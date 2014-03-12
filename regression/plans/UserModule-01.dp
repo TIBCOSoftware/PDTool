@@ -1,0 +1,4 @@
+# -----------------------------------------
+# User Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateUsersXML   		$SERVERID "composite" 	"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getUserModule.xml"	"$MODULE_HOME/servers.xml"

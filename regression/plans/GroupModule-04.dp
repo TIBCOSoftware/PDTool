@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Group Module:
+# -----------------------------------------
+PASS	FALSE	ExecuteAction	addUsersToGroups		$SERVERID group3 "user3" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"

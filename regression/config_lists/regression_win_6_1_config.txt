@@ -1,0 +1,30 @@
+# Provides the order of execution for the different PDTool configurations on windows
+# PDTool Config File        PDTool Plan File List
+#   Note: Do not put the .properties on the end of the config file name.
+#   Note: Do use tabs as separators.  Use spaces only.
+#
+# Execute PDTool regresion for Windows and CIS 6.1 environment
+#
+# Regression Module Only
+#regression_win_6_1          regression_plan_regession_list.txt
+
+# PDTool - All modules except VCS
+#regression_win_6_1          regression_plan_test_list.txt            # test the base module connection
+regression_win_6_1          regression_plan_base_list.txt            # Full regression of base modules
+
+# PDTool - VCS Module for Subversion
+#regression_win_6_1_svn      regression_plan_vcs_test_list.txt        # test Subversion connection
+regression_win_6_1_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+
+# PDTool - VCS Module for CVS
+#regression_win_6_1_cvs      regression_plan_vcs_test_list.txt        # test CVS connection
+regression_win_6_1_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+
+# PDTool - VCS Module for Microsoft Team Foundation Server
+#regression_win_6_1_tfs      regression_plan_vcs_test_list.txt        # test TFS connection
+#regression_win_6_1_tfs      regression_plan_vcs_base_list.txt        # Full regression of VCS TFS
+
+# PDTool - VCS Module for Perforce
+#regression_win_6_1_p4       regression_plan_vcs_test_list.txt        # test Perforce connection
+regression_win_6_1_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
+#regression_win_6_1_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)

@@ -1,0 +1,5 @@
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Generate the Data Source resource list + children for the data sources found in the starting path
+PASS	TRUE	ExecuteAction   	generateDataSourcesResourceListXML 	$SERVERID "/shared/test00" "$PROJECT_HOME_PHYSICAL/resources/modules/generated/generateDataSourcesResourceListXML.xml" "$MODULE_HOME/servers.xml"

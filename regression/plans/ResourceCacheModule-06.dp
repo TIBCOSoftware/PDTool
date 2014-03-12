@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ResourceCache Module:
+# -----------------------------------------
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled 		$SERVERID "cache_disable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"

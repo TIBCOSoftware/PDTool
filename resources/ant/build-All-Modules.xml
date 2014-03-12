@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+
+  <description>ANT Regression Test for all methhods and all modules.</description>
+
+  <!-- Default properties -->
+
+  <!-- Default Server Id -->
+  <!--  <property name="SERVERID" 			value="localhost"/>    -->
+  <!-- CIS5.1.0 Server Id -->
+  <!--  <property name="SERVERID" 			value="localhost9410"/>  -->
+  <!-- CIS5.2.0 Server Id -->
+  <!-- <property name="SERVERID" 			value="localhost9420"/> -->
+  <!-- CIS6.1.0 Server Id -->
+  <!-- <property name="SERVERID" 			value="localhost9430"/>  -->
+  <!-- CIS6.2.0 Server Id -->
+  <!-- <property name="SERVERID" 			value="localhost9440"/>  -->
+
+  <property name="SERVERID" 				value="localhost9440"/>
+  <!-- VCS Connection Properties [svn01,perforce01,cvs01,tfs01] -->
+  <property name="VCONN" 					value="svn01"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="arguments-pass" 			value="'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"/>
+
+ <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" description="Update CIS with environment specific parameters">
+
+	<!--
+	# ========================================
+	# Begin task definition list:
+	# ========================================
+		# Start by deleting the following:
+		#    /services/databases/TEST00
+		PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/databases/TEST00 "$MODULE_HOME/servers.xml"
+		#    /services/webservices/
+		PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/webservices/testWebService00 "$MODULE_HOME/servers.xml"
+		#    /shared/test00
+		PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /shared/test00 "$MODULE_HOME/servers.xml"
+		#    user1 and user2
+		PASS	TRUE	ExecuteAction   deleteUsers    	$SERVERID "*" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+		#    group1 and goup2
+		PASS	TRUE	ExecuteAction   deleteGroups 	$SERVERID "*" 		"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+	-->
+		<executeJavaAction action="deleteResource" 	arguments="${SERVERID}^/services/databases/TEST00^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="deleteResource" 	arguments="${SERVERID}^/services/webservices/testWebService00^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="deleteResource" 	arguments="${SERVERID}^/shared/test00^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="deleteUsers" 	arguments="${SERVERID}^*^${pathToUsersXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="deleteGroups" 	arguments="${SERVERID}^*^${pathToGroupsXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		
+	<!--
+	# ========================================
+	# Archive Module:
+	# ========================================
+		# Full Server Backup
+		PASS	TRUE	ExecuteAction  	backup_export   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Full Server Restore
+		PASS	TRUE	ExecuteAction  	backup_import   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Import
+		PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Export
+		PASS	TRUE	ExecuteAction   	pkg_export  $SERVERID "export01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="backup_export"   arguments="${SERVERID}^FullBackup^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="backup_import"   arguments="${SERVERID}^FullBackup^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="pkg_import"    	arguments="${SERVERID}^import01^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="pkg_export"    	arguments="${SERVERID}^export01^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		
+	<!--
+	# ========================================
+	# Group Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateGroupsXML		$SERVERID composite 		"$MODULE_HOME/generated/getGroupModule.xml" "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   deleteGroups 			$SERVERID group1 			"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   createOrUpdateGroups 	$SERVERID "group1,group2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generateGroupsXML"    	arguments="${SERVERID}^composite^${MODULE_HOME}/generated/getGroupModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="deleteGroups"    		arguments="${SERVERID}^group1^${pathToGroupsXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="createOrUpdateGroups"    arguments="${SERVERID}^group1,group2^${pathToGroupsXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		
+	<!--
+	# ========================================
+	# User Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateUsersXML   		$SERVERID "composite" 	"$MODULE_HOME/generated/getUserModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   deleteUsers    			$SERVERID "user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   createOrUpdateUsers    	$SERVERID "user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   createOrUpdateUsers    	$SERVERID "-user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generateUsersXML"   	arguments="${SERVERID}^composite^${MODULE_HOME}/generated/getUserModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="deleteUsers"    		arguments="${SERVERID}^user1^${pathToUsersXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="createOrUpdateUsers" arguments="${SERVERID}^user1^${pathToUsersXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="createOrUpdateUsers" arguments="${SERVERID}^-user1^${pathToUsersXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# ========================================
+	# Group Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	addUsersToGroups		$SERVERID group1 "user2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction	deleteUsersFromGroups 	$SERVERID group1 "user2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="addUsersToGroups"    	arguments="${SERVERID}^group1^user2^${pathToGroupsXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="deleteUsersFromGroups"   arguments="${SERVERID}^group1^user2^${pathToGroupsXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	
+	<!--
+	# ========================================
+	# ServerAttribute Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"
+		PASS	TRUE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"
+		PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "studio3" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "server9" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "*" 			"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "-server9"	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generateServerAttributesXML"  			arguments="${SERVERID}^/^${MODULE_HOME}/generated/getServerAttributeModule.xml^${pathToServersXML}^READ_WRITE" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="generateServerAttributeDefinitionsXML"  	arguments="${SERVERID}^/^${MODULE_HOME}/generated/getServerAttributeDefinitionModule.xml^${pathToServersXML}^*" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateServerAttributes"    				arguments="${SERVERID}^studio3^${pathToServerAttributeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateServerAttributes"    				arguments="${SERVERID}^server9^${pathToServerAttributeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateServerAttributes"    				arguments="${SERVERID}^*^${pathToServerAttributeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateServerAttributes"    				arguments="${SERVERID}^-server9^${pathToServerAttributeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# ========================================
+	# DataSource Module:
+	# ========================================
+		# Generate the list of Datasources
+		PASS	TRUE	ExecuteAction   	generateDataSourcesXML 	$SERVERID /shared/test00		"$MODULE_HOME/generated/getDataSourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Update Datasource
+		PASS	FALSE	ExecuteAction   	updateDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Enable Datasource
+		PASS	TRUE	ExecuteAction   	enableDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Reintrospect Datasource
+		PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="generateDataSourcesXML"  arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getDataSourceModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateDataSources"    	arguments="${SERVERID}^ds1,ds2,ds3^${pathToDataSourcesXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="enableDataSources"    	arguments="${SERVERID}^ds1,ds2,ds3^${pathToDataSourcesXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="reIntrospectDataSources" arguments="${SERVERID}^ds1,ds2,ds3^${pathToDataSourcesXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# ========================================
+	# Resource Module:
+	# ========================================
+		# ===================
+		# Direct invocations
+		# ===================
+		# Execute a Configured Procedure (defined in ResourceModule.xml
+		PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 					TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+		# Copy a resource at a given path
+		PASS	TRUE	ExecuteAction   	copyResource 			$SERVERID /shared/test00/f1/p1		"$MODULE_HOME/servers.xml" /shared/test00/f1 p1copy OVERWRITE_REPLACE_IF_EXISTS
+		# Rename a resource at a given path
+		PASS	TRUE	ExecuteAction   	renameResource 			$SERVERID /shared/test00/f1/p1copy	"$MODULE_HOME/servers.xml" p1rename
+		# Move a resource at a given path
+		PASS	TRUE	ExecuteAction   	moveResource 			$SERVERID /shared/test00/f1/p1rename "$MODULE_HOME/servers.xml" /shared/test00/f1/f2 p1move
+		# Delete resources 
+		PASS	TRUE	ExecuteAction   	deleteResource 			$SERVERID /shared/test00/f1/f2/p1move "$MODULE_HOME/servers.xml"
+		# Lock a resource at a given path
+		PASS	TRUE	ExecuteAction   	lockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml"
+		# Unlock a resource at a given path
+		PASS	TRUE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml" "unlocking resource"
+		-->
+		<!--# Execute a Composite procedure -->
+        <executeJavaAction action="executeProcedure" arguments="${SERVERID}^testproc^TEST00^${pathToServersXML}^${arguments-pass}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Copy a resource at a given path -->
+		<executeJavaAction action="copyResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}^/shared/test00/f1^p1copy^OVERWRITE_REPLACE_IF_EXISTS" endExecutionOnTaskFailure="TRUE" />
+		<!--# Rename a resource at a given path -->
+		<executeJavaAction action="renameResource" arguments="${SERVERID}^/shared/test00/f1/p1copy^${pathToServersXML}^p1rename" endExecutionOnTaskFailure="TRUE" />
+		<!--# Move a resource at a given path -->
+		<executeJavaAction action="moveResource" arguments="${SERVERID}^/shared/test00/f1/p1rename^${pathToServersXML}^/shared/test00/f1/f2^p1move" endExecutionOnTaskFailure="TRUE" />
+		<!--# Delete a resource at a given path -->
+		<executeJavaAction action="deleteResource" arguments="${SERVERID}^/shared/test00/f1/f2/p1move^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Lock a resource at a given path -->
+		<executeJavaAction action="lockResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Unlock a resource at a given path -->
+		<executeJavaAction action="unlockResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}^unlocking resource" endExecutionOnTaskFailure="TRUE" />
+		<!--			
+		# =======================
+		# Module XML invocations
+		# =======================
+		# Check for existence of resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	doResourcesExist 		$SERVERID "exist1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Execute a Composite procedure
+		PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Copy resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	copyResources 			$SERVERID "copy1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Rename resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	renameResources 		$SERVERID "rename1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Move resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	moveResources 			$SERVERID "move1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Delete resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	deleteResources 		$SERVERID "delete1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Lock a resource at a given path
+		PASS	TRUE	ExecuteAction   	lockResources 			$SERVERID "lock1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Unlock resource configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	unlockResources 		$SERVERID "unlock1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		-->
+ 		<!--# Check for existence of resources configured in ResourceModule.xml -->
+ 		<executeJavaAction action="doResourcesExist" arguments="${SERVERID}^exist1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Execute a Configured Procedure (defined in ResourceModule.xml -->
+ 		<executeJavaAction action="executeConfiguredProcedures" arguments="${SERVERID}^testproc^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Copy resources configured in ResourceModule.xml -->
+		<executeJavaAction action="copyResources" arguments="${SERVERID}^copy1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Rename resources configured in ResourceModule.xml -->
+		<executeJavaAction action="renameResources" arguments="${SERVERID}^rename1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Move resources configured in ResourceModule.xml -->
+		<executeJavaAction action="moveResources" arguments="${SERVERID}^move1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Delete resources configured in ResourceModule.xml -->
+		<executeJavaAction action="deleteResources" arguments="${SERVERID}^delete1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Lock resources configured in ResourceModule.xml -->
+ 		<executeJavaAction action="lockResources" arguments="${SERVERID}^lock1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Unlock resource configured in ResourceModule.xml -->
+		<executeJavaAction action="unlockResources" arguments="${SERVERID}^unlock1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+
+	<!--	
+	# ========================================
+	# Rebind Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction   		generateRebindXML   $SERVERID "/shared/test00/Views" 	"$MODULE_HOME/generated/getRebindModule.xml" "$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   		rebindResources    	$SERVERID "rb1,rb2" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 
+		#PASS	TRUE	ExecuteAction   		rebindFolder    	$SERVERID "rf1,rf2" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generateRebindXML"  arguments="${SERVERID}^/shared/test00/Views^${MODULE_HOME}/generated/getRebindModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="rebindResources"    arguments="${SERVERID}^rb1,rb2^${pathToRebindXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <!--executeJavaAction action="rebindFolder"    arguments="${SERVERID}^rf1,rf2^${pathToRebindXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>-->
+
+	<!--
+	# ========================================
+	# ResourceCache Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
+		PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="generateResourceCacheXML"  	arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getResourceCacheModule.xml^${pathToServersXML}^CONFIGURED TABLE PROCEDURE" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCache"    		arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="clearResourceCache"    		arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="refreshResourceCache"    	arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# ========================================
+	# Trigger Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-2" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   updateTriggers		 		$SERVERID "TR-1,TR-2,TR-3,TR-4"  	"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-5" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="generateTriggersXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getTriggerModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="enableTriggers"  	arguments="${SERVERID}^TR-2^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateTriggers"  	arguments="${SERVERID}^TR-1,TR-2,TR-3,TR-4^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="enableTriggers"  	arguments="${SERVERID}^TR-5^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# ========================================
+	# Privilege Module:
+	# ========================================
+		# Generate Privilege XML
+		# Param5=serverId 						[$SERVERID]
+		# Param6=startingPath 					[/shared/test00]
+		# Param7=Path-to-PrivilegeModuule.xml 	[$MODULE_HOME/getPrivilegeModule.xml]
+		# Param8=Path-to-Servers.xml 			[$MODULE_HOME/servers.xml]
+		#
+		# Param9=filter - 						[ALL] - return privileges for all resource types in the path
+		#				comma separate list of one or more filter resource types to generate privileges for [ALL,CONTAINER,DATA_SOURCE,DEFINITION_SET,LINK,PROCEDURE,TABLE,TREE,TRIGGER,COLUMN]
+		#                 If the list contains ALL anywhere in the list then ALL resource types are returned and the rest of the list is ignored.
+		#
+		# param10=options - 					[GROUP,USER,NONSYSTEM,PARENT,CHILD]
+		#				comma separate list of one or more options to generate privileges for [USER,GROUP,SYSTEM,NONSYSTEM,PARENT,CHILD]
+		#
+		#				USER=return privileges for users
+		#				GROUP=return privileges for groups.  This is the default if neither USER or GROUP is specified.
+		#
+		#				SYSTEM=return privileges for system users (anonymous,monitor) and groups (all)
+		#				NONSYSTEM=return privileges for all non-system users and groups.  This is the default if neither SYSTEM or NONSYSTEM is specified.
+		#
+		#				PARENT=return privileges for the parent starting path
+		#				CHILD=return privileges for all children of the starting path.  This is the default if neither PARENT or CHILD is specified.
+		#
+		# param11=domainList - list of domains to generate privileges for [composite]
+		#
+		PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"
+		PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule2.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP USER NONSYSTEM PARENT CHILD" "composite"
+		#
+		# Update Privileges
+		PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv1,priv2"		"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv3"			"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generatePrivilegesXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getPrivilegeModule1.xml^${pathToServersXML}^ALL^GROUP NONSYSTEM PARENT^composite" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="generatePrivilegesXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getPrivilegeModule2.xml^${pathToServersXML}^ALL^GROUP USER NONSYSTEM PARENT CHILD^composite" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updatePrivileges"  	arguments="${SERVERID}^priv1,priv2^${pathToPrivilegeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updatePrivileges"  	arguments="${SERVERID}^priv3^${pathToPrivilegeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+	# =============================================
+	# VCS Module: Non-VCS Connection Properties
+	# =============================================
+		# These versions are original methods which use connection properties in "deploy.properties"
+		PASS	TRUE	ExecuteAction  	vcsInitWorkspace
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/databases/TEST00 "Data Source" HEAD 									"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /shared/test00 "Folder" HEAD 														"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckouts   			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		# overloaded checkout function for perforce labels
+		#PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID "" "" rel1.2 HEAD 																"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" "check in"			"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /shared/test00 "Folder" "check in"												"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckins    			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin		$SERVERID /services/databases/TEST00 "Data Source" "force check in" 						"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /services/webservices/testWebService00 "Composite Web Service" "force check in" 	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /shared/test00 "Folder" "force check in"											"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/databases/TEST00 "Data Source" 			"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		-->
+        <executeJavaAction action="vcsInitWorkspace"	arguments="${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/databases/TEST00^Data Source^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/shared/test00^Folder^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+		<executeJavaAction action="vcsCheckouts"		arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		
+		<!-- # overloaded checkout function for perforce labels (only enable when testing perforce) -->
+		<!--
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^^^rel1.2^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		-->
+		
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/services/databases/TEST00^Data Source^check in database^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^check in web service^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/shared/test00^Folder^check in shared test00^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+        <executeJavaAction action="vcsCheckins"			arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/services/databases/TEST00^Data Source^force check in database^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^force check in web service^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/shared/test00^Folder^force check in shared test00^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+	
+        <executeJavaAction action="vcsForcedCheckins"	arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsPrepareCheckin"	arguments="${SERVERID}^/shared/test00^Folder^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+        <executeJavaAction action="vcsPrepareCheckins"	arguments="${SERVERID}^testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<!--
+	# ==============================================
+	# VCS Module: VCS Connection Properties version
+	# ==============================================
+		# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+		#
+		PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /shared/test00 "Folder" HEAD 					"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckouts2    		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		# overloaded checkout function for perforce labels
+		#PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN "" "" rel1.2 HEAD 								"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /shared/test00 "Folder" "check in"				"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /shared/test00 "Folder" "force check in"		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckins2 		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /shared/test00 "Folder"						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckins2 	$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+	-->
+        <executeJavaAction action="vcsInitWorkspace2"	arguments="${VCONN}^${pathToVCSModuleXML}^${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+		<executeJavaAction action="vcsCheckouts2"		arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		
+		<!-- # overloaded checkout function for perforce labels (only enable when testing perforce) -->
+		<!--
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^^^rel1.2^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		-->
+		
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^check in database^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^check in web service^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^check in shared test00^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+        <executeJavaAction action="vcsCheckins2"		arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^force check in database^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^force check in web service^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^force check in shared test00^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+	
+        <executeJavaAction action="vcsForcedCheckins2"	arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsPrepareCheckin2"	arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+        <executeJavaAction action="vcsPrepareCheckins2"	arguments="${SERVERID}^${VCONN}^testNN,testDB,testWS^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+    <!-- 
+	# ========================================
+	# Regression Module:
+	# ========================================
+		# Generate Input file
+		PASS	TRUE   ExecuteAction      createRegressionInputFile   $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
+		# Perform a Functional Test
+		PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction description="Create Input File" 		action="createRegressionInputFile" 	arguments="${SERVERID}^Test1^${pathToRegressionXML}^${pathToServersXML}"		endExecutionOnTaskFailure="TRUE"/>
+        <executeJavaAction description="Execute Test" 			action="executeRegressionTest" 		arguments="${SERVERID}^Test1^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+		# Perform a Migration Test for cis51
+		PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+		# Perform a Migration Test for cis61
+		PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+		# Compare query result files (checksum)
+		PASS	TRUE   ExecuteAction      compareRegressionFiles      $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+		# Compare Migration Log files
+		PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+		<executeJavaAction description="Execute Test" 			action="executeRegressionTest" 		arguments="${SERVERID}^Test2.1^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction description="Execute Test" 			action="executeRegressionTest" 		arguments="${SERVERID}^Test2.2^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+        <executeJavaAction description="CompareResults" 		action="compareRegressionFiles" 	arguments="${SERVERID}^Test2.2^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+        <executeJavaAction description="CompareLogs" 			action="compareRegressionLogs"		arguments="${SERVERID}^Test2.2^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+
+	<!--
+		# Perform a Performance Test for cis51
+		PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+		# Perform a Performance Test for cis61
+		PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+		# Compare Performance Logs
+		PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+		<executeJavaAction description="Execute Performance" 	action="executePerformanceTest"		arguments="${SERVERID}^Test3.1^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction description="Execute Performance" 	action="executePerformanceTest"		arguments="${SERVERID}^Test3.2^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+        <executeJavaAction description="CompareLogs" 			action="compareRegressionLogs"		arguments="${SERVERID}^Test2.2^${pathToRegressionXML}^${pathToServersXML}" 		endExecutionOnTaskFailure="TRUE"/>
+		
+	<!--
+	# ========================================
+	# ServerManager Module:
+	# ========================================
+		PASS	TRUE   ExecuteAction   stopServer     $SERVERID  "$MODULE_HOME/servers.xml" 
+		PASS	TRUE   ExecuteAction   startServer    $SERVERID  "$MODULE_HOME/servers.xml" 
+		PASS	TRUE   ExecuteAction   restartServer  $SERVERID  "$MODULE_HOME/servers.xml" 
+	-->
+		<executeJavaAction action="stopServer" 		arguments="${SERVERID}^${pathToServersXML}"	endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="startServer" 	arguments="${SERVERID}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+		<executeJavaAction action="restartServer" 	arguments="${SERVERID}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	
+	</target>
+</project>

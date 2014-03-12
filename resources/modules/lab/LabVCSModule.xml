@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+<p1:VCSModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+
+  <vcsConnections>
+    <vcsConnection>
+        <id>svn01</id>
+        <VCS_TYPE>svn</VCS_TYPE>
+        <VCS_HOME>D:/dev/vcs/csvn/bin</VCS_HOME>
+        <VCS_COMMAND>svn</VCS_COMMAND>
+        <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
+        <VCS_OPTIONS>--non-interactive --no-auth-cache --trust-server-cert</VCS_OPTIONS>
+	    <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
+	    <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
+	    <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
+	    <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
+	    <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
+        <VCS_REPOSITORY_URL>http:////$SVN_VCS_HOST/svn/sandbox/</VCS_REPOSITORY_URL>
+        <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+        <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+		<VCS_WORKSPACE_NAME>SVNww</VCS_WORKSPACE_NAME>
+		<VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
+        <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/SVNt</VCS_TEMP_DIR>
+        <VCS_USERNAME></VCS_USERNAME>
+        <VCS_PASSWORD></VCS_PASSWORD>
+        <VCS_IGNORE_MESSAGES></VCS_IGNORE_MESSAGES>
+		<VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
+        <!--Element vcsSpecificEnvVars is optional-->
+        <vcsSpecificEnvVars>
+            <!--Element envVar is optional, maxOccurs=unbounded-->
+            <envVar>
+                <envName>SVN_EDITOR</envName>
+                <envValue>notepad</envValue>
+            </envVar>
+        </vcsSpecificEnvVars>
+    </vcsConnection>
+    <vcsConnection>
+        <id>perforce01</id>
+        <VCS_TYPE>p4</VCS_TYPE>
+        <VCS_HOME>D:/dev/vcs/perforce</VCS_HOME>
+        <VCS_COMMAND>p4</VCS_COMMAND>
+        <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
+        <VCS_OPTIONS></VCS_OPTIONS>
+	    <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
+	    <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
+	    <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
+	    <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
+	    <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
+        <VCS_REPOSITORY_URL>$P4_VCS_HOST:1666</VCS_REPOSITORY_URL>
+        <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+        <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+		<VCS_WORKSPACE_NAME>P4ww</VCS_WORKSPACE_NAME>
+		<VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
+        <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$P4t</VCS_TEMP_DIR>
+        <VCS_USERNAME></VCS_USERNAME>
+        <VCS_PASSWORD></VCS_PASSWORD>
+        <VCS_IGNORE_MESSAGES>No files to submit</VCS_IGNORE_MESSAGES>
+		<VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
+        <!--Element vcsSpecificEnvVars is optional-->
+        <vcsSpecificEnvVars>
+            <!--Element envVar is optional, maxOccurs=unbounded-->
+            <envVar>
+                <envName>P4EDITOR</envName>
+                <envValue>notepad</envValue>
+            </envVar>
+            <envVar>
+				<envName>P4CLIENT</envName>
+				<envValue>$VCS_WORKSPACE_NAME</envValue>
+            </envVar>
+            <envVar>
+                <envName>P4PORT</envName>
+                <envValue>$VCS_REPOSITORY_URL</envValue>
+            </envVar>
+            <envVar>
+                <envName>P4USER</envName>
+                <envValue>$VCS_USERNAME</envValue>
+            </envVar>
+            <envVar>
+                <envName>P4PASSWD</envName>
+                <envValue>$VCS_PASSWORD</envValue>
+            </envVar>
+            <envVar>
+                <envName>P4DEL_LINK_OPTIONS</envName>
+                <envValue>-f</envValue>
+            </envVar>            
+        </vcsSpecificEnvVars>
+    </vcsConnection>
+    <vcsConnection>
+        <id>cvs01</id>
+        <VCS_TYPE>cvs</VCS_TYPE>
+        <VCS_HOME>D:/dev/vcs/cvsnt</VCS_HOME>
+        <VCS_COMMAND>cvs</VCS_COMMAND>
+        <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
+        <VCS_OPTIONS></VCS_OPTIONS>
+	    <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
+	    <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
+	    <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
+	    <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
+	    <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
+	    <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
+        <VCS_REPOSITORY_URL>:pserver:$VCS_USERNAME:$VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
+        <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+        <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+		<VCS_WORKSPACE_NAME>CVSww</VCS_WORKSPACE_NAME>
+		<VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
+        <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/CVSt</VCS_TEMP_DIR>
+        <VCS_USERNAME></VCS_USERNAME>
+        <VCS_PASSWORD></VCS_PASSWORD>
+        <VCS_IGNORE_MESSAGES></VCS_IGNORE_MESSAGES>
+		<VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
+        <!--Element vcsSpecificEnvVars is optional-->
+        <vcsSpecificEnvVars>
+            <!--Element envVar is optional, maxOccurs=unbounded-->
+            <envVar>
+                <envName>CVSROOT</envName>
+                <envValue>$VCS_REPOSITORY_URL</envValue>
+            </envVar>
+            <envVar>
+                <envName>CVS_RSH</envName>
+                <envValue>ssh</envValue>
+            </envVar>
+        </vcsSpecificEnvVars>
+    </vcsConnection>
+    <vcsConnection>
+        <id>tfs01</id>
+        <VCS_TYPE>tfs2013</VCS_TYPE>
+        <VCS_HOME>C:\\dev\\vcs\\TEE-CLC-11.0.0</VCS_HOME>
+        <VCS_COMMAND>tf</VCS_COMMAND>
+        <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
+        <VCS_OPTIONS></VCS_OPTIONS>
+      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
+		# Workspace Initialization.  Create new workspace equates to: 
+		#		TFS: tf workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
+		#		       e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
+		#		SVN: not applicable
+		#		 P4: not applicable
+		#		CVS: not applicable
+		-->
+	  <VCS_WORKSPACE_INIT_NEW_OPTIONS>/location:server</VCS_WORKSPACE_INIT_NEW_OPTIONS>
+	  
+      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
+		# Workspace Initialization.  Link workspace to VCS repository equates to: 
+		#		TFS: tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workfold -map -collection:http://hostname:8080/tfs/DefaultCollection $/Composite_62/cis_objects W:/wks/Composite_62/cis_objects -workspace:wks -noprompt /login:user,********
+		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+		#		 P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+		#		 P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
+		#		CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+		-->
+      <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
+	  
+      <!--Element VCS_WORKSPACE_INIT_GET_OPTIONS is optional
+		# Workspace Initialization.  Get resources from VCS repository equates to: 
+		#		TFS: tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} {$VCS_WORKSPACE_INIT_GET_OPTIONS}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+		#		 P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+		-->
+      <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+	  
+      <!--Element VCS_CHECKIN_OPTIONS is optional
+		# Resource Checkin. Checkin resources to VCS equates to:
+		#		TFS: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					Check out folder for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#					             Check in folder:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#					  Check out file for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#								   Check in file:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+		#		SVN: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					             Check in folder:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#								   Check in file:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+		#		 P4: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					             Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#								   Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		#		CVS: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		-->
+      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
+	  
+      <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		-->
+      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
+	  
+      <!--Element VCS_CHECKOUT_OPTIONS is optional
+		# Resource Checkout. Checkout resources to VCS equates to:
+		#		TFS: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					            Check out folder:  tf.cmd get ${fullResourcePath} -version:${Revision} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#					              Check out file:  tf.cmd get ${fullResourcePath} -version:${Revision} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#		SVN: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					            Check out folder:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#					              Check out file:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+		#		 P4: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					            Check out folder:  current:  p4 sync ${VCS_CHECKOUT_OPTIONS}
+		#												   revision: p4 sync @${Revision} ${VCS_CHECKOUT_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#					              Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
+		#												   revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
+		#		CVS: 
+		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
+		#					            Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
+		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
+		#					              Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
+		-->
+      <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
+
+      <!--Element VCS_CHECKOUT_OPTIONS_REQUIRED is optional
+		# A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
+		-->
+      <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
+	  
+        <VCS_REPOSITORY_URL>http:////$TFS_VCS_HOST:8080/tfs/DefaultCollection</VCS_REPOSITORY_URL>
+        <VCS_PROJECT_ROOT>TeamProject/cis_objects</VCS_PROJECT_ROOT>
+        <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+		<VCS_WORKSPACE_NAME>TFSww</VCS_WORKSPACE_NAME>
+		<VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
+        <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/TFSt</VCS_TEMP_DIR>
+        <VCS_USERNAME></VCS_USERNAME>
+        <VCS_PASSWORD></VCS_PASSWORD>
+        <VCS_IGNORE_MESSAGES>No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in</VCS_IGNORE_MESSAGES>
+		<VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
+        <!--Element vcsSpecificEnvVars is optional-->
+        <vcsSpecificEnvVars>
+            <!--Element envVar is optional, maxOccurs=unbounded-->
+            <envVar>
+                <envName>TFS_EDITOR</envName>
+                <envValue>notepad</envValue>
+            </envVar>
+            <envVar>
+                <envName>TFS_SERVER_URL</envName>
+                <envValue>$$/TeamProject/cis_objects</envValue>
+            </envVar>
+        </vcsSpecificEnvVars>
+    </vcsConnection>
+  </vcsConnections>
+    <vcsResource>
+        <id>testDB</id>
+        <resourcePath>/services/databases/TEST$STUDENTID</resourcePath>
+        <resourceType>Composite Database</resourceType>
+        <revision>HEAD</revision>
+        <message>checkin testDB</message>
+    </vcsResource>
+    <vcsResource>
+        <id>testWS</id>
+        <resourcePath>/services/webservices/TEST$STUDENTID</resourcePath>
+        <resourceType>Folder</resourceType>
+        <revision>HEAD</revision>
+        <message>checkin testWS</message>
+    </vcsResource>
+    <vcsResource>
+        <id>testSH</id>
+        <resourcePath>/shared/test$STUDENTID</resourcePath>
+        <resourceType>Folder</resourceType>
+        <revision>HEAD</revision>
+        <message>checkin test$STUDENTID</message>
+    </vcsResource>
+	
+</p1:VCSModule>

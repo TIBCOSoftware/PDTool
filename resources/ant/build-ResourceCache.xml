@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  
+  <!-- Custom properties -->
+  <property name="resourceCacheIds" 		value="cache2"/>
+  <property name="pathToGenResourceCacheXML" value="${MODULE_HOME}/generated/getResourceCacheModule.xml"/>
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+  
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" description="Update CIS with environment specific parameters">
+     
+	<!--
+	# ========================================
+	# ResourceCache Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
+		PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+		PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="generateResourceCacheXML"  	arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getResourceCacheModule.xml^${pathToServersXML}^CONFIGURED TABLE PROCEDURE" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCache"    		arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="clearResourceCache"    		arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="refreshResourceCache"    	arguments="${SERVERID}^cache2^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCacheEnabled" 	arguments="${SERVERID}^cache_enable_single^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCacheEnabled" 	arguments="${SERVERID}^cache_disable_single^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCacheEnabled" 	arguments="${SERVERID}^cache_disable_all^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateResourceCacheEnabled" 	arguments="${SERVERID}^cache_enable_all^${pathToResourceCacheXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	</target>
+</project>

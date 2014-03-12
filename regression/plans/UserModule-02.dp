@@ -1,0 +1,4 @@
+# -----------------------------------------
+# User Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   deleteUsers    			$SERVERID "user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 

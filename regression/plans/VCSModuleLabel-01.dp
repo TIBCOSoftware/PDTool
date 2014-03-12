@@ -1,0 +1,7 @@
+# -----------------------------------------
+# VCS Module: Non-VCS Connection Properties
+# -----------------------------------------
+# These are the original methods which use the "deploy.properties" files
+#
+# overloaded checkout function for perforce labels
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID "" "" rel1.2 HEAD 																"$MODULE_HOME/servers.xml"

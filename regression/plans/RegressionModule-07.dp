@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Compare Migration Log files
+PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"

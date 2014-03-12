@@ -1,0 +1,21 @@
+# Provides the order of execution for the plan files
+_initialize_vcs.dp
+
+VCSModuleConn-01.dp
+VCSModuleConn-02.dp
+VCSModuleConn-03.dp
+VCSModuleConn-04.dp
+VCSModuleConn-05.dp
+VCSModuleConn-06.dp
+VCSModuleConn-07.dp
+VCSModuleConn-08.dp
+VCSModuleConn-09.dp
+VCSModuleConn-10.dp
+VCSModuleConn-11.dp
+VCSModuleConn-12.dp
+VCSModuleConn-13.dp
+VCSModuleConn-14.dp
+VCSModuleConn-15.dp
+VCSModuleConn-16.dp
+VCSModuleConn-17.dp
+VCSModuleConn-18.dp

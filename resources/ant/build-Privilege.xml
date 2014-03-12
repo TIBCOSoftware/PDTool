@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="privilegeIds" 			value="priv1,priv2"/>
+  <property name="pathToGenPrivilegeXML" 	value="${MODULE_HOME}/generated/getPrivilegeModule.xml"/>
+
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" description="Update CIS with environment specific parameters">
+     
+	<!--
+	# ========================================
+	# Privilege Module:
+	# ========================================
+		# Generate Privilege XML
+		# Param5=serverId 						[$SERVERID]
+		# Param6=startingPath 					[/shared/test00]
+		# Param7=Path-to-PrivilegeModuule.xml 	[$MODULE_HOME/getPrivilegeModule.xml]
+		# Param8=Path-to-Servers.xml 			[$MODULE_HOME/servers.xml]
+		#
+		# Param9=filter - 						[ALL] - return privileges for all resource types in the path
+		#				comma separate list of one or more filter resource types to generate privileges for [ALL,CONTAINER,DATA_SOURCE,DEFINITION_SET,LINK,PROCEDURE,TABLE,TREE,TRIGGER,COLUMN]
+		#                 If the list contains ALL anywhere in the list then ALL resource types are returned and the rest of the list is ignored.
+		#
+		# param10=options - 					[GROUP,USER,NONSYSTEM,PARENT,CHILD]
+		#				comma separate list of one or more options to generate privileges for [USER,GROUP,SYSTEM,NONSYSTEM,PARENT,CHILD]
+		#
+		#				USER=return privileges for users
+		#				GROUP=return privileges for groups.  This is the default if neither USER or GROUP is specified.
+		#
+		#				SYSTEM=return privileges for system users (anonymous,monitor) and groups (all)
+		#				NONSYSTEM=return privileges for all non-system users and groups.  This is the default if neither SYSTEM or NONSYSTEM is specified.
+		#
+		#				PARENT=return privileges for the parent starting path
+		#				CHILD=return privileges for all children of the starting path.  This is the default if neither PARENT or CHILD is specified.
+		#
+		# param11=domainList - list of domains to generate privileges for [composite]
+		#
+		PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"
+		PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule2.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP USER NONSYSTEM PARENT CHILD" "composite"
+		#
+		# Update Privileges
+		PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv1,priv2"		"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+		PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv3"			"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+	-->
+	    <executeJavaAction action="generatePrivilegesXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getPrivilegeModule1.xml^${pathToServersXML}^ALL^GROUP NONSYSTEM PARENT^composite" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="generatePrivilegesXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getPrivilegeModule2.xml^${pathToServersXML}^ALL^GROUP USER NONSYSTEM PARENT CHILD^composite" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updatePrivileges"  	arguments="${SERVERID}^priv1,priv2^${pathToPrivilegeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updatePrivileges"  	arguments="${SERVERID}^priv3^${pathToPrivilegeXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	</target>
+</project>

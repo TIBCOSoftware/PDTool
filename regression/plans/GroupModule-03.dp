@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Group Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   createOrUpdateGroups 	$SERVERID "group*" 		"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 

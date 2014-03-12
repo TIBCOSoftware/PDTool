@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:GroupModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <group>
+        <id>group-1</id>
+        <groupName>GROUP1</groupName>
+        <groupDomain>composite</groupDomain>
+        <privilege>ACCESS_TOOLS</privilege>
+    </group>
+	    <group>
+        <id>group2</id>
+        <groupName>group2</groupName>
+        <groupDomain>composite</groupDomain>
+        <privilege>ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS</privilege>
+    </group>
+</ns2:GroupModule>

@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ServerAttribure Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "studio3" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 

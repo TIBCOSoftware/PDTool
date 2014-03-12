@@ -1,0 +1,6 @@
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Reintrospect Datasource
+# Fails when PDTool connects over https
+PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"

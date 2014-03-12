@@ -1,0 +1,7 @@
+# -----------------------------------------
+# VCS Module: VCS Connection Properties version
+# -----------------------------------------
+# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+
+# overloaded checkout function for perforce labels
+PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN "" "" rel1.2 HEAD 								"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"

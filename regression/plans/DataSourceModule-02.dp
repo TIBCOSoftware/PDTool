@@ -1,0 +1,5 @@
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Update Datasource
+PASS	TRUE	ExecuteAction   	updateDataSources 		$SERVERID " * " 		"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getDataSourceModule.xml" "$MODULE_HOME/servers.xml"

@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Check for existence of resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	doResourcesExist 		$SERVERID "exist1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

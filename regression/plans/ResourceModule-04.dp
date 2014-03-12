@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Move a resource at a given path
+PASS	TRUE	ExecuteAction   	moveResource 			$SERVERID /shared/test00/f1/p1rename "$MODULE_HOME/servers.xml" /shared/test00/f1/f2 p1move

@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Archive Module:
+# -----------------------------------------
+# Full Server Restore
+PASS	TRUE	ExecuteAction  	backup_import   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"

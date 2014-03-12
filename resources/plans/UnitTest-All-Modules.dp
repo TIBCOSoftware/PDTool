@@ -1,0 +1,328 @@
+# ----------------------------
+# UnitTest-All-Modules.dp
+# ----------------------------
+# ----------------------------
+# Parameter Specification:
+# ----------------------------
+# Param1=[PASS or FAIL]  :: Expected Regression Behavior.  Informs the script whether you expect the action to pass or fail.  Can be used for regression testing.
+# Param2=[TRUE or FALSE] :: Exit Orchestration script on error
+# Param3=Module Batch/Shell Script name to execute (no extension).  Extension is added by script.
+# Param4=Module Action to execute
+# Param5-ParamN=Specific space separated parameters for the action.  See Property Rules below.
+#
+# ----------------------------
+# Property File Rules:
+# ----------------------------
+#   1. All parameters are space separated.  Commas are not used.
+#         a. Any number of spaces may occur before or after any parameter and are trimmed.
+#
+#   2. Parameters should always be enclosed in double quotes according to these rules:
+#         a. when the parameter value contains a comma separated list:
+#                                    ANSWER: "ds1,ds2,ds3"
+#
+#         b. when the parameter value contain spaces or contains a dynamic variable that will resolve to spaces
+#            i.   There is no distinguising between Windows and Unix variables.   Both UNIX style variables ($VAR) and
+#                 and Windows style variables (%VAR%) are valid and will be parsed accordingly.
+#            ii.  All parameters that need to be grouped together that contain spaces are enclosed in double quotes. 
+#            iii. All paths that contain or will resolve to a space must be enclosed in double quotes.
+#                 An environment variable (e.g. $MODULE_HOME) gets resolved on invocation CisDeployTool. 
+#                       Paths containing spaces must be enclosed in double quotes:
+#                              ANSWER: "$MODULE_HOME/LabVCSModule.xml"
+#                       Given that MODULE_HOME=C:/dev/Cis Deploy Tool/resources/modules, CisDeployTool automatically resolves the variable to
+#                       "C:/dev/Cis Deploy Tool/resources/modules/LabVCSModule.xml".
+#
+#         c. when the parameter value is complex and the inner value contains spaces
+#			 i. In this example $PROJECT_HOME will resolve to a path that contains spaces such as C:/dev/Cis Deploy Tool
+#                       For example take the parameter -pkgfile $PROJECT_HOME$/bin/carfiles/testout.car.
+#                       Since the entire command contains a space it must be enclosed in double quotes:
+#                              ANSWER: "-pkgfile $PROJECT_HOME/bin/carfiles/testout.car"
+#
+#   3. A comment is designated by a # sign preceeding any other text.
+#         a. Comments may occur on any line and will not be processed.  
+#
+#   4. Blank lines are not processed 
+#         a. Blank lines are counted as lines for display purposes
+#         b. If the last line of the file is blank, it is not counted for display purposes.
+#   
+# -----------------------------------------
+# Begin task definition list:
+# -----------------------------------------
+# Start by deleting the following:
+#    /services/databases/TEST00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/databases/TEST00 "$MODULE_HOME/servers.xml"
+#    /services/webservices/
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/webservices/testWebService00 "$MODULE_HOME/servers.xml"
+#    /shared/test00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /shared/test00 "$MODULE_HOME/servers.xml"
+#    user1 and user2
+PASS	TRUE	ExecuteAction   deleteUsers    	$SERVERID "*" 		"$MODULE_HOME/UserModule.xml" 	"$MODULE_HOME/servers.xml" 
+#    group1 and goup2
+PASS	TRUE	ExecuteAction   deleteGroups 	$SERVERID "*" 		"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+
+
+# -----------------------------------------
+# Archive Module:
+# -----------------------------------------
+# Full Server Backup
+PASS	TRUE	ExecuteAction  	backup_export   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+# Full Server Restore
+PASS	TRUE	ExecuteAction  	backup_import   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+# Import
+PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+# Export
+PASS	TRUE	ExecuteAction   	pkg_export  $SERVERID "export01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+
+
+# -----------------------------------------
+# Group Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateGroupsXML		$SERVERID composite 		"$MODULE_HOME/generated/getGroupModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   deleteGroups 			$SERVERID group1 			"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   createOrUpdateGroups 	$SERVERID "group1,group2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+
+# -----------------------------------------
+# User Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateUsersXML   		$SERVERID "composite" 	"$MODULE_HOME/generated/getUserModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   deleteUsers    			$SERVERID "user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   createOrUpdateUsers    	$SERVERID "user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   createOrUpdateUsers    	$SERVERID "-user1" 		"$MODULE_HOME/UserModule.xml" 		"$MODULE_HOME/servers.xml" 
+
+# -----------------------------------------
+# Group Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	addUsersToGroups		$SERVERID group1 "user2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction	deleteUsersFromGroups 	$SERVERID group1 "user2" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
+
+# -----------------------------------------
+# ServerAttribure Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"
+PASS	TRUE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"
+PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "studio3" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "server9" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "*" 			"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "-server9"	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Generate the list of Datasources
+PASS	TRUE	ExecuteAction   	generateDataSourcesXML 	$SERVERID /shared/test00		"$MODULE_HOME/generated/getDataSourceModule.xml" "$MODULE_HOME/servers.xml"
+# Update Datasource
+PASS	FALSE	ExecuteAction   	updateDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+# Enable Datasource
+PASS	TRUE	ExecuteAction   	enableDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+# Reintrospect Datasource
+PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds1,ds2" 			"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+# commented out as reintrospection on a web service fails with https
+#PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds3" 				"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Execute a Configured Procedure (defined in ResourceModule.xml
+PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 					TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+# Copy a resource at a given path
+PASS	TRUE	ExecuteAction   	copyResource 			$SERVERID /shared/test00/f1/p1		"$MODULE_HOME/servers.xml" /shared/test00/f1 p1copy OVERWRITE_REPLACE_IF_EXISTS
+# Rename a resource at a given path
+PASS	TRUE	ExecuteAction   	renameResource 			$SERVERID /shared/test00/f1/p1copy	"$MODULE_HOME/servers.xml" p1rename
+# Move a resource at a given path
+PASS	TRUE	ExecuteAction   	moveResource 			$SERVERID /shared/test00/f1/p1rename "$MODULE_HOME/servers.xml" /shared/test00/f1/f2 p1move
+# Delete resources 
+PASS	TRUE	ExecuteAction   	deleteResource 			$SERVERID /shared/test00/f1/f2/p1move "$MODULE_HOME/servers.xml"
+# Lock a resource at a given path
+PASS	TRUE	ExecuteAction   	lockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml"
+# Unlock a resource at a given path
+PASS	TRUE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml" "unlocking resource"
+
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Check for existence of resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	doResourcesExist 		$SERVERID "exist1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Execute a Composite procedure
+PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Copy resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	copyResources 			$SERVERID "copy1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Rename resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	renameResources 		$SERVERID "rename1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Move resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	moveResources 			$SERVERID "move1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Delete resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	deleteResources 		$SERVERID "delete1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Lock a resource at a given path
+PASS	TRUE	ExecuteAction   	lockResources 			$SERVERID "lock1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Unlock resource configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	unlockResources 		$SERVERID "unlock1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+#
+# -----------------------------------------
+# Rebind Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   		generateRebindXML   $SERVERID "/shared/test00/Rebind/RebindFolder/Views" 	"$MODULE_HOME/generated/getRebindModule.xml" "$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   		rebindResources    	$SERVERID "rb1,rb2" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 
+#PASS	TRUE	ExecuteAction   		rebindFolder    	$SERVERID "rf1,rf2" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 
+
+# -----------------------------------------
+# ResourceCache Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
+PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+
+# -----------------------------------------
+# Trigger Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-2" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   updateTriggers		 		$SERVERID "TR-1,TR-2,TR-3,TR-4"  	"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-5" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+
+# -----------------------------------------
+# Privilege Module:
+# -----------------------------------------
+# Generate Privilege XML
+# Param5=serverId 						[$SERVERID]
+# Param6=startingPath 					[/shared/test00]
+# Param7=Path-to-PrivilegeModuule.xml 	[$MODULE_HOME/getPrivilegeModule.xml]
+# Param8=Path-to-Servers.xml 			[$MODULE_HOME/servers.xml]
+#
+# Param9=filter - 						[ALL] - return privileges for all resource types in the path
+#				comma separate list of one or more filter resource types to generate privileges for [ALL,CONTAINER,DATA_SOURCE,DEFINITION_SET,LINK,PROCEDURE,TABLE,TREE,TRIGGER,COLUMN]
+#                 If the list contains ALL anywhere in the list then ALL resource types are returned and the rest of the list is ignored.
+#
+# param10=options - 					[GROUP,USER,NONSYSTEM,PARENT,CHILD]
+#				comma separate list of one or more options to generate privileges for [USER,GROUP,SYSTEM,NONSYSTEM,PARENT,CHILD]
+#
+#				USER=return privileges for users
+#				GROUP=return privileges for groups.  This is the default if neither USER or GROUP is specified.
+#
+#				SYSTEM=return privileges for system users (anonymous,monitor) and groups (all)
+#				NONSYSTEM=return privileges for all non-system users and groups.  This is the default if neither SYSTEM or NONSYSTEM is specified.
+#
+#				PARENT=return privileges for the parent starting path
+#				CHILD=return privileges for all children of the starting path.  This is the default if neither PARENT or CHILD is specified.
+#
+# param11=domainList - list of domains to generate privileges for [composite]
+#
+PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"
+PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule2.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP USER NONSYSTEM PARENT CHILD" "composite"
+#
+# Update Privileges
+PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv1,priv2"		"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv3"			"$MODULE_HOME/PrivilegeModule.xml" "$MODULE_HOME/servers.xml" 
+#
+
+# -----------------------------------------
+# VCS Module: Non-VCS Connection Properties
+# -----------------------------------------
+# These are the original methods which use the "deploy.properties" files
+#
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace
+#
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/databases/TEST00 "Data Source" HEAD 									"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /shared/test00 "Folder" HEAD 														"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckouts   			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+# overloaded checkout function for perforce labels
+#PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID "" "" rel1.2 HEAD 																"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" "check in"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /shared/test00 "Folder" "check in"												"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckins    			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin		$SERVERID /services/databases/TEST00 "Data Source" "force check in" 						"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" "force check in" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /shared/test00 "Folder" "force check in"											"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsForcedCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/databases/TEST00 "Data Source" 			"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" 			"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+#
+# -----------------------------------------
+# VCS Module: VCS Connection Properties version
+# -----------------------------------------
+# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+#
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /shared/test00 "Folder" HEAD 					"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckouts2    		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+# overloaded checkout function for perforce labels
+#PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN "" "" rel1.2 HEAD 								"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /shared/test00 "Folder" "check in"				"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /shared/test00 "Folder" "force check in"		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsForcedCheckins2 		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" 		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service"  "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /shared/test00 "Folder"						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckins2 	$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Import Regression Module Resources for testing (comment out if already imported)
+PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "regression01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+
+# Generate Input file
+PASS	TRUE   ExecuteAction      createRegressionInputFile   $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
+# Perform a Functional Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+
+# Perform a Migration Test for cis51
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Perform a Migration Test for cis61
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Compare query result files (checksum)
+PASS	TRUE   ExecuteAction      compareRegressionFiles      $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Compare Migration Log files
+PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+
+# Perform a Performance Test for cis51
+PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Perform a Performance Test for cis61
+PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Compare Performance Logs
+PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+
+
+# -----------------------------------------
+# ServerManager Module:
+# -----------------------------------------
+PASS	TRUE   ExecuteAction   stopServer     $SERVERID  "$MODULE_HOME/servers.xml" 
+PASS	TRUE   ExecuteAction   startServer    $SERVERID  "$MODULE_HOME/servers.xml" 
+PASS	TRUE   ExecuteAction   restartServer  $SERVERID  "$MODULE_HOME/servers.xml" 

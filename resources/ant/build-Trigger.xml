@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="triggerIds" 				value="TR-2"/>
+  <property name="pathToGenTriggerXML" 		value="${MODULE_HOME}/generated/getTriggerModule.xml"/>
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" description="Update CIS with environment specific parameters">
+
+	<!--
+	# ========================================
+	# Trigger Module:
+	# ========================================
+		PASS	TRUE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-2" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   updateTriggers		 		$SERVERID "TR-1,TR-2,TR-3,TR-4"  	"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-5" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="generateTriggersXML" arguments="${SERVERID}^/shared/test00^${MODULE_HOME}/generated/getTriggerModule.xml^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="enableTriggers"  	arguments="${SERVERID}^TR-2^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="updateTriggers"  	arguments="${SERVERID}^TR-1,TR-2,TR-3,TR-4^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="enableTriggers"  	arguments="${SERVERID}^TR-5^${pathToTriggerXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+
+	</target>
+</project>

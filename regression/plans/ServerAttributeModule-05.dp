@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ServerAttribure Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "*" 			"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 

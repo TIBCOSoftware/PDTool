@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Lock a resource at a given path
+PASS	TRUE	ExecuteAction   	lockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml"

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="archiveIds" 				value="import1"/>
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+<!-- ================================= 
+ target: default              
+================================= -->
+  <target name="default" description="Update CIS with environment specific parameters">
+  <!--
+	# ========================================
+	# Archive Module:
+	# ========================================
+		# Full Server Backup
+		PASS	TRUE	ExecuteAction  	backup_export   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Full Server Restore
+		PASS	TRUE	ExecuteAction  	backup_import   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Import
+		PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Export
+		PASS	TRUE	ExecuteAction   	pkg_export  $SERVERID "export01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="backup_export"   arguments="${SERVERID}^FullBackup^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="backup_import"   arguments="${SERVERID}^FullBackup^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="pkg_import"    	arguments="${SERVERID}^import01^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+	    <executeJavaAction action="pkg_export"    	arguments="${SERVERID}^export01^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+  </target>
+</project>

@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Rename resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	renameResources 		$SERVERID "rename1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

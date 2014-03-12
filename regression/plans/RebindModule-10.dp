@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Rebind Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   		rebindFolder    	$SERVERID "rf3" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 

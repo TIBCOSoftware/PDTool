@@ -1,0 +1,6 @@
+# -----------------------------------------
+# VCS Module: Non-VCS Connection Properties
+# -----------------------------------------
+# These are the original methods which use the "deploy.properties" files
+#
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /shared/test00 "Folder" "force check in"											"$MODULE_HOME/servers.xml"

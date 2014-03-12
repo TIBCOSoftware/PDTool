@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p1:ArchiveModule  xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+	<archive>
+		<id>FullBackup</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/local_server_backup.car</archiveFileName>
+		<overwrite>true</overwrite> 
+		<encrypt>false</encrypt>
+		<pkgName>Test backup-export operation</pkgName>
+	</archive>
+	
+	<archive>
+		<id>export01</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/test00_$CIS_VERSION$%HTTP_TYPE%.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>
+		<overwrite></overwrite> 
+		<resources>
+			<export>/shared/test00</export>
+			<export></export>	
+		</resources>
+	</archive>
+	
+	<archive>
+		<id>import01</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%HTTP_TYPE%.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>true</includecaching>
+		<includejars>true</includejars>
+		<includesourceinfo>true</includesourceinfo>
+		<overwrite>true</overwrite> 
+		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>user</attribute>
+				<value>admin</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>password</attribute>
+				<value>admin</value>
+			</resourceAttribute>
+		</setAttributes>
+	</archive>
+	
+	<!-- Used for Regression Module Testing -->
+	<archive>
+		<id>regression01</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\Regression_Test_$CIS_VERSION$.car</archiveFileName>
+		<overwrite>true</overwrite> 
+	</archive>
+	
+	<archive>
+		<id>TestOptions</id>
+		<pkgName>Test package-export and package-import operations</pkgName>
+		<description>Test archive that contains resources from two folder in admin's My Home</description>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/TestCar.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>		
+		<overwrite>true</overwrite> 
+		<encrypt>false</encrypt>
+		<resources>
+			<export>/users/composite/admin/test00/datasources/K12</export>
+			<export>/users/composite/admin/test00/datasources/451-AUTH</export>
+			<export>/users/composite/admin/test00/datasources/BIBLIO3_2008</export>
+			<export>/users/composite/admin/test00/views</export>
+			<export>/users/composite/admin/test00/utilities</export>
+			<export>/shared/PS_UTIL</export>
+			<relocate>
+				<oldPath>/users/composite/admin/test00/utilities</oldPath>
+				<newPath>/users/composite/admin/test00/restored/utilities</newPath>
+			</relocate>
+			<relocate>
+				<oldPath>/users/composite/admin/test00/datasources</oldPath>
+				<newPath>/users/composite/admin/test00/restored/datasources</newPath>
+			</relocate>
+		</resources>
+		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/users/composite/admin/test00/restored/datasources/BIBLIO3_2008</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>annotation</attribute>
+				<value>test data source</value>
+			</resourceAttribute>
+		</setAttributes>
+		<archiveMethod>CAR</archiveMethod>
+	</archive>
+	<archive>
+		<id>TestRestoreOptions</id>
+		<pkgName>Test backup-export/backup-import operations</pkgName>
+		<description>Test archive that contains full backup of a Composite server</description>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/TestFullCar.car</archiveFileName>
+		<overwrite>true</overwrite> 
+		<encrypt>false</encrypt>
+		<resources>
+			<relocate>
+				<oldPath>/users/composite/admin/test00/training</oldPath>
+				<newPath>/users/composite/admin/test00/backup/training</newPath>
+			</relocate>
+			<relocate>
+				<oldPath>/users/composite/admin/test00/restored</oldPath>
+				<newPath>NOIMPORT</newPath>
+			</relocate>
+		</resources>
+		<archiveMethod>CAR</archiveMethod>
+	</archive>
+
+	<archive>
+		<id>K12</id>
+		<pkgName>K12 datasource export/import</pkgName>
+		<description>Test archive that contains a single DS resource</description>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/K12.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>		
+		<overwrite>true</overwrite> 
+		<resources>
+			<!-- on export -->
+			<export>/users/composite/admin/test00/datasources/K12</export>
+			<!-- on import -->
+			<relocate>
+				<oldPath>/users/composite/admin/test00</oldPath>
+				<newPath>/users/composite/admin/test00/restored</newPath>
+			</relocate>
+		</resources>
+		<users>
+			<!-- exporting security info -->
+			<export>
+				<domain>composite</domain>
+				<group></group>
+			</export>
+			<export>
+				<domain>composite</domain>
+				<group>group1</group>
+				<user></user>
+			</export>
+			<export>
+				<domain>composite</domain>
+				<user>user2</user>
+			</export>
+			<!-- importing security info -->
+			<import>merge</import>
+			<import>overwrite</import>
+		</users>
+		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/users/composite/admin/test00/restored/K12</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>annotation</attribute>
+				<value>Test setting datasource annotation</value>
+			</resourceAttribute>
+		</setAttributes>
+		<archiveMethod>CAR</archiveMethod>
+	</archive>
+
+
+</p1:ArchiveModule>

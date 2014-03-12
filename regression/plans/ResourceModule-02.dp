@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Copy a resource at a given path
+PASS	TRUE	ExecuteAction   	copyResource 			$SERVERID /shared/test00/f1/p1		"$MODULE_HOME/servers.xml" /shared/test00/f1 p1copy OVERWRITE_REPLACE_IF_EXISTS

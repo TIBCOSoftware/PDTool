@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:PrivilegeModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <resourcePrivilege>
+        <id>priv1</id>
+        <resourcePath>/services/webservices/TEST$STUDENTID</resourcePath>
+        <resourceType>CONTAINER</resourceType>
+        <recurse>true</recurse>
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>NONE</privileges>
+        </privilege>
+        <privilege>
+            <name>group2</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE SELECT</privileges>
+        </privilege>
+    </resourcePrivilege>
+    <resourcePrivilege>
+        <id>priv2</id>
+        <resourcePath>/services/databases/TEST$STUDENTID</resourcePath>
+        <resourceType>DATA_SOURCE</resourceType>
+        <recurse>true</recurse>
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>NONE</privileges>
+        </privilege>
+        <privilege>
+            <name>group2</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE SELECT</privileges>
+        </privilege>
+    </resourcePrivilege>
+    <resourcePrivilege>
+        <id>priv3</id>
+        <resourcePath>/shared/test$STUDENTID</resourcePath>
+        <resourceType>CONTAINER</resourceType>
+        <recurse>true</recurse>
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>NONE</privileges>
+        </privilege>
+        <privilege>
+            <name>group2</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE SELECT</privileges>
+        </privilege>
+    </resourcePrivilege>	
+</ns2:PrivilegeModule>

@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Generate Input file
+PASS	TRUE   ExecuteAction      createRegressionInputFile   $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<servers>
+  <server>
+    <id>lab9400http</id>
+    <hostname>localhost</hostname>
+    <port>9400</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9400https</id>
+    <hostname>localhost</hostname>
+    <port>9400</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+  <server>
+    <id>lab9410http</id>
+    <hostname>localhost</hostname>
+    <port>9410</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9410https</id>
+    <hostname>localhost</hostname>
+    <port>9410</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+  <server>
+    <id>lab9420http</id>
+    <hostname>localhost</hostname>
+    <port>9420</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9420https</id>
+    <hostname>localhost</hostname>
+    <port>9420</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+  <server>
+   <id>lab9430http</id>
+    <hostname>localhost</hostname>
+    <port>9430</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9430https</id>
+    <hostname>localhost</hostname>
+    <port>9430</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+  <server>
+   <id>lab9440http</id>
+    <hostname>localhost</hostname>
+    <port>9440</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9440https</id>
+    <hostname>localhost</hostname>
+    <port>9440</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+  <server>
+   <id>lab9500http</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>false</useHttps>
+  </server>
+  <server>
+    <id>lab9500https</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>DEV-Default</usage>
+    <user>admin</user>
+    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
+    <domain>composite</domain>
+    <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
+    <clustername>cluster2</clustername>
+    <site>US East</site>
+    <useHttps>true</useHttps>
+  </server>
+  
+</servers>
+

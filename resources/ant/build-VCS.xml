@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CisDeployTool" default="default" basedir=".">
+
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="VCONN" 					value="svn01"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="vcsIds" 					value="TESTNN,TESTDB,TESTWS"/>
+
+ <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+  <!-- ================================= 
+          target: default              
+       ================================= -->
+  <target name="default" description="Update CIS with environment specific parameters">
+     
+	<!--
+	# =============================================
+	# VCS Module: Non-VCS Connection Properties
+	# =============================================
+		# These versions are original methods which use connection properties in "deploy.properties"
+		PASS	TRUE	ExecuteAction  	vcsInitWorkspace
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/databases/TEST00 "Data Source" HEAD 									"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /shared/test00 "Folder" HEAD 														"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckouts   			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		# overloaded checkout function for perforce labels
+		#PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID "" "" rel1.2 HEAD 																"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" "check in"			"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /shared/test00 "Folder" "check in"												"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckins    			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin		$SERVERID /services/databases/TEST00 "Data Source" "force check in" 						"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /services/webservices/testWebService00 "Composite Web Service" "force check in" 	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /shared/test00 "Folder" "force check in"											"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/databases/TEST00 "Data Source" 			"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		-->
+		<executeJavaAction action="vcsInitWorkspace"	arguments="${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+ 
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/databases/TEST00^Data Source^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/shared/test00^Folder^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+		<executeJavaAction action="vcsCheckouts"		arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		
+		<!-- # overloaded checkout function for perforce labels (only enable when testing perforce) -->
+		<!--
+		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^^^rel1.2^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		-->
+		
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/services/databases/TEST00^Data Source^check in database^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^check in web service^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin"			arguments="${SERVERID}^/shared/test00^Folder^check in shared test00^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+        <executeJavaAction action="vcsCheckins"			arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/services/databases/TEST00^Data Source^force check in database^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^force check in web service^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin"	arguments="${SERVERID}^/shared/test00^Folder^force check in shared test00^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+	
+        <executeJavaAction action="vcsForcedCheckins"	arguments="${SERVERID}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsPrepareCheckin"	arguments="${SERVERID}^/shared/test00^Folder^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+        <executeJavaAction action="vcsPrepareCheckins"	arguments="${SERVERID}^testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<!--
+	# ==============================================
+	# VCS Module: VCS Connection Properties version
+	# ==============================================
+		# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+		#
+		PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /shared/test00 "Folder" HEAD 					"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckouts2    		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		# overloaded checkout function for perforce labels
+		#PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN "" "" rel1.2 HEAD 								"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /shared/test00 "Folder" "check in"				"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /shared/test00 "Folder" "force check in"		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsForcedCheckins2 		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /shared/test00 "Folder"						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+		#
+		PASS	TRUE	ExecuteAction  	vcsPrepareCheckins2 	$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+		#
+	-->
+        <executeJavaAction action="vcsInitWorkspace2"	arguments="${VCONN}^${pathToVCSModuleXML}^${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+		<executeJavaAction action="vcsCheckouts2"		arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		
+		<!-- # overloaded checkout function for perforce labels (only enable when testing perforce) -->
+		<!--
+		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^^^rel1.2^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+		-->
+		
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^check in database^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^check in web service^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsCheckin2"			arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^check in shared test00^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		
+        <executeJavaAction action="vcsCheckins2"		arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^force check in database^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^force check in web service^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+		<executeJavaAction action="vcsForcedCheckin2"	arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^force check in shared test00^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+	
+        <executeJavaAction action="vcsForcedCheckins2"	arguments="${SERVERID}^${VCONN}^testDB,testWS,testNN^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+		<executeJavaAction action="vcsPrepareCheckin2"	arguments="${SERVERID}^${VCONN}^/shared/test00^Folder^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
+        <executeJavaAction action="vcsPrepareCheckins2"	arguments="${SERVERID}^${VCONN}^testNN,testDB,testWS^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>
+
+	</target>
+</project>

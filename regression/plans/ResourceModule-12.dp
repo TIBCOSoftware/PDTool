@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Move resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	moveResources 			$SERVERID "move1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

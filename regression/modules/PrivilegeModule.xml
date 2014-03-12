@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:PrivilegeModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <resourcePrivilege>
+        <id>priv1</id>
+        <resourcePath>/shared/test00/DataSources/ServerAttributeDefinitions</resourcePath>
+        <recurse>true</recurse>
+        <privilege>
+            <name>USER2</name>
+            <nameType>USER</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE</privileges>
+       </privilege>
+    </resourcePrivilege>
+    <resourcePrivilege>
+        <id>priv2</id>
+        <resourcePath>/services/webservices/TEST00/testWebService00</resourcePath>
+        <recurse>true</recurse>
+
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE</privileges>
+            <combinedPrivileges>NONE</combinedPrivileges>
+            <inheritedPrivileges>NONE</inheritedPrivileges>
+        </privilege>
+        <privilege>
+            <name>group2</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ WRITE EXECUTE SELECT UPDATE INSERT DELETE GRANT</privileges>
+            <combinedPrivileges>NONE</combinedPrivileges>
+            <inheritedPrivileges>NONE</inheritedPrivileges>
+        </privilege>
+    </resourcePrivilege>
+		
+	<resourcePrivilege>
+        <id>priv3</id>
+        <resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
+        <recurse>true</recurse>
+
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ EXECUTE</privileges>
+            <combinedPrivileges>NONE</combinedPrivileges>
+            <inheritedPrivileges>NONE</inheritedPrivileges>
+        </privilege>
+		
+        <privilege>
+            <name>group2</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ EXECUTE SELECT UPDATE INSERT DELETE GRANT</privileges>
+            <combinedPrivileges>NONE</combinedPrivileges>
+            <inheritedPrivileges>NONE</inheritedPrivileges>
+        </privilege>
+    </resourcePrivilege>
+	
+</ns2:PrivilegeModule>
+
+

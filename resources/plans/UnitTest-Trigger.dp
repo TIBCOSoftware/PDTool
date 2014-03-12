@@ -1,0 +1,57 @@
+# ----------------------------
+# UnitTest-Trigger.dp
+# ----------------------------
+# ----------------------------
+# Parameter Specification:
+# ----------------------------
+# Param1=[PASS or FAIL]  :: Expected Regression Behavior.  Informs the script whether you expect the action to pass or fail.  Can be used for regression testing.
+# Param2=[TRUE or FALSE] :: Exit Orchestration script on error
+# Param3=Module Batch/Shell Script name to execute (no extension).  Extension is added by script.
+# Param4=Module Action to execute
+# Param5-ParamN=Specific space separated parameters for the action.  See Property Rules below.
+#
+# ----------------------------
+# Property File Rules:
+# ----------------------------
+#   1. All parameters are space separated.  Commas are not used.
+#         a. Any number of spaces may occur before or after any parameter and are trimmed.
+#
+#   2. Parameters should always be enclosed in double quotes according to these rules:
+#         a. when the parameter value contains a comma separated list:
+#                                    ANSWER: "ds1,ds2,ds3"
+#
+#         b. when the parameter value contain spaces or contains a dynamic variable that will resolve to spaces
+#            i.   There is no distinguising between Windows and Unix variables.   Both UNIX style variables ($VAR) and
+#                 and Windows style variables (%VAR%) are valid and will be parsed accordingly.
+#            ii.  All parameters that need to be grouped together that contain spaces are enclosed in double quotes. 
+#            iii. All paths that contain or will resolve to a space must be enclosed in double quotes.
+#                 An environment variable (e.g. $MODULE_HOME) gets resolved on invocation CisDeployTool. 
+#                       Paths containing spaces must be enclosed in double quotes:
+#                              ANSWER: "$MODULE_HOME/LabVCSModule.xml"
+#                       Given that MODULE_HOME=C:/dev/Cis Deploy Tool/resources/modules, CisDeployTool automatically resolves the variable to
+#                       "C:/dev/Cis Deploy Tool/resources/modules/LabVCSModule.xml".
+#
+#         c. when the parameter value is complex and the inner value contains spaces
+#			 i. In this example $PROJECT_HOME will resolve to a path that contains spaces such as C:/dev/Cis Deploy Tool
+#                       For example take the parameter -pkgfile $PROJECT_HOME$/bin/carfiles/testout.car.
+#                       Since the entire command contains a space it must be enclosed in double quotes:
+#                              ANSWER: "-pkgfile $PROJECT_HOME/bin/carfiles/testout.car"
+#
+#   3. A comment is designated by a # sign preceeding any other text.
+#         a. Comments may occur on any line and will not be processed.  
+#
+#   4. Blank lines are not processed 
+#         a. Blank lines are counted as lines for display purposes
+#         b. If the last line of the file is blank, it is not counted for display purposes.
+   
+# -----------------------------------------
+# Begin task definition list:
+# -----------------------------------------
+# Quick Test
+PASS	FALSE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"
+#
+#PASS	FALSE	ExecuteAction   enableTriggers 				$SERVERID "TR-2" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+#
+#PASS	FALSE	ExecuteAction   updateTriggers		 		$SERVERID "TR-1,TR-2,TR-3,TR-4"  	"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"
+#
+#PASS	FALSE	ExecuteAction   enableTriggers 				$SERVERID "TR-5" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"

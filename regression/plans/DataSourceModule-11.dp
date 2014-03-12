@@ -1,0 +1,5 @@
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Introspect Datasource
+PASS	TRUE	ExecuteAction   	introspectDataSources	$SERVERID "ds5,ds6" 				"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"

@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ResourceCache Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"

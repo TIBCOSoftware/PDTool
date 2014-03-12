@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Perform a Performance Test for cis51
+PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"

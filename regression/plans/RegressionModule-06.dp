@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Compare query result files (checksum)
+PASS	TRUE   ExecuteAction      compareRegressionFiles      $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"

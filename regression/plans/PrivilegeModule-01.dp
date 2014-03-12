@@ -1,0 +1,28 @@
+# -----------------------------------------
+# Privilege Module:
+# -----------------------------------------
+# Generate Privilege XML
+# Param5=serverId 						[$SERVERID]
+# Param6=startingPath 					[/shared/test00]
+# Param7=Path-to-PrivilegeModuule.xml 	[$MODULE_HOME/getPrivilegeModule.xml]
+# Param8=Path-to-Servers.xml 			[$MODULE_HOME/servers.xml]
+#
+# Param9=filter - 						[ALL] - return privileges for all resource types in the path
+#				comma separate list of one or more filter resource types to generate privileges for [ALL,CONTAINER,DATA_SOURCE,DEFINITION_SET,LINK,PROCEDURE,TABLE,TREE,TRIGGER,COLUMN]
+#                 If the list contains ALL anywhere in the list then ALL resource types are returned and the rest of the list is ignored.
+#
+# param10=options - 					[GROUP,USER,NONSYSTEM,PARENT,CHILD]
+#				comma separate list of one or more options to generate privileges for [USER,GROUP,SYSTEM,NONSYSTEM,PARENT,CHILD]
+#
+#				USER=return privileges for users
+#				GROUP=return privileges for groups.  This is the default if neither USER or GROUP is specified.
+#
+#				SYSTEM=return privileges for system users (anonymous,monitor) and groups (all)
+#				NONSYSTEM=return privileges for all non-system users and groups.  This is the default if neither SYSTEM or NONSYSTEM is specified.
+#
+#				PARENT=return privileges for the parent starting path
+#				CHILD=return privileges for all children of the starting path.  This is the default if neither PARENT or CHILD is specified.
+#
+# param11=domainList - list of domains to generate privileges for [composite]
+#
+PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"

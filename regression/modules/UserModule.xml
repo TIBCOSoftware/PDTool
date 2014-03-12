@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p1:UserModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+  <user>
+    <id>user1</id>
+    <userName>USER1</userName>
+    <encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword>
+    <forcePassword>true</forcePassword>
+    <domainName>composite</domainName>
+    <groupMembershipList>
+      <groupName>all</groupName>
+      <groupDomain>composite</groupDomain>
+    </groupMembershipList>
+    <groupMembershipList>
+      <groupName>group1</groupName>
+      <groupDomain>composite</groupDomain>
+    </groupMembershipList>
+    <privilege>ACCESS_TOOLS</privilege>
+    <annotation>user1</annotation>
+  </user>
+  <user>
+    <id>user2</id>
+    <userName>user2</userName>
+    <encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword>
+    <forcePassword>true</forcePassword>
+    <domainName>composite</domainName>
+    <groupMembershipList>
+      <groupName>all</groupName>
+      <groupDomain>composite</groupDomain>
+    </groupMembershipList>
+    <groupMembershipList>
+      <groupName>group2</groupName>
+      <groupDomain>composite</groupDomain>
+    </groupMembershipList>
+    <privilege>ACCESS_TOOLS</privilege>
+    <annotation>user2</annotation>
+  </user>
+  <user>
+    <id>user3</id>
+    <userName>user3</userName>
+    <encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword>
+    <forcePassword>false</forcePassword>
+    <domainName>composite</domainName>
+    <groupMembershipList>
+      <groupName>all</groupName>
+      <groupDomain>composite</groupDomain>
+    </groupMembershipList>
+    <privilege>ACCESS_TOOLS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS</privilege>
+    <annotation>user3</annotation>
+  </user>
+  
+</p1:UserModule>
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UserModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <user>
+        <id>user-1</id>
+        <userName>USER1</userName>
+        <encryptedPassword>password</encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <groupMembershipList>
+            <groupName>GROUP1</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege/>
+        <annotation>User 1</annotation>
+    </user>
+    <user>
+        <id>user2</id>
+        <userName>user2</userName>
+        <encryptedPassword>password</encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <groupMembershipList>
+            <groupName>group1</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>		
+        <groupMembershipList>
+            <groupName>group2</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>	
+        <privilege></privilege>
+        <annotation>User 2</annotation>
+    </user>
+</ns2:UserModule>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="deployManager" class="com.cisco.dvbu.ps.deploytool.DeployManagerImpl">
+        <property name="dataSourceManager" ref="dataSourceManager" />
+        <property name="groupManager" ref="groupManager" />
+        <property name="privilegeManager" ref="privilegeManager" />
+        <property name="rebindManager" ref="rebindManager" />
+ 		<property name="regressionManager" ref="regressionManager" />
+        <property name="resourceCacheManager" ref="resourceCacheManager" />
+        <property name="resourceManager" ref="resourceManager" />
+		<property name="serverManager" ref="serverManager" />
+		<property name="serverAttributeManager" ref="serverAttributeManager" />
+        <property name="triggerManager" ref="triggerManager" />
+        <property name="userManager" ref="userManager" />
+        <property name="archiveManager" ref="archiveManager" />
+        <property name="VCSManager" ref="vcsManager" />
+    </bean>
+
+    <bean id="dataSourceManager" class="com.cisco.dvbu.ps.deploytool.services.DataSourceManagerImpl">
+        <property name="dataSourceDAO" ref="dataSourceDAO" />
+    </bean>
+    
+    <bean id="groupManager" class="com.cisco.dvbu.ps.deploytool.services.GroupManagerImpl">
+        <property name="groupDAO" ref="groupDAO" />
+    </bean>
+
+    <bean id="privilegeManager" class="com.cisco.dvbu.ps.deploytool.services.PrivilegeManagerImpl">
+        <property name="privilegeDAO" ref="privilegeDAO" />
+    </bean>
+
+    <bean id="rebindManager" class="com.cisco.dvbu.ps.deploytool.services.RebindManagerImpl">
+        <property name="rebindDAO" ref="rebindDAO" />
+    </bean>
+ 
+	<bean id="regressionManager" class="com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl">
+        <property name="regressionInputFileJdbcDAO" ref="regressionInputFileJdbcDAO" />
+        <property name="regressionPubTestJdbcDAO" ref="regressionPubTestJdbcDAO" />
+        <property name="regressionPerfTestDAO" ref="regressionPerfTestDAO" />
+        <property name="regressionSecurityTestDAO" ref="regressionSecurityTestDAO" />
+    </bean>
+     
+    <bean id="resourceCacheManager" class="com.cisco.dvbu.ps.deploytool.services.ResourceCacheManagerImpl">
+        <property name="resourceCacheDAO" ref="resourceCacheDAO" />
+    </bean>
+	
+    <bean id="resourceManager" class="com.cisco.dvbu.ps.deploytool.services.ResourceManagerImpl">
+        <property name="resourceDAO" ref="resourceDAO" />
+    </bean>
+
+    <bean id="serverManager" class="com.cisco.dvbu.ps.deploytool.services.ServerManagerImpl">
+        <property name="serverDAO" ref="serverDAO" />
+    </bean>  
+    
+    <bean id="serverAttributeManager" class="com.cisco.dvbu.ps.deploytool.services.ServerAttributeManagerImpl">
+        <property name="serverAttributeDAO" ref="serverAttributeDAO" />
+    </bean>
+
+    <bean id="triggerManager" class="com.cisco.dvbu.ps.deploytool.services.TriggerManagerImpl">
+        <property name="triggerDAO" ref="triggerDAO" />
+    </bean>
+
+    <bean id="userManager" class="com.cisco.dvbu.ps.deploytool.services.UserManagerImpl">
+        <property name="userDAO" ref="userDAO" />
+    </bean>
+
+     <bean id="archiveManager" class="com.cisco.dvbu.ps.deploytool.services.ArchiveManagerImpl">
+        <property name="archiveDAO" ref="archiveDAO" />
+    </bean>
+
+     <bean id="vcsManager" class="com.cisco.dvbu.ps.deploytool.services.VCSManagerImpl">
+        <property name="VCSDAO" ref="vcsDAO" />
+    </bean>
+  
+    <bean id="dataSourceDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.DataSourceWSDAOImpl"/>
+    <bean id="groupDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.GroupWSDAOImpl"/>
+	<bean id="privilegeDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.PrivilegeWSDAOImpl"/>
+	<bean id="rebindDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.RebindWSDAOImpl"/>
+	<bean id="regressionInputFileJdbcDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionInputFileJdbcDAOImpl"/>
+	<bean id="regressionPubTestJdbcDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPubTestJdbcDAOImpl"/>
+	<bean id="regressionPerfTestDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl"/>
+	<bean id="regressionSecurityTestDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionSecurityTestDAOImpl"/>
+	<bean id="resourceCacheDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ResourceCacheWSDAOImpl"/>
+    <bean id="resourceDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ResourceWSDAOImpl"/>
+	<bean id="serverAttributeDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl"/>
+	<bean id="serverDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerWSDAOImpl"/>
+	<bean id="triggerDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.TriggerWSDAOImpl"/>
+    <bean id="userDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.UserWSDAOImpl"/>
+    <bean id="archiveDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ArchiveWSDAOImpl"/>
+    <bean id="vcsDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.VCSWSDAOImpl"/>
+    
+</beans>
+

@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Trigger Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   updateTriggers		 		$SERVERID "TR-1,TR-2,TR-3,TR-4"  	"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"

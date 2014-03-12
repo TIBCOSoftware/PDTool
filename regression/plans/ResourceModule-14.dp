@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Lock a resource at a given path
+PASS	TRUE	ExecuteAction   	lockResources 			$SERVERID "lock1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

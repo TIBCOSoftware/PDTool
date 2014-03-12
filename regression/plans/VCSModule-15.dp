@@ -1,0 +1,6 @@
+# -----------------------------------------
+# VCS Module: Non-VCS Connection Properties
+# -----------------------------------------
+# These are the original methods which use the "deploy.properties" files
+#
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"

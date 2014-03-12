@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Trigger Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   enableTriggers 				$SERVERID "TR-5" 					"$MODULE_HOME/TriggerModule.xml"	 "$MODULE_HOME/servers.xml"

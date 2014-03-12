@@ -1,0 +1,26 @@
+# Provides the order of execution for the different PDTool configurations on UNIX
+# PDTool Config File        PDTool Plan File List
+#   Note: Do not put the .properties on the end of the config file name.
+#   Note: Do use tabs as separators.  Use spaces only.
+#
+# Execute PDTool regresion for UNIX and CIS 6.1 environment
+#
+# Regression Module Only
+#regression_unix_6_1          regression_plan_regession_list.txt
+
+# PDTool - All modules except VCS
+#regression_unix_6_1          regression_plan_test_list.txt            # test the base module connection
+regression_unix_6_1          regression_plan_base_list.txt            # Full regression of base modules
+
+# PDTool - VCS Module for Subversion
+#regression_unix_6_1_svn      regression_plan_vcs_test_list.txt        # test Subversion connection
+regression_unix_6_1_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+
+# PDTool - VCS Module for CVS
+#regression_unix_6_1_cvs      regression_plan_vcs_test_list.txt        # test CVS connection
+regression_unix_6_1_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+
+# PDTool - VCS Module for Perforce
+#regression_unix_6_1_p4       regression_plan_vcs_test_list.txt        # test Perforce connection
+regression_unix_6_1_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
+#regression_unix_6_1_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)

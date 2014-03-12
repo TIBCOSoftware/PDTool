@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<p1:ResourceModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <resource>
+        <id>testproc</id>
+        <resourcePath>testproc</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proc success</argument>
+        <argument>0</argument>
+        <argument>12.3</argument>
+        <argument>3.141592653589793</argument>
+        <argument>2000-02-01</argument>
+        <argument>23:59:01</argument>
+        <argument>1923-03-06 23:59:31</argument>
+        <argument></argument>
+        <argument>0</argument>   
+    </resource>
+    <resource>
+        <id>testproc-fail</id>
+        <resourcePath>testproc</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proc Fail</argument>
+        <argument>1</argument>
+        <argument>12.3</argument>
+        <argument>3.141592653589793</argument>
+        <argument>2000-02-01</argument>
+        <argument>23:59:01</argument>
+        <argument>1923-03-06 23:59:31</argument>
+        <argument></argument>
+        <argument>1</argument>   
+    </resource>
+    <resource>
+        <id>testprocsimple-success</id>
+        <resourcePath>testprocsimple</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proce Simple Success</argument>
+        <argument>0</argument> 
+    </resource>    
+    <resource>
+        <id>testprocsimple-fail</id>
+        <resourcePath>testprocsimple</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proce Simple Fail</argument>
+        <argument>1</argument> 
+    </resource>    
+    <resource>
+        <id>testnoparams</id>
+        <resourcePath>testnoparams</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+    </resource>   
+	
+    <resource>
+        <id>exist1</id>
+        <resourcePath>/shared/test00/f1/p1</resourcePath>
+    </resource>
+
+	<resource>
+        <id>copy1</id>
+        <resourcePath>/shared/test00/f1/p1</resourcePath>
+        <targetContainerPath>/shared/test00/f1</targetContainerPath>
+        <newName>p1copy</newName>
+        <copyMode>OVERWRITE_REPLACE_IF_EXISTS</copyMode>
+    </resource>
+	
+	<resource>
+        <id>rename1</id>
+        <resourcePath>/shared/test00/f1/p1copy</resourcePath>
+        <targetContainerPath>/shared/test00/f1</targetContainerPath>
+        <newName>p1rename</newName>
+    </resource>
+
+	<resource>
+        <id>move1</id>
+        <resourcePath>/shared/test00/f1/p1rename</resourcePath>
+        <targetContainerPath>/shared/test00/f1/f2</targetContainerPath>
+        <newName>p1move</newName>
+    </resource>
+	
+    <resource>
+        <id>delete1</id>
+        <resourcePath>/shared/test00/f1/f2/p1move</resourcePath>
+    </resource>
+	
+	<resource>
+        <id>lock1</id>
+        <resourcePath>/shared/test00/f1/p1</resourcePath>
+    </resource>
+	
+	<resource>
+        <id>unlock1</id>
+        <resourcePath>/shared/test00/f1/p1</resourcePath>
+		<comment>unlocking resource</comment>
+    </resource>
+
+	<resource>
+        <id>createFolder1</id>
+        <resourcePath>/shared/test00/_test2</resourcePath>
+		<recursive>true</recursive>
+    </resource>
+
+	<resource>
+        <id>createFolder2</id>
+        <resourcePath>/shared/test00/_test2/test2</resourcePath>
+		<recursive>false</recursive>
+    </resource>
+	
+</p1:ResourceModule>

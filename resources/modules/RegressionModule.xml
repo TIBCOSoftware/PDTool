@@ -1,0 +1,1176 @@
+<?xml version="1.0"?>
+<p1:RegressionModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cisco.dvbu.com/ps/deploytool/modules ..\..\..\PDToolModules\schema\PDToolModules.xsd">
+
+	<regressionTest>
+		<id>Test1</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>yes</createNewFile>
+		
+		<newFileParams>
+			<createQueries>yes</createQueries>
+			<createProcedures>yes</createProcedures>
+			<createWS>yes</createWS>
+			<!-- The soap type specifies whether to generate web services using soap11 (default), soap12 or all.  soap12 is only applicable for CIS 6.1 and higher and only if a CIS New Composite Web Service has been created. -->
+			<createSoapType>soap11</createSoapType>
+			
+			<!-- Category filter: [yes|no|true|false] Use the default query when generating input file. -->
+			<useDefaultViewQuery>no</useDefaultViewQuery>
+			<useDefaultProcQuery>no</useDefaultProcQuery>
+			<useDefaultWSQuery>no</useDefaultWSQuery>
+
+			<!--  Default queries for Views and Procedures. -->
+			<publishedViewQry>SELECT count(1) cnt FROM</publishedViewQry>
+			<publishedProcQry>SELECT count(*) cnt FROM</publishedProcQry>
+			
+			<!--  If Yes, generate entries for all data sources in the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which input file entries are created for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName/>
+				<dsName>examplesWS</dsName>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>		
+			</datasources>
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+		  <resources>
+			<resource>CAT*</resource>
+			<resource>TEST00.testWebService00*</resource>
+		  </resources>
+		  
+		  <defaultProcParamValues>
+				<bit>1</bit>
+				<varchar>'dummyStr'</varchar>
+				<char>'a'</char>
+				<clob>A</clob>
+				<integer>1</integer>
+				<int>1</int>
+				<bigint>1</bigint>
+				<smallint>1</smallint>
+				<tinyint>1</tinyint>
+				<decimal>1.0</decimal>
+				<numeric>1.0</numeric>
+				<real>1.0</real>
+				<float>1.0</float>
+				<double>1.0</double>
+				<date>'2011-01-01'</date>
+				<time>'00:00:00'</time>
+				<timestamp>'2011-01-01 00:00:00'</timestamp>
+				<binary>''</binary>
+				<varbinary>''</varbinary>
+				<blob>''</blob>
+				<xml>''</xml>
+		  </defaultProcParamValues>
+	  </newFileParams>
+		
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+			-->
+			<testType>functional</testType>
+
+			<!-- Test run results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/FunctionalTest.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>c:/tmp/pdtool/functest</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+			<!-- (Optional) The number of threads to create when doing performance testing. -->
+			<perfTestThreads>10</perfTestThreads>
+			<!-- (Optional) The duration in seconds to execute the performance test for. -->
+			<perfTestDuration>60</perfTestDuration>
+			<!-- (Optional) The number of seconds to sleep in between printing stats when executing the performance test. -->
+			<perfTestSleepPrint>5</perfTestSleepPrint>
+			<!-- (Optional) The number of seconds to sleep in between query executions when executing the performance test. -->
+			<perfTestSleepExec>1</perfTestSleepExec>
+			
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>examplesWS</dsName>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources/>
+			
+		</testRunParams>
+
+	</regressionTest>
+	
+	<regressionTest>
+		<id>Test2.1</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>no</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+			-->
+			<testType>migration</testType>
+			
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/MigrationTest51.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>C:/tmp/pdtool/cis51</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output to command line: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+		
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources>
+			</resources>
+
+		</testRunParams>
+			
+	</regressionTest>
+	
+	<regressionTest>
+		<id>Test2.2</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>no</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+			-->
+			<testType>migration</testType>
+			
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/MigrationTest61.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>C:/tmp/pdtool/cis61</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output to command line: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+		
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources>
+			</resources>
+
+		</testRunParams>
+
+		<compareFiles>
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:\\tmp\\pdtool\\MigrationCompareFiles2.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+
+			<!-- These are the two base directories from which the files will be retrieved from.  They represent the two instances of the regression execution tests and two different points in time. -->
+			<baseDir1>C:/tmp/pdtool/cis51</baseDir1>
+			<baseDir2>C:/tmp/pdtool/cis61</baseDir2>
+
+			<!-- Category filter: This informs the Regression Module whether to perform the comparison for Queries, Procedure and Web Services.  It is a way of turning comparison on and off for an entire category of resources. -->
+			<compareQueries>yes</compareQueries>
+			<compareProcedures>yes</compareProcedures>
+			<compareWS>yes</compareWS>
+			
+			<!--  If Yes, run comparisons for all data sources from the input file. datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which comparisons are run for JDBC and Web Services datasources -->
+			<datasources>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources/>
+
+		</compareFiles>		
+		
+		<compareLogs>
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:\\tmp\\pdtool\\MigrationCompareLogs2.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+
+			<!-- These are the two summary execution log files to be compared. -->
+			<logFilePath1>C:/tmp/pdtool/MigrationTest51.log</logFilePath1>
+			<logFilePath2>C:/tmp/pdtool/MigrationTest61.log</logFilePath2>
+
+			<!-- Log file 1 and 2 delimiters [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter1>PIPE</logDelimiter1>
+			<logDelimiter2>PIPE</logDelimiter2>
+
+			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
+			<durationDelta>000 00:00:01.0000</durationDelta>
+			
+		</compareLogs>
+				
+	</regressionTest>
+	
+	<regressionTest>
+		<id>Test3.1</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>yes</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+			-->
+			<testType>performance</testType>
+
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/PerfTest1.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>C:/tmp/pdtool/cis51</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output to command line: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+			<!-- (Optional) The number of threads to create when doing performance testing. -->
+			<perfTestThreads>1</perfTestThreads>
+			<!-- (Optional) The duration in seconds to execute the performance test for. -->
+			<perfTestDuration>10</perfTestDuration>
+			<!-- (Optional) The number of seconds to sleep in between printing stats when executing the performance test. -->
+			<perfTestSleepPrint>5</perfTestSleepPrint>
+			<!-- (Optional) The number of seconds to sleep in between query executions when executing the performance test. -->
+			<perfTestSleepExec>0</perfTestSleepExec>
+
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName/>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources>
+				<resource>My Catalog.*</resource>
+				<resource>all_domains</resource>
+				<resource>CAT1.*</resource>
+				<resource>SCH1.*</resource>
+				<resource>ViewSales</resource>
+				<resource>LookupProduct</resource>
+				<resource>testWebService00.*</resource>
+			</resources>
+		</testRunParams>
+		
+	</regressionTest>
+
+	<regressionTest>
+		<id>Test3.2</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>yes</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+			-->
+			<testType>performance</testType>
+
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/PerfTest2.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output files  -->
+			<baseDir>C:/tmp/pdtool/cis61</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output to command line: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+			<!-- (Optional) The number of threads to create when doing performance testing. -->
+			<perfTestThreads>1</perfTestThreads>
+			<!-- (Optional) The duration in seconds to execute the performance test for. -->
+			<perfTestDuration>10</perfTestDuration>
+			<!-- (Optional) The number of seconds to sleep in between printing stats when executing the performance test. -->
+			<perfTestSleepPrint>5</perfTestSleepPrint>
+			<!-- (Optional) The number of seconds to sleep in between query executions when executing the performance test. -->
+			<perfTestSleepExec>0</perfTestSleepExec>
+
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName/>
+				<dsName>testWebService00</dsName>
+				<dsName>testWebService00_Params_bare</dsName>
+				<dsName>testWebService00_Params_wrapped</dsName>
+				<dsName>testWebService00_NoParams_bare</dsName>
+				<dsName>testWebService00_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+					-->
+			<resources>
+				<resource>My Catalog.*</resource>
+				<resource>all_domains</resource>
+				<resource>CAT1.*</resource>
+				<resource>SCH1.*</resource>
+				<resource>ViewSales</resource>
+				<resource>LookupProduct</resource>
+				<resource>testWebService00.*</resource>
+			</resources>
+			
+		</testRunParams>
+		
+		<compareLogs>
+			<!-- Comparison results are written to this log file. -->
+			<logFilePath>C:\\tmp\\pdtool\\PerformanceTestCompareLogs.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+
+			<!-- These are the two summary execution log files to be compared. -->
+			<logFilePath1>C:/tmp/pdtool/PerfTest1.log</logFilePath1>
+			<logFilePath2>C:/tmp/pdtool/PerfTest2.log</logFilePath2>
+
+			<!-- Log file 1 and 2 delimiters [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter1>PIPE</logDelimiter1>
+			<logDelimiter2>PIPE</logDelimiter2>
+
+			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
+			<durationDelta>000 00:00:01.0000</durationDelta>
+		</compareLogs>
+	</regressionTest>
+
+  <regressionTest>
+    <id>Test4.1</id>
+    <!-- the inputFilePath and createNewFile are ignored for the security test -->
+    <inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+    <tempDirPath>C:\\tmp\\pdtool</tempDirPath>
+    <createNewFile>no</createNewFile>
+    <newFileParams>
+      <createQueries>yes</createQueries>
+      <createProcedures>yes</createProcedures>
+      <createWS>yes</createWS>
+      <!-- The soap type specifies whether to generate web services using soap11 (default), soap12 or all.  soap12 is only applicable for CIS 6.1 and higher and only if a CIS New Composite Web Service has been created. -->
+      <createSoapType>soap11</createSoapType>
+      <!-- Category filter: [yes|no|true|false] Use the default query when generating input file. -->
+      <useDefaultViewQuery>yes</useDefaultViewQuery>
+      <useDefaultProcQuery>yes</useDefaultProcQuery>
+      <useDefaultWSQuery>yes</useDefaultWSQuery>
+      <!--  Default queries for Views and Procedures. -->
+      <publishedViewQry>SELECT count(1) cnt FROM</publishedViewQry>
+      <publishedProcQry>SELECT count(1) cnt FROM</publishedProcQry>
+      <!--  If Yes, generate entries for all data sources in the input file, datasources below are ignored -->
+      <useAllDatasources>no</useAllDatasources>
+      <!-- Datasource filter: published datasources for which input file entries are created for JDBC and Web Services datasources. -->
+      <datasources>
+        <dsName>TEST00</dsName>
+        <dsName>CustomerWS</dsName>
+      </datasources>
+      <!-- Resource filter: This is a list of resources for which to perform comparisons.  
+			This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+			A fully qualified resource may be used.  The resource validation is case insensitive.
+			A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+			Overlapping resource wild cards will use the highest level specified in this list. 
+			It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+			For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+			   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+			   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+			Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+				<resource>SCH1.*</resource>
+				<resource>CAT1.*.customers</resource>
+				<resource>ViewSales</resource>
+				<resource>LookupProduct</resource>
+			
+			Examples of filters for web services [the web service name is included in the resource filter]:
+				<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+				<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+				<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+				<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+			-->
+      <resources>
+        <resource>CAT1.*.customers</resource>
+        <resource>CAT2.*.customers</resource>
+        <resource>Common.*.getCustomerById</resource>
+		<resource>TEST00.CAT1.*</resource>
+		<resource>TEST00.CAT2.*</resource>
+		<resource>TEST00.Common.*</resource>		
+      </resources>
+	  
+	  <!-- Options for generating the Regression Security XML section. -->
+	  <securityGenerationOptions>
+		<!--Path to Target Regression Module XML - a required path to the target configuration file for the regression module.  Provides a way of writing to a different file than the source or original RegressionModule.xml.-->
+        <pathToTargetRegressionXML>$PROJECT_HOME_PHYSICAL\\resources\\modules\\generated\\getRegressionModule.xml</pathToTargetRegressionXML>
+        <!--[optional] A security user default encrypted password.  [node="regressionSecurityUser"] It will be encrypted when the ExecutePDTool.bat -encrypt ..\resources\modules\RegressionModule.xml is executed.-->
+        <encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword>
+        <!--[optional] Determines what CIS users to generate.  Wildcards (*) may be used.  [node="regressionSecurityUser"]-->
+        <userFilter>user1,user2</userFilter>
+        <!--[optional] Provides a way of specifying what domain the userFilter should be applied to.  [node="regressionSecurityUser"]-->
+        <domainFilter>composite</domainFilter>
+		<!--[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security user XML, APPEND=add to existing security user XML if the user does not exist.  [node="regressionSecurityUser"]-->
+        <userMode>OVERWRITE</userMode>
+		<!--[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security query XML, APPEND=add to existing security query XML if the query does not exist.  [node="regressionSecurityQuery"-->
+        <queryMode>OVERWRITE</queryMode>
+		<!--[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security plan XML, APPEND=add to existing security plan XML if the plan does not exist.  [node="regressionSecurityPlanTest"]-->
+        <planMode>OVERWRITE</planMode>
+		<!--SINGLEPLAN|MULTIPLAN] - SINGLEPLAN=Generate the Cartesian plan as a single plan. MULTIPLAN=Generate the Cartesian plan as multiple plans for each user who has the same set of queries.  [node="regressionSecurityPlanTest"]
+			e.g. when planMode=OVERWRITE and planModeType=MULTIPLAN - will produce a new list where each user is a security plan with the full set of queries.  
+			e.g. when planMode=APPEND and planModeType=SINGLEPLAN - will produce a new plan appended to the existing set of plans where this plan will contain a Cartesian product of users and queries.-->
+        <planModeType>MULTIPLAN</planModeType>
+		<!--The plan id prefix provides a way of overriding the default [sp].  For example a plan id=sp1,sp2, etc.  This gives the user the ability to identify certain plans with different prefixes.  [node="regressionSecurityPlanTest"]-->
+        <planIdPrefix>sp</planIdPrefix>
+		<!-- The plan generate expected outcome determines whether to 
+			(true) generate the outcome based on retrieving privileges for a given query resource and cross-referencing with the user and their groups to determine what the expected outcome should be upon execution.
+					Updside: it provides a ready-made plan with expected outcome. [CAUTION: The developer needs to double-check that the expected outcome is what they want.  
+							 The generation is based on how the privileges are actually set in the environemnt that PDTool connects to.  It may be the same environment that you are intending to
+							 execute a test.  Generating a test and executing the test defeats the purpose of testing.  A validation of expected outcome is a required step between generation of the
+							 test plan and executing the test plan.
+					Downside: it is a very slow process as it requires retrieving groups for each user and privileges for each resource query from CIS and then calculating the expected outcome.
+			(false) do not generate the outcome and leave blank. -->
+		<planGenerateExpectedOutcome>true</planGenerateExpectedOutcome>
+		
+		<!--Flatten the security XML sections into a table structure for easier viewing -->
+		<!--   The flatten security users XML [node="regressionSecurityUser"] output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.-->
+        <flattenSecurityUsersXML>true</flattenSecurityUsersXML>
+		<!--   The flatten security query (SQL Queries) [node="regressionSecurityQuery" and "queryType"=QUERY] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.-->
+        <flattenSecurityQueryQueriesXML>true</flattenSecurityQueryQueriesXML>
+		<!--   The flatten security query (SQL Procedures) [node="regressionSecurityQuery" and "queryType"=PROCEDURE] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.-->
+        <flattenSecurityQueryProceduresXML>true</flattenSecurityQueryProceduresXML>
+		<!--   The flatten security query (Web Services) [node="regressionSecurityQuery" and "queryType"=WEB_SERVICES] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.-->
+        <flattenSecurityQueryWebServicesXML>true</flattenSecurityQueryWebServicesXML>
+		<!--   The flatten security plans [node="regressionSecurityPlanTest"] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.-->
+        <flattenSecurityPlansXML>true</flattenSecurityPlansXML>
+      </securityGenerationOptions>
+
+      <defaultProcParamValues>
+			<bit>1</bit>
+			<varchar>'dummyStr'</varchar>
+			<char>'a'</char>
+			<clob>A</clob>
+			<integer>1</integer>
+			<int>1</int>
+			<bigint>1</bigint>
+			<smallint>1</smallint>
+			<tinyint>1</tinyint>
+			<decimal>1.0</decimal>
+			<numeric>1.0</numeric>
+			<real>1.0</real>
+			<float>1.0</float>
+			<double>1.0</double>
+			<date>'2011-01-01'</date>
+			<time>'00:00:00'</time>
+			<timestamp>'2011-01-01 00:00:00'</timestamp>
+			<binary>''</binary>
+			<varbinary>''</varbinary>
+			<blob>''</blob>
+			<xml>''</xml>
+      </defaultProcParamValues>
+    </newFileParams>
+    <testRunParams>
+      <!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
+			-->
+      <testType>security</testType>
+      <!-- Comparison results are written to this log file. -->
+      <logFilePath>C:/tmp/pdtool/SecurityTest.log</logFilePath>
+      <!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+      <logDelimiter>PIPE</logDelimiter>
+      <!-- Append results to existing log (yes) or overwrite existing log (no) -->
+      <logAppend>no</logAppend>
+      <!-- Base directory for output files  -->
+      <baseDir>C:/tmp/pdtool/cis61</baseDir>
+      <!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+      <delimiter>PIPE</delimiter>
+      <!-- Print output to command line: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+      <printOutput>summary</printOutput>
+	  
+	  <!-- Optional regression security testing section -->
+  	  <securityExecution>
+		  <!-- Identifies one or more security plan ids to execute security tests with. -->
+		  <securityPlanIds>sp*</securityPlanIds>
+		  <!-- true=throw an exception when the overall security rating=FAIL, false=don't throw an exception when the overall security rating=FAIL -->
+		  <securityOverallRatingException>false</securityOverallRatingException>
+		  <!-- true=throw an exception when there were errors, result=ERROR, false=don't throw an exception when there were errors, result=ERROR -->
+		  <securityExecutionErrorException>true</securityExecutionErrorException>
+	  </securityExecution>
+
+      <!-- Category filter:  Turn of/off the execution of an entire category. -->
+      <runQueries>yes</runQueries>
+      <runProcedures>yes</runProcedures>
+      <runWS>yes</runWS>
+      <!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+      <useAllDatasources>no</useAllDatasources>
+      <!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+      <datasources>
+        <dsName>TEST00</dsName>
+        <dsName>CustomerWS</dsName>
+      </datasources>
+      <!-- Resource filter: This is a list of resources for which to perform comparisons.  
+			This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+			A fully qualified resource may be used.  The resource validation is case insensitive.
+			A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+			Overlapping resource wild cards will use the highest level specified in this list. 
+			It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+			For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+			   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+			   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+			Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+				<resource>SCH1.*</resource>
+				<resource>CAT1.*.customers</resource>
+				<resource>ViewSales</resource>
+				<resource>LookupProduct</resource>
+			
+			Examples of filters for web services [the web service name is included in the resource filter]:
+				<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
+				<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+				<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+				<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+			-->
+      <resources />
+    </testRunParams>
+  </regressionTest>
+	
+
+  <!--Element regressionQueries is optional-->
+  <regressionQueries>
+    <regressionQuery>
+      <datasource>My Orders</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. 
+			SELECT  Orders_Open.Ship_State, count(Orders_Open.Quantity) Total_Quantity FROM Orders1.Orders_Open Orders_Open GROUP BY Orders_Open.Ship_State  EXCEPT SELECT Orders_Open.Ship_State,  count(Orders_Open.Quantity) Total_Quantity FROM  Orders1.Orders_Open Orders_Open WHERE Ship_State = 'FL' GROUP BY Orders_Open.Ship_State-->
+      <query>SELECT  "Orders Open".Ship_State, "Orders Open".Quantity Total_Quantity FROM "My Catalog"  .  "My Schema" ."Orders Open"</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>My Orders</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. 
+			SELECT  Orders_Open.Ship_State, count(Orders_Open.Quantity) Total_Quantity FROM Orders1.Orders_Open Orders_Open GROUP BY Orders_Open.Ship_State  EXCEPT SELECT Orders_Open.Ship_State,  count(Orders_Open.Quantity) Total_Quantity FROM  Orders1.Orders_Open Orders_Open WHERE Ship_State = 'FL' GROUP BY Orders_Open.Ship_State-->
+      <query>SELECT  Orders_Closed.Ship_State, Orders_Closed.Quantity Total_Quantity FROM "My Catalog"."My Schema".Orders_Closed</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>My Orders</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. 
+			SELECT  Orders_Open.Ship_State, count(Orders_Open.Quantity) Total_Quantity FROM Orders1.Orders_Open Orders_Open GROUP BY Orders_Open.Ship_State  EXCEPT SELECT Orders_Open.Ship_State,  count(Orders_Open.Quantity) Total_Quantity FROM  Orders1.Orders_Open Orders_Open WHERE Ship_State = 'FL' GROUP BY Orders_Open.Ship_State-->
+      <query>SELECT  "Orders Open Complex".Ship_State, count("Orders Open Complex".Quantity) Total_Quantity FROM "My Catalog"."My Schema"."Orders Open Complex" "Orders Open Complex" GROUP BY "Orders Open Complex".Ship_State  EXCEPT SELECT "Orders Open Complex".Ship_State,  count("Orders Open Complex".Quantity) Total_Quantity FROM  "My Catalog"."My Schema"."Orders Open Complex" "Orders Open Complex" WHERE Ship_State = 'FL' GROUP BY "Orders Open Complex".Ship_State</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>My Orders</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. 
+			SELECT  Orders_Open.Ship_State, count(Orders_Open.Quantity) Total_Quantity FROM Orders1.Orders_Open Orders_Open GROUP BY Orders_Open.Ship_State  EXCEPT SELECT Orders_Open.Ship_State,  count(Orders_Open.Quantity) Total_Quantity FROM  Orders1.Orders_Open Orders_Open WHERE Ship_State = 'FL' GROUP BY Orders_Open.Ship_State-->
+      <query>SELECT  "Orders.Open . Complex".Ship_State, count("Orders.Open . Complex".Quantity) Total_Quantity FROM "My Catalog" . "My Schema" .  "Orders.Open . Complex" "Orders.Open . Complex" GROUP BY "Orders.Open . Complex".Ship_State  EXCEPT SELECT "Orders.Open . Complex".Ship_State,  count("Orders.Open . Complex".Quantity) Total_Quantity FROM  "My Catalog"."My Schema"."Orders.Open . Complex" "Orders.Open . Complex" WHERE Ship_State = 'FL' GROUP BY "Orders.Open . Complex".Ship_State</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. -->
+      <query>SELECT ProductID, ProductName, ReorderLevel, LeadTime, "$$Status" FROM ViewSales2 WHERE "$$Status" = '$VIEWSALES_STATUS' order by ProductID</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <!-- For columns that contain a $ sign must be escaped with a double $$ as shown below. -->
+      <!-- For variables that are set in the environment use a single $. The sql wildcard "%" may not be used to designate variables. -->
+      <!-- Variables are resolved upon execution. -->
+      <!-- In this case, the content of PRODUCT_NAME_WILDCARD=Widget%% contains an escaped % so that what is returned is Widget% -->
+      <query>SELECT * FROM CAT1.SCH1.ViewSales2 WHERE ProductName like '$PRODUCT_NAME_WILDCARD'</query>
+    </regressionQuery>
+	
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM ViewSales WHERE ReorderLevel &lt;= 3</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM SCH1.ViewOrder</query>
+      <!-- Duration delta for this query.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
+      <durationDelta>000 00:00:00.0005</durationDelta>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM SCH1.ViewSales WHERE CategoryID = 7</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM CAT1.SCH1.ViewSales where Discount &gt; 0</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM CAT1.SCH2.ViewSales WHERE ProductName like 'Mega%'</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM CAT1.SCH2.ViewSupplier</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT * FROM getProductName(1)</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 3 )</query>
+    </regressionQuery>
+    <regressionQuery>
+      <datasource>MYTEST</datasource>
+      <query>SELECT count(*) cnt FROM CAT1.SCH2.LookupProduct( 4 )</query>
+    </regressionQuery>
+	
+    <!-- Soap11: Customer WebService "wrapped" no parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_wrapped</datasource>
+      <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"&gt;
+    &lt;soapenv:Header/&gt;
+    &lt;soapenv:Body&gt;
+		&lt;tem:customers&gt;
+			&lt;tem:customersInput&gt;&lt;/tem:customersInput&gt;
+		&lt;/tem:customers&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap11/TEST00/testWebService00_wrapped</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>customers</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap11: Customer WebService "wrapped" with parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_wrapped</datasource>
+      <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"&gt;
+    &lt;soapenv:Header/&gt;
+    &lt;soapenv:Body&gt;
+		&lt;tem:WrapperedGetcustomerbyid&gt;
+			&lt;tem:getCustomerByIdCustid&gt;1&lt;/tem:getCustomerByIdCustid&gt;
+		&lt;/tem:WrapperedGetcustomerbyid&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap11/TEST00/testWebService00_wrapped</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap12: Customer WebService "wrapped" no parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_wrapped</datasource>
+      <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
+      <query>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/"&gt;
+    &lt;soap:Header/&gt;
+    &lt;soap:Body&gt;
+		&lt;tem:customers&gt;
+			&lt;tem:customersInput&gt;&lt;/tem:customersInput&gt;
+		&lt;/tem:customers&gt;
+	&lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap12/TEST00/testWebService00_wrapped</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>customers</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>application/soap+xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap12: Customer WebService "wrapped" with parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_wrapped</datasource>
+      <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
+      <query>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/"&gt;
+    &lt;soap:Header/&gt;
+    &lt;soap:Body&gt;
+		&lt;tem:WrapperedGetcustomerbyid&gt;
+			&lt;tem:getCustomerByIdCustid&gt;1&lt;/tem:getCustomerByIdCustid&gt;
+		&lt;/tem:WrapperedGetcustomerbyid&gt;
+	&lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap12/TEST00/testWebService00_wrapped</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>application/soap+xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap11: Customer WebService "bare" no parameters style -->
+    <regressionQuery>
+      <datasource>testWebService00_bare</datasource>
+      <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;
+	&lt;soapenv:Header/&gt;
+	&lt;soapenv:Body&gt;
+		&lt;tem:customers&gt;
+			&lt;tem:customersInput&gt;&lt;/tem:customersInput&gt;
+		&lt;/tem:customers&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap11/TEST00/testWebService00_bare</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <regressionQuery>
+      <datasource>testWebService00_bare</datasource>
+      <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;
+	&lt;soapenv:Header/&gt;
+	&lt;soapenv:Body&gt;
+			&lt;ns1:getCustomerByIdCustid&gt;1&lt;/ns1:getCustomerByIdCustid&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap11/TEST00/testWebService00_bare</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap12: Customer WebService "bare" no parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_bare</datasource>
+      <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/"&gt;
+	&lt;soapenv:Header/&gt;
+	&lt;soapenv:Body&gt;
+		&lt;tem:customers&gt;
+			&lt;tem:customersInput&gt;&lt;/tem:customersInput&gt;
+		&lt;/tem:customers&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap12/TEST00/testWebService00_bare</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Soap12: Customer WebService "bare" with parameters -->
+    <regressionQuery>
+      <datasource>testWebService00_bare</datasource>
+      <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/"&gt;
+	&lt;soapenv:Header/&gt;
+	&lt;soapenv:Body&gt;
+			&lt;ns1:getCustomerByIdCustid&gt;1&lt;/ns1:getCustomerByIdCustid&gt;
+		&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/soap12/TEST00/testWebService00_bare</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerByIdCustid</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>application/soap+xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Composite Legacy Web Service no parameters -->
+    <regressionQuery>
+      <datasource>testWebService00</datasource>
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;     
+	&lt;soapenv:Body&gt;         
+		&lt;ns1:customers xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService00/testService"&gt;&lt;/ns1:customers&gt;    
+	&lt;/soapenv:Body&gt; 
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/services/webservices/TEST00/testWebService00/testService/testPort.ws</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>customers</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+	
+    <!-- Composite Legacy Web Service with parameters -->
+    <regressionQuery>
+      <datasource>testWebService00</datasource>
+      <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;     
+	&lt;soapenv:Body&gt;         
+		&lt;ns1:getCustomerById xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService00/testService"&gt;
+			&lt;ns1:custId&gt;1&lt;/ns1:custId&gt;
+		&lt;/ns1:getCustomerById&gt;
+	&lt;/soapenv:Body&gt; 
+&lt;/soapenv:Envelope&gt;</query>
+      <!--Element wsPath is optional-->
+      <wsPath>/services/webservices/TEST00/testWebService00/testService/testPort.ws</wsPath>
+      <!--Element wsAction is optional-->
+      <wsAction>getCustomerById</wsAction>
+      <!--Element wsEncrypt is optional-->
+      <wsEncrypt>false</wsEncrypt>
+      <!--Element wsContentType is optional-->
+      <wsContentType>text/xml;charset=UTF-8</wsContentType>
+    </regressionQuery>
+  </regressionQueries>
+
+      <regressionSecurity>
+		<!-- List of users to be used for security testing. -->
+		<regressionSecurityUsers>
+			<regressionSecurityUser><id>rsu1</id><userName>user1</userName><encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword><domain>composite</domain></regressionSecurityUser>
+			<regressionSecurityUser><id>rsu2</id><userName>user2</userName><encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword><domain>composite</domain></regressionSecurityUser>
+		</regressionSecurityUsers>
+		
+		<!-- List of queries, procedures or web services to be used for security testing.  Only one query per object is needed.  Typically a select count(1) as a functional test is all that is needed to test security. -->
+		<regressionSecurityQueries>
+			<regressionSecurityQuery><id>rsq1</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.customers</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq2</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.customers</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq3</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM Common.Common.customers</query><resourcePath>/services/databases/TEST00/Common/Common/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq4</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq5</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq6</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM Common.Common.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/Common/Common/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq7</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:customers&gt;&lt;ns1:customersInput&gt;&lt;/ns1:customersInput&gt;&lt;/ns1:customers&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/CAT1/SCH1/CustomerWS</wsPath><wsAction>customers</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/CAT1/SCH1/CustomerWS/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq8</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:WrapperedGetcustomerbyid&gt;&lt;ns1:getCustomerByIdCustid&gt;1&lt;/ns1:getCustomerByIdCustid&gt;&lt;/ns1:WrapperedGetcustomerbyid&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/CAT1/SCH1/CustomerWS</wsPath><wsAction>getCustomerById</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/CAT1/SCH1/CustomerWS/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq9</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:customers&gt;&lt;ns1:customersInput&gt;&lt;/ns1:customersInput&gt;&lt;/ns1:customers&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/CAT2/SCH2/CustomerWS</wsPath><wsAction>customers</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/CAT2/SCH2/CustomerWS/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq10</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:WrapperedGetcustomerbyid&gt;&lt;ns1:getCustomerByIdCustid&gt;1&lt;/ns1:getCustomerByIdCustid&gt;&lt;/ns1:WrapperedGetcustomerbyid&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/CAT2/SCH2/CustomerWS</wsPath><wsAction>getCustomerById</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/CAT2/SCH2/CustomerWS/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq11</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:customers&gt;&lt;ns1:customersInput&gt;&lt;/ns1:customersInput&gt;&lt;/ns1:customers&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/Common/Common/CustomerWS</wsPath><wsAction>customers</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/Common/Common/CustomerWS/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq12</id><datasource>CustomerWS</datasource><queryType>WEB_SERVICE</queryType><query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;ns1:WrapperedGetcustomerbyid&gt;&lt;ns1:getCustomerByIdCustid&gt;1&lt;/ns1:getCustomerByIdCustid&gt;&lt;/ns1:WrapperedGetcustomerbyid&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</query><wsPath>/soap11/TEST00/Common/Common/CustomerWS</wsPath><wsAction>getCustomerById</wsAction><wsEncrypt>false</wsEncrypt><wsContentType>text/xml;charset=UTF-8</wsContentType><resourcePath>/services/webservices/TEST00/Common/Common/CustomerWS/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+		</regressionSecurityQueries>
+
+		<!-- List of security plans.  Each plan provides the functionality of a test.  The expectedOutcome [PASS|FAIL] is the measure of whether a user is supposed to pass or fail a query. -->
+		<regressionSecurityPlans>
+			<regressionSecurityPlan>
+				<id>sp1</id>
+				<regressionSecurityPlanTest><id>rst1</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq1</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/TEST00/CAT1/SCH1/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst2</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq2</queryId><expectedOutcome>FAIL</expectedOutcome><description>user1 :: /services/databases/TEST00/CAT2/SCH2/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst3</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq3</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/TEST00/Common/Common/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst4</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq4</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/TEST00/CAT1/SCH1/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst5</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq5</queryId><expectedOutcome>FAIL</expectedOutcome><description>user1 :: /services/databases/TEST00/CAT2/SCH2/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst6</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq6</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/TEST00/Common/Common/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst7</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq7</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/webservices/TEST00/CAT1/SCH1/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst8</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq8</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/webservices/TEST00/CAT1/SCH1/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst9</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq9</queryId><expectedOutcome>FAIL</expectedOutcome><description>user1 :: /services/webservices/TEST00/CAT2/SCH2/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst10</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq10</queryId><expectedOutcome>FAIL</expectedOutcome><description>user1 :: /services/webservices/TEST00/CAT2/SCH2/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst11</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq11</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/webservices/TEST00/Common/Common/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst12</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq12</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/webservices/TEST00/Common/Common/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+			</regressionSecurityPlan>
+			<regressionSecurityPlan>
+				<id>sp2</id>
+				<regressionSecurityPlanTest><id>rst1</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq1</queryId><expectedOutcome>FAIL</expectedOutcome><description>user2 :: /services/databases/TEST00/CAT1/SCH1/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst2</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq2</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/TEST00/CAT2/SCH2/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst3</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq3</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/TEST00/Common/Common/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst4</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq4</queryId><expectedOutcome>FAIL</expectedOutcome><description>user2 :: /services/databases/TEST00/CAT1/SCH1/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst5</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq5</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/TEST00/CAT2/SCH2/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst6</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq6</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/TEST00/Common/Common/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst7</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq7</queryId><expectedOutcome>FAIL</expectedOutcome><description>user2 :: /services/webservices/TEST00/CAT1/SCH1/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst8</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq8</queryId><expectedOutcome>FAIL</expectedOutcome><description>user2 :: /services/webservices/TEST00/CAT1/SCH1/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst9</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq9</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/webservices/TEST00/CAT2/SCH2/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst10</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq10</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/webservices/TEST00/CAT2/SCH2/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst11</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq11</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/webservices/TEST00/Common/Common/CustomerWS/customers</description></regressionSecurityPlanTest>
+				<regressionSecurityPlanTest><id>rst12</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq12</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/webservices/TEST00/Common/Common/CustomerWS/getCustomerById</description></regressionSecurityPlanTest>
+			</regressionSecurityPlan>
+		</regressionSecurityPlans>
+	</regressionSecurity>
+
+</p1:RegressionModule>

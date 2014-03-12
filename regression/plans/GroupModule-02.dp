@@ -1,0 +1,4 @@
+# -----------------------------------------
+# Group Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   deleteGroups 			$SERVERID group1 			"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 

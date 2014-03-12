@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Copy resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	copyResources 			$SERVERID "copy1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

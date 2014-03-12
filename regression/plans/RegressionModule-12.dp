@@ -1,0 +1,6 @@
+# -----------------------------------------
+# Regression Module:
+# -----------------------------------------
+# Generate Security XML
+PASS	TRUE   ExecuteAction      generateRegressionSecurityXML $SERVERID   Test4.1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
+#

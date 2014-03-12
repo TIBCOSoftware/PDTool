@@ -1,0 +1,5 @@
+# -----------------------------------------
+# DataSource Module:
+# -----------------------------------------
+# Generate the list of Datasource Attribute Definitions for the given data source type
+PASS	TRUE	ExecuteAction   	generateDataSourceAttributeDefsByDataSourceType $SERVERID "Oracle 10g (Thin Driver)" "$PROJECT_HOME_PHYSICAL/resources/modules/generated/generateDataSourceAttributeDefsByDataSourceType.xml" "$MODULE_HOME/servers.xml"

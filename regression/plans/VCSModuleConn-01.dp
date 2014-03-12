@@ -1,0 +1,6 @@
+# -----------------------------------------
+# VCS Module: VCS Connection Properties version
+# -----------------------------------------
+# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+#
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"

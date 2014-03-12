@@ -1,0 +1,6 @@
+# -----------------------------------------
+# VCS Module: Non-VCS Connection Properties
+# -----------------------------------------
+# Test checking out a resource with a long path
+#
+PASS	TRUE	ExecuteAction  	vcsCheckout	$SERVERID "/shared/test00_longpath/$VCS_BASE_TYPE" "CONTAINER" "HEAD"   "$MODULE_HOME/servers.xml"

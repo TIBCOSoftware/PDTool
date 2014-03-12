@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ServerManager Module:
+# -----------------------------------------
+PASS	TRUE   ExecuteAction   startServer    $SERVERID  "$MODULE_HOME/servers.xml" 

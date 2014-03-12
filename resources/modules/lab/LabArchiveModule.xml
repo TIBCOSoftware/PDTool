@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p1:ArchiveModule  xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+	<archive>
+		<!--  <ArchiveType>IMPORT</ArchiveType> -->
+		<id>test$STUDENTID</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/carfiles/TEST$STUDENTID.car</archiveFileName>
+		<overwrite>true</overwrite> 
+	</archive>	
+</p1:ArchiveModule>

@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Unlock a resource at a given path
+PASS	TRUE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml" "unlocking resource"

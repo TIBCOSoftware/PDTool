@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Execute a Composite procedure
+PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

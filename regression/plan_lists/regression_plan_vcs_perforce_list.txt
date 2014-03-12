@@ -1,0 +1,10 @@
+# Provides the order of execution for the plan files
+_initialize_vcs.dp
+
+VCSModule-01.dp
+# Execute perforce in perforce list
+VCSModuleLabel-01.dp
+
+VCSModuleConn-01.dp
+# Execute perforce in perforce list
+VCSModuleConnLabel-01.dp

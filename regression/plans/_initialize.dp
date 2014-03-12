@@ -1,0 +1,18 @@
+# -----------------------------------------
+# Begin task definition list:
+# -----------------------------------------
+# Start by deleting the following:
+#    /services/databases/TEST00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/databases/TEST00 				"$MODULE_HOME/servers.xml"
+#    /services/webservices/TEST00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/webservices/TEST00 				"$MODULE_HOME/servers.xml"
+#    /shared/test00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /shared/test00 							"$MODULE_HOME/servers.xml"
+#	/shared/test00_longpath
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /shared/test00_longpath					"$MODULE_HOME/servers.xml"
+#    /users/composite/admin/test00
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /users/composite/admin/test00				"$MODULE_HOME/servers.xml"
+#    user1 and user2
+PASS	TRUE	ExecuteAction   deleteUsers    	$SERVERID "*" 		"$MODULE_HOME/UserModule.xml" 	"$MODULE_HOME/servers.xml" 
+#    group1 and goup2
+PASS	TRUE	ExecuteAction   deleteGroups 	$SERVERID "*" 		"$MODULE_HOME/GroupModule.xml" 	"$MODULE_HOME/servers.xml" 

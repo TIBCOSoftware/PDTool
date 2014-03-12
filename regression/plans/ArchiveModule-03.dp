@@ -1,0 +1,5 @@
+# -----------------------------------------
+# Archive Module:
+# -----------------------------------------
+# Import
+PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"

@@ -1,0 +1,5 @@
+# -----------------------------------------
+# ServerAttribure Module:
+# This entry is used to update the "anonymous" to true so that web services can be re-introspected
+# -----------------------------------------
+PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "server134"	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 

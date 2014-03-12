@@ -1,0 +1,4 @@
+# -----------------------------------------
+# ServerAttribure Module:
+# -----------------------------------------
+PASS	TRUE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/" 			"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"

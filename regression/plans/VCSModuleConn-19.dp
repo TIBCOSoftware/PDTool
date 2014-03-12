@@ -1,0 +1,6 @@
+# -----------------------------------------
+# VCS Module: VCS Connection Properties version
+# -----------------------------------------
+# Test checking in a resource with a long path
+#
+PASS	TRUE	ExecuteAction  	vcsCheckin2  $SERVERID $VCONN "/shared/test00_longpath/$VCS_BASE_TYPE" "CONTAINER" "long path check in" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"

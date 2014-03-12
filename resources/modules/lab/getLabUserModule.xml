@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:UserModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+    <user>
+        <id>user1</id>
+        <userName>monitor</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS MODIFY_ALL_CONFIG READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS</privilege>
+        <annotation>Monitor user</annotation>
+    </user>
+    <user>
+        <id>user2</id>
+        <userName>anonymous</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <privilege>NONE</privilege>
+        <annotation>Anonymous user</annotation>
+    </user>
+    <user>
+        <id>user3</id>
+        <userName>nobody</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <privilege>NONE</privilege>
+        <annotation>Nobody user</annotation>
+    </user>
+    <user>
+        <id>user4</id>
+        <userName>system</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE</privilege>
+        <annotation>System user</annotation>
+    </user>
+    <user>
+        <id>user5</id>
+        <userName>admin</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>admin</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE</privilege>
+        <annotation>Administrator user</annotation>
+    </user>
+    <user>
+        <id>user6</id>
+        <userName>user1</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <groupMembershipList>
+            <groupName>group1</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS</privilege>
+        <annotation>user1</annotation>
+    </user>
+    <user>
+        <id>user7</id>
+        <userName>user2</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <groupMembershipList>
+            <groupName>group2</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS</privilege>
+        <annotation>user2</annotation>
+    </user>
+    <user>
+        <id>user8</id>
+        <userName>user3</userName>
+        <encryptedPassword></encryptedPassword>
+        <forcePassword>false</forcePassword>
+        <domainName>composite</domainName>
+        <groupMembershipList>
+            <groupName>all</groupName>
+            <groupDomain>composite</groupDomain>
+        </groupMembershipList>
+        <privilege>ACCESS_TOOLS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS</privilege>
+        <annotation>user3</annotation>
+    </user>
+</ns2:UserModule>

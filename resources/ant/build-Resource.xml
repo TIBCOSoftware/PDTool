@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PDTool" default="default" basedir=".">
+
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="localhost9430"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="arguments-pass" 			value="'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"/>
+  <property name="arguments-fail" 			value="'myname','5','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"/>
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.cisco.dvbu.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" description="Update CIS with environment specific parameters">
+
+	<!--
+	# ========================================
+	# Resource Module:
+	# ========================================
+		# ===================
+		# Direct invocations
+		# ===================
+		# Execute a Configured Procedure (defined in ResourceModule.xml
+		PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 					TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+		# Copy a resource at a given path
+		PASS	TRUE	ExecuteAction   	copyResource 			$SERVERID /shared/test00/f1/p1		"$MODULE_HOME/servers.xml" /shared/test00/f1 p1copy OVERWRITE_REPLACE_IF_EXISTS
+		# Rename a resource at a given path
+		PASS	TRUE	ExecuteAction   	renameResource 			$SERVERID /shared/test00/f1/p1copy	"$MODULE_HOME/servers.xml" p1rename
+		# Move a resource at a given path
+		PASS	TRUE	ExecuteAction   	moveResource 			$SERVERID /shared/test00/f1/p1rename "$MODULE_HOME/servers.xml" /shared/test00/f1/f2 p1move
+		# Delete resources 
+		PASS	TRUE	ExecuteAction   	deleteResource 			$SERVERID /shared/test00/f1/f2/p1move "$MODULE_HOME/servers.xml"
+		# Lock a resource at a given path
+		PASS	TRUE	ExecuteAction   	lockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml"
+		# Unlock a resource at a given path
+		PASS	TRUE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml" "unlocking resource"
+		-->
+		<!--# Execute a Composite procedure -->
+        <executeJavaAction action="executeProcedure" arguments="${SERVERID}^testproc^TEST00^${pathToServersXML}^${arguments-pass}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Copy a resource at a given path -->
+		<executeJavaAction action="copyResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}^/shared/test00/f1^p1copy^OVERWRITE_REPLACE_IF_EXISTS" endExecutionOnTaskFailure="TRUE" />
+		<!--# Rename a resource at a given path -->
+		<executeJavaAction action="renameResource" arguments="${SERVERID}^/shared/test00/f1/p1copy^${pathToServersXML}^p1rename" endExecutionOnTaskFailure="TRUE" />
+		<!--# Move a resource at a given path -->
+		<executeJavaAction action="moveResource" arguments="${SERVERID}^/shared/test00/f1/p1rename^${pathToServersXML}^/shared/test00/f1/f2^p1move" endExecutionOnTaskFailure="TRUE" />
+		<!--# Delete a resource at a given path -->
+		<executeJavaAction action="deleteResource" arguments="${SERVERID}^/shared/test00/f1/f2/p1move^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Lock a resource at a given path -->
+		<executeJavaAction action="lockResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Unlock a resource at a given path -->
+		<executeJavaAction action="unlockResource" arguments="${SERVERID}^/shared/test00/f1/p1^${pathToServersXML}^unlocking resource" endExecutionOnTaskFailure="TRUE" />
+		<!--# Create folder resource at a given path -->
+		<executeJavaAction action="createFolder" arguments="${SERVERID}^/shared/test00/_test1^${pathToServersXML}^true" endExecutionOnTaskFailure="TRUE" />
+		<!--			
+		# =======================
+		# Module XML invocations
+		# =======================
+		# Check for existence of resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	doResourcesExist 		$SERVERID "exist1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Execute a Composite procedure
+		PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Copy resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	copyResources 			$SERVERID "copy1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Rename resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	renameResources 		$SERVERID "rename1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Move resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	moveResources 			$SERVERID "move1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Delete resources configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	deleteResources 		$SERVERID "delete1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Lock a resource at a given path
+		PASS	TRUE	ExecuteAction   	lockResources 			$SERVERID "lock1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		# Unlock resource configured in ResourceModule.xml
+		PASS	TRUE	ExecuteAction   	unlockResources 		$SERVERID "unlock1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+		-->
+ 		<!--# Check for existence of resources configured in ResourceModule.xml -->
+ 		<executeJavaAction action="doResourcesExist" arguments="${SERVERID}^exist1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Execute a Configured Procedure (defined in ResourceModule.xml -->
+ 		<executeJavaAction action="executeConfiguredProcedures" arguments="${SERVERID}^testproc^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Copy resources configured in ResourceModule.xml -->
+		<executeJavaAction action="copyResources" arguments="${SERVERID}^copy1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Rename resources configured in ResourceModule.xml -->
+		<executeJavaAction action="renameResources" arguments="${SERVERID}^rename1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Move resources configured in ResourceModule.xml -->
+		<executeJavaAction action="moveResources" arguments="${SERVERID}^move1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Delete resources configured in ResourceModule.xml -->
+		<executeJavaAction action="deleteResources" arguments="${SERVERID}^delete1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Lock resources configured in ResourceModule.xml -->
+ 		<executeJavaAction action="lockResources" arguments="${SERVERID}^lock1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Unlock resource configured in ResourceModule.xml -->
+		<executeJavaAction action="unlockResources" arguments="${SERVERID}^unlock1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+		<!--# Create folder resource configured in ResourceModule.xml -->
+		<executeJavaAction action="" arguments="${SERVERID}^unlock1^${pathToResourceXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE" />
+
+	</target>
+</project>
