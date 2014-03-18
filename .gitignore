@@ -1,0 +1,13 @@
+*.class
+
+# Package Files #
+*.war
+*.ear
+
+# tmp editor files #
+*~
+*.swp
+
+# local settings #
+.DS_Store
+user.properties
