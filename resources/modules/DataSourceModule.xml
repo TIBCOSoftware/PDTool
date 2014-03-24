@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<p1:DatasourceModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<p1:DatasourceModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
     <datasource>
         <genericDataSource>
             <id>ds1</id>

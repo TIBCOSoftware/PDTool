@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:PrivilegeModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<ns2:PrivilegeModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
     <resourcePrivilege>
         <id>priv1</id>
         <resourcePath>/services/webservices/TEST01/testWebService</resourcePath>

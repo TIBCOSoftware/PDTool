@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!-- (c) 2014 Cisco and/or its affiliates. All rights reserved.-->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://www.cisco.dvbu.com/ps/deploytool/modules" elementFormDefault="unqualified" targetNamespace="http://www.cisco.dvbu.com/ps/deploytool/modules" xmlns:xsd="undefined">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns:ns="http://www.dvbu.cisco.com/ps/deploytool/modules" 
+elementFormDefault="unqualified" 
+targetNamespace="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsd="undefined">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">(c) 2014 Cisco and/or its affiliates. All rights reserved.</xs:documentation>  
 		</xs:annotation>

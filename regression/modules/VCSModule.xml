@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<p1:VCSModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<p1:VCSModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
   <vcsConnections>
   
 	<!-- SUBVERSION EXAMPLE -->

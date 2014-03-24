@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<p1:RegressionModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cisco.dvbu.com/ps/deploytool/modules ..\..\..\PDToolModules\schema\PDToolModules.xsd">
+<p1:RegressionModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dvbu.cisco.com/ps/deploytool/modules ..\..\..\PDToolModules\schema\PDToolModules.xsd">
 
 	<regressionTest>
 		<id>Test1</id>
