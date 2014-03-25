@@ -1,5 +1,5 @@
 # -----------------------------------------
 # Archive Module:
 # -----------------------------------------
-# Full Server Backup
-PASS	TRUE	ExecuteAction  	backup_export   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+# Import
+PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"

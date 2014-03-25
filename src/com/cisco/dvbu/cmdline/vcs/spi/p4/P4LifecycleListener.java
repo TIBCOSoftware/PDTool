@@ -31,7 +31,7 @@ public class P4LifecycleListener extends AbstractLifecycleListener {
     private static final String[] P4_DELETE = new String[] { P4, "delete", ""};
     private static final String[] P4_SUBMIT = new String[] { P4, "submit", "-d 'Autocommitting preamble.'"};
 
-    @Override
+//    @Override
     public void handle(File file, Event event, Mode mode, boolean verbose) throws VCSException {
         switch(event) {
             case CREATE:

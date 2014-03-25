@@ -146,7 +146,7 @@ public class RegressionManagerImpl implements RegressionManager
 	 * Also see comments for  
 	 * com.cisco.dvbu.ps.deploytool.services.RegressionManager#generateInputFile(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void generateInputFile(String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML) throws CompositeException
 	{
 		// Initialize prefix
@@ -225,7 +225,7 @@ public class RegressionManagerImpl implements RegressionManager
 	 * com.cisco.dvbu.ps.deploytool.services.RegressionManager#executeRegressionTest(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 *
 	 */
-	@Override
+//	@Override
 	public void executeRegressionTest( String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML) throws CompositeException
 	{
 		// Initialize prefix
@@ -344,7 +344,7 @@ public class RegressionManagerImpl implements RegressionManager
 	 * Also see comments for 
 	 * com.cisco.dvbu.ps.deploytool.services.RegressionManager#compareRegressionFiles(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void compareRegressionFiles(String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML)
 			throws CompositeException {
 				
@@ -641,7 +641,7 @@ public class RegressionManagerImpl implements RegressionManager
 	 * com.cisco.dvbu.ps.deploytool.services.RegressionManager#compareRegressionLogs(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 *
 	 */
-	@Override
+//	@Override
 	public void compareRegressionLogs(String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML) throws CompositeException {
 		
 		// Initialize prefix
@@ -1122,7 +1122,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	 * com.cisco.dvbu.ps.deploytool.services.RegressionManager#executeSecurityTest(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 *
 	 */
-	@Override
+//	@Override
 	public void executeSecurityTest(String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML) throws CompositeException
 	{
 		// Initialize prefix

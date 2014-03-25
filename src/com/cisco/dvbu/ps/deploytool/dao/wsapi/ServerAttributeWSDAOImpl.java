@@ -41,7 +41,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#takeServerAttributeAction(java.lang.String, com.compositesw.services.system.util.common.AttributeList, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void takeServerAttributeAction(String actionName, AttributeList attributeList, String serverId, String pathToServersXML) throws CompositeException {
 		
 		// read target server properties from xml and build target server object based on target server name 
@@ -70,7 +70,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#getServerAttribute(java.lang.String, java.lang.String, java.lang.String)
 	 * Get server attributes for the given paths.
 	 */
-	@Override
+//	@Override
 	public Attribute getServerAttribute(String serverId, String serverAttrPath, String pathToServersXML)  throws CompositeException {
 
 		// read target server properties from server xml and build target server object based on target server name 
@@ -109,7 +109,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#getServerVersion(java.lang.String, java.lang.String, java.lang.String)
 	 * Get server attributes for the given paths.
 	 */
-	@Override
+//	@Override
 	public String getServerVersion(String serverId, String pathToServersXML)  throws CompositeException {
 
 		// Get the CIS Version
@@ -151,7 +151,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#getServerAttributesFromPath(java.lang.String, java.lang.String, java.lang.String)
 	 * Get the child server attributes of the given path.  This will be an empty list for attribute definitions that are not of the "FOLDER" type.
 	 */
-	@Override
+//	@Override
 	public AttributeList getServerAttributesFromPath(String serverId, String startpath, String pathToServersXML) {
 
 		AttributeList returnAttributeList = new AttributeList();
@@ -216,7 +216,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#getServerAttributeDefinition(java.lang.String, java.lang.String, java.lang.String)
 	 * Get server attribute definitions for the given paths.
 	 */
-	@Override
+//	@Override
 	public AttributeDef getServerAttributeDefinition(String serverId, String serverAttrPath, String pathToServersXML) {
 
 		// read target server properties from server xml and build target server object based on target server name 
@@ -255,7 +255,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#getServerAttributeDefsFromPath(java.lang.String, java.lang.String, java.lang.String)
 	 * Get the child server attribute definitions of the given path.  This will be an empty list for attribute definitions that are not of the "FOLDER" type.
 	 */
-	@Override
+//	@Override
 	public AttributeDefList getServerAttributeDefsFromPath(String serverId, String startpath, String pathToServersXML) {
 
 		AttributeDefList returnAttributeDefList = new AttributeDefList();

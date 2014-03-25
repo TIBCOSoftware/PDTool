@@ -8,7 +8,6 @@ import com.compositesw.cmdline.archive.ExportCommand;
 import com.compositesw.cmdline.archive.ImportCommand;
 import com.compositesw.cmdline.archive.RestoreCommand;
 import com.compositesw.cdms.webapi.WebapiException;
-
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.LogOutputStream;
 import com.cisco.dvbu.ps.common.NoExitSecurityExceptionStatusNonZero;
@@ -18,6 +17,7 @@ import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
+import com.cisco.dvbu.ps.common.util.PropertyManager;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
 import com.cisco.dvbu.ps.common.util.wsapi.WsApiHelperObjects;
 import com.cisco.dvbu.ps.deploytool.dao.ArchiveDAO;
@@ -56,12 +56,21 @@ import org.apache.log4j.Logger;
 public class ArchiveWSDAOImpl implements ArchiveDAO {
 
 	private static Log logger = LogFactory.getLog(ArchiveWSDAOImpl.class);
+    private static boolean debug1 = false;
+    private static boolean debug2 = false;
+    private static boolean debug3 = false;
 	private ServerDAO serverDAO = null;
+	// Get the configuration property file set in the environment with a default of deploy.properties
+	String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
+
 
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ArchiveDAO#takeArchiveAction(java.lang.String,java.lang.String, com.compositesw.services.system.util.common.AttributeList, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void takeArchiveAction(String actionName, ArchiveType archive, String serverId, String pathToServersXML, String prefix, String propertyFile) throws CompositeException {
+		
+		// Set the debug options
+		setDebug();
 		
 // Read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ArchiveWSDAOImpl.takeArchiveAction("+actionName+")", logger);
@@ -78,8 +87,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		String identifier = "ArchiveWSDAOImpl.takeArchiveAction"; // some unique identifier that characterizes this invocation.
 		try {
 	
-			if(logger.isDebugEnabled()) {
-				logger.debug(identifier+":: executing action: "+actionName);
+			if(logger.isDebugEnabled() || debug3) {
+				CommonUtils.writeOutput(":: executing action: "+actionName,prefix,"-debug3",logger,debug1,debug2,debug3);
+				//logger.debug(identifier+":: executing action: "+actionName);
 			}
 
 			List<String> argsList = getCommonArchiveParameters(archive,targetServer) ;			
@@ -91,8 +101,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
-				if ( logger.isDebugEnabled() ) {
-					logger.debug(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
+				if ( logger.isDebugEnabled() || debug3 ) {
+					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" argument list=[" + maskedArgList+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+					//logger.debug(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
 				}
 				/*
 				 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
@@ -127,8 +138,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
-					if ( logger.isDebugEnabled() ) {
-						logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+					if ( logger.isDebugEnabled() || debug3 ) {
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -145,8 +157,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
-				if ( logger.isDebugEnabled() ) {
-					logger.debug(identifier+":: "+ArchiveDAO.action.RESTORE.name().toString()+" argument list=[" + maskedArgList+"]" );
+				if ( logger.isDebugEnabled() || debug3 ) {
+					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.RESTORE.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+					//logger.debug(identifier+":: "+ArchiveDAO.action.RESTORE.name().toString()+" argument list=[" + maskedArgList+"]" );
 				}
 				
 				/*
@@ -182,8 +195,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
-					if ( logger.isDebugEnabled() ) {
-						logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+					if ( logger.isDebugEnabled() || debug3 ) {
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -200,8 +214,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
-				if ( logger.isDebugEnabled() ) {
-					logger.debug(identifier+":: "+ArchiveDAO.action.EXPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
+				if ( logger.isDebugEnabled() || debug3 ) {
+					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.EXPORT.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+					//logger.debug(identifier+":: "+ArchiveDAO.action.EXPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
 				}
 				
 				/*
@@ -237,8 +252,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
-					if ( logger.isDebugEnabled() ) {
-						logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+					if ( logger.isDebugEnabled() || debug3 ) {
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -255,8 +271,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
-				if ( logger.isDebugEnabled() ) {
-					logger.debug(identifier+":: "+ArchiveDAO.action.BACKUP.name().toString()+" argument list=[" + maskedArgList+"]" );
+				if ( logger.isDebugEnabled() || debug3 ) {
+					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.BACKUP.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+					//logger.debug(identifier+":: "+ArchiveDAO.action.BACKUP.name().toString()+" argument list=[" + maskedArgList+"]" );
 				}
 				
 				/*
@@ -292,8 +309,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
-					if ( logger.isDebugEnabled() ) {
-						logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+					if ( logger.isDebugEnabled() || debug3 ) {
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -304,8 +322,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 
 			}
 			
-			if ( logger.isDebugEnabled() ) {
-				logger.debug(identifier+":: completed " + actionName );
+			if ( logger.isDebugEnabled() || debug3 ) {
+				CommonUtils.writeOutput(identifier+":: completed " + actionName ,prefix,"-debug3",logger,debug1,debug2,debug3);
+				//logger.debug(identifier+":: completed " + actionName );
 			}
 
 		} 
@@ -360,6 +379,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * @return list of parameters specified for pkg_export invocation
  */
 	private List<String> getPackageImportParameters(ArchiveType archive) {
+		
+		String prefix = "getPackageImportParameters";
+
 		List<String> argsList = new ArrayList<String>() ;
 		if (archive.isIncludeaccess() != null && archive.isIncludeaccess() == true ) {
 			argsList.add("-includeaccess");	
@@ -407,15 +429,15 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				if ( o instanceof ArchiveRelocateResourcePathType ) {
 					ArchiveRelocateResourcePathType relocate = (ArchiveRelocateResourcePathType)o ;
 					argsList.add("-relocate") ;
-					argsList.add(relocate.getOldPath()) ;
-					argsList.add(relocate.getNewPath()) ;
+					argsList.add(CommonUtils.extractVariable(prefix, relocate.getOldPath(), propertyFile, false));
+					argsList.add(CommonUtils.extractVariable(prefix, relocate.getNewPath(), propertyFile, false));
 				}
 				else
 				if ( o instanceof ArchiveRebindResourcePathType ) {
 					ArchiveRebindResourcePathType rebind = (ArchiveRebindResourcePathType)o ;
 					argsList.add("-rebind") ;
-					argsList.add(rebind.getOldPath()) ;
-					argsList.add(rebind.getNewPath()) ;
+					argsList.add(CommonUtils.extractVariable(prefix, rebind.getOldPath(), propertyFile, false));
+					argsList.add(CommonUtils.extractVariable(prefix, rebind.getNewPath(), propertyFile, false));
 				}
 			}
 		}
@@ -423,10 +445,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			ArchiveResourceModificationType arm = archive.getSetAttributes() ; 
 			for ( ArchiveResourceAttributeModificationType aram : arm.getResourceAttribute()) {
 				argsList.add("-set") ;
-				argsList.add(aram.getResourcePath()) ;
-				argsList.add(aram.getResourceType()) ;
-				argsList.add(aram.getAttribute()) ;
-				argsList.add(aram.getValue()) ;
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getResourcePath(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getResourceType(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getAttribute(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getValue(), propertyFile, false));
 			}
 		}
 	// Importing user domain/group/user definitions
@@ -469,6 +491,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * @return list of parameters specified for pkg_export invocation
  */
 	private List<String> getPackageExportParameters(ArchiveType archive) {
+
+		String prefix = "getPackageExportParameters";
+
 		List<String> argsList = new ArrayList<String>() ;
 		if (archive.isIncludeDependencies() != null && archive.isIncludeDependencies() == true ) {
 			argsList.add("-includeDependencies");	
@@ -508,7 +533,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				if ( resourcePath instanceof String ) {
 					String s = (String)resourcePath ;
 					if ( s.trim().length() > 0 ) 
-						argsList.add(s) ;
+						argsList.add(CommonUtils.extractVariable(prefix, s, propertyFile, false));
 				}
 			}
 		}
@@ -519,17 +544,17 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					ArchiveExportSecurityType.Export export = (ArchiveExportSecurityType.Export)o ;
 					if ( export.getUser() != null && export.getUser().trim().length() > 0 ) {
 						argsList.add("-includeUser");	
-						argsList.add(export.getDomain());	
-						argsList.add(export.getUser().trim());	
+						argsList.add(CommonUtils.extractVariable(prefix, export.getDomain(), propertyFile, false));
+						argsList.add(CommonUtils.extractVariable(prefix, export.getUser().trim(), propertyFile, false));
 					}
 					else if ( export.getGroup() != null && export.getGroup().trim().length() > 0 ) {
 						argsList.add("-includeGroup");	
-						argsList.add(export.getDomain());	
-						argsList.add(export.getGroup().trim());	
+						argsList.add(CommonUtils.extractVariable(prefix, export.getDomain(), propertyFile, false));
+						argsList.add(CommonUtils.extractVariable(prefix, export.getGroup().trim(), propertyFile, false));
 					}
 					else {
 						argsList.add("-includeDomain");	
-						argsList.add(export.getDomain());	
+						argsList.add(CommonUtils.extractVariable(prefix, export.getDomain(), propertyFile, false));
 					}
 				}
 			}
@@ -557,6 +582,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * @return list of parameters specified for backup_export invocation
  */
 	private List<String> getBackupImportParameters(ArchiveType archive) {
+		String prefix = "getBackupImportParameters";
 		List<String> argsList = new ArrayList<String>() ;
 		if (archive.isPrintinfo() != null && archive.isPrintinfo() == true ) {
 			argsList.add("-printinfo");	
@@ -569,8 +595,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				if ( o instanceof ArchiveRelocateResourcePathType ) {
 					ArchiveRelocateResourcePathType relocate = (ArchiveRelocateResourcePathType)o ;
 					argsList.add("-relocate") ;
-					argsList.add(relocate.getOldPath()) ;
-					argsList.add(relocate.getNewPath()) ;
+					argsList.add(CommonUtils.extractVariable(prefix, relocate.getOldPath(), propertyFile, false));
+					argsList.add(CommonUtils.extractVariable(prefix, relocate.getNewPath(), propertyFile, false));
 				}
 			}
 		}
@@ -578,10 +604,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			ArchiveResourceModificationType arm = archive.getSetAttributes() ; 
 			for ( ArchiveResourceAttributeModificationType aram : arm.getResourceAttribute()) {
 				argsList.add("-set") ;
-				argsList.add(aram.getResourcePath()) ;
-				argsList.add(aram.getResourceType()) ;
-				argsList.add(aram.getAttribute()) ;
-				argsList.add(aram.getValue()) ;
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getResourcePath(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getResourceType(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getAttribute(), propertyFile, false));
+				argsList.add(CommonUtils.extractVariable(prefix, aram.getValue(), propertyFile, false));
 			}
 		}
 		return argsList ;
@@ -601,10 +627,11 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * @return list of parameters specified for backup_export invocation
  */
 	private List<String> getBackupExportParameters(ArchiveType archive) {
+		String prefix = "getBackupExportParameters";
 		List<String> argsList = new ArrayList<String>() ;
 		if (archive.getDescription() != null && archive.getDescription().trim().length() > 0 ) {
 			argsList.add("-description");	
-			argsList.add(archive.getDescription().trim());	
+			argsList.add(CommonUtils.extractVariable(prefix, archive.getDescription().trim(), propertyFile, false));
 		}
 	// JARs are exported by default, so the inversed logic here is intentional
 		if (archive.isIncludejars() != null && archive.isIncludejars() == false ) {
@@ -615,7 +642,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		}
 		if (archive.getPkgName() !=null && archive.getPkgName().trim().length() > 0 ) {
 			argsList.add("-pkgname");	
-			argsList.add(archive.getPkgName());	
+			argsList.add(CommonUtils.extractVariable(prefix, archive.getPkgName(), propertyFile, false));
 		}
 		return argsList ;
 	}
@@ -660,5 +687,33 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.add("-encrypt");	
 		}
 		return argsList ;
+	}
+	
+	private void setDebug() {
+		// Validate the configuration property file exists
+		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
+		if (!PropertyManager.getInstance().doesPropertyFileExist(propertyFile)) {
+			throw new ApplicationException("The property file does not exist for CONFIG_PROPERTY_FILE="+propertyFile);
+		}
+		
+		// Set the global suppress and debug properties used throughout this class
+		String validOptions = "true,false";
+	    // Get the property from the property file
+	    String debug = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "DEBUG1");
+	    debug1 = false;
+	    if (debug != null && validOptions.contains(debug)) {
+	    	debug1 = Boolean.valueOf(debug);
+	    }
+	    debug = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "DEBUG2");
+	    debug2 = false;
+	    if (debug != null && validOptions.contains(debug)) {
+	    	debug2 = Boolean.valueOf(debug);
+	    }
+	    debug = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "DEBUG3");
+	    debug3 = false;
+	    if (debug != null && validOptions.contains(debug)) {
+	    	debug3 = Boolean.valueOf(debug);
+	    }
+
 	}
 }

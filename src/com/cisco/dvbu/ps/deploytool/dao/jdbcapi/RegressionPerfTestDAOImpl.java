@@ -89,7 +89,7 @@ public class RegressionPerfTestDAOImpl implements RegressionPerfTestDAO
 	 */
 	private static HashMap<String,Connection> cisConnections = null;
 
-	@Override
+//	@Override
 	public void executePerformanceTest( CompositeServer cisServerConfig, RegressionTestType regressionConfig, List<RegressionTestType> regressionList) throws CompositeException
 	{	
 		// 0. Check the input parameter values:

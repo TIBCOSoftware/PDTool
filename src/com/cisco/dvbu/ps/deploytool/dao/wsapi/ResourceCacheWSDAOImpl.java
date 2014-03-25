@@ -203,7 +203,7 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceCacheDAO#getResourceCacheConfig(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, Boolean)
 	 */
-	@Override
+//	@Override
 	public CacheConfig getResourceCacheConfig(String resourceCachePath,	String resourceCacheType, String serverId, String pathToServersXML, Boolean validateResourceExists) throws CompositeException {
 /*
 Only TABLE and PROCEDURE resources support caching in this release.
@@ -290,7 +290,7 @@ Faults:
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceCacheDAO#getResourceCacheConfig(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public boolean isCacheEnabled(String resourceCachePath,	String resourceCacheType, String serverId, String pathToServersXML) throws CompositeException {
 
 		boolean enabled = false;

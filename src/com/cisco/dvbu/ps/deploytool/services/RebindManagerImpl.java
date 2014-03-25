@@ -84,7 +84,7 @@ public class RebindManagerImpl implements RebindManager {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.RebindManager#generateRebindXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void generateRebindXML(String serverId, String startPath, String pathToRebindXML, String pathToServersXML) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -211,7 +211,7 @@ public class RebindManagerImpl implements RebindManager {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.RebindManager#rebindResources(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void rebindResources(String serverId, String rebindIds, String pathToRebindXml, String pathToServersXML) throws CompositeException {
 
 		String prefix = "rebindResources";
@@ -404,7 +404,7 @@ public class RebindManagerImpl implements RebindManager {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.RebindManager#rebindFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void rebindFolder(String serverId, String rebindIds,	String pathToRebindXml, String pathToServersXML) throws CompositeException {
 	
 		String prefix = "rebindFolder";

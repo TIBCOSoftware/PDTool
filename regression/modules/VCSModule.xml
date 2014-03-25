@@ -1196,7 +1196,7 @@
   </vcsResource>
   <vcsResource>
     <id>testWS</id>
-    <resourcePath>/services/webservices/TEST00/testWebService00</resourcePath>
+    <resourcePath>/services/webservices/TEST00/testWebService</resourcePath>
     <resourceType>Composite Web Service</resourceType>
     <revision>HEAD</revision>
     <message>checkin testWS</message>

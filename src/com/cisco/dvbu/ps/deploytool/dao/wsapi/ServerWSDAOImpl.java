@@ -29,7 +29,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#takeServerAttributeAction(com.cisco.dvbu.ps.common.util.wsapi.CompositeServer)
 	 */
-	@Override
+//	@Override
 	public void pingServer(CompositeServer targetServer) throws CompositeException {	
 		// Use the simple getLicesense invocation that takes no parameters.  This either works or it does not.
 		// This method is used to test whether the "targetServer" information is correct or not.
@@ -43,7 +43,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 		}
 	}
 	
-	@Override
+//	@Override
 	public void takeServerManagerAction(String actionName, String serverId, String pathToServersXML) throws CompositeException {	
 		
 		// -- read target server properties from xml and build target server object based on target server name 

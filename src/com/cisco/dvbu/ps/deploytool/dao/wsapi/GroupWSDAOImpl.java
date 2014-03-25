@@ -122,7 +122,7 @@ public class GroupWSDAOImpl implements GroupDAO {
 		return domainMemberReferenceList;
 	}
 
-	@Override
+//	@Override
 	public Group getGroup(String groupName, String groupDomain,String serverId, String pathToServersXML) {
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -146,7 +146,7 @@ public class GroupWSDAOImpl implements GroupDAO {
 		return null;
 	}
 
-	@Override
+//	@Override
 	public GroupList getAllGroups(String groupDomain, String serverId, String pathToServersXML) {
 		GroupList groupsList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "GroupWSDAOImpl.getAllGroups", logger);
@@ -185,7 +185,7 @@ public class GroupWSDAOImpl implements GroupDAO {
 		 return groupsList;
 	}
 	
-	@Override
+//	@Override
 	public GroupList getGroupsByUser(String userName, String domainName, String serverId, String pathToServersXML) throws CompositeException {
 		GroupList groupList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);

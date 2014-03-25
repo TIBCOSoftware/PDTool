@@ -154,7 +154,7 @@
             <genericAttribute>
                 <name>url</name>
                 <type>STRING</type>
-                <value>$HTTP_TYPE$://localhost:$WSPORT/services/TEST00/testWebService00?wsdl</value>
+                <value>$HTTP_TYPE$://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
             </genericAttribute>
         </genericDataSource>
     </datasource>

@@ -13,7 +13,7 @@
     </resourcePrivilege>
     <resourcePrivilege>
         <id>priv2</id>
-        <resourcePath>/services/webservices/TEST00/testWebService00</resourcePath>
+        <resourcePath>/services/webservices/TEST00/testWebService</resourcePath>
         <recurse>true</recurse>
 
         <privilege>
@@ -57,6 +57,22 @@
             <inheritedPrivileges>NONE</inheritedPrivileges>
         </privilege>
     </resourcePrivilege>
+	
+	<resourcePrivilege>
+        <id>priv4</id>
+        <resourcePath>/shared/test00/TestSecurity/customers/CustomerID</resourcePath>
+        <recurse>false</recurse>
+
+        <privilege>
+            <name>group1</name>
+            <nameType>GROUP</nameType>
+            <domain>composite</domain>
+            <privileges>READ EXECUTE SELECT</privileges>
+            <combinedPrivileges>NONE</combinedPrivileges>
+            <inheritedPrivileges>NONE</inheritedPrivileges>
+        </privilege>
+    </resourcePrivilege>
+	
 	
 </ns2:PrivilegeModule>
 

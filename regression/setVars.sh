@@ -11,6 +11,10 @@ echo "Setting custom variables"
 echo ""
 echo "########################################################################################################################################"
 
+# The student number for the Lab-PD [01-12]
+export STUDENTID="00"
+echo STUDENTID="${STUDENTID}"
+
 # CIS Port
 # Used to define the SERVERID in deploy.properties
 export PORT="9400"

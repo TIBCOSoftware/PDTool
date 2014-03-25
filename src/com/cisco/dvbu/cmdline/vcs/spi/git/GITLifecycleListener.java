@@ -30,7 +30,7 @@ public class GITLifecycleListener extends AbstractLifecycleListener {
         
     public GITLifecycleListener() {}
     
-    @Override
+//    @Override
     public void handle(File file, Event event, Mode mode, boolean verbose) throws VCSException {
         switch(event) {
             case CREATE:

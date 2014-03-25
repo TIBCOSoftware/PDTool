@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="lib" path="lib/webservices-rt.jar"/>
 	<classpathentry kind="lib" path="lib/cscommon.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen.jar"/>
@@ -57,7 +57,6 @@
 	<classpathentry kind="lib" path="lib/endorsed/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/endorsed/serializer.jar"/>
 	<classpathentry kind="lib" path="lib/RepoUtils.jar"/>
-	<classpathentry kind="lib" path="lib/RepoUtils.properties"/>
 	<classpathentry kind="lib" path="lib/csext.jar"/>
 	<classpathentry kind="lib" path="lib/PDToolModules.jar"/>
 	<classpathentry kind="lib" path="lib/endorsed/mail.jar"/>
