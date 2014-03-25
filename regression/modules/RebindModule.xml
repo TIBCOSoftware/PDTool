@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<p1:RebindModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<p1:RebindModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
     <rebind>
 		<!-- Rebind an individual resource of any type and apply one or more rebind rules provided.  Both the from resource and to resource must exist. -->
         <rebindResource>

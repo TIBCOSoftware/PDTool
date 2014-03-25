@@ -22,7 +22,7 @@ public class ServerManagerImpl implements ServerManager {
 
 	private static Log logger = LogFactory.getLog(ServerManagerImpl.class);
 	
-	@Override
+//	@Override
 	public void startServer(String serverId, String pathToServersXML) throws CompositeException {
 		String prefix = "startServer";
 		// Extract variables for the serverId
@@ -39,7 +39,7 @@ public class ServerManagerImpl implements ServerManager {
 		}
 	}	
 	
-	@Override
+//	@Override
 	public void stopServer(String serverId, String pathToServersXML)  throws CompositeException {
 
 		String prefix = "stopServer";
@@ -57,7 +57,7 @@ public class ServerManagerImpl implements ServerManager {
 		}
 	}
 
-	@Override
+//	@Override
 	public void restartServer(String serverId, String pathToServersXML) throws CompositeException {
 
 		String prefix = "restartServer";

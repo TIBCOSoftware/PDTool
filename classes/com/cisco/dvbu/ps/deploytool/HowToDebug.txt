@@ -13,7 +13,7 @@ How to Debug:
 2) Main -->
 ===========================================
 	Project: PDTool_6_2
-	Main Class: com.compositesw.ps.deploytool.DeployManagerUtil
+	Main Class: com.cisco.dvbu.ps.deploytool.DeployManagerUtil
 	
 ===========================================
 3) Arguments Tab --> Set the VM Arguments:
@@ -25,7 +25,7 @@ For HTTP Connection only
 -DPROJECT_HOME=<your-eclipse-PDTool-project-path> 
 -DCONFIG_PROPERTY_FILE=deploy.properties 
 -Dlog4j.configuration="file:resources/config/log4j.properties"  
--Dcom.compositesw.ps.configroot=resources/config
+-Dcom.cisco.dvbu.ps.configroot=resources/config
 -Djava.endorsed.dirs=lib\endorsed 
 
 Example:
@@ -33,7 +33,7 @@ Example:
 -DPROJECT_HOME=E:\dev\Workspaces\DeployToolWorkspace\PDTool_6_2  
 -DCONFIG_PROPERTY_FILE=deploy.properties 
 -Dlog4j.configuration="file:resources\config\log4j.properties"  
--Dcom.compositesw.ps.configroot=resources\config 
+-Dcom.cisco.dvbu.ps.configroot=resources\config 
 -Djava.endorsed.dirs=lib\endorsed 
 
 
@@ -42,7 +42,7 @@ For PDTool over SSL (HTTPS):
 -DPROJECT_HOME=<your-eclipse-PDTool-project-path> 
 -DCONFIG_PROPERTY_FILE=deploy.properties 
 -Dlog4j.configuration="file:resources/config/log4j.properties"  
--Dcom.compositesw.ps.configroot=resources/config
+-Dcom.cisco.dvbu.ps.configroot=resources/config
 -Djava.endorsed.dirs=lib\endorsed 
 -Djavax.net.ssl.trustStore="<your-eclipse-PDTool-project-path>\security\cis_studio_truststore.jks" 
 -Djavax.net.ssl.trustStorePassword=changeit
@@ -52,7 +52,7 @@ Example:
 -DPROJECT_HOME="E:\dev\Workspaces\DeployToolWorkspace\PDTool_6_2" 
 -DCONFIG_PROPERTY_FILE=deploy.properties 
 -Dlog4j.configuration="file:resources\config\log4j.properties"  
--Dcom.compositesw.ps.configroot=resources\config 
+-Dcom.cisco.dvbu.ps.configroot=resources\config 
 -Djava.endorsed.dirs=lib\endorsed 
 -Djavax.net.ssl.trustStore="E:\dev\Workspaces\DeployToolWorkspace\PDTool_6_2\security\cis_studio_truststore.jks" 
 -Djavax.net.ssl.trustStorePassword=changeit

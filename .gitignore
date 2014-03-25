@@ -11,3 +11,4 @@
 # local settings #
 .DS_Store
 user.properties
+/logs

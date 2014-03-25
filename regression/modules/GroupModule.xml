@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:GroupModule xmlns:ns2="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<ns2:GroupModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
     <group>
         <id>group1</id>
         <groupName>group1</groupName>

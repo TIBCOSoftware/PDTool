@@ -66,7 +66,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceCacheManager#updateResourceCache(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void updateResourceCache(String serverId, String resourceIds, String pathToResourceCacheXML, String pathToServersXML) throws CompositeException {
 		if(logger.isDebugEnabled()){
 			logger.debug(" Entering ResourceCacheManagerImpl.updateResourceCache() with following params "+" serverId: "+serverId+", resourceIds: "+resourceIds+", pathToResourceCacheXML: "+pathToResourceCacheXML+", pathToServersXML: "+pathToServersXML);
@@ -83,7 +83,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceCacheManager#clearResourceCache(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void clearResourceCache(String serverId, String resourceIds, String pathToResourceCacheXML, String pathToServersXML) throws CompositeException {
 		if(logger.isDebugEnabled()){
 			logger.debug(" Entering ResourceCacheManagerImpl.clearResourceCache() with following params "+" serverId: "+serverId+", resourceIds: "+resourceIds+", pathToResourceCacheXML: "+pathToResourceCacheXML+", pathToServersXML: "+pathToServersXML);
@@ -99,7 +99,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceCacheManager#refreshResourceCache(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void refreshResourceCache(String serverId, String resourceIds, String pathToResourceCacheXML, String pathToServersXML) throws CompositeException {
 		if(logger.isDebugEnabled()){
 			logger.debug(" Entering ResourceCacheManagerImpl.refreshResourceCache() with following params "+" serverId: "+serverId+", resourceIds: "+resourceIds+", pathToResourceCacheXML: "+pathToResourceCacheXML+", pathToServersXML: "+pathToServersXML);
@@ -115,7 +115,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceCacheManager#updateResourceCacheEnabled(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void updateResourceCacheEnabled(String serverId, String resourceIds, String pathToResourceCacheXML, String pathToServersXML) throws CompositeException {
 		if(logger.isDebugEnabled()){
 			logger.debug(" Entering ResourceCacheManagerImpl.updateResourceCacheEnabled() with following params "+" serverId: "+serverId+", resourceIds: "+resourceIds+", pathToResourceCacheXML: "+pathToResourceCacheXML+", pathToServersXML: "+pathToServersXML);
@@ -409,7 +409,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceCacheManager#generateResourceCacheXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void generateResourceCacheXML(String serverId, String startPath, String pathToResourceCacheXML, String pathToServersXML, String options) throws CompositeException {
 
 		// Validate whether the files exist or not

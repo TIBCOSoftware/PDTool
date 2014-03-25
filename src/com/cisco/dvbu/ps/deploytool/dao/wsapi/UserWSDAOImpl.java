@@ -72,7 +72,7 @@ public class UserWSDAOImpl implements UserDAO {
 			}
 	}
 
-	@Override
+//	@Override
 	public UserList getUsers(String userName, String domainName, String serverId, String pathToServersXML) throws CompositeException {
 		UserList userList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "UserWSDAOImpl.getUsers", logger);
@@ -93,7 +93,7 @@ public class UserWSDAOImpl implements UserDAO {
 		 return userList;
 	}
 
-	@Override
+//	@Override
 	public UserList getAllUsers(ArrayList<String> validUsers, String domainName, String serverId, String pathToServersXML) throws CompositeException {
 		UserList userList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "UserWSDAOImpl.getAllUsers", logger);

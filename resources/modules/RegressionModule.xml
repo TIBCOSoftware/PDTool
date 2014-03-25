@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<p1:RegressionModule xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cisco.dvbu.com/ps/deploytool/modules ..\..\..\PDToolModules\schema\PDToolModules.xsd">
+<p1:RegressionModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dvbu.cisco.com/ps/deploytool/modules ..\..\..\PDToolModules\schema\PDToolModules.xsd">
 
 	<regressionTest>
 		<id>Test1</id>
@@ -30,11 +30,11 @@
 				<dsName>MYTEST</dsName>
 				<dsName/>
 				<dsName>examplesWS</dsName>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>		
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>		
 			</datasources>
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
 					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
@@ -52,14 +52,14 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 		  <resources>
 			<resource>CAT*</resource>
-			<resource>TEST00.testWebService00*</resource>
+			<resource>TEST00.testWebService*</resource>
 		  </resources>
 		  
 		  <defaultProcParamValues>
@@ -136,11 +136,11 @@
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
 				<dsName>examplesWS</dsName>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -159,10 +159,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources/>
 			
@@ -215,11 +215,11 @@
 				<dsName>My Orders</dsName>
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -238,10 +238,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources>
 			</resources>
@@ -295,11 +295,11 @@
 				<dsName>My Orders</dsName>
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -318,10 +318,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources>
 			</resources>
@@ -351,11 +351,11 @@
 			<datasources>
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -374,10 +374,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources/>
 
@@ -460,11 +460,11 @@
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
 				<dsName/>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -483,10 +483,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources>
 				<resource>My Catalog.*</resource>
@@ -495,7 +495,7 @@
 				<resource>SCH1.*</resource>
 				<resource>ViewSales</resource>
 				<resource>LookupProduct</resource>
-				<resource>testWebService00.*</resource>
+				<resource>testWebService.*</resource>
 			</resources>
 		</testRunParams>
 		
@@ -555,11 +555,11 @@
 				<dsName>system</dsName>
 				<dsName>MYTEST</dsName>
 				<dsName/>
-				<dsName>testWebService00</dsName>
-				<dsName>testWebService00_Params_bare</dsName>
-				<dsName>testWebService00_Params_wrapped</dsName>
-				<dsName>testWebService00_NoParams_bare</dsName>
-				<dsName>testWebService00_NoParams_wrapped</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
 			</datasources>	
 			
 			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
@@ -578,10 +578,10 @@
 						<resource>LookupProduct</resource>
 					
 					Examples of filters for web services [the web service name is included in the resource filter]:
-						<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-						<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-						<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 			<resources>
 				<resource>My Catalog.*</resource>
@@ -590,7 +590,7 @@
 				<resource>SCH1.*</resource>
 				<resource>ViewSales</resource>
 				<resource>LookupProduct</resource>
-				<resource>testWebService00.*</resource>
+				<resource>testWebService.*</resource>
 			</resources>
 			
 		</testRunParams>
@@ -658,10 +658,10 @@
 				<resource>LookupProduct</resource>
 			
 			Examples of filters for web services [the web service name is included in the resource filter]:
-				<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-				<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+				<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+				<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 				<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-				<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+				<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 			-->
       <resources>
         <resource>CAT1.*.customers</resource>
@@ -806,10 +806,10 @@
 				<resource>LookupProduct</resource>
 			
 			Examples of filters for web services [the web service name is included in the resource filter]:
-				<resource>testWebService00</resource> 				<- this is a legacy web service at the root of the web service folder
-				<resource>testWebService00_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+				<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+				<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
 				<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
-				<resource>folder2.testWebService00*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService00	
+				<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 			-->
       <resources />
     </testRunParams>
@@ -907,7 +907,7 @@
 	
     <!-- Soap11: Customer WebService "wrapped" no parameters -->
     <regressionQuery>
-      <datasource>testWebService00_wrapped</datasource>
+      <datasource>testWebService_wrapped</datasource>
       <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"&gt;
     &lt;soapenv:Header/&gt;
@@ -918,7 +918,7 @@
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap11/TEST00/testWebService00_wrapped</wsPath>
+      <wsPath>/soap11/TEST00/testWebService_wrapped</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>customers</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -929,7 +929,7 @@
 	
     <!-- Soap11: Customer WebService "wrapped" with parameters -->
     <regressionQuery>
-      <datasource>testWebService00_wrapped</datasource>
+      <datasource>testWebService_wrapped</datasource>
       <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"&gt;
     &lt;soapenv:Header/&gt;
@@ -940,7 +940,7 @@
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap11/TEST00/testWebService00_wrapped</wsPath>
+      <wsPath>/soap11/TEST00/testWebService_wrapped</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -951,7 +951,7 @@
 	
     <!-- Soap12: Customer WebService "wrapped" no parameters -->
     <regressionQuery>
-      <datasource>testWebService00_wrapped</datasource>
+      <datasource>testWebService_wrapped</datasource>
       <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
       <query>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/"&gt;
     &lt;soap:Header/&gt;
@@ -962,7 +962,7 @@
 	&lt;/soap:Body&gt;
 &lt;/soap:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap12/TEST00/testWebService00_wrapped</wsPath>
+      <wsPath>/soap12/TEST00/testWebService_wrapped</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>customers</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -973,7 +973,7 @@
 	
     <!-- Soap12: Customer WebService "wrapped" with parameters -->
     <regressionQuery>
-      <datasource>testWebService00_wrapped</datasource>
+      <datasource>testWebService_wrapped</datasource>
       <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
       <query>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/"&gt;
     &lt;soap:Header/&gt;
@@ -984,7 +984,7 @@
 	&lt;/soap:Body&gt;
 &lt;/soap:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap12/TEST00/testWebService00_wrapped</wsPath>
+      <wsPath>/soap12/TEST00/testWebService_wrapped</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -995,7 +995,7 @@
 	
     <!-- Soap11: Customer WebService "bare" no parameters style -->
     <regressionQuery>
-      <datasource>testWebService00_bare</datasource>
+      <datasource>testWebService_bare</datasource>
       <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;
 	&lt;soapenv:Header/&gt;
@@ -1006,7 +1006,7 @@
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap11/TEST00/testWebService00_bare</wsPath>
+      <wsPath>/soap11/TEST00/testWebService_bare</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -1016,7 +1016,7 @@
     </regressionQuery>
 	
     <regressionQuery>
-      <datasource>testWebService00_bare</datasource>
+      <datasource>testWebService_bare</datasource>
       <!-- soap11 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/"&gt;
 	&lt;soapenv:Header/&gt;
@@ -1025,7 +1025,7 @@
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap11/TEST00/testWebService00_bare</wsPath>
+      <wsPath>/soap11/TEST00/testWebService_bare</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -1036,7 +1036,7 @@
 	
     <!-- Soap12: Customer WebService "bare" no parameters -->
     <regressionQuery>
-      <datasource>testWebService00_bare</datasource>
+      <datasource>testWebService_bare</datasource>
       <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/"&gt;
 	&lt;soapenv:Header/&gt;
@@ -1047,7 +1047,7 @@
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap12/TEST00/testWebService00_bare</wsPath>
+      <wsPath>/soap12/TEST00/testWebService_bare</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -1058,7 +1058,7 @@
 	
     <!-- Soap12: Customer WebService "bare" with parameters -->
     <regressionQuery>
-      <datasource>testWebService00_bare</datasource>
+      <datasource>testWebService_bare</datasource>
       <!-- soap12 namesspace must be: xmlns:soapenv=&quot;http://www.w3.org/2003/05/soap-envelope&quot; -->
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/"&gt;
 	&lt;soapenv:Header/&gt;
@@ -1067,7 +1067,7 @@
 		&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/soap12/TEST00/testWebService00_bare</wsPath>
+      <wsPath>/soap12/TEST00/testWebService_bare</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerByIdCustid</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -1078,14 +1078,14 @@
 	
     <!-- Composite Legacy Web Service no parameters -->
     <regressionQuery>
-      <datasource>testWebService00</datasource>
+      <datasource>testWebService</datasource>
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;     
 	&lt;soapenv:Body&gt;         
-		&lt;ns1:customers xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService00/testService"&gt;&lt;/ns1:customers&gt;    
+		&lt;ns1:customers xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService/testService"&gt;&lt;/ns1:customers&gt;    
 	&lt;/soapenv:Body&gt; 
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/services/webservices/TEST00/testWebService00/testService/testPort.ws</wsPath>
+      <wsPath>/services/webservices/TEST00/testWebService/testService/testPort.ws</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>customers</wsAction>
       <!--Element wsEncrypt is optional-->
@@ -1096,16 +1096,16 @@
 	
     <!-- Composite Legacy Web Service with parameters -->
     <regressionQuery>
-      <datasource>testWebService00</datasource>
+      <datasource>testWebService</datasource>
       <query>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;     
 	&lt;soapenv:Body&gt;         
-		&lt;ns1:getCustomerById xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService00/testService"&gt;
+		&lt;ns1:getCustomerById xmlns:ns1="http://localhost/services/webservices/TEST00/testWebService/testService"&gt;
 			&lt;ns1:custId&gt;1&lt;/ns1:custId&gt;
 		&lt;/ns1:getCustomerById&gt;
 	&lt;/soapenv:Body&gt; 
 &lt;/soapenv:Envelope&gt;</query>
       <!--Element wsPath is optional-->
-      <wsPath>/services/webservices/TEST00/testWebService00/testService/testPort.ws</wsPath>
+      <wsPath>/services/webservices/TEST00/testWebService/testService/testPort.ws</wsPath>
       <!--Element wsAction is optional-->
       <wsAction>getCustomerById</wsAction>
       <!--Element wsEncrypt is optional-->

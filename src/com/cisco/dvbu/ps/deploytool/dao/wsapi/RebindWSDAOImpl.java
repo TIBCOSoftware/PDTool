@@ -40,7 +40,7 @@ public class RebindWSDAOImpl implements RebindDAO {
 	private static Log logger = LogFactory.getLog(RebindWSDAOImpl.class);
 
 
-	@Override
+//	@Override
 	public void rebindResource(String serverId, PathTypePair source, RebindRuleList rebinds, String pathToServersXML) throws CompositeException {
 
 		if(logger.isDebugEnabled()){
@@ -104,7 +104,7 @@ public class RebindWSDAOImpl implements RebindDAO {
 	 *		subtype = 'STREAM_TRANSFORM_PROCEDURE' -- Update XSLT Stream Transformation text
 	 *			port.updateStreamTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, model, isExplicitDesign, parameters, annotation, attributes);
 	 */
-	@Override
+//	@Override
 	public void takeRebindFolderAction(String serverId, String pathToServersXML, String actionName, String resourcePath, DetailLevel detailLevel, String procedureText, String usedResourcePath, String usedResourceType, 
 			Boolean isExplicitDesign, Model model, ColumnList columns, ParameterList parameters, String annotation, AttributeList attributes) throws CompositeException {
 

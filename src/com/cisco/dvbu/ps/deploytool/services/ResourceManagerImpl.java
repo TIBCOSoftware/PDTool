@@ -33,7 +33,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#executeConfiguredProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void executeConfiguredProcedures(String serverId,String procedureIds, String pathToResourceXML,String pathToServersXML) throws CompositeException {
 
 		String prefix = "executeConfiguredProcedures";
@@ -96,7 +96,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -114,7 +114,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#deleteResource(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void deleteResource(String serverId, String resourcePath, String pathToServersXML) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -147,7 +147,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#deleteResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void deleteResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "deleteResources";
@@ -181,7 +181,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#renameResource(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void renameResource(String serverId, String resourcePath, String pathToServersXML, String newName) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -203,7 +203,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#renameResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void renameResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "renameResources";
@@ -245,7 +245,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#copyResource(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void copyResource(String serverId, String resourcePath, String pathToServersXML, String targetContainerPath, String newName, String copyMode) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -270,7 +270,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#copyResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void copyResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "copyResources";
@@ -311,7 +311,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#moveResource(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void moveResource(String serverId, String resourcePath, String pathToServersXML, String targetContainerPath, String newName) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -333,7 +333,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#moveResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void moveResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "moveResources";
@@ -374,7 +374,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#doResourceExist(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public boolean doResourceExist(String serverId, String resourcePath, String pathToServersXML) {
 
 		// Validate whether the files exist or not
@@ -397,7 +397,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#resourceExists(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public boolean resourceExists(String serverId, String resourcePath, String resourceType, String pathToServersXML) {
 		
 		// Validate whether the files exist or not
@@ -417,7 +417,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#doResourcesExist(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void doResourcesExist(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "doResourcesExist";
@@ -453,7 +453,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#lockResource(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void lockResource(String serverId, String resourcePath, String pathToServersXML) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -474,7 +474,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#lockResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void lockResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "lockResources";
@@ -515,7 +515,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#unlockResource(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void unlockResource(String serverId, String resourcePath, String pathToServersXML, String comment) throws CompositeException {
 
 		// Validate whether the files exist or not
@@ -536,7 +536,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#unlockResources(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void unlockResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "unlockResources";
@@ -578,7 +578,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#getResourceType(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public String getResourceType(String serverId, String resourcePath, String pathToServersXML) {
 
 		try {
@@ -595,7 +595,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#getResourcesFromPath(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public ResourceList getResourcesFromPath(String serverId, String resourcePath, String resourceType, String resourceTypeFilter, String detailLevel,String pathToServersXML) {
 		return getResourceDAO().getResourcesFromPath(serverId, resourcePath, resourceType, resourceTypeFilter, detailLevel, pathToServersXML);
 	}
@@ -603,7 +603,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#getImmediateResourcesFromPath(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public ResourceList getImmediateResourcesFromPath(String serverId, String resourcePath, String resourceType, String detailLevel,String pathToServersXML) {
 		return getResourceDAO().getImmediateResourcesFromPath(serverId, resourcePath, resourceType, detailLevel, pathToServersXML);
 	}
@@ -631,7 +631,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
 		getResourceDAO().createFolder(serverId, resourcePath, pathToServersXML, recursive);
 		if(logger.isInfoEnabled()){
@@ -643,7 +643,7 @@ public class ResourceManagerImpl implements ResourceManager{
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolders(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	@Override
+//	@Override
 	public void createFolders(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "createFolders";

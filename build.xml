@@ -118,6 +118,7 @@
 		    <fileset dir="${bin}/PDTool">
 		        <include name="*.bat"/>
 		        <include name="*.sh"/>
+		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/dist">
@@ -255,6 +256,7 @@
 		    <fileset dir="${bin}/PDToolStudio">
 		        <include name="*.bat"/>
 		        <include name="*.sh"/>
+		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/dist">

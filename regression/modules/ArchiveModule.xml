@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<p1:ArchiveModule  xmlns:p1="http://www.cisco.dvbu.com/ps/deploytool/modules">
+<p1:ArchiveModule  xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
 	<archive>
 		<id>FullBackup</id>
 		<archiveMethod>CAR</archiveMethod>
@@ -31,6 +31,12 @@
 		<includesourceinfo>true</includesourceinfo>
 		<overwrite>true</overwrite> 
 		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>host</attribute>
+				<value>http://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
+			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
