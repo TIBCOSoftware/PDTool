@@ -160,6 +160,11 @@
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/licenses">
+		    <fileset dir=".">
+		        <include name="LICENSE"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtool-target}/licenses">
 		    <fileset dir="${licenses}">
 		        <include name="**"/>
 		    </fileset>
@@ -288,6 +293,11 @@
 		<copy todir="${pdtoolstudio-target}/lib/endorsed">
 		    <fileset dir="${lib}/endorsed">
 		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtoolstudio-target}/licenses">
+		    <fileset dir=".">
+		        <include name="LICENSE"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/licenses">
