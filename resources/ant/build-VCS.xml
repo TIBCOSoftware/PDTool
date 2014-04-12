@@ -48,6 +48,7 @@
 	# =============================================
 		# These versions are original methods which use connection properties in "deploy.properties"
 		PASS	TRUE	ExecuteAction  	vcsInitWorkspace
+		PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "" "" ""
 		#
 		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/databases/TEST00 "Data Source" HEAD 									"$MODULE_HOME/servers.xml"
 		PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"
@@ -76,7 +77,8 @@
 		PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 		-->
 		<executeJavaAction action="vcsInitWorkspace"	arguments="${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
- 
+ 		<executeJavaAction action="vcsInitializeBaseFolderCheckin"	arguments="^${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+
 		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/databases/TEST00^Data Source^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
 		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
 		<executeJavaAction action="vcsCheckout"			arguments="${SERVERID}^/shared/test00^Folder^HEAD^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
@@ -110,6 +112,7 @@
 		# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
 		#
 		PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
+        PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN ""                                             "$MODULE_HOME/VCSModule.xml" "" ""
 		#
 		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 		PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/testWebService00 "Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
@@ -138,6 +141,7 @@
 		#
 	-->
         <executeJavaAction action="vcsInitWorkspace2"	arguments="${VCONN}^${pathToVCSModuleXML}^${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
+ 		<executeJavaAction action="vcsInitializeBaseFolderCheckin2"	arguments="${VCONN}^^${pathToVCSModuleXML}^${VCS_USERNAME}^${VCS_PASSWORD}"  endExecutionOnTaskFailure="TRUE"/>
 
 		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/databases/TEST00^Data Source^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	
 		<executeJavaAction action="vcsCheckout2"		arguments="${SERVERID}^${VCONN}^/services/webservices/testWebService00^Composite Web Service^HEAD^${pathToVCSModuleXML}^${pathToServersXML}^${VCS_USERNAME}^${VCS_PASSWORD}" 	endExecutionOnTaskFailure="TRUE"/>	

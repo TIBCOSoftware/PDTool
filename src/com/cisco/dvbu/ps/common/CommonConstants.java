@@ -30,5 +30,11 @@ public class CommonConstants {
 	
 	// Common indent 
 	public static final String indent = "    ";	
+	
+	// Encode/Decode CIS paths.  This is an array of {"symbol", "encodedValue"}
+	public static final String[][] pathCodes = new String[][] {
+        { "$", "_0024"}
+        };
+
 
 }

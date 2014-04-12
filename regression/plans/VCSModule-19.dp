@@ -1,6 +1,6 @@
 # -----------------------------------------
 # VCS Module: Non-VCS Connection Properties
 # -----------------------------------------
-# Test checking in a resource with a long path
+# These are the original methods which use the "deploy.properties" files
 #
-PASS	TRUE	ExecuteAction  	vcsCheckin  $SERVERID "/shared/test00_longpath/$VCS_BASE_TYPE"   "CONTAINER"    "long path check in"   "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"

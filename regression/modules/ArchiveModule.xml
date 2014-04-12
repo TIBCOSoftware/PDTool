@@ -7,6 +7,26 @@
 		<overwrite>true</overwrite> 
 		<encrypt>false</encrypt>
 		<pkgName>Test backup-export operation</pkgName>
+		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>host</attribute>
+				<value>http://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>user</attribute>
+				<value>admin</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>password</attribute>
+				<value>admin</value>
+			</resourceAttribute>
+		</setAttributes>
 	</archive>
 	
 	<archive>

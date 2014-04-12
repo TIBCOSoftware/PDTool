@@ -3,4 +3,4 @@
 # -----------------------------------------
 # These are the original methods which use the "deploy.properties" files
 #
-PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/webservices/TEST00/testWebService00 "Legacy Composite Web Service" 			"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"

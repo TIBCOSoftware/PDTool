@@ -7,6 +7,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
+import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -49,6 +52,7 @@ import com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl;
 import com.compositesw.common.security.CompositeSecurityException;
 import com.compositesw.common.security.EncryptionManager;
+import com.compositesw.common.vcs.primitives.ResourceNameCodec;
 import com.compositesw.ps.utils.repository.CisPathQuoter;
 import com.compositesw.ps.utils.repository.CisPathQuoterException;
 import com.compositesw.services.system.util.common.Attribute;
@@ -339,8 +343,6 @@ public class CommonUtils {
 		return dir;
 	}
 
-
-	
 	 /**
 	  Remove a directory and all of its contents.
 
@@ -390,7 +392,194 @@ public class CommonUtils {
 	  return directory.delete();
 	}
 
-	// Get the current date timestamp as a string
+	/**
+	 * The copyFile method is used to copy files from a source to a destination folder.
+	 * 
+	 * @param fromFilePath
+	 * @param toFilePath
+	 * @throws ValidationException
+	 */
+	public static void copyFile(String fromFilePath, String toFilePath, boolean forceCopy) throws ValidationException {
+		
+		FileChannel srcChannel = null;
+		FileChannel dstChannel = null;
+		boolean fileExists = fileExists(toFilePath);
+
+		if (forceCopy && fileExists) {
+			removeFile(toFilePath);
+			fileExists = fileExists(toFilePath);
+		}
+		
+		if ( (!fileExists) || (forceCopy && fileExists) ) {
+			try {
+				// Create channel on the source
+				srcChannel = new FileInputStream(fromFilePath).getChannel();
+	
+				// Create channel on the destination
+				dstChannel = new FileOutputStream(toFilePath).getChannel();
+				
+				// Force the copy - added to overcome copy error
+				dstChannel.force(true);
+				
+				// Copy file contents from source to destination
+				dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+	
+			} catch (IOException e) {
+				String message = "Could not copy file "+fromFilePath+".An error was encountered: " + e.toString();
+				throw new ValidationException(message, e);
+			} finally {
+				try {
+					// Close the channels
+					if (srcChannel != null) srcChannel.close();
+					if (dstChannel != null) dstChannel.close();
+					srcChannel = null;
+					dstChannel = null;
+				} catch (IOException e) {
+					String message = "Could not copy file "+fromFilePath+".  Error encountered while closing source and destination channels: " + e.toString();
+					throw new ValidationException(message, e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Recursively copy the directories and files from the source to the destination.
+	 * 
+	 * @param fSource
+	 * @param fDest
+	 * @throws ValidationException
+	 */
+	public static void recursiveCopy(File fSource, File fDest, boolean forceCopy) throws ValidationException {
+	    try {
+	        if (fSource.isDirectory()) {
+	        // A simple validation, if the destination is not exist then create it
+	             if (!fDest.exists()) {
+	                  fDest.mkdirs();
+	             }
+	
+	             // Create list of files and directories on the current source
+	             // Note: with the recursion 'fSource' changed accordingly
+	             String[] fList = fSource.list();
+	
+	             for (int index = 0; index < fList.length; index++) {
+	                  File dest = new File(fDest, fList[index]);
+	                  File source = new File(fSource, fList[index]);
+	
+	                  // Recursion call take place here
+	                  recursiveCopy(source, dest, forceCopy);
+	             }
+	        }
+	        else {
+	             // Found a file. Copy it into the destination, which is already created in 'if' condition above	
+	        	copyFile(fSource.getAbsolutePath(), fDest.getAbsolutePath(), forceCopy);
+	        }
+	   }
+	   catch (Exception e) {
+			throw new ValidationException("", e);
+	   }
+	}
+
+	/**
+	 * This is the initial parent to getFiles.  This envelope allows the user to decide whether the initial parent folder should be
+	 * included in the list or not.
+	 * 
+	 * @param dir
+	 * @param excludeFiles
+	 * @param includeParentDir
+	 * @param includeFiles
+	 * @param includeDirs
+	 * @param recursive
+	 * @return
+	 */
+	public static File[] getFilesParent(File dir, String excludeFiles, boolean includeParentDir, boolean includeFiles, boolean includeDirs, boolean recursive) {
+		
+		File[] files = null;
+		List<File> filelist = new ArrayList<File>();
+		filelist = getFiles(dir, excludeFiles, includeFiles, includeDirs, recursive, filelist);
+
+		if (includeParentDir) {
+			files = new File[filelist.size()+1];
+			files[0] = dir;
+			for (int i=0; i < filelist.size(); i++) {
+				files[i+1] = filelist.get(i);
+			}		
+		} else {
+			files = new File[filelist.size()];
+			for (int i=0; i < filelist.size(); i++) {
+				files[i] = filelist.get(i);
+			}					
+		}
+				
+		return files;
+	}
+ 
+	/**
+	 * Recursive function to descend into the directory tree and find all the files and directories excluding those specified by exclude.
+	 * 
+	 * @param dir A file object defining the top directory
+	 * @param excludeFiles
+	 * @param includeFiles
+	 * @param includeDirs
+	 * @param recursive
+	 * @param filelist
+	 * @return
+	 */
+    public static List<File> getFiles(File dir, String excludeFiles,  boolean includeFiles, boolean includeDirs, boolean recursive, List<File> filelist) {
+  
+        File listFile[] = dir.listFiles();
+        if (listFile != null) {
+            for (int i=0; i<listFile.length; i++) 
+            {
+            	if (!excludeFile(listFile[i].getName(), excludeFiles)) 
+            	{
+                    if (listFile[i].isDirectory()) 
+                    {
+                    	if (includeDirs) 
+                    	{
+	                		filelist.add(listFile[i]);
+                    	}
+	                	if (recursive) {
+	                		filelist = getFiles(listFile[i], excludeFiles, includeFiles, includeDirs, recursive, filelist);
+                    	}
+                    } else {
+                    	if (includeFiles)
+                    		filelist.add(listFile[i]);
+                    }
+            	}
+            }
+        }
+        return filelist;
+    }
+
+    /**
+     * Determine whether a filename should be excluded from a list by verifying it against the excludeFiles comma separated list.
+     *  
+     * @param path
+     * @param excludeFiles
+     * @return
+     */
+    public static boolean excludeFile(String filename, String excludeFiles) {
+    	boolean exclude = false;
+    	
+		StringTokenizer st = new StringTokenizer(excludeFiles, ",");
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if (filename.endsWith(token)) {
+				exclude = true;
+				break;
+			}
+		}
+
+    	return exclude;
+    }
+    
+
+	/**
+	 * Get the current date timestamp as a string
+	 * 
+	 * @param timestampFormat - timestamp format.  e.g. yyyy-MM-dd HH:mm:ss.SSS
+	 * @return
+	 */
 	public static String getCurrentDateAsString(String timestampFormat) {
 		Format formatter;
 		Date date = new Date();
@@ -421,6 +610,298 @@ public class CommonUtils {
 		return filename;
 	}
 
+	/**
+	 * Process the custom path list and create .cmf files for each folder path using the template folders that come with PDTool.
+	 * 
+	 * @param customPathList
+	 * @param templateFolderPath
+	 * @param forceCopy
+	 * @param toFilePath
+	 */
+	public static void processTemplateFolder(String customPathList, String templateFolderPath, String toFilePath, boolean forceCopy) {
+
+		// Initialize variables.
+		String templateSharedFolder = getFileAsString(templateFolderPath+"/sharedFolder.cmf");
+		String templateVirtualFolder = getFileAsString(templateFolderPath+"/virtualFolder.cmf");
+		String templateDatabase = getFileAsString(templateFolderPath+"/database.cmf");
+		String templateCatalog = getFileAsString(templateFolderPath+"/catalog.cmf");
+		String templateSchema = getFileAsString(templateFolderPath+"/schema.cmf");
+		String templateText = null;
+		String pathStart = null;
+		String remainderPath = null;
+		String resourcePath = null;
+		String resourcePathEncoded = null;
+		String resourceName = null;
+		String resourceNameEncoded = null;
+		String fsPath = null;
+		BigInteger bigIntTime = null;
+		String regexSize = "200000";
+		String regexReplacePatternDoubleQuote = "\\,(?=[^\"]{0,"+regexSize+"}\"(?:[^\"\\r\\n]{0,"+regexSize+"}\"[^\"]{0,"+regexSize+"}\"){0,"+regexSize+"}[^\"\\r\\n]{0,"+regexSize+"}$)";
+
+		// Replace commas within double quotes with encoded commas
+		customPathList = customPathList.replaceAll(regexReplacePatternDoubleQuote, "_002c");
+		
+		// Iterate over the comma separated paths
+		StringTokenizer pst = new StringTokenizer(customPathList, ",");
+		while (pst.hasMoreTokens()) {
+			String token = pst.nextToken();
+			
+			// Make sure all paths have forward slashes
+			token = token.replaceAll(Matcher.quoteReplacement("\\\\"), "/");
+			token = token.replaceAll(Matcher.quoteReplacement("\\"), "/");
+			// Make sure all paths have a single forward slash
+			token = token.replaceAll("//", "/");
+			// Make sure no paths have double quotes
+			token = token.replaceAll("\"", "");
+			// Replace encoded commas with real commas
+			token = token.replaceAll("_002c", ",");
+			
+			// Create custom shared folders
+			// e.g. /shared/My Folder,/shared/My Folder/My.Folder/My-Folder/""My,Folder""
+			pathStart = "/shared/";
+			if (token.startsWith(pathStart)) {
+				remainderPath = token.replaceFirst(pathStart, "");
+				resourcePath = pathStart;
+				resourcePathEncoded = pathStart;
+				fsPath = toFilePath;
+				
+				StringTokenizer st = new StringTokenizer(remainderPath, "/");
+				while (st.hasMoreTokens()) {
+					resourceName = st.nextToken();
+					resourceNameEncoded = ResourceNameCodec.encode(resourceName);
+					templateText = templateSharedFolder;
+					
+					// CIS resource path
+					resourcePath = (resourcePath + "/" + resourceName).replaceAll("//", "/");
+					resourcePathEncoded = (resourcePathEncoded + "/" + resourceNameEncoded).replaceAll("//", "/");
+					
+					// Files system path
+					fsPath = (toFilePath + "/" + resourcePathEncoded).replaceAll("//", "/");
+					mkdirs(fsPath);
+					
+					/*
+					 *  Create File content
+					 */
+					// Encode name
+					resourceName = encodePath(resourceName);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_NAME"), resourceName);
+
+					// Encode path
+					resourcePath = encodePath(resourcePath);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_PATH"), resourcePath);
+
+					bigIntTime = TimestampToBigint(getCurrentDateAsString("yyyy-MM-dd HH:mm:ss.SSS"));
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$CREATE_DATE_LONG"), bigIntTime.toString());
+					
+					// Decode path
+					templateText = decodePath(templateText);
+					
+					// Write out the file
+					fsPath = fsPath+"/"+resourceNameEncoded+".cmf";
+					boolean fileExists = fileExists(fsPath);
+					if (!fileExists) {
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+					if (fileExists && forceCopy) {
+						removeFile(fsPath);
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+				}
+			}
+			
+			// Create custom database folders
+			// e.g. /services/databases/My Database{TYPE:DATABASE}/My.Catalog{TYPE:CATALOG}/My$Schema{TYPE:SCHEMA}
+			pathStart = "/services/databases/";
+			if (token.startsWith(pathStart)) {
+				remainderPath = token.replaceFirst(pathStart, "");
+				resourcePath = pathStart;
+				resourcePathEncoded = pathStart;
+				fsPath = toFilePath;
+				int pathCount = 0;
+				
+				StringTokenizer st = new StringTokenizer(remainderPath, "/");
+				while (st.hasMoreTokens()) {
+					token = st.nextToken();
+					++pathCount;
+					
+					// Determine if the token is a database type token
+					if (token.toUpperCase().contains("<TYPE=DATABASE>") || pathCount == 1) {
+						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=DATABASE>"), Matcher.quoteReplacement(""));
+						templateText = templateDatabase;
+					}
+					// Determine if the token is a catalog type token
+					else if (token.toUpperCase().contains("<TYPE=CATALOG>")) {
+						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=CATALOG>"), Matcher.quoteReplacement(""));
+						templateText = templateCatalog;
+					}
+					// Determine if the token is a schema type token
+					else if (token.toUpperCase().contains("<TYPE=SCHEMA>")) {
+						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=SCHEMA>"), Matcher.quoteReplacement(""));
+						templateText = templateSchema;
+					// Otherwise default to a folder token
+					} else {
+						resourceName = token;
+						templateText = templateVirtualFolder;
+					}
+					resourceNameEncoded = ResourceNameCodec.encode(resourceName);
+					
+					// CIS resource path
+					resourcePath = (resourcePath + "/" + resourceName).replaceAll("//", "/");
+					resourcePathEncoded = (resourcePathEncoded + "/" + resourceNameEncoded).replaceAll("//", "/");
+					
+					// Files system path
+					fsPath = (toFilePath + "/" + resourcePathEncoded).replaceAll("//", "/");
+					mkdirs(fsPath);
+					
+					/*
+					 *  Create File content
+					 */
+					// Encode name
+					resourceName = encodePath(resourceName);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_NAME"), resourceName);
+
+					// Encode path
+					resourcePath = encodePath(resourcePath);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_PATH"), resourcePath);
+
+					bigIntTime = TimestampToBigint(getCurrentDateAsString("yyyy-MM-dd HH:mm:ss.SSS"));
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$CREATE_DATE_LONG"), bigIntTime.toString());
+					
+					// Decode path
+					templateText = decodePath(templateText);
+					
+					// Write out the file
+					fsPath = fsPath+"/"+resourceNameEncoded+".cmf";
+					boolean fileExists = fileExists(fsPath);
+					if (!fileExists) {
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+					if (fileExists && forceCopy) {
+						removeFile(fsPath);
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+				}
+			}
+			
+			// Create custom web services folders
+			// e.g. /services/webservices/My Folder/My.Folder/My-Folder
+			pathStart = "/services/webservices/";
+			if (token.startsWith(pathStart)) {
+				remainderPath = token.replaceFirst(pathStart, "");
+				resourcePath = pathStart;
+				resourcePathEncoded = pathStart;
+				fsPath = toFilePath;
+			
+				StringTokenizer st = new StringTokenizer(remainderPath, "/");
+				while (st.hasMoreTokens()) {
+					resourceName = st.nextToken();
+					resourceNameEncoded = ResourceNameCodec.encode(resourceName);
+					templateText = templateVirtualFolder;
+					
+					// CIS resource path
+					resourcePath = (resourcePath + "/" + resourceName).replaceAll("//", "/");
+					resourcePathEncoded = (resourcePathEncoded + "/" + resourceNameEncoded).replaceAll("//", "/");
+					
+					// Files system path
+					fsPath = (toFilePath + "/" + resourcePathEncoded).replaceAll("//", "/");
+					mkdirs(fsPath);
+					
+					/*
+					 *  Create File content
+					 */
+					// Encode name
+					resourceName = encodePath(resourceName);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_NAME"), resourceName);
+
+					// Encode path
+					resourcePath = encodePath(resourcePath);
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$RESOURCE_PATH"), resourcePath);
+
+					bigIntTime = TimestampToBigint(getCurrentDateAsString("yyyy-MM-dd HH:mm:ss.SSS"));
+					templateText = templateText.replaceAll(Matcher.quoteReplacement("$CREATE_DATE_LONG"), bigIntTime.toString());
+					
+					// Decode path
+					templateText = decodePath(templateText);
+					
+					// Write out the file
+					fsPath = fsPath+"/"+resourceNameEncoded+".cmf";
+					boolean fileExists = fileExists(fsPath);
+					if (!fileExists) {
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+					if (fileExists && forceCopy) {
+						removeFile(fsPath);
+						CommonUtils.createFileWithContent(fsPath, templateText);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Encode CIS paths by replacing real values with encoded values.
+	 * Modify CommonConstants.pathCodes to modify the array of encoded values and real values.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static String encodePath(String path) 
+	{
+		for (int i=0; i < CommonConstants.pathCodes.length; i++) 
+		{
+			String symbol = CommonConstants.pathCodes[i][0];
+			String encodedValue = CommonConstants.pathCodes[i][1];
+			
+			// Encode "symbol" with "encodedValue"
+			if (path.contains(symbol)) 
+				path = path.replaceAll(Matcher.quoteReplacement(symbol), Matcher.quoteReplacement(encodedValue));
+		}
+		return path;
+	}
+	
+	/**
+	 * Decode CIS paths by replacing encoded values with real values.
+	 * Modify CommonConstants.pathCodes to modify the array of encoded values and real values.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static String decodePath(String path) 
+	{
+		for (int i=0; i < CommonConstants.pathCodes.length; i++) 
+		{
+			String symbol = CommonConstants.pathCodes[i][0];
+			String encodedValue = CommonConstants.pathCodes[i][1];
+			
+			// Decode encodedValue to a symbol
+			if (path.contains(encodedValue))
+				path = path.replaceAll(Matcher.quoteReplacement(encodedValue), Matcher.quoteReplacement(symbol));
+		}		
+		return path;
+	}
+	
+	/**
+	 * Convert a string timestamp value to big integer.
+	 * 
+	 * @param String timestamp
+	 * @return
+	 */
+	public static BigInteger TimestampToBigint(String timestamp) {
+        BigInteger result = BigInteger.valueOf(new Long (Timestamp.valueOf(timestamp).getTime()));
+        return result;
+	}
+
+	/**
+	 * Convert a timestamp value to big integer.
+	 * 
+	 * @param Timestamp timestamp
+	 * @return
+	 */
+	public static BigInteger TimestampToBigint(Timestamp timestamp) {
+        BigInteger result = BigInteger.valueOf(new Long (timestamp.getTime()));
+        return result;
+	}
+	
 	/**
 	 * Pad a number to the left for totalPadAmount using padChar and return as a string
 	 * @param num - the number to pad as a string
@@ -1623,7 +2104,8 @@ public class CommonUtils {
 	        throw new CompositeException("Error retrieving quoted word for word="+word+"  Error="+e.getMessage());
 		}
 	}
-	
+
+
 	/**
 	 * For testing.
 	 * 
@@ -1635,13 +2117,22 @@ public class CommonUtils {
 		CommonUtils utilsObject = new CommonUtils();
 
 		// test file comparisons.
-		
+		/*
 		String file1 = "C:/temp/TestFileComparisons/prdFileEmpty.txt";  // compFileXLarge.txt";   //prdFile.txt";  // prdFileSmall2.txt";
 		String file2 = "C:/temp/TestFileComparisons/compfileEmpty.txt";  // compFileXLarge.txt";  // compFileSmall.txt";
 		
 		boolean areFilesTheSame = utilsObject.compareFiles(file1, file2);
 		System.out.println("areFilesTheSame = " + areFilesTheSame);
-
+*/
+		String dirpath = "C:/temp/PDTool/resources/vcs_initial/baseFolders";	
+	    boolean includeParentDir = false;
+	    boolean includeFiles = true;
+	    boolean includeDirs = false;
+	    boolean recursive = true;
+		String excludeFiles = ".svn,.p4set";
+		File dir = new File(dirpath);
+		
+		File[] filelist = getFilesParent(dir, excludeFiles, includeParentDir, includeFiles, includeDirs, recursive);
 	}
 
 }

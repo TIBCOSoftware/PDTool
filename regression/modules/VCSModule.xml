@@ -42,6 +42,15 @@
 		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+
+	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
 	  
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
@@ -67,11 +76,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
@@ -215,6 +226,15 @@
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
 	  
+ 	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
+
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
 		#		TFS: 
@@ -239,11 +259,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
@@ -330,7 +352,7 @@
 		#    CVS:
 		#    Perforce:    	No files to submit
 		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
+		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in,No arguments matched any files to add
 		-->
       <VCS_IGNORE_MESSAGES>No files to submit</VCS_IGNORE_MESSAGES>
 	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
@@ -406,6 +428,15 @@
 		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+
+	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
 	  
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
@@ -431,11 +462,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
@@ -593,6 +626,15 @@
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
 	  
+	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
+
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
 		#		TFS: 
@@ -617,11 +659,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS>-associate:1</VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED>-associate</VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
@@ -667,7 +711,7 @@
 		#                  Command Format: [http://hostname.domain:8080/tfs/basename]
 		#                         Example: http://myhost:8080/tfs/TeamCollection/TeamProject
 		-->
-      <VCS_REPOSITORY_URL>http:////$TFS_VCS_HOST:8080/tfs/DefaultCollection</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>http:////$TFS_VCS_HOST:8080/tfs/CompositeCollection</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
       <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
@@ -708,9 +752,9 @@
 		#    CVS:
 		#    Perforce:    	No files to submit
 		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
+		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in,No arguments matched any files to add
 		-->
-      <VCS_IGNORE_MESSAGES>No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in</VCS_IGNORE_MESSAGES>
+      <VCS_IGNORE_MESSAGES>No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in,No arguments matched any files to add</VCS_IGNORE_MESSAGES>
  	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
       <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
       <!--Element vcsSpecificEnvVars is optional-->
@@ -844,7 +888,16 @@
 		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-	  
+	  	  
+	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
+
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
 		#		TFS: 
@@ -869,11 +922,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
@@ -960,7 +1015,7 @@
 		#    CVS:
 		#    Perforce:    	No files to submit
 		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
+		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in,No arguments matched any files to add
 		-->
       <VCS_IGNORE_MESSAGES>No files to submit</VCS_IGNORE_MESSAGES>
 	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
@@ -1036,6 +1091,15 @@
 		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
+
+	  <!--VCS Base Folder Initialization.  Add Options: 
+		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
+		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+		-->
+      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
 	  
       <!--Element VCS_CHECKIN_OPTIONS is optional
 		# Resource Checkin. Checkin resources to VCS equates to:
@@ -1061,11 +1125,13 @@
 		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
+		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
+		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
       <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  

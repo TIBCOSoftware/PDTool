@@ -926,6 +926,22 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin2(String vcsConnectionId, String customPathList, String pathToVcsXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsInitializeBaseFolderCheckin2(vcsConnectionId, customPathList, pathToVcsXML, vcsUser, vcsPassword);
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsCheckout(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
@@ -1076,6 +1092,14 @@ public class DeployManagerImpl implements DeployManager{
 		getVCSManager().vcsStudioInitWorkspace(vcsUser, vcsPassword);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsStudioInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioCheckout(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
