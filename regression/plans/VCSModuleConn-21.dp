@@ -1,6 +1,7 @@
 # -----------------------------------------
 # VCS Module: VCS Connection Properties version
 # -----------------------------------------
-# Test checking out a resource with a long path
+# Test vcs scan path length
 #
-PASS	TRUE	ExecuteAction  	vcsCheckout2	$SERVERID $VCONN "/shared/test00_longpath/$VCS_BASE_TYPE" "CONTAINER" "HEAD" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+ 

@@ -134,17 +134,18 @@ if [ ! -d "$JAVA_HOME" ]; then
    writeOutput "Execution Failed::JAVA_HOME does not exist: $JAVA_HOME" 									$SCRIPT $SEP
    exit 1
 fi
+echo " "
 #=======================================
 # Display Licenses
 #=======================================
-writeOutput " " 
-writeOutput "------------------------------------------------------------------"							"" $SEP -nodate 
-writeOutput "------------------------ PD Tool Licenses ------------------------" 							"" $SEP -nodate
-writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
-cat "${PROJECT_HOME}/licenses/Composite_License.txt"
-writeOutput " " 																							"" $SEP -nodate
-cat "${PROJECT_HOME}/licenses/Project_Specific_License.txt"
-writeOutput " " 																							"" $SEP -nodate
+#writeOutput " " 
+#writeOutput "------------------------------------------------------------------"							"" $SEP -nodate 
+#writeOutput "------------------------ PD Tool Licenses ------------------------" 							"" $SEP -nodate
+#writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
+#cat "${PROJECT_HOME}/licenses/Composite_License.txt"
+#writeOutput " " 																							"" $SEP -nodate
+#cat "${PROJECT_HOME}/licenses/Project_Specific_License.txt"
+#writeOutput " " 																							"" $SEP -nodate
 
 #=======================================
 # Set DeployManager Environment Variables

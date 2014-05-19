@@ -1127,6 +1127,24 @@ public class DeployManagerImpl implements DeployManager{
 		getVCSManager().vcsStudioForcedCheckin(resourcePath, resourceType, message, vcsWorkspace, vcsWorkspaceTemp);		
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsScanPathLength2(serverId, vcsConnectionId, vcsResourcePathList, pathToVcsXML, pathToServersXML, vcsUser, vcsPassword);		
+	}
+
 	/**
 	 * @return the vcsManager
 	 */

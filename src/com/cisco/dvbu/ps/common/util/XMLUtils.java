@@ -277,8 +277,6 @@ public class XMLUtils {
 				if( (CommonUtils.existsEncryptPropertyList(element.getName()) && element.getValue() != null)){
 					if(encrypt){
 						element.setText(CommonUtils.encrypt(element.getValue()));
-					}else{
-						element.setText(CommonUtils.decrypt(element.getValue()));
 					}
 				}
 				// Look for PASSWORD_STRING
@@ -300,8 +298,6 @@ public class XMLUtils {
 				if((element.getName().equalsIgnoreCase("value") || element.getName().equalsIgnoreCase("defaultValue") ) && element.getValue() != null){
 					if(encrypt){
 						element.setText(CommonUtils.encrypt(element.getValue()));
-					}else{
-						element.setText(CommonUtils.decrypt(element.getValue()));
 					}
 				}
 			}

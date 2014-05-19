@@ -1271,8 +1271,22 @@ public class CommonUtils {
 					}
 
 					if (endSepFound) {
-						// First look in the property file and then look in the System Environment for the property
-						propertyVal = getFileOrSystemPropertyValue(propertyFile, property);
+						try {
+							// This indicates that there is a stand-alone $ or % sign with no property value
+							// When this situation arises then escape the single $ or % sign so that the value carries through as a value and not a variable.
+							if ((replaceProperty.equals("$") || replaceProperty.equals("%")) && propertyVal == null) {
+								if (replaceProperty.equals("$"))
+									propertyVal = argumentEscape("escape", "$$");
+								if (replaceProperty.equals("%"))
+									propertyVal = argumentEscape("escape", "%%");
+							} else {
+								// First look in the property file and then look in the System Environment for the property
+								propertyVal = getFileOrSystemPropertyValue(propertyFile, property);
+							}
+						} catch (Exception e) {
+							// Property was not found in either the property file or System environment
+							throw new ApplicationException("Error parsing property file="+propertyFile+"  Original Property="+arg+"  Resolved Property=["+property+"] was not found.  Invoked from method="+prefix);													
+						}
 						// Handle the use case to escape an argument containing $$ or %%
 						propertyVal = argumentEscape("escape", propertyVal);
 
@@ -1285,7 +1299,7 @@ public class CommonUtils {
 							
 						} else {
 							// Property was not found in either the property file or System environment
-							throw new ApplicationException("Error parsing property file="+propertyFile+"  Property=["+property+" was not found.  Invoked from method="+prefix);						
+							throw new ApplicationException("Error parsing property file="+propertyFile+"  Original Property="+arg+"  Resolved Property=["+property+"] was not found.  Invoked from method="+prefix);						
 						}
 					}
 				}

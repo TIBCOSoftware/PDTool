@@ -1,6 +1,9 @@
 The following 3rd party software was used during the development of the Composite PS Promotion and Deployment Tool.
 The licenses for each technology are provided in sub-folders specified below:
 
+############
+PDTool:	
+############
 =====================================================
 1. /licenses/Apache-License - Various Apache technologies
 =====================================================
@@ -78,5 +81,24 @@ saxpath-1.0						/lib/saxpath.jar					/licenses/Saxpath-License/LICENSE.txt - Co
 xml-apis						/lib/endorsed/xml-apis.jar			/licenses/SAX-W3C-License/SAX.LICENSE.txt - Copyright Status, SAX is free!																						http://xerces.apache.org/xml-commons/
 																	/licenses/SAX-W3C-License/W3C.LICENSE.txt - W3C® SOFTWARE NOTICE AND LICENSE, 																								
 																		http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+############
+PDTool GUI:	
+############
+=====================================================
+1. /licenses/Apache-License - Various Apache technologies
+=====================================================
+3rd party software				PDTool location						License version																																					Project Site URL
+-------------------				------------------					----------------------------																																	--------------------------------
+																	/licenses/Apache-License/LICENSE.txt - Apache License Version 2.0, January 2004 http://www.apache.org/licenses/LICENSE-2.0										DropWizard (web server) https://dropwizard.github.io/dropwizard/
+																	/licenses/Apache-License/LICENSE.txt - Apache License Version 2.0, January 2004 http://www.apache.org/licenses/LICENSE-2.0										JDOM2 (for parsing and serlializing XML) http://www.jdom.org
+																	/licenses/Apache-License/LICENSE.txt - Apache License Version 2.0, January 2004 http://www.apache.org/licenses/LICENSE-2.0										Apache Commons IO (for file manipulation) http://commons.apache.org/proper/commons-io/
+=====================================================
+2. /licenses/MIT-License - Various technologies
+=====================================================
+3rd party software				PDTool location						License version																																					Project Site URL
+-------------------				------------------					----------------------------																																	--------------------------------
+																	/licenses/MIT-License/LICENSE.txt - http://opensource.org/licenses/MIT																							JQuery / JQuery-UI (javascript library) http://jquery.com
+																	/licenses/MIT-License/LICENSE.txt - http://opensource.org/licenses/MIT																							JQGrid (JQuery plugin for table widgets) http://www.trirand.com/blog/
+																	/licenses/MIT-License/LICENSE.txt - http://opensource.org/licenses/MIT																							Query Parser (JQuery plugin for parsing URL query strings) https://github.com/mattsnider/jquery-plugin-query-parser
 
 

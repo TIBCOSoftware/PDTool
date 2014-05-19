@@ -19,9 +19,9 @@ public interface DeployManager
 		// General PD Tool execution with a password
 		"execCisDeployTool[3|3]"+
 		// PD Tool version 1 original methods with a password
-		",vcsInitWorkspace[2|2],,vcsInitializeBaseFolderCheckin[3|3]vcsCheckout[7|7],vcsCheckout[8|8],vcsCheckouts[6|6],vcsCheckin[7|7],vcsCheckins[6|6],vcsForcedCheckin[7|7],vcsForcedCheckins[6|6],vcsPrepareCheckin[6|6],vcsPrepareCheckins[6|6]"+
+		",vcsInitWorkspace[2|2],vcsInitializeBaseFolderCheckin[3|3],vcsScanPathLength[5|5],vcsCheckout[7|7],vcsCheckout[8|8],vcsCheckouts[6|6],vcsCheckin[7|7],vcsCheckins[6|6],vcsForcedCheckin[7|7],vcsForcedCheckins[6|6],vcsPrepareCheckin[6|6],vcsPrepareCheckins[6|6]"+
 		// PD Tool version 2 methods with a password
-		",vcsInitWorkspace2[4|4],vcsInitializeBaseFolderCheckin2[5|5],vcsCheckout2[9|9],vcsCheckout2[10|10],vcsCheckouts2[7|7],vcsCheckin2[9|9],vcsCheckins2[7|7],vcsForcedCheckin2[9|9],vcsForcedCheckins2[7|7],vcsPrepareCheckin2[8|8],vcsPrepareCheckins2[7|7]"+
+		",vcsInitWorkspace2[4|4],vcsInitializeBaseFolderCheckin2[5|5],vcsScanPathLength2[7|7],vcsCheckout2[9|9],vcsCheckout2[10|10],vcsCheckouts2[7|7],vcsCheckin2[9|9],vcsCheckins2[7|7],vcsForcedCheckin2[9|9],vcsForcedCheckins2[7|7],vcsPrepareCheckin2[8|8],vcsPrepareCheckins2[7|7]"+
 		// PD Tool Studio methods with a password
 		",vcsStudioInitWorkspace[2|2]";
 	
@@ -962,8 +962,6 @@ public interface DeployManager
 	 * into the VCS repository without checking in the entire Composite repository.  This can be useful for multi-tenant environments where only certain folders will be
 	 * held under version control.  The issue is that all the base-level folders must first be checked in into prior to any user-level folders being checked in.
 	 * 
-	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
-	 * 
 	 * This method uses VCSModule.xml for VCS connection properties.
 	 * 
 	 * @param vcsConnectionId - VCS Connection property information
@@ -1394,6 +1392,46 @@ public interface DeployManager
 	 * @throws CompositeException
 	 */
 	public void vcsStudioForcedCheckin(String resourcePath, String resourceType, String message, String vcsWorkspace, String vcsWorkspaceTemp) throws CompositeException;
+
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 * 
+	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 * 
+	 * This method uses VCSModule.xml for VCS connection properties.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsConnectionId - VCS Connection property information 
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	//--Begin::??? Module-------------------------------------------------------------------------------------------------------------

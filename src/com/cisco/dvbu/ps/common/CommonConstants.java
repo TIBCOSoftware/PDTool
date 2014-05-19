@@ -26,7 +26,7 @@ public class CommonConstants {
 	public static final String NEWLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.tfs.NEWLifecycleListener";
 	
 	// List of constants for encrypting passwords
-	public static final String encryptPropertiesList = "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD";
+	public static final String encryptPropertiesList = "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD CIS_PASSWORD";
 	
 	// Common indent 
 	public static final String indent = "    ";	
@@ -36,5 +36,6 @@ public class CommonConstants {
         { "$", "_0024"}
         };
 
-
+	// Maximum windows path length
+	public static final int maxWindowsPathLen = 259;
 }

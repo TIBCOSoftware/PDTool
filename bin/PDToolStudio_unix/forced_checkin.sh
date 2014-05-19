@@ -59,17 +59,18 @@ if [[ !  -d "$JAVA_HOME" ]]; then
 fi
 echo "PROJECT_HOME=$PROJECT_HOME"
 echo "JAVA_HOME=$JAVA_HOME"
+echo " "
 #=======================================
 # Display Licenses
 #=======================================
-echo " "
-echo "------------------------------------------------------------------"
-echo "------------------------ PD Tool Licenses ------------------------"
-echo "------------------------------------------------------------------"
-cat "${PROJECT_HOME}/licenses/Composite_License.txt"
-echo " "
-cat "${PROJECT_HOME}/licenses/Project_Specific_License.txt"
-echo " "
+#echo " "
+#echo "------------------------------------------------------------------"
+#echo "------------------------ PD Tool Licenses ------------------------"
+#echo "------------------------------------------------------------------"
+#cat "${PROJECT_HOME}/licenses/Composite_License.txt"
+#echo " "
+#cat "${PROJECT_HOME}/licenses/Project_Specific_License.txt"
+#echo " "
 
 #  #=======================================
 #  # Set DeployManager Environment Variables

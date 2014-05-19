@@ -1,6 +1,6 @@
 # -----------------------------------------
 # VCS Module: Non-VCS Connection Properties
 # -----------------------------------------
-# Test checking out a resource with a long path
+# Test vcs scan path length
 #
-PASS	TRUE	ExecuteAction  	vcsCheckout	$SERVERID "/shared/test00_longpath/$VCS_BASE_TYPE" "CONTAINER" "HEAD"   "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsScanPathLength 		$SERVERID "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" 	"$MODULE_HOME/servers.xml"

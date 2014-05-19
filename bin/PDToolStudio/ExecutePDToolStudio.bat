@@ -27,7 +27,7 @@ REM #               arg1:: [-nopause] is an optional parameter used to execute t
 REM #	            arg2:: -encrypt is used to encrypt the passwords in studio.properties or a Module XML property file
 REM #	            arg3:: file path to studio.properties or XML property file (full or relative path)
 REM #
-REM # Option 4 - Create Composite Studio Enable VCS:"
+REM # Option 4 - Create Composite Studio Enable VCS:
 REM #
 REM #            ExecutePDToolStudio.bat [-nopause] -enablevcs -winlogin windows_user_login -user composite_login_user -domain composite_domain -host composite_host_server
 REM #                                    -includeResourceSecurity [true or false] [-vcsWorkspacePathOverride "vcs-workspace-project-root-path"]
@@ -454,11 +454,36 @@ REM #   The PD Tool PROJECT HOME is a substituted
 REM #   path in order to shorten the path and
 REM #   prevent "too long a file name" error
 REM #=======================================
+REM #=======================================
+REM # Substitute PROJECT_HOME path
+REM #=======================================
+REM #   The PD Tool PROJECT HOME is a substituted
+REM #   path in order to shorten the path and
+REM #   prevent "too long a file name" error
+REM #=======================================
 if defined SUBSTITUTE_DRIVE ( 
-	if EXIST %SUBSTITUTE_DRIVE% subst /D %SUBSTITUTE_DRIVE%
-	echo Substitute drive %SUBSTITUTE_DRIVE% for path "%PROJECT_DIR%"
-	subst %SUBSTITUTE_DRIVE% "%PROJECT_DIR%"
+    echo Section: Substitute Drives
+    if EXIST %SUBSTITUTE_DRIVE% goto UNMAP
+    GOTO MAP
+:UNMAP
+    subst /D %SUBSTITUTE_DRIVE%
+    set ERROR=%ERRORLEVEL%
+    if "%ERROR%"=="0" goto MAP
+    echo An error occurred trying to unmap substitute drive=%SUBSTITUTE_DRIVE% ERROR=%ERROR%
+    echo Execute this command manually: subst /D %SUBSTITUTE_DRIVE%
+    exit /b 1
+:MAP
+    echo Substitute drive %SUBSTITUTE_DRIVE% for path "%PROJECT_HOME_PHYSICAL%"
+    subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
+    set ERROR=%ERRORLEVEL%
+    if "%ERROR%"=="0" goto MAPSUCCESS
+    echo An error occurred trying to map substitute drive=%SUBSTITUTE_DRIVE% ERROR=%ERROR%
+    echo If drive %SUBSTITUTE_DRIVE% exists then execute command: subst /D %SUBSTITUTE_DRIVE%
+    echo Execute this command manually: subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
+    echo Re-execute %0
+    exit /b 1
 )
+:MAPSUCCESS   
 
 REM #=======================================
 REM # Validate Paths exist
@@ -473,17 +498,18 @@ if NOT EXIST "%JAVA_HOME%" (
    ENDLOCAL
    exit /B 1
 )
+call %writeOutput% " " 
 REM #=======================================
 REM # Display Licenses
 REM #=======================================
-call %writeOutput% " " 
-call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% "------------------------ PD Tool Licenses ------------------------" 
-call %writeOutput% "------------------------------------------------------------------" 
-type "%PROJECT_HOME%\licenses\Composite_License.txt"
-call %writeOutput% " " 
-type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
-call %writeOutput% " " 
+REM #call %writeOutput% " " 
+REM #call %writeOutput% "------------------------------------------------------------------" 
+REM #call %writeOutput% "------------------------ PD Tool Licenses ------------------------" 
+REM #call %writeOutput% "------------------------------------------------------------------" 
+REM #type "%PROJECT_HOME%\licenses\Composite_License.txt"
+REM #call %writeOutput% " " 
+REM #type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
+REM #call %writeOutput% " " 
 
 REM #=======================================
 REM # Set DeployManager Environment Variables

@@ -253,7 +253,7 @@
 		<mkdir dir="${pdtoolstudio-target}/lib"/>
 		<mkdir dir="${pdtoolstudio-target}/lib/endorsed"/>
 		<mkdir dir="${pdtoolstudio-target}/licenses"/>
-		<mkdir dir="${pdtoolstudio-target}/log"/>
+		<mkdir dir="${pdtoolstudio-target}/logs"/>
 		<mkdir dir="${pdtoolstudio-target}/resources/config"/>
 		<mkdir dir="${pdtoolstudio-target}/resources/vcs_initial"/>
 		<mkdir dir="${pdtoolstudio-target}/security"/>

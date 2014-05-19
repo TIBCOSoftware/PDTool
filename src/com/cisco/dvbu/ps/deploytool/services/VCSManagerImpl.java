@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
-
 import com.cisco.dvbu.cmdline.vcs.spi.LifecycleListener;
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
@@ -29,6 +28,9 @@ import com.cisco.dvbu.ps.deploytool.dao.VCSDAO;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.VCSWSDAOImpl;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
 import com.compositesw.common.vcs.primitives.ResourceNameCodec;
+import com.compositesw.services.system.admin.resource.Resource;
+import com.compositesw.services.system.admin.resource.ResourceList;
+import com.compositesw.services.system.util.common.DetailLevel;
 import com.cisco.dvbu.ps.deploytool.modules.VCSConnectionEnvNameValuePairType;
 import com.cisco.dvbu.ps.deploytool.modules.VCSConnectionType;
 import com.cisco.dvbu.ps.deploytool.modules.VCSModule;
@@ -1594,6 +1596,206 @@ public class VCSManagerImpl implements VCSManager {
 				logger.error("Failed executing "+prefix+".",e);
 				throw new CompositeException(e.getMessage(), e);
 			}
+		}
+
+/******************************************************************************************
+ *  PUBLIC IMPLEMENTATION
+ *  
+ *  VCS SCAN PATH
+ *******************************************************************************************/
+		/**
+		 *  This method handles scanning the Composite path and searching for encoded paths
+		 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+		 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+		 *  like TFS.  Subversion does not have this issue.
+		 *  
+		 * @param serverId - target server name
+		 * @param vcsConnectionId - VCS Connection property information 
+		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
+		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
+		 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
+		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
+		 * @param pathToServersXML - path to the server values XML
+		 * @param vcsUser - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @param vcsPassword - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @throws CompositeException
+		 */
+		/* (non-Javadoc)
+		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+		 */
+		public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword)	throws CompositeException {	
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsConnectionId="+vcsConnectionId+", vcsResourcePathList: "+vcsResourcePathList+", pathToVcsXML="+pathToVcsXML+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
+			}
+			try {
+				// Set the VCS Module XML Connection Properties in the JVM Environment
+				setVCSConnectionProperties(vcsConnectionId, pathToVcsXML);
+				vcsConnId = vcsConnectionId;
+
+				// Invoke the command
+				vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);
+				
+			} catch (CompositeException e) {
+				throw new ApplicationContextException(e.getMessage(), e);
+			}			
+		}
+
+		/**
+		 *  This method handles scanning the Composite path and searching for encoded paths
+		 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+		 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+		 *  like TFS.  Subversion does not have this issue.
+		 *  
+		 * @param serverId - target server name
+		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
+		 * @param pathToServersXML - path to the server values XML
+		 * @param vcsUser - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @param vcsPassword - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @throws CompositeException
+		 */
+		/*
+		 * (non-Javadoc)
+		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+		 */
+		public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsResourcePathList: "+vcsResourcePathList+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
+			}
+		
+			try {
+				String prefix = "vcsScanPathLength";
+
+				// Set the global suppress and debug flags for this class based on properties found in the property file
+				setGlobalProperties();
+				
+				CommonUtils.writeOutput("***** BEGIN COMMAND *****",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+
+				/*****************************************
+				 * VALIDATE COMMAND-LINE VARIABLES
+				 *****************************************/
+				// Validate the arguments
+				if(serverId == null || serverId.trim().length() ==0 || vcsResourcePathList == null || vcsResourcePathList.trim().length() ==0 || pathToServersXML == null || pathToServersXML.trim().length() ==0){
+					throw new ValidationException("Invalid Arguments for "+prefix);
+				}
+				// Validate whether the files exist or not
+				if (!CommonUtils.fileExists(pathToServersXML)) {
+					throw new ValidationException("File ["+pathToServersXML+"] does not exist.");
+				}
+
+				/*****************************************
+				 * PRINT OUT COMMAND-LINE VARIABLES
+				 *****************************************/
+				// Print out Debug input parameters
+				CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("---Input Variables from deployment plan file: ",prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("    SERVER_ID=    "+serverId,prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("    SERVER_PATH=  "+pathToServersXML,prefix,"-debug2",logger,debug1,debug2,debug3);
+
+				// Get the server info from the servers.xml file
+				CompositeServer serverInfo = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, prefix, logger);
+				serverInfo = validateServerProperties(serverInfo);
+
+				/*****************************************
+				 * INITIALIZE VCS STRUCTURE VARIABLE
+				 *****************************************/
+				// Initialize a new VCS structure for passing to the methods
+				VcsStruct vcsStruct = (new VCSManagerImpl()).new VcsStruct();
+				// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
+				vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
+				
+		        /*****************************************
+				 * DISPLAY/VALIDATE VCS VARIABLES
+				 *****************************************/	        
+		        // Validate, Create VCS Workspace and Temp directories
+		        vcsStruct.validateVcs(prefix);
+		        // Resolve Absolute paths
+		        vcsStruct.resolveCanonicalPathsVcs(prefix);
+				// Display VCS variables
+		        vcsStruct.displayVcs(prefix);
+
+		        /*****************************************
+				 * INITIALIZE VARIABLES
+				 *****************************************/	        
+				String vcsResourceType=null;
+				String resourceTypeFilter = null;
+				String workspaceProjectDir = vcsStruct.getVcsWorkspaceProject();
+				int workspaceProjectDirLen = workspaceProjectDir.length();
+				int totalPathsTooLong = 0;
+
+				/*****************************************
+				 * PRINT OUT VCS INFO VARIABLES
+				 *****************************************/
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("---VCS Module ID Arguments:",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      vcsResourcePathList=            "+vcsResourcePathList,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT=          "+vcsStruct.getVcsWorkspaceProject(),prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT Length=   "+workspaceProjectDirLen,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      Max Windows Path Len=           "+CommonConstants.maxWindowsPathLen,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				
+				//--------------------------------------------------------------
+				// vcs scan path length
+				//--------------------------------------------------------------	
+				// Extract individual paths from the resource path list
+				StringTokenizer st = new StringTokenizer(vcsResourcePathList, ",");
+				while(st.hasMoreTokens()) 
+				{
+					// Get the next path from the list
+					String resourcePath = st.nextToken();
+					int pathsTooLong = 0;
+
+					if (resourcePath != null && resourcePath.length() > 0) 
+					{
+						// Get the resource type
+						vcsResourceType = getResourceManager().getResourceType(serverId, resourcePath, pathToServersXML);
+												
+						ResourceList resourceList = getResourceManager().getResourcesFromPath(serverId, resourcePath, vcsResourceType, resourceTypeFilter, DetailLevel.FULL.name(), pathToServersXML);
+			
+						if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()) 
+						{
+							CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("CIS resource to scan:  type="+vcsResourceType+"  path="+resourcePath,prefix,"-info",logger,debug1,debug2,debug3);
+//							CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+
+							for (Resource resource : resourceList.getResource()) 
+							{
+								// Encode the VCS resource path
+								String vcsResourcePath = ResourceNameCodec.encode(resource.getPath());
+								vcsResourcePath = vcsResourcePath.replaceAll("_002F", "/");
+								
+								// Get the length of the encoded path
+								int vcsResourcePathLen = vcsResourcePath.length();
+								int vcsTotalPathLen = workspaceProjectDirLen + vcsResourcePathLen;
+								
+								// Validate the length against the maximum length allowed
+								if (vcsTotalPathLen >= CommonConstants.maxWindowsPathLen) {
+									CommonUtils.writeOutput("      TotalPathLen="+CommonUtils.rpad(Integer.toString(vcsTotalPathLen), 4, " ")+"   EncodedPathLen="+CommonUtils.rpad(Integer.toString(vcsResourcePathLen), 4, " ")+"  ResourceType="+resource.getType()+"  EncodedPath="+vcsResourcePath+"  *****OriginalPath*****="+resource.getPath(),prefix,"-info",logger,debug1,debug2,debug3);
+									++pathsTooLong;
+									++totalPathsTooLong;
+								}
+							}
+							if (pathsTooLong == 0)
+								CommonUtils.writeOutput("      No paths found exceeding maximum.",prefix,"-info",logger,debug1,debug2,debug3);
+						}
+						CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+					}
+				}
+				
+				// Display the final message
+				CommonUtils.writeOutput("Final Scan Report:",prefix,"-info",logger,debug1,debug2,debug3);				
+				CommonUtils.writeOutput("      CIS Paths found >= "+CommonConstants.maxWindowsPathLen+" chars.  Total="+totalPathsTooLong,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      Note: Subversion has no limitations with long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
+				CommonUtils.writeOutput("      Note: TFS implementation on windows is affected by long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
+				
+			} catch (CompositeException e) {
+				throw new ApplicationContextException(e.getMessage(), e);
+			}				
 		}
 
 /******************************************************************************************
@@ -4917,98 +5119,98 @@ public class VCSManagerImpl implements VCSManager {
 							if (vcsType == null || vcsType.isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TYPE cannot be emtpy.");						
 							}
-							String oldProp = System.setProperty("VCS_TYPE", vcsConnection.getVCSTYPE());
+							String oldProp = System.setProperty("VCS_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTYPE(), propertyFile, true));
 							
 							// VCS_HOME
 							if (vcsConnection.getVCSHOME() == null || vcsConnection.getVCSHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_HOME", vcsConnection.getVCSHOME());
+							oldProp = System.setProperty("VCS_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSHOME(), propertyFile, true));
 
 							// VCS_COMMAND
 							if (vcsConnection.getVCSCOMMAND() == null || vcsConnection.getVCSCOMMAND().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_COMMAND cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_COMMAND", vcsConnection.getVCSCOMMAND());
+							oldProp = System.setProperty("VCS_COMMAND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCOMMAND(), propertyFile, true));
 
 							// VCS_EXEC_FULL_PATH
 							if (vcsConnection.getVCSEXECFULLPATH() == null || vcsConnection.getVCSEXECFULLPATH().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_EXEC_FULL_PATH cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", vcsConnection.getVCSEXECFULLPATH());
+							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", CommonUtils.extractVariable(prefix, vcsConnection.getVCSEXECFULLPATH(), propertyFile, true));
 
 							// VCS_REPOSITORY_URL
 							if (vcsConnection.getVCSREPOSITORYURL() == null || vcsConnection.getVCSREPOSITORYURL().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_REPOSITORY_URL cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_REPOSITORY_URL", vcsConnection.getVCSREPOSITORYURL());
+							oldProp = System.setProperty("VCS_REPOSITORY_URL", CommonUtils.extractVariable(prefix, vcsConnection.getVCSREPOSITORYURL(), propertyFile, true));
 
 							// VCS_PROJECT_ROOT
 							if (vcsConnection.getVCSPROJECTROOT() == null || vcsConnection.getVCSPROJECTROOT().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_PROJECT_ROOT cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_PROJECT_ROOT", vcsConnection.getVCSPROJECTROOT());
+							oldProp = System.setProperty("VCS_PROJECT_ROOT", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPROJECTROOT(), propertyFile, true));
 
 							// VCS_WORKSPACE_HOME
 							if (vcsConnection.getVCSWORKSPACEHOME() == null || vcsConnection.getVCSWORKSPACEHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_HOME", vcsConnection.getVCSWORKSPACEHOME());
+							oldProp = System.setProperty("VCS_WORKSPACE_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEHOME(), propertyFile, true));
 
 							// VCS_WORKSPACE_NAME
 							if (vcsConnection.getVCSWORKSPACENAME() == null || vcsConnection.getVCSWORKSPACENAME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_NAME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_NAME", vcsConnection.getVCSWORKSPACENAME());
+							oldProp = System.setProperty("VCS_WORKSPACE_NAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACENAME(), propertyFile, true));
 
 							// VCS_WORKSPACE_DIR
 							if (vcsConnection.getVCSWORKSPACEDIR() == null || vcsConnection.getVCSWORKSPACEDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_DIR", vcsConnection.getVCSWORKSPACEDIR());
+							oldProp = System.setProperty("VCS_WORKSPACE_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEDIR(), propertyFile, true));
 							
 							// VCS_TEMP_DIR
 							if (vcsConnection.getVCSTEMPDIR() == null || vcsConnection.getVCSTEMPDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TEMP_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_TEMP_DIR", vcsConnection.getVCSTEMPDIR());
+							oldProp = System.setProperty("VCS_TEMP_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTEMPDIR(), propertyFile, true));
 
 							// VCS_OPTIONS
-							oldProp = System.setProperty("VCS_OPTIONS", vcsConnection.getVCSOPTIONS());
+							oldProp = System.setProperty("VCS_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSOPTIONS(), propertyFile, true));
 
 							// VCS_WORKSPACE_INIT_NEW_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITNEWOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", vcsConnection.getVCSWORKSPACEINITNEWOPTIONS());
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITNEWOPTIONS(), propertyFile, true));
 							// VCS_WORKSPACE_INIT_LINK_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITLINKOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", vcsConnection.getVCSWORKSPACEINITLINKOPTIONS());
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITLINKOPTIONS(), propertyFile, true));
 							// VCS_WORKSPACE_INIT_GET_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITGETOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", vcsConnection.getVCSWORKSPACEINITGETOPTIONS());						
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITGETOPTIONS(), propertyFile, true));						
 							// VCS_BASE_FOLDER_INIT_ADD
 							if (vcsConnection.getVCSBASEFOLDERINITADD() != null)
-								oldProp = System.setProperty("VCS_BASE_FOLDER_INIT_ADD", vcsConnection.getVCSBASEFOLDERINITADD());
+								oldProp = System.setProperty("VCS_BASE_FOLDER_INIT_ADD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASEFOLDERINITADD(), propertyFile, true));
 							// VCS_CHECKIN_OPTIONS
 							if (vcsConnection.getVCSCHECKINOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", vcsConnection.getVCSCHECKINOPTIONS());
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONS(), propertyFile, true));
 							// VCS_CHECKIN_OPTIONS_REQUIRED
 							if (vcsConnection.getVCSCHECKINOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", vcsConnection.getVCSCHECKINOPTIONSREQUIRED());
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONSREQUIRED(), propertyFile, true));
 							// VCS_CHECKOUT_OPTIONS
 							if (vcsConnection.getVCSCHECKOUTOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", vcsConnection.getVCSCHECKOUTOPTIONS());
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONS(), propertyFile, true));
 							// VCS_CHECKOUT_OPTIONS_REQUIRED
 							if (vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED());
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED(), propertyFile, true));
 
 							// VCS_USERNAME
-							oldProp = System.setProperty("VCS_USERNAME", vcsConnection.getVCSUSERNAME());
+							oldProp = System.setProperty("VCS_USERNAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSUSERNAME(), propertyFile, true));
 							// VCS_PASSWORD
-							oldProp = System.setProperty("VCS_PASSWORD", vcsConnection.getVCSPASSWORD());
+							oldProp = System.setProperty("VCS_PASSWORD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPASSWORD(), propertyFile, true));
 							// VCS_IGNORE_MESSAGES
-							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", vcsConnection.getVCSIGNOREMESSAGES());
+							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", CommonUtils.extractVariable(prefix, vcsConnection.getVCSIGNOREMESSAGES(), propertyFile, true));
 							// VCS_MESSAGE_PREPEND
-							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", vcsConnection.getVCSMESSAGEPREPEND());
+							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSMESSAGEPREPEND(), propertyFile, true));
 							// VCS_MESSAGE_MANDATORY
 							/* 3-7-2012: may not need 		
 							//oldProp = System.setProperty("VCS_MESSAGE_MANDATORY", vcsConnection.getVCSMESSAGEMANDATORY());
@@ -5024,7 +5226,10 @@ public class VCSManagerImpl implements VCSManager {
 								for (VCSConnectionEnvNameValuePairType nameValue : nameValuePairList) {
 									
 									String envName = nameValue.getEnvName();
-									String envValue = nameValue.getEnvValue();
+									String envValue = CommonUtils.extractVariable(prefix, nameValue.getEnvValue(), propertyFile, true);
+								    if (vcsType.equalsIgnoreCase("P4") && envName.equalsIgnoreCase("P4PASSWD")) {
+								    	envValue = CommonUtils.decrypt(envValue);
+								    }
 									oldProp = System.setProperty(envName, envValue);
 									if (envList.length() > 0) {
 										envList = envList + ",";
@@ -5855,7 +6060,7 @@ public class VCSManagerImpl implements VCSManager {
 				// We cannot use VCS_OPTIONS for this because checkin option like /override gives errors when used on other TFS commands
 				// TFS_CHECKIN_OPTIONS has been deprecated.  Still supported but not used.  The primary capability is VCS_CHECKIN_OPTIONS which is generic for all VCS.
 				// this.setTfsCheckinOptions(CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS"));
-				String TfsCheckinOptions = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS");
+				String TfsCheckinOptions = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS"), propertyFile, true);
 				if (TfsCheckinOptions == null) 
 					TfsCheckinOptions = "";
 				String vcsCheckinOptions = this.getVcsCheckinOptions();
@@ -5866,7 +6071,7 @@ public class VCSManagerImpl implements VCSManager {
 				else
 					this.setVcsCheckinOptions(vcsCheckinOptions + " " + TfsCheckinOptions);
 				
-				this.setTfsServerUrl(CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_SERVER_URL"));
+				this.setTfsServerUrl(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_SERVER_URL"), propertyFile, true));
 				if (this.getTfsServerUrl() == null || this.getTfsServerUrl().equals("")) {
 					this.setTfsServerUrl("$");
 				}

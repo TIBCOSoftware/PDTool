@@ -508,4 +508,40 @@ public interface VCSManager {
 	 */
 	public void vcsStudioForcedCheckin(String resourcePath, String resourceType, String message, String vcsWorkspace, String vcsWorkspaceTemp) throws CompositeException;
 	
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsConnectionId - VCS Connection property information 
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+
 }
