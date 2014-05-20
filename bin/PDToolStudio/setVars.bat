@@ -8,16 +8,26 @@ REM #==========================================================
 REM #----------------------------------------------------------
 REM # USER MODIFIES ENVIRONMENT VARIABLES
 REM #----------------------------------------------------------
+REM #
+REM # The My Vars path provides the user with the ability to set specific environment variables for their login
+REM # e.g. set MY_VARS_PATH=c:\users\%USERNAME%\.compositesw\setMyPDToolStudioVars.bat
+set MY_VARS_PATH=
+if not defined MY_VARS_PATH goto CONTINUE
+if not exist %MY_VARS_PATH% echo.Unknown path=%MY_VARS_PATH%
+if exist %MY_VARS_PATH% echo.Invoking %MY_VARS_PATH%
+if exist %MY_VARS_PATH% call %MY_VARS_PATH%
+:CONTINUE
+REM #
 REM # Set to JRE 1.6 Home Directory
 set JAVA_HOME=C:\Program Files\Java\jre6
-
+REM #
 REM # Configure the Java Heap Min and Max memory
 set MIN_MEMORY=-Xms256m
 set MAX_MEMORY=-Xmx512m
-
+REM #
 REM # Name of the configuration property file located in CisDeployTool/resources/config
 set CONFIG_PROPERTY_FILE=studio.properties
-
+REM #
 REM # -----------------------
 REM # PDTool Substitute Drive
 REM # -----------------------
@@ -27,7 +37,7 @@ REM # Currently in PDToolStudio/bin directory so back up one level to .../PDTool
 cd ..
 REM # Remember the PROJECT_HOME_PHYSICAL as it points to PROJECT_HOME full path 
 set PROJECT_HOME_PHYSICAL=%CD%
-
+REM #
 REM #=======================================
 REM # Derive PROJECT_HOME from a substituted drive letter in order to shorten the overall path in an attempt to avert the "too long file name" errors
 REM #=======================================
@@ -49,7 +59,7 @@ REM # Mapping a network drive
 REM -- set PROJECT_DIR=\\%COMPUTERNAME%\%CD%
 REM #
 cd %CURRDIR%
-
+REM #
 REM # -----------------------
 REM # PDTool Over SSL (https)
 REM # -----------------------

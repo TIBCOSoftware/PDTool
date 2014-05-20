@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -24,7 +14,6 @@ import java.util.regex.Matcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
-
 import com.cisco.dvbu.cmdline.vcs.spi.LifecycleListener;
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
@@ -39,6 +28,9 @@ import com.cisco.dvbu.ps.deploytool.dao.VCSDAO;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.VCSWSDAOImpl;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
 import com.compositesw.common.vcs.primitives.ResourceNameCodec;
+import com.compositesw.services.system.admin.resource.Resource;
+import com.compositesw.services.system.admin.resource.ResourceList;
+import com.compositesw.services.system.util.common.DetailLevel;
 import com.cisco.dvbu.ps.deploytool.modules.VCSConnectionEnvNameValuePairType;
 import com.cisco.dvbu.ps.deploytool.modules.VCSConnectionType;
 import com.cisco.dvbu.ps.deploytool.modules.VCSModule;
@@ -64,6 +56,7 @@ public class VCSManagerImpl implements VCSManager {
     private static boolean pdToolStudio = false;
     private static boolean vcsV2Method = false;
     private static String  vcsConnId = null;
+    private static boolean vcsStudioInitializeBaseFolderCheckin = false;
     // VCS Resource Type variables
     // 2012-10-29 mtinius: added container,data_source,relationship,model,policy to valid types
 	private static String validResourceTypes="container,FOLDER,data_source,definitions,link,procedure,table,tree,trigger,relationship,model,policy";
@@ -1049,6 +1042,155 @@ public class VCSManagerImpl implements VCSManager {
 	}
 
 	
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.resource.VCSManager#vcsInitializeBaseFolderCheckin2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin2(String vcsConnectionId, String customPathList, String pathToVcsXML, String vcsUser, String vcsPassword) throws CompositeException {
+		if(logger.isDebugEnabled()){
+			logger.debug("Entering VCSManagerImpl.vcsInitializeBaseFolderCheckin2() with following params: vcsConnectionId: "+vcsConnectionId+", customPathList: "+ customPathList);
+		}
+		try {
+			// Set the VCS Module XML Connection Properties in the JVM Environment
+			setVCSConnectionProperties(vcsConnectionId, pathToVcsXML);
+			vcsConnId = vcsConnectionId;
+
+			// Invoke the command
+			vcsInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+			
+		} catch (CompositeException e) {
+			throw new ApplicationContextException(e.getMessage(), e);
+		}	
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.resource.VCSManager#vcsInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		if(logger.isDebugEnabled()){
+			logger.debug("Entering VCSManagerImpl.vcsInitializeBaseFolderCheckin() with following params: customPathList:"+customPathList);
+		}
+		try {
+			/*****************************************
+			 * INITIALIZE VARIABLES
+			 *****************************************/
+			// Trim input variables to remove spaces
+			vcsUser = vcsUser.trim();
+			vcsPassword = vcsPassword.trim();
+
+			String prefix = "vcsInitializeBaseFolderCheckin";
+			String actionName = "vcsInitializeBaseFolderCheckin";
+
+			// Always initialize starting at the root (/) folder
+			String vcsResourcePath = "/";
+			String vcsResourceType = "CONTAINER";
+			String vcsMessage = "VCS Base Folder Initialization.";
+	
+			// Set the global suppress and debug flags for this class based on properties found in the property file
+			setGlobalProperties();
+			
+			CommonUtils.writeOutput("***** BEGIN COMMAND: "+actionName+" *****",prefix,"-info",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+			
+			/*****************************************
+			 * PRINT OUT COMMAND-LINE VARIABLES
+			 *****************************************/
+			// Print out Debug input parameters
+			CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("---Input Variables from deployment plan file: ",prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("    VCONN_ID=     "+vcsConnId,prefix,"-debug2",logger,debug1,debug2,debug3);
+
+			/*****************************************
+			 * INITIALIZE VCS STRUCTURE VARIABLE
+			 *****************************************/
+			// Initialize a new VCS structure for passing to the methods
+			VcsStruct vcsStruct = (new VCSManagerImpl()).new VcsStruct();
+			// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
+			vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
+
+	        /*****************************************
+			 * DISPLAY/VALIDATE VCS VARIABLES
+			 *****************************************/	        
+	        // Validate, Create VCS Workspace and Temp directories
+	        vcsStruct.validateVcs(prefix);
+	        // Resolve Absolute paths
+	        vcsStruct.resolveCanonicalPathsVcs(prefix);
+			// Display VCS variables
+	        vcsStruct.displayVcs(prefix);
+
+			String origResourceType = null;
+			String origResourcePath = null;
+
+			//********************************************************************************************
+			// Validate vcsResourcePath settings prior to invocation of vcs scripts
+			//********************************************************************************************
+			origResourcePath = vcsResourcePath;
+
+			if (vcsResourcePath == null || vcsResourcePath.length() == 0) {
+				throw new ValidationException("VCS Resource Path is null or empty.");							
+			}
+			// Encode the VCS resource path
+			vcsResourcePath = ResourceNameCodec.encode(vcsResourcePath);
+			vcsResourcePath = vcsResourcePath.replaceAll("_002F", "/");
+
+			//********************************************************************************************
+			// Validate vcsResourceType settings prior to invocation of vcs scripts
+			//********************************************************************************************
+			// Get the Resource Type for the VCS Resource Path
+			origResourceType = vcsResourceType;
+			vcsResourceType = getConvertedVcsResourceType(vcsResourceType);
+		
+			// Validate the resource type
+			if (vcsResourceType == null || vcsResourceType.length() == 0) {
+				throw new ValidationException("VCS Resource Type is null or empty.");							
+			}
+			if (!validResourceTypes.contains(vcsResourceType)) {
+				throw new ValidationException("VCS Resource Type=["+vcsResourceType+"] is not valid.  Valid Resource Types=["+validResourceTypes+"]");							
+			}
+					
+	        // Prepend the property VCS_MESSAGE_PREPEND to message
+	        String messagePrepend = vcsStruct.getVcsMessagePrepend();
+	        if (messagePrepend != null && messagePrepend.length() > 0) {
+	        	if (vcsMessage == null) {
+		        	vcsMessage = messagePrepend;
+	        	} else {
+		        	vcsMessage = messagePrepend+" "+vcsMessage;	        		
+	        	}
+	        }
+	        // Validate the message is not null or emtpy
+			if (vcsMessage == null || vcsMessage.length() == 0) {
+				throw new ValidationException("VCS Message is null or empty.");		
+			}
+
+			// Print out info statements
+			CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("---VCS Module ID Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   Resource Path          ="+origResourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   Encoded Resource Path  ="+vcsResourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   Resource Type          ="+origResourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   Converted Resource Type="+vcsResourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   Message                ="+vcsMessage,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("   customPathList         ="+customPathList,prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("-- BEGIN OUTPUT ------------------------------------",prefix,"-info",logger,debug1,debug2,debug3);					
+
+			//--------------------------------------------------------------
+			// checkin
+			//--------------------------------------------------------------
+			initialize_checkin(vcsResourcePath, vcsResourceType, vcsMessage, customPathList, vcsStruct);
+
+			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("Successfully completed "+actionName+".",prefix,"-info",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+			
+		} catch (CompositeException e) {
+			throw new ApplicationContextException(e.getMessage(), e);
+		}	
+	}
+	
+	
 /******************************************************************************************
  *  PUBLIC INTERFACES
  *  
@@ -1079,6 +1221,32 @@ public class VCSManagerImpl implements VCSManager {
 				
 			} catch (CompositeException e) {
 				logger.error("Initialize VCS Workspace Failed. Error: ",e);
+				throw new CompositeException(e.getMessage(),e);
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see com.cisco.dvbu.ps.deploytool.resource.VCSManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+		 */
+	//	@Override
+		public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+
+			try {
+				logger.info("--------------------------------------------------------");
+				logger.info("-------- STUDIO/VCS BASE FOLDER INITIALIZATION ---------");
+				logger.info("--------------------------------------------------------");
+
+				// Gets set only when PD Tool Studio is being invoked
+				pdToolStudio = true;
+				vcsStudioInitializeBaseFolderCheckin = true;
+				
+				// Set the global suppress and debug flags for this class based on properties found in the property file
+				setGlobalProperties();
+
+				vcsInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+				
+			} catch (CompositeException e) {
+				logger.error("Studio/VCS Base Folder Initialize Failed. Error: ",e);
 				throw new CompositeException(e.getMessage(),e);
 			}
 		}
@@ -1428,6 +1596,206 @@ public class VCSManagerImpl implements VCSManager {
 				logger.error("Failed executing "+prefix+".",e);
 				throw new CompositeException(e.getMessage(), e);
 			}
+		}
+
+/******************************************************************************************
+ *  PUBLIC IMPLEMENTATION
+ *  
+ *  VCS SCAN PATH
+ *******************************************************************************************/
+		/**
+		 *  This method handles scanning the Composite path and searching for encoded paths
+		 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+		 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+		 *  like TFS.  Subversion does not have this issue.
+		 *  
+		 * @param serverId - target server name
+		 * @param vcsConnectionId - VCS Connection property information 
+		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
+		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
+		 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
+		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
+		 * @param pathToServersXML - path to the server values XML
+		 * @param vcsUser - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @param vcsPassword - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @throws CompositeException
+		 */
+		/* (non-Javadoc)
+		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+		 */
+		public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword)	throws CompositeException {	
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsConnectionId="+vcsConnectionId+", vcsResourcePathList: "+vcsResourcePathList+", pathToVcsXML="+pathToVcsXML+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
+			}
+			try {
+				// Set the VCS Module XML Connection Properties in the JVM Environment
+				setVCSConnectionProperties(vcsConnectionId, pathToVcsXML);
+				vcsConnId = vcsConnectionId;
+
+				// Invoke the command
+				vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);
+				
+			} catch (CompositeException e) {
+				throw new ApplicationContextException(e.getMessage(), e);
+			}			
+		}
+
+		/**
+		 *  This method handles scanning the Composite path and searching for encoded paths
+		 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+		 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+		 *  like TFS.  Subversion does not have this issue.
+		 *  
+		 * @param serverId - target server name
+		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
+		 * @param pathToServersXML - path to the server values XML
+		 * @param vcsUser - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @param vcsPassword - the VCS user passed in from the command line
+		 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+		 * @throws CompositeException
+		 */
+		/*
+		 * (non-Javadoc)
+		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+		 */
+		public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsResourcePathList: "+vcsResourcePathList+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
+			}
+		
+			try {
+				String prefix = "vcsScanPathLength";
+
+				// Set the global suppress and debug flags for this class based on properties found in the property file
+				setGlobalProperties();
+				
+				CommonUtils.writeOutput("***** BEGIN COMMAND *****",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+
+				/*****************************************
+				 * VALIDATE COMMAND-LINE VARIABLES
+				 *****************************************/
+				// Validate the arguments
+				if(serverId == null || serverId.trim().length() ==0 || vcsResourcePathList == null || vcsResourcePathList.trim().length() ==0 || pathToServersXML == null || pathToServersXML.trim().length() ==0){
+					throw new ValidationException("Invalid Arguments for "+prefix);
+				}
+				// Validate whether the files exist or not
+				if (!CommonUtils.fileExists(pathToServersXML)) {
+					throw new ValidationException("File ["+pathToServersXML+"] does not exist.");
+				}
+
+				/*****************************************
+				 * PRINT OUT COMMAND-LINE VARIABLES
+				 *****************************************/
+				// Print out Debug input parameters
+				CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("---Input Variables from deployment plan file: ",prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("    SERVER_ID=    "+serverId,prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("    SERVER_PATH=  "+pathToServersXML,prefix,"-debug2",logger,debug1,debug2,debug3);
+
+				// Get the server info from the servers.xml file
+				CompositeServer serverInfo = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, prefix, logger);
+				serverInfo = validateServerProperties(serverInfo);
+
+				/*****************************************
+				 * INITIALIZE VCS STRUCTURE VARIABLE
+				 *****************************************/
+				// Initialize a new VCS structure for passing to the methods
+				VcsStruct vcsStruct = (new VCSManagerImpl()).new VcsStruct();
+				// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
+				vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
+				
+		        /*****************************************
+				 * DISPLAY/VALIDATE VCS VARIABLES
+				 *****************************************/	        
+		        // Validate, Create VCS Workspace and Temp directories
+		        vcsStruct.validateVcs(prefix);
+		        // Resolve Absolute paths
+		        vcsStruct.resolveCanonicalPathsVcs(prefix);
+				// Display VCS variables
+		        vcsStruct.displayVcs(prefix);
+
+		        /*****************************************
+				 * INITIALIZE VARIABLES
+				 *****************************************/	        
+				String vcsResourceType=null;
+				String resourceTypeFilter = null;
+				String workspaceProjectDir = vcsStruct.getVcsWorkspaceProject();
+				int workspaceProjectDirLen = workspaceProjectDir.length();
+				int totalPathsTooLong = 0;
+
+				/*****************************************
+				 * PRINT OUT VCS INFO VARIABLES
+				 *****************************************/
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("---VCS Module ID Arguments:",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      vcsResourcePathList=            "+vcsResourcePathList,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT=          "+vcsStruct.getVcsWorkspaceProject(),prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT Length=   "+workspaceProjectDirLen,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      Max Windows Path Len=           "+CommonConstants.maxWindowsPathLen,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				
+				//--------------------------------------------------------------
+				// vcs scan path length
+				//--------------------------------------------------------------	
+				// Extract individual paths from the resource path list
+				StringTokenizer st = new StringTokenizer(vcsResourcePathList, ",");
+				while(st.hasMoreTokens()) 
+				{
+					// Get the next path from the list
+					String resourcePath = st.nextToken();
+					int pathsTooLong = 0;
+
+					if (resourcePath != null && resourcePath.length() > 0) 
+					{
+						// Get the resource type
+						vcsResourceType = getResourceManager().getResourceType(serverId, resourcePath, pathToServersXML);
+												
+						ResourceList resourceList = getResourceManager().getResourcesFromPath(serverId, resourcePath, vcsResourceType, resourceTypeFilter, DetailLevel.FULL.name(), pathToServersXML);
+			
+						if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()) 
+						{
+							CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("CIS resource to scan:  type="+vcsResourceType+"  path="+resourcePath,prefix,"-info",logger,debug1,debug2,debug3);
+//							CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+
+							for (Resource resource : resourceList.getResource()) 
+							{
+								// Encode the VCS resource path
+								String vcsResourcePath = ResourceNameCodec.encode(resource.getPath());
+								vcsResourcePath = vcsResourcePath.replaceAll("_002F", "/");
+								
+								// Get the length of the encoded path
+								int vcsResourcePathLen = vcsResourcePath.length();
+								int vcsTotalPathLen = workspaceProjectDirLen + vcsResourcePathLen;
+								
+								// Validate the length against the maximum length allowed
+								if (vcsTotalPathLen >= CommonConstants.maxWindowsPathLen) {
+									CommonUtils.writeOutput("      TotalPathLen="+CommonUtils.rpad(Integer.toString(vcsTotalPathLen), 4, " ")+"   EncodedPathLen="+CommonUtils.rpad(Integer.toString(vcsResourcePathLen), 4, " ")+"  ResourceType="+resource.getType()+"  EncodedPath="+vcsResourcePath+"  *****OriginalPath*****="+resource.getPath(),prefix,"-info",logger,debug1,debug2,debug3);
+									++pathsTooLong;
+									++totalPathsTooLong;
+								}
+							}
+							if (pathsTooLong == 0)
+								CommonUtils.writeOutput("      No paths found exceeding maximum.",prefix,"-info",logger,debug1,debug2,debug3);
+						}
+						CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+					}
+				}
+				
+				// Display the final message
+				CommonUtils.writeOutput("Final Scan Report:",prefix,"-info",logger,debug1,debug2,debug3);				
+				CommonUtils.writeOutput("      CIS Paths found >= "+CommonConstants.maxWindowsPathLen+" chars.  Total="+totalPathsTooLong,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      Note: Subversion has no limitations with long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
+				CommonUtils.writeOutput("      Note: TFS implementation on windows is affected by long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
+				
+			} catch (CompositeException e) {
+				throw new ApplicationContextException(e.getMessage(), e);
+			}				
 		}
 
 /******************************************************************************************
@@ -2744,6 +3112,139 @@ public class VCSManagerImpl implements VCSManager {
 		}
 	}	
 	
+	// ***********************************************************************************************
+	// Execute a VCS Generalized Scripts ** INITIALIZE CHECKIN **
+	// ***********************************************************************************************
+	private void initialize_checkin(String resourcePath, String resourceType, String message, String customPathList, VcsStruct vcsStruct) throws CompositeException {
+	/*
+	 * Initialize checkin is used to checkin the Composite base folder structure into VCS.  This is required in order to establish the baseline structure so
+	 * that the user does not have to checkin the entire Composite repository at one time.  This allows the user to be more flexible to determine what folders
+	 * they want to checkin within the /shared, /services/databases or /services/webservices folder structure.  The following steps are executed in order to achieve
+	 * the initial checkin.
+	 * 
+	 * Copy base folders from /resources/vcs_initial/baseFolders/* into workspace $VCS_WORKSPACE_DIR/$VCS_PROJECT_ROOT
+	 * 
+	 * Add files: $VCS_WORKSPACE_DIR/$VCS_PROJECT_ROOT
+	 * E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add R:\TFSww\Composite_62\cis_objects -recursive /login:user,********
+	 * 
+	 * Check-out Head: E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get R:/TFSww/Composite_62/cis_objects/ -version:T -recursive -noprompt /login:user,********
+	 *
+	 * Check-in:
+	 *    Create a comment file in the /bin folder
+	 *    Check-out lock:  E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd checkout R:/TFSww/Composite_62/cis_objects/ -lock:Checkout -recursive -noprompt /login:user,********
+	 *    Check-in:  E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd checkin R:/TFSww/Composite_62/cis_objects/ -comment:@comment.txt -recursive -noprompt /login:user,********
+	 * 
+		# $1 ->  Resource path 			(e.g. "/shared/MyFolder/My__View"), using file system (encoded) names
+		# $2 ->  Resource type 			(e.g. "CONTAINER", "TABLE", "PROCEDURE" etc.)
+		# $3 ->  Checkin message 		(e.g. "Adding MyFolder")
+		# $4 ->  VCS Workspace Folder	(e.g. "/tmp/vcs_svn/cisVcsWorkspace/cis_objects")
+		# $5 ->  VCS Temp Folder		(e.g. "/tmp/vcs_svn/cisVcsTemp")
+		# $6 ->  CIS user name			(e.g. "admin")
+		# $7 ->  CIS user password		(e.g. "admin")
+		# $8 ->  CIS user domain		(e.g. "composite")
+		# $9 ->  CIS server host name	(e.g. "localhost
+	*/
+		String prefix = "initialize_checkin";
+		String baseFolderPath = vcsStruct.getProjectHome()+"/resources/vcs_initial/baseFolders";
+		String toFolderPath = vcsStruct.getVcsWorkspaceProject();
+		String templateFolderPath = vcsStruct.getProjectHome()+"/resources/vcs_initial/templateFolder";
+		
+		try {
+			CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] checkin =========",prefix,"-info",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("---VCS Arguments:",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      resourcePath=       "+resourcePath,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      resourceType=       "+resourceType,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      Message=            "+message,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      customPathList=     "+customPathList,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VcsWorkspace=       "+vcsStruct.getVcsWorkspace(),prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VcsWorkspaceProject="+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VcsTemp=            "+vcsStruct.getVcsTemp(),prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VcsUser=            "+vcsStruct.getVcsUsername(),prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VcsPassword=        ********",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      baseFolderPath=     "+baseFolderPath,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      toFolderPath=       "+toFolderPath,prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
+
+			// Validate that the Project Folder Base Folder exists
+			if (!CommonUtils.fileExists(baseFolderPath)) {
+				throw new ApplicationException("The VCS Initialize Base Folder does not exist.  Base Folder="+baseFolderPath);
+			}
+			
+			// Validate that the Template Folder File exists
+			if (!CommonUtils.fileExists(templateFolderPath)) {
+				throw new ApplicationException("The VCS Initialize Template File \"folder.cmf\" does not exist.  Path="+templateFolderPath);
+			}
+
+			CommonUtils.writeOutput("============== REMOVE BASE FOLDERS =================",prefix,"-debug3",logger,debug1,debug2,debug3);
+			File fromFile = new File(baseFolderPath);
+			File toWorkspaceFile = new File(toFolderPath);
+			File toTempFile = new File(vcsStruct.getVcsTemp());
+		    File dir = new File(baseFolderPath);
+		    String excludeFileList = "";
+		    boolean includeParentDir = false;
+		    boolean includeFiles = true;
+		    boolean includeDirs = true;
+		    boolean recursive = false;
+		    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+			
+			// Remove the folder/file from the workspace and vcs temp folder if it exists based on the lowest level resources found in \resources\vcs_initial\baseFolders
+			if (CommonUtils.fileExists(toFolderPath)) {
+				for (int i=0; i < files.length; i++) 
+				{
+					String removeWorkspaceFile = (toFolderPath + "/" + files[i].getName()).replaceAll("//", "/");
+					String removeTempFile = (vcsStruct.getVcsTemp() + "/" + files[i].getName()).replaceAll("//", "/");
+					if (removeWorkspaceFile.contains(".cmf")) 
+					{
+						CommonUtils.removeFile(removeTempFile);
+						CommonUtils.removeFile(removeWorkspaceFile);
+						CommonUtils.writeOutput("Removed      file \"to\" path["+removeWorkspaceFile+"]",prefix,"-debug3",logger,debug1,debug2,debug3);						
+					} else {
+						File remTempDir = new File(removeTempFile);
+						CommonUtils.removeDirectory(remTempDir);
+						File remWorkspaceDir = new File(removeWorkspaceFile);
+						CommonUtils.removeDirectory(remWorkspaceDir);
+						CommonUtils.writeOutput("Removed directory \"to\" path["+removeWorkspaceFile+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+					}
+				}
+			}
+			
+			CommonUtils.writeOutput("============== VCS CHECKOUT ==============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			vcs_add__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
+	
+			CommonUtils.writeOutput("============== COPY BASE FOLDERS ===================",prefix,"-debug3",logger,debug1,debug2,debug3);
+			boolean forceCopy = false;
+			CommonUtils.recursiveCopy(fromFile, toTempFile, forceCopy);
+			CommonUtils.writeOutput("Recursively copied directories and files \"from\" path=["+baseFolderPath+"] \"to\"   vcsTemp path["+vcsStruct.getVcsTemp()+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+
+			forceCopy = false;
+			CommonUtils.recursiveCopy(fromFile, toWorkspaceFile, forceCopy);
+			CommonUtils.writeOutput("Recursively copied directories and files \"from\" path=["+baseFolderPath+"] \"to\" workspace path["+toFolderPath+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+
+			forceCopy = false;
+			CommonUtils.processTemplateFolder(customPathList, templateFolderPath, vcsStruct.getVcsTemp(), forceCopy);
+			CommonUtils.writeOutput("Processed custom folder paths \"custom\" path list=["+customPathList+"] \"to\"   vcsTemp path["+vcsStruct.getVcsTemp()+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+
+			forceCopy = false;
+			CommonUtils.processTemplateFolder(customPathList, templateFolderPath, toFolderPath, forceCopy);
+			CommonUtils.writeOutput("Processed custom folder paths \"custom\" path list=["+customPathList+"] \"to\" workspace path["+toFolderPath+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+			
+			CommonUtils.writeOutput("============== VCS ADD ===================",prefix,"-debug3",logger,debug1,debug2,debug3);
+			vcs_add__vcs_checkin(resourcePath, resourceType, vcsStruct.getVcsTemp(), vcsStruct);
+			
+			CommonUtils.writeOutput("============== VCS CHECKIN ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			vcs_checkin_checkout__vcs_checkin(resourcePath, resourceType, message, vcsStruct);
+	
+			CommonUtils.writeOutput("======= COMPLETED VCS ["+vcsStruct.getVcsType()+"] initial checkin ======",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
+			
+		} catch (CompositeException e) {
+		    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
+			logger.error("Failed executing "+prefix+".",e);
+			throw new CompositeException(e.getMessage(), e);
+		}
+	}
+
 /******************************************************************************************
  *  PRIVATE IMPLEMENTATION
  *  
@@ -3372,6 +3873,7 @@ public class VCSManagerImpl implements VCSManager {
 			throw new CompositeException(e.getMessage(), e);
 		}
 	}
+	
 	// ***********************************************************************************************
 	// Execute a VCS Generalized Scripts  ** vcs_checkin_checkout_cvs vcs_checkout **
 	// ***********************************************************************************************
@@ -3835,6 +4337,502 @@ public class VCSManagerImpl implements VCSManager {
 	}
 
 	
+
+
+	/******************************************************************************************
+	 *  PRIVATE IMPLEMENTATION
+	 *  
+	 *  VCS ADD [vcs_add]
+	 *  
+	 *  Specific implementation for a particular Version Control System (VCS)
+	 * 
+	 *******************************************************************************************/
+
+	// ***********************************************************************************************
+	// Execute a VCS Generalized Scripts  ** vcs_add__vcs_checkout **
+	// ***********************************************************************************************
+	private void vcs_add__vcs_checkout(String resourcePath, String resourceType, String vcsLabel, String revision,  VcsStruct vcsStruct) throws CompositeException {
+	/*
+		# $1 -> Resource path 		 (e.g. /shared/MyFolder/My__View), using file system (encoded) names
+		# $2 -> Resource type 		 (e.g. FOLDER, table etc.)
+		# $3 -> Rollback revision 	 (e.g. HEAD, 827)
+		# $4 -> VCS Workspace Folder (e.g. /tmp/workspaces/workspace_CIS)
+	*/
+		String prefix = "vcs_add__vcs_checkout_"+vcsStruct.getVcsType();
+	    List<String> argList = new ArrayList<String>();
+	    List<String> envList = new ArrayList<String>();
+	    boolean initArgList = true;
+	    boolean preserveQuotes = false;
+	    String command = vcsStruct.getVcsExecCommand();
+	    String arguments = null;
+	    String execFromDir = null;
+	    String commandDesc = null;
+
+		try {
+			/********************************************
+			 * vcs_add__vcs_checkout:
+			 *      CVS=Concurrent Versions System
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
+
+				// Execute from the Workspace Project Directory
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/cvs_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			
+				//------------------------------------------
+				// Check out Label
+				//------------------------------------------
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for CVS.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					//------------------------------------------
+					// Check out Folder
+					//------------------------------------------
+
+				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+					//Derived from script:
+				    // cvs update -jHEAD ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
+//					arguments=" update -jHEAD "+fullResourcePath+" "+vcsStruct.getVcsCheckoutOptions();
+//					arguments=" update -jHEAD . "+vcsStruct.getVcsCheckoutOptions();
+//					commandDesc = "    Update folder revisions to the CVS Repository...";
+				
+					// Check out the repository to the local workspace
+					//   cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+					arguments=" co "+vcsStruct.getVcsProjectRoot() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+					commandDesc = "    Checking out the repository to the local workspace...";
+
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				}
+			}
+			
+			/********************************************
+			 * vcs_add__vcs_checkout:
+			 *      P4=Perforce
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/p4_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+	
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for CVS.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					//------------------------------------------
+					// Check out Folder
+					//------------------------------------------
+					// Execute from directory.  Make sure there are no double slashes
+					execFromDir=(execFromDir+"/"+resourcePath).replaceAll("//", "/");
+
+					// Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+			
+					// Synchronize (Check out) the repository to the local workspace
+					// p4 sync -f ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+					arguments=" sync -f " + vcsStruct.getVcsWorkspaceInitGetOptions();
+
+					commandDesc = "    Sync folder HEAD with the Perforce Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				}
+			}
+			
+			/********************************************
+			 * vcs_add__vcs_checkout:
+			 *      SVN=Subversion
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for Subversion.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					//------------------------------------------
+					// Check out Folder
+					//------------------------------------------
+
+				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+					//Derived from script:
+				    // svn update ${fullResourcePath} -r HEAD ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+					arguments=" update "+fullResourcePath+" -r HEAD "+vcsStruct.getVcsOptions()+" "+vcsStruct.getVcsCheckoutOptions();
+
+					commandDesc = "    Update folder revisions to the Subversion Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());						
+				}
+			}
+			
+			/********************************************
+			 * vcs_add__vcs_checkout:
+			 *      TFS=Team Foundation Server
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2012") ||
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2013") ||
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2005")) 
+			{
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for TFS.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					//------------------------------------------
+					// Check out Folder
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+					// Check out the repository to the local workspace	    
+				    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
+				    // tf.cmd get -all -recursive -force ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+					arguments=" get -all -recursive -force " + vcsStruct.getTfsServerUrl() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+					commandDesc = "    Checking out the repository to the local workspace...";
+
+					commandDesc = "    Update folder revisions to the Team Foundation Server Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());						
+				}
+			}
+			
+			/********************************************
+			 * vcs_add__vcs_checkout:
+			 *      NEW_VCS_TYPE=New VCS Type
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("NEW_VCS_TYPE")) {
+				// Implement VCS Checkout here
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for NEW_VCS_TYPE.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					// Code goes here
+				}
+			}
+			
+		} catch (CompositeException e) {
+		    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
+			logger.error("Failed executing "+prefix+".",e);
+			throw new CompositeException(e.getMessage(), e);
+		}
+	}
+	
+		// ***********************************************************************************************
+		// Execute a VCS Generalized Scripts  ** vcs_add vcs_checkin **
+		// ***********************************************************************************************
+		private void vcs_add__vcs_checkin(String resourcePath, String resourceType, String baseFolderPath, VcsStruct vcsStruct) throws CompositeException {
+		/*
+			# $1 -> Resource path 		 (e.g. /shared/MyFolder/My__View), using file system (encoded) names
+			# $2 -> Resource type 		 (e.g. FOLDER, table etc.)
+			# $3 -> Checkin message 	 (e.g. Adding MyFolder)
+			# $4 -> VCS Workspace Folder (e.g. /tmp/workspaces/workspace_CIS)
+		*/
+			String prefix = "vcs_add__vcs_checkin_"+vcsStruct.getVcsType();
+		    List<String> argList = new ArrayList<String>();
+		    List<String> envList = new ArrayList<String>();
+		    boolean initArgList = true;
+		    boolean preserveQuotes = false;
+		    String command = vcsStruct.getVcsExecCommand();
+		    String arguments = null;
+		    String execFromDir = null;
+		    String commandDesc = null;
+		    
+			try {
+				/********************************************
+				 * vcs_add__vcs_checkin: 
+				 *     CVS=Concurrent Versions System
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
+					//cd "${Workspace}"
+					//	 e.g: vcsWorkspaceProject:  D:/PDTool/cvs_workspace/cis_objects
+					execFromDir = vcsStruct.getVcsWorkspaceProject();
+					
+					//------------------------------------------
+					// Add Files or Folders
+					//------------------------------------------
+								    
+				    File dir = new File(baseFolderPath);
+				    String excludeFileList = "CVS/Entries,CVS/Entries.Extra,CVS/Entries.Extra.old,CVS/Entries.Old,CVS/Repository,CVS/root";
+				    boolean includeParentDir = false;
+				    boolean includeFiles = true;
+				    boolean includeDirs = false;
+				    boolean recursive = true;
+				    // Get the /resources/vcs_initial/baseFolders + additional processed folders by using vcsTemp as a checklist against the workspace
+				    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+				    
+				    // Iterate over the checklist of files and add them into the VCS
+				    for (int i=0; i < files.length; i++) 
+					{
+						String remainderPath = files[i].toString();			
+						remainderPath = remainderPath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+						remainderPath = remainderPath.replaceAll(baseFolderPath, "");
+
+						String fullResourcePath = (execFromDir+"/"+remainderPath).replaceAll("//", "/");
+
+						//Derived from script:
+						// cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+						arguments=" add "+fullResourcePath + " " + vcsStruct.getVcsBaseFolderInitAddOptions();
+						
+						commandDesc = "    Add folder changes to the CVS Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}
+				}
+				
+				/********************************************
+				 * vcs_add__vcs_checkin:
+				 *      P4=Perforce
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
+					//cd "${Workspace}"
+					//   e.g: vcsWorkspaceProject:  D:/PDTool/p4_workspace/cis_objects
+					execFromDir=vcsStruct.getVcsWorkspaceProject();
+
+					//------------------------------------------
+					// Add Files or Folders
+					//------------------------------------------
+
+				    File dir = new File(baseFolderPath);
+				    String excludeFileList = "";
+				    boolean includeParentDir = false;
+				    boolean includeFiles = true;
+				    boolean includeDirs = false;
+				    boolean recursive = true;
+				    // Get the /resources/vcs_initial/baseFolders + additional processed folders by using vcsTemp as a checklist against the workspace
+				    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+				    
+				    // Iterate over the checklist of files and add them into the VCS
+				    for (int i=0; i < files.length; i++) 
+					{
+						String remainderPath = files[i].toString();			
+						remainderPath = remainderPath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+						remainderPath = remainderPath.replaceAll(baseFolderPath, "");
+
+						String fullResourcePath = (execFromDir+"/"+remainderPath).replaceAll("//", "/");
+
+						//Derived from script:
+						// p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
+						arguments=" add "+fullResourcePath+"\"" + " " + vcsStruct.getVcsBaseFolderInitAddOptions();
+						preserveQuotes = true;
+						
+						commandDesc = "    Add the change list to the Perforce Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}
+				}
+
+				
+				/********************************************
+				 * vcs_add__vcs_checkin:
+				 *      SVN=Subversion
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
+					//cd "${Workspace}"
+					//   e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+					execFromDir=vcsStruct.getVcsWorkspaceProject();
+					
+					//------------------------------------------
+					// Add Files or Folders
+					//------------------------------------------
+					
+				    File dir = new File(baseFolderPath);
+				    String excludeFileList = ".svn";
+				    boolean includeParentDir = false;
+				    boolean includeFiles = true;
+				    boolean includeDirs = true;
+				    boolean recursive = true;
+				    // Get the /resources/vcs_initial/baseFolders + additional processed folders by using vcsTemp as a checklist against the workspace
+				    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+				    
+				    // Iterate over the checklist of files and add them into the VCS
+				    for (int i=0; i < files.length; i++) 
+					{
+						String remainderPath = files[i].toString();			
+						remainderPath = remainderPath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+						remainderPath = remainderPath.replaceAll(baseFolderPath, "");
+
+						String fullResourcePath = (execFromDir+"/"+remainderPath).replaceAll("//", "/");
+						//Derived from script:
+					    // svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+						arguments=" add "+fullResourcePath+" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsBaseFolderInitAddOptions();
+
+						commandDesc = "    Add folder changes to the Subversion Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}					
+				}
+				
+				/********************************************
+				 * vcs_add__vcs_checkin:
+				 *      TFS=Team Foundation Server
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
+					vcsStruct.getVcsType().equalsIgnoreCase("TFS2012") ||
+					vcsStruct.getVcsType().equalsIgnoreCase("TFS2013") ||
+					vcsStruct.getVcsType().equalsIgnoreCase("TFS2005")) 
+				{
+					//cd "${Workspace}"
+					//	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+					execFromDir=vcsStruct.getVcsWorkspaceProject();
+					preserveQuotes = true;
+				
+					//------------------------------------------
+					// Add Files or Folders
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKIN_OPTIONS against the VCS_CHECKIN_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckinRequired(vcsStruct.getVcsCheckinOptions(), vcsStruct.getVcsCheckinOptionsRequired());
+				    
+				    File dir = new File(baseFolderPath);
+				    String excludeFileList = "";
+				    boolean includeParentDir = false;
+				    boolean includeFiles = true;
+				    boolean includeDirs = false;
+				    boolean recursive = true;
+				    // Get the /resources/vcs_initial/baseFolders + additional processed folders by using vcsTemp as a checklist against the workspace
+				    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+				    
+				    // Iterate over the checklist of files and add them into the VCS
+				    for (int i=0; i < files.length; i++) 
+					{
+						String remainderPath = files[i].toString();			
+						remainderPath = remainderPath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+						remainderPath = remainderPath.replaceAll(baseFolderPath, "");
+
+						String fullResourcePath = (execFromDir+"/"+remainderPath).replaceAll("//", "/");
+						//Derived from script:				
+					    // tf.cmd add ${fullResourcePath} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+						arguments=" add "+fullResourcePath+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsBaseFolderInitAddOptions();
+
+						commandDesc = "    Add folder changes to the Team Foundation Server Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+						//logger.debug("TFS Unparsed Arguments: " + arguments);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());	
+					}				    	
+				    	
+				    /*
+					//------------------------------------------
+					// Add Folders recursively
+					//------------------------------------------
+				    
+				    String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+					//Derived from script:				
+				    // tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
+					arguments=" add "+fullResourcePath+" -recursive -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsBaseFolderInitAddOptions();
+
+					commandDesc = "    Add folder changes to the Team Foundation Server Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+					//logger.debug("TFS Unparsed Arguments: " + arguments);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    //logger.debug("TFS Argument List: " + argList);
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());	
+				    */					
+				}
+				
+				/********************************************
+				 * vcs_add__vcs_checkin:
+				 *      NEW_VCS_TYPE=New VCS Type
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("NEW_VCS_TYPE")) {
+					// Implement VCS Checkin here
+				}
+				
+			} catch (CompositeException e) {
+			    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
+				logger.error("Failed executing "+prefix+".",e);
+				throw new CompositeException(e.getMessage(), e);
+			}
+		}
+	
 /******************************************************************************************
  *  PRIVATE IMPLEMENTATION
  *  
@@ -4044,6 +5042,8 @@ public class VCSManagerImpl implements VCSManager {
 			oldProp = System.clearProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS");
 			// VCS_WORKSPACE_INIT_GET_OPTIONS
 			oldProp = System.clearProperty("VCS_WORKSPACE_INIT_GET_OPTIONS");
+			// VCS_BASE_FOLDER_INIT_ADD
+			oldProp = System.clearProperty("VCS_BASE_FOLDER_INIT_ADD");
 			// VCS_CHECKIN_OPTIONS
 			oldProp = System.clearProperty("VCS_CHECKIN_OPTIONS");
 			// VCS_CHECKIN_OPTIONS_REQUIRED
@@ -4119,95 +5119,98 @@ public class VCSManagerImpl implements VCSManager {
 							if (vcsType == null || vcsType.isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TYPE cannot be emtpy.");						
 							}
-							String oldProp = System.setProperty("VCS_TYPE", vcsConnection.getVCSTYPE());
+							String oldProp = System.setProperty("VCS_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTYPE(), propertyFile, true));
 							
 							// VCS_HOME
 							if (vcsConnection.getVCSHOME() == null || vcsConnection.getVCSHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_HOME", vcsConnection.getVCSHOME());
+							oldProp = System.setProperty("VCS_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSHOME(), propertyFile, true));
 
 							// VCS_COMMAND
 							if (vcsConnection.getVCSCOMMAND() == null || vcsConnection.getVCSCOMMAND().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_COMMAND cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_COMMAND", vcsConnection.getVCSCOMMAND());
+							oldProp = System.setProperty("VCS_COMMAND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCOMMAND(), propertyFile, true));
 
 							// VCS_EXEC_FULL_PATH
 							if (vcsConnection.getVCSEXECFULLPATH() == null || vcsConnection.getVCSEXECFULLPATH().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_EXEC_FULL_PATH cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", vcsConnection.getVCSEXECFULLPATH());
+							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", CommonUtils.extractVariable(prefix, vcsConnection.getVCSEXECFULLPATH(), propertyFile, true));
 
 							// VCS_REPOSITORY_URL
 							if (vcsConnection.getVCSREPOSITORYURL() == null || vcsConnection.getVCSREPOSITORYURL().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_REPOSITORY_URL cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_REPOSITORY_URL", vcsConnection.getVCSREPOSITORYURL());
+							oldProp = System.setProperty("VCS_REPOSITORY_URL", CommonUtils.extractVariable(prefix, vcsConnection.getVCSREPOSITORYURL(), propertyFile, true));
 
 							// VCS_PROJECT_ROOT
 							if (vcsConnection.getVCSPROJECTROOT() == null || vcsConnection.getVCSPROJECTROOT().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_PROJECT_ROOT cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_PROJECT_ROOT", vcsConnection.getVCSPROJECTROOT());
+							oldProp = System.setProperty("VCS_PROJECT_ROOT", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPROJECTROOT(), propertyFile, true));
 
 							// VCS_WORKSPACE_HOME
 							if (vcsConnection.getVCSWORKSPACEHOME() == null || vcsConnection.getVCSWORKSPACEHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_HOME", vcsConnection.getVCSWORKSPACEHOME());
+							oldProp = System.setProperty("VCS_WORKSPACE_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEHOME(), propertyFile, true));
 
 							// VCS_WORKSPACE_NAME
 							if (vcsConnection.getVCSWORKSPACENAME() == null || vcsConnection.getVCSWORKSPACENAME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_NAME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_NAME", vcsConnection.getVCSWORKSPACENAME());
+							oldProp = System.setProperty("VCS_WORKSPACE_NAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACENAME(), propertyFile, true));
 
 							// VCS_WORKSPACE_DIR
 							if (vcsConnection.getVCSWORKSPACEDIR() == null || vcsConnection.getVCSWORKSPACEDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_DIR", vcsConnection.getVCSWORKSPACEDIR());
+							oldProp = System.setProperty("VCS_WORKSPACE_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEDIR(), propertyFile, true));
 							
 							// VCS_TEMP_DIR
 							if (vcsConnection.getVCSTEMPDIR() == null || vcsConnection.getVCSTEMPDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TEMP_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_TEMP_DIR", vcsConnection.getVCSTEMPDIR());
+							oldProp = System.setProperty("VCS_TEMP_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTEMPDIR(), propertyFile, true));
 
 							// VCS_OPTIONS
-							oldProp = System.setProperty("VCS_OPTIONS", vcsConnection.getVCSOPTIONS());
+							oldProp = System.setProperty("VCS_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSOPTIONS(), propertyFile, true));
 
 							// VCS_WORKSPACE_INIT_NEW_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITNEWOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", vcsConnection.getVCSWORKSPACEINITNEWOPTIONS());
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITNEWOPTIONS(), propertyFile, true));
 							// VCS_WORKSPACE_INIT_LINK_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITLINKOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", vcsConnection.getVCSWORKSPACEINITLINKOPTIONS());
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITLINKOPTIONS(), propertyFile, true));
 							// VCS_WORKSPACE_INIT_GET_OPTIONS
 							if (vcsConnection.getVCSWORKSPACEINITGETOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", vcsConnection.getVCSWORKSPACEINITGETOPTIONS());
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITGETOPTIONS(), propertyFile, true));						
+							// VCS_BASE_FOLDER_INIT_ADD
+							if (vcsConnection.getVCSBASEFOLDERINITADD() != null)
+								oldProp = System.setProperty("VCS_BASE_FOLDER_INIT_ADD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASEFOLDERINITADD(), propertyFile, true));
 							// VCS_CHECKIN_OPTIONS
 							if (vcsConnection.getVCSCHECKINOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", vcsConnection.getVCSCHECKINOPTIONS());
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONS(), propertyFile, true));
 							// VCS_CHECKIN_OPTIONS_REQUIRED
 							if (vcsConnection.getVCSCHECKINOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", vcsConnection.getVCSCHECKINOPTIONSREQUIRED());
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONSREQUIRED(), propertyFile, true));
 							// VCS_CHECKOUT_OPTIONS
 							if (vcsConnection.getVCSCHECKOUTOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", vcsConnection.getVCSCHECKOUTOPTIONS());
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONS(), propertyFile, true));
 							// VCS_CHECKOUT_OPTIONS_REQUIRED
 							if (vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED());
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED(), propertyFile, true));
 
 							// VCS_USERNAME
-							oldProp = System.setProperty("VCS_USERNAME", vcsConnection.getVCSUSERNAME());
+							oldProp = System.setProperty("VCS_USERNAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSUSERNAME(), propertyFile, true));
 							// VCS_PASSWORD
-							oldProp = System.setProperty("VCS_PASSWORD", vcsConnection.getVCSPASSWORD());
+							oldProp = System.setProperty("VCS_PASSWORD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPASSWORD(), propertyFile, true));
 							// VCS_IGNORE_MESSAGES
-							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", vcsConnection.getVCSIGNOREMESSAGES());
+							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", CommonUtils.extractVariable(prefix, vcsConnection.getVCSIGNOREMESSAGES(), propertyFile, true));
 							// VCS_MESSAGE_PREPEND
-							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", vcsConnection.getVCSMESSAGEPREPEND());
+							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSMESSAGEPREPEND(), propertyFile, true));
 							// VCS_MESSAGE_MANDATORY
 							/* 3-7-2012: may not need 		
 							//oldProp = System.setProperty("VCS_MESSAGE_MANDATORY", vcsConnection.getVCSMESSAGEMANDATORY());
@@ -4223,7 +5226,10 @@ public class VCSManagerImpl implements VCSManager {
 								for (VCSConnectionEnvNameValuePairType nameValue : nameValuePairList) {
 									
 									String envName = nameValue.getEnvName();
-									String envValue = nameValue.getEnvValue();
+									String envValue = CommonUtils.extractVariable(prefix, nameValue.getEnvValue(), propertyFile, true);
+								    if (vcsType.equalsIgnoreCase("P4") && envName.equalsIgnoreCase("P4PASSWD")) {
+								    	envValue = CommonUtils.decrypt(envValue);
+								    }
 									oldProp = System.setProperty(envName, envValue);
 									if (envList.length() > 0) {
 										envList = envList + ",";
@@ -4675,6 +5681,7 @@ public class VCSManagerImpl implements VCSManager {
 	    private String vcsWorkspaceInitNewOptions;
 	    private String vcsWorkspaceInitLinkOptions;
 	    private String vcsWorkspaceInitGetOptions;
+	    private String vcsBaseFolderInitAddOptions;
 	    private String vcsCheckinOptions;
 	    private String vcsCheckinOptionsRequired;
 	    private String vcsCheckoutOptions;
@@ -4714,6 +5721,7 @@ public class VCSManagerImpl implements VCSManager {
 		    vcsWorkspaceInitNewOptions = null;
 		    vcsWorkspaceInitLinkOptions = null;
 		    vcsWorkspaceInitGetOptions = null;
+		    vcsBaseFolderInitAddOptions = null;
 		    vcsCheckinOptions = null;
 		    vcsCheckinOptionsRequired = null;
 		    vcsCheckoutOptions = null;
@@ -4780,6 +5788,7 @@ public class VCSManagerImpl implements VCSManager {
 	    	this.setVcsWorkspaceInitNewOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_WORKSPACE_INIT_NEW_OPTIONS"), propertyFile, true));
 	    	this.setVcsWorkspaceInitLinkOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_WORKSPACE_INIT_LINK_OPTIONS"), propertyFile, true));
 	    	this.setVcsWorkspaceInitGetOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_WORKSPACE_INIT_GET_OPTIONS"), propertyFile, true));
+	    	this.setVcsBaseFolderInitAddOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_BASE_FOLDER_INIT_ADD"), propertyFile, true));    	
 	    	this.setVcsCheckinOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKIN_OPTIONS"), propertyFile, true));
 	    	this.setVcsCheckinOptionsRequired(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKIN_OPTIONS_REQUIRED"), propertyFile, true));
 	    	this.setVcsCheckoutOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKOUT_OPTIONS"), propertyFile, true));
@@ -4848,7 +5857,7 @@ public class VCSManagerImpl implements VCSManager {
 				throw new ValidationException("VCS_WORKSPACE_NAME could not be determined from VCS_WORKSPACE_DIR.  VCS_WORKSPACE_DIR must be set via the "+propertyFile+" file in the format of [$VCS_WORKSPACE_HOME/<vcs-workspace-dir-name].");				
 			}
 
-			if (!pdToolStudio) {
+			if (!pdToolStudio || vcsStudioInitializeBaseFolderCheckin) {
 				// Set up the workspace temp directory
 				this.setVcsTemp(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_TEMP_DIR"), propertyFile, true));
 				this.setVcsTemp(CommonUtils.setCanonicalPath(this.getVcsTemp()));
@@ -5051,7 +6060,7 @@ public class VCSManagerImpl implements VCSManager {
 				// We cannot use VCS_OPTIONS for this because checkin option like /override gives errors when used on other TFS commands
 				// TFS_CHECKIN_OPTIONS has been deprecated.  Still supported but not used.  The primary capability is VCS_CHECKIN_OPTIONS which is generic for all VCS.
 				// this.setTfsCheckinOptions(CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS"));
-				String TfsCheckinOptions = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS");
+				String TfsCheckinOptions = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_CHECKIN_OPTIONS"), propertyFile, true);
 				if (TfsCheckinOptions == null) 
 					TfsCheckinOptions = "";
 				String vcsCheckinOptions = this.getVcsCheckinOptions();
@@ -5062,7 +6071,7 @@ public class VCSManagerImpl implements VCSManager {
 				else
 					this.setVcsCheckinOptions(vcsCheckinOptions + " " + TfsCheckinOptions);
 				
-				this.setTfsServerUrl(CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_SERVER_URL"));
+				this.setTfsServerUrl(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_SERVER_URL"), propertyFile, true));
 				if (this.getTfsServerUrl() == null || this.getTfsServerUrl().equals("")) {
 					this.setTfsServerUrl("$");
 				}
@@ -5163,6 +6172,7 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("      VCS_WORKSPACE_INIT_NEW_OPTIONS= "+CommonUtils.maskCommand(this.getVcsWorkspaceInitNewOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_WORKSPACE_INIT_LINK_OPTIONS="+CommonUtils.maskCommand(this.getVcsWorkspaceInitLinkOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_WORKSPACE_INIT_GET_OPTIONS= "+CommonUtils.maskCommand(this.getVcsWorkspaceInitGetOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VCS_BASE_FOLDER_INIT_ADD=       "+CommonUtils.maskCommand(this.getVcsBaseFolderInitAddOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_CHECKIN_OPTIONS=            "+CommonUtils.maskCommand(this.getVcsCheckinOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_CHECKIN_OPTIONS_REQUIRED=   "+CommonUtils.maskCommand(this.getVcsCheckinOptionsRequired()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_CHECKOUT_OPTIONS=           "+CommonUtils.maskCommand(this.getVcsCheckoutOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -5378,6 +6388,13 @@ public class VCSManagerImpl implements VCSManager {
 	    }
 	    private String getVcsWorkspaceInitGetOptions() {
 	    	return this.vcsWorkspaceInitGetOptions;
+	    }
+	    // Set/Get vcsBaseFolderInitAddOptions
+	    private void setVcsBaseFolderInitAddOptions(String s) {
+	    	this.vcsBaseFolderInitAddOptions = s;
+	    }
+	    private String getVcsBaseFolderInitAddOptions() {
+	    	return this.vcsBaseFolderInitAddOptions;
 	    }
 	    // Set/Get vcsCheckinOptions
 	    private void setVcsCheckinOptions(String s) {

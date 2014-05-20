@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -30,6 +20,7 @@ import com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerWSDAOImpl;
 public class WsApiHelperObjects {
 
 	private static ServerDAO serverDAO = null;
+    private static String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
 
 	// -- New method with logging capabilities
 	public static CompositeServer getServerLogger(String serverId, String pathToServersXML, String prefix, Log logger) throws CompositeException {
@@ -38,7 +29,6 @@ public class WsApiHelperObjects {
 		CompositeServer serverInfo = getServerImpl(serverId, pathToServersXML);
 
 		// Validate the configuration property file exists
-        String propertyFile = CommonUtils.getFileOrSystemPropertyValue(null, "CONFIG_PROPERTY_FILE");
 		if (!PropertyManager.getInstance().doesPropertyFileExist(propertyFile)) {
 			throw new ApplicationException("The property file does not exist for CONFIG_PROPERTY_FILE="+propertyFile);
 		}
@@ -92,6 +82,7 @@ public class WsApiHelperObjects {
 	private static CompositeServer getServerImpl(String serverId, String pathToServersXML) throws CompositeException {
 		CompositeServer retval = null;
 		
+		String prefix = "WsApiHelperObjects.getServerImpl";
 		String serversXML = CommonUtils.getFileAsString(pathToServersXML);
 		Element el = XMLUtils.getDocumentFromString(serversXML);
 		@SuppressWarnings("unchecked")
@@ -104,11 +95,13 @@ public class WsApiHelperObjects {
 			
 			if (id.equals(serverId)) {
 				
+				
+				
 				retval = new CompositeServer();
 				retval.setId(server.getChildText("id"));
-				retval.setDomain(server.getChildText("domain"));
-				retval.setHostname(server.getChildText("hostname"));
-				String encryptedpassword = server.getChildText("encryptedpassword");
+				retval.setDomain(CommonUtils.extractVariable(prefix, server.getChildText("domain"), propertyFile, true));
+				retval.setHostname(CommonUtils.extractVariable(prefix, server.getChildText("hostname"), propertyFile, true));
+				String encryptedpassword = CommonUtils.extractVariable(prefix, server.getChildText("encryptedpassword"), propertyFile, true);
 				
 				String decryptedpassword = null;
 				
@@ -117,15 +110,16 @@ public class WsApiHelperObjects {
 				}
 				
 				retval.setPassword(decryptedpassword);
-				retval.setPort(server.getChildText("port"));
-				retval.setUsage(server.getChildText("usage"));
-				retval.setUser(server.getChildText("user"));
+				retval.setPort(CommonUtils.extractVariable(prefix, server.getChildText("port"), propertyFile, true));
+				retval.setUsage(CommonUtils.extractVariable(prefix, server.getChildText("usage"), propertyFile, true));
+				retval.setUser(CommonUtils.extractVariable(prefix, server.getChildText("user"), propertyFile, true));
 
-				retval.setCishome(server.getChildText("cishome"));
-				retval.setClustername(server.getChildText("clustername"));
-				retval.setSite(server.getChildText("site"));
+				retval.setCishome(CommonUtils.extractVariable(prefix, server.getChildText("cishome"), propertyFile, true));
+				retval.setClustername(CommonUtils.extractVariable(prefix, server.getChildText("clustername"), propertyFile, true));
+				retval.setSite(CommonUtils.extractVariable(prefix, server.getChildText("site"), propertyFile, true));
 
-                String useHttps = server.getChildText("useHttps");
+                String useHttps = CommonUtils.extractVariable(prefix, server.getChildText("useHttps"), propertyFile, true);
+
                 if(useHttps != null) {
                 	retval.setUseHttps(Boolean.parseBoolean(useHttps));
                 } else {

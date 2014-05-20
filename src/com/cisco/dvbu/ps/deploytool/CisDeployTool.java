@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -169,30 +159,28 @@ public class CisDeployTool {
 			while ( !exitOrchestrationOnError && ((line = reader.readLine()) != null) ) {
 				lnCount++;
 				padCounter = CommonUtils.padCount(lnCount, 4, " ");
-				// Trim the line of spaces
-				line = line.trim();
 
 				/*****************************************
 				 * TEST LINE FOR BLANK
 				 *****************************************/
-				if (line.isEmpty() || line.length() == 0) {
+				if (line.trim().isEmpty() || line.trim().length() == 0) {
 					
 					CommonUtils.writeOutput("---------------------------------------------------------------------------",	prefix,"-info"+suppress,logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("Line"+padCounter+" [SKIP BLANK]::"+line,										prefix,"-info"+suppress,logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("Line"+padCounter+" [SKIP BLANK]::"+line.trim(),								prefix,"-info"+suppress,logger,debug1,debug2,debug3);
 					
 				/*****************************************
 				 * TEST LINE FOR COMMENT (#)
 				 *****************************************/
-				} else if (line.startsWith("#")) {
+				} else if (line.trim().startsWith("#")) {
 					
 					CommonUtils.writeOutput("---------------------------------------------------------------------------",	prefix,"-info"+suppress,logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("Line"+padCounter+" [SKIP COMMENT]::"+line,										prefix,"-info"+suppress,logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("Line"+padCounter+" [SKIP COMMENT]::"+line.trim(),								prefix,"-info"+suppress,logger,debug1,debug2,debug3);
 					
 				// Otherwise this is a line to be processed
 				} else {
 					
 					CommonUtils.writeOutput("---------------------------------------------------------------------------",	prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("Line"+padCounter+" "+line,														prefix,"-info",logger,debug1,debug2,debug3);	
+					CommonUtils.writeOutput("Line"+padCounter+" "+line.trim(),												prefix,"-info",logger,debug1,debug2,debug3);	
 
 					/*****************************************
 					 * PARSE THE LINE
@@ -204,6 +192,8 @@ public class CisDeployTool {
 						line = line.replaceAll(" \"\" "," \"\"\"\" ");
 					// Convert double sets of quotes "" to a single double quote "
 					line = line.replaceAll("\"\"" , "\"");
+					// Trim the line of spaces
+					line = line.trim();
 					// Tokenize a space separated line
 					StringTokenizer st = new StringTokenizer(line, " ");
 				    int arg = 0;

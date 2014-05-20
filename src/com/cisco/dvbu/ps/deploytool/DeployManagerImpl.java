@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -936,6 +926,22 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsInitializeBaseFolderCheckin2(String vcsConnectionId, String customPathList, String pathToVcsXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsInitializeBaseFolderCheckin2(vcsConnectionId, customPathList, pathToVcsXML, vcsUser, vcsPassword);
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsCheckout(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
@@ -1086,6 +1092,14 @@ public class DeployManagerImpl implements DeployManager{
 		getVCSManager().vcsStudioInitWorkspace(vcsUser, vcsPassword);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsStudioInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioCheckout(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
@@ -1111,6 +1125,24 @@ public class DeployManagerImpl implements DeployManager{
 //	@Override
 	public void vcsStudioForcedCheckin(String resourcePath, String resourceType, String message, String vcsWorkspace, String vcsWorkspaceTemp) throws CompositeException {
 		getVCSManager().vcsStudioForcedCheckin(resourcePath, resourceType, message, vcsWorkspace, vcsWorkspaceTemp);		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsScanPathLength2(serverId, vcsConnectionId, vcsResourcePathList, pathToVcsXML, pathToServersXML, vcsUser, vcsPassword);		
 	}
 
 	/**

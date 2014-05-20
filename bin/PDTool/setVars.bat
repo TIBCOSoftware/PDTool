@@ -8,18 +8,28 @@ REM #==========================================================
 REM #----------------------------------------------------------
 REM # USER MODIFIES ENVIRONMENT VARIABLES
 REM #-----------------------------------------------------------
+REM #
+REM # The My Vars path provides with the user the ability to set specific environment variables for their login
+REM # e.g. set MY_VARS_PATH=c:\users\%USERNAME%\.compositesw\setMyPDToolVars.bat
+set MY_VARS_PATH=
+if not defined MY_VARS_PATH goto CONTINUE
+if not exist %MY_VARS_PATH% echo.Unknown path=%MY_VARS_PATH%
+if exist %MY_VARS_PATH% echo.Invoking %MY_VARS_PATH%
+if exist %MY_VARS_PATH% call %MY_VARS_PATH%
+:CONTINUE
+REM #
 REM # For Command-line execution - Set to JRE 1.6 Home Directory
 REM # For Ant execution - set to JDK 1.6 Home Directory
 set JAVA_HOME=C:\Program Files\Java\jre6
-
+REM #
 REM # Configure the Java Heap Min and Max memory
 set MIN_MEMORY=-Xms256m
 set MAX_MEMORY=-Xmx1024m
-
+REM #
 REM # Default name of the configuration property file located in CisDeployTool/resources/config
 REM #   Note: This property may be overwritten by using -config <prop_name.properties> on the command line
 set CONFIG_PROPERTY_FILE=deploy.properties
-
+REM #
 REM # -----------------------
 REM # PDTool Substitute Drive
 REM # -----------------------
@@ -51,7 +61,7 @@ REM # Mapping a network drive
 REM -- set PROJECT_HOME_PHYSICAL=\\%COMPUTERNAME%\%CD%
 REM #
 cd %CURRDIR%
-
+REM #
 REM # -----------------------
 REM # PDTool Over SSL (https)
 REM # -----------------------
@@ -63,13 +73,13 @@ REM #   2. Strong Encryption pack and strong TrustStore acquired from Cisco supp
 REM #      CERT_ARGS=-Djavax.net.ssl.trustStore="%PROJECT_HOME_PHYSICAL%\security\cis_studio_truststore_strong.jks" -Djavax.net.ssl.trustStorePassword=changeit
 REM #
 set CERT_ARGS=-Djavax.net.ssl.trustStore="%PROJECT_HOME_PHYSICAL%\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit
-
+REM #
 REM # -----------------------
 REM # PDTool Proxy Settings
 REM # -----------------------
 REM # Set the HTTP proxy settings for PDTool.  Determine if a proxyUser and proxyPassword is required and set accordingly.
 REM # set HTTP_PROXY=-DproxySet=true -Dhttp.proxyHost=wwwproxy.mydomain.com -Dhttp.proxyPort=80 -Dhttp.proxyUser=mydomain\myuser -Dhttp.proxyPassword=mypassword
 set HTTP_PROXY=
-
+REM #
 REM # Set the Java Options for the JVM command line
 set JAVA_OPT=%MIN_MEMORY% %MAX_MEMORY% %CERT_ARGS% %HTTP_PROXY%

@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -287,8 +277,6 @@ public class XMLUtils {
 				if( (CommonUtils.existsEncryptPropertyList(element.getName()) && element.getValue() != null)){
 					if(encrypt){
 						element.setText(CommonUtils.encrypt(element.getValue()));
-					}else{
-						element.setText(CommonUtils.decrypt(element.getValue()));
 					}
 				}
 				// Look for PASSWORD_STRING
@@ -310,8 +298,6 @@ public class XMLUtils {
 				if((element.getName().equalsIgnoreCase("value") || element.getName().equalsIgnoreCase("defaultValue") ) && element.getValue() != null){
 					if(encrypt){
 						element.setText(CommonUtils.encrypt(element.getValue()));
-					}else{
-						element.setText(CommonUtils.decrypt(element.getValue()));
 					}
 				}
 			}

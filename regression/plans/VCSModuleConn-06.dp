@@ -3,4 +3,4 @@
 # -----------------------------------------
 # These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
 #
-PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"

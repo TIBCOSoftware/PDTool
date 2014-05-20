@@ -3,4 +3,4 @@
 # -----------------------------------------
 # These are the original methods which use the "deploy.properties" files
 #
-PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /shared/test00 "Folder" HEAD 														"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/TEST00/testWebService "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"

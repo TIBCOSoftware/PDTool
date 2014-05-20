@@ -19,3 +19,6 @@ VCSModuleConn-15.dp
 VCSModuleConn-16.dp
 VCSModuleConn-17.dp
 VCSModuleConn-18.dp
+VCSModuleConn-19.dp
+VCSModuleConn-20.dp
+VCSModuleConn-21.dp

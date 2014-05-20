@@ -1,13 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2014 Cisco Systems
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-* PDTool project commiters - initial release
-*******************************************************************************/
 /**
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
@@ -381,6 +371,44 @@ public interface VCSManager {
 	public void vcsPrepareCheckins2(String serverId, String vcsConnectionId, String vcsIds, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;	
 
 	/**
+	 * Initialize base folder checkin from the local workspace to the VCS repository.  This provides an alternative way to establish the Composite repository base folders
+	 * into the VCS repository without checking in the entire Composite repository.  This can be useful for multi-tenant environments where only certain folders will be
+	 * held under version control.  The issue is that all the base-level folders must first be checked in into prior to any user-level folders being checked in.
+	 * 
+	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
+	 * 
+	 * @param customPathList - a comma separated list of paths that are added to the base paths of /shared or /services/databases or /services/webservices 
+	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository. 
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * @return void
+	 * @throws CompositeException
+	 */
+	public void vcsInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException;
+
+
+	/**
+	 * Initialize base folder checkin from the local workspace to the VCS repository.  This provides an alternative way to establish the Composite repository base folders
+	 * into the VCS repository without checking in the entire Composite repository.  This can be useful for multi-tenant environments where only certain folders will be
+	 * held under version control.  The issue is that all the base-level folders must first be checked in into prior to any user-level folders being checked in.
+	 * 
+	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
+	 * 
+	 * This method uses VCSModule.xml for VCS connection properties.
+	 * 
+	 * @param vcsConnectionId - VCS Connection property information
+	 * @param customPathList - a comma separated list of paths that are added to the base paths of /shared or /services/databases or /services/webservices 
+	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository. 
+	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * @return void
+	 * @throws CompositeException
+	 */
+	public void vcsInitializeBaseFolderCheckin2(String vcsConnectionId, String customPathList, String pathToVcsXML, String vcsUser, String vcsPassword) throws CompositeException;
+
+
+	/**
 	 * Generate a VCS Module XML
 	 * 
 	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
@@ -423,6 +451,22 @@ public interface VCSManager {
 	public void vcsStudioInitWorkspace(String vcsUser, String vcsPassword) throws CompositeException;
 	
 	/**
+	 * Initialize base folder checkin from the local workspace to the VCS repository.  This provides an alternative way to establish the Composite repository base folders
+	 * into the VCS repository without checking in the entire Composite repository.  This can be useful for multi-tenant environments where only certain folders will be
+	 * held under version control.  The issue is that all the base-level folders must first be checked in into prior to any user-level folders being checked in.
+	 * 
+	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
+	 * 
+	 * @param customPathList - a comma separated list of paths that are added to the base paths of /shared or /services/databases or /services/webservices 
+	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository. 
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * @return void
+	 * @throws CompositeException
+	 */	
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException;
+
+	/**
 	 * Composite Studio integrates with vcsStudioCheckout to checkout the changes from the repository and import the differences into the CIS server.
 	 * If folders are present in CIS that are not present in the repository, those folders will be deleted in CIS.
 	 * 
@@ -464,4 +508,40 @@ public interface VCSManager {
 	 */
 	public void vcsStudioForcedCheckin(String resourcePath, String resourceType, String message, String vcsWorkspace, String vcsWorkspaceTemp) throws CompositeException;
 	
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+
+	/**
+	 *  This method handles scanning the Composite path and searching for encoded paths
+	 *  that equal or exceed the windows 259 character limit.  If found this routine reports those paths.
+	 *  The 259 character limit is only a limitation for windows-based implementations of VCS
+	 *  like TFS.  Subversion does not have this issue.
+	 *  
+	 * @param serverId - target server name
+	 * @param vcsConnectionId - VCS Connection property information 
+	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
+	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
+	 * @param pathToServersXML - path to the server values XML
+	 * @param vcsUser - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @param vcsPassword - the VCS user passed in from the command line
+	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
+	 * @throws CompositeException
+	 */
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+
 }

@@ -7,19 +7,27 @@ REM #===========================================================================
 REM # Example Execution Statement:
 REM #
 REM # Option 1 - Execute VCS Workspace initialization:
-REM #            ExecutePDToolStudio.bat [-nopause] -vcsinit [vcs-username] [vcs-password]
+REM #            ExecutePDToolStudio.bat [-nopause] -vcsinit [-vcsuser vcs-username] [-vcspassword vcs-password]
 REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
 REM #	            arg2:: -vcsinit is used to initialize the vcs workspace and link it to the repository
-REM #               arg3:: [vcs-username] optional parameters
-REM #               arg4:: [vcs-password] optional parameters
+REM #               arg3:: [-vcsuser vcs-username] optional parameter
+REM #               arg4:: [-vcspassword vcs-password] optional parameter
 REM #
-REM # Option 2 - Execute VCS Workspace property file encryption:
+REM # Option 2 - Execute VCS Base Folder initialization:
+REM #            ExecutePDToolStudio.bat [-nopause] -vcsinitBaseFolders [-customCisPathList "custom-CIS-path-list"] [-vcsuser vcs-username] [-vcspassword vcs-password]
+REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
+REM #	            arg2:: -vcsinitBaseFolders is used to initialize the vcs repository with the Composite repository base folders and custom folders.
+REM #               arg3:: [-customCisPathList custom-CIS-path-list] optional parameter.   Custom, comma separated list of CIS paths to add to the VCS repository.
+REM #               arg4:: [-vcsuser vcs-username] optional parameter
+REM #               arg5:: [-vcspassword vcs-password] optional parameter
+REM #
+REM # Option 3 - Execute VCS Workspace property file encryption:
 REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-file-path
 REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
 REM #	            arg2:: -encrypt is used to encrypt the passwords in studio.properties or a Module XML property file
 REM #	            arg3:: file path to studio.properties or XML property file (full or relative path)
 REM #
-REM # Option 3 - Create Composite Studio Enable VCS:"
+REM # Option 4 - Create Composite Studio Enable VCS:
 REM #
 REM #            ExecutePDToolStudio.bat [-nopause] -enablevcs -winlogin windows_user_login -user composite_login_user -domain composite_domain -host composite_host_server
 REM #                                    -includeResourceSecurity [true or false] [-vcsWorkspacePathOverride "vcs-workspace-project-root-path"]
@@ -81,7 +89,19 @@ REM #Usage Exit
 	call %writeOutput% "               arg3:: [-vcsuser username] optional parameters"
 	call %writeOutput% "               arg4:: [-vcspassword password] optional parameters"
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
-	call %writeOutput% " Option 2 - Execute Encrypt Property File:"
+	call %writeOutput% " Option 2 - VCS Base Folder initialization:"
+	call %writeOutput% " "
+	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -vcsinitBaseFolders [-customCisPathList custom-path-list] [-vcsuser username] [-vcspassword password]"
+	call %writeOutput% " "
+	call %writeOutput% "            Example: %SCRIPT%%ext% -nopause -vcsinit -vcsuser user -vcspassword password"
+ 	call %writeOutput% " "
+	call %writeOutput% "               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script."
+	call %writeOutput% "               arg2:: -vcsinitBaseFolders is used to initialize the vcs repository with the Composite repository base folders and custom folders."
+	call %writeOutput% "               arg3:: [-customCisPathList custom-CIS-path-list] optional parameters.  Custom, comma separated list of CIS paths to add to the VCS repository."
+	call %writeOutput% "               arg4:: [-vcsuser username] optional parameters"
+	call %writeOutput% "               arg5:: [-vcspassword password] optional parameters"
+	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
+	call %writeOutput% " Option 3 - Execute Encrypt Property File:"
 	call %writeOutput% " "
 	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -encrypt config-property-file-path"
 	call %writeOutput% " "
@@ -91,7 +111,7 @@ REM #Usage Exit
 	call %writeOutput% "               arg2:: -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	call %writeOutput% "               arg3:: file path to deploy.properties or XML property file [full or relative path]"
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
-	call %writeOutput% " Option 3 - Create Composite Studio Enable VCS:"
+	call %writeOutput% " Option 4 - Create Composite Studio Enable VCS:"
 	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -enablevcs -winlogin windows_user_login -user composite_login_user -domain composite_domain -host composite_host_server"
 	call %writeOutput% "                          -includeResourceSecurity [true or false] [-vcsWorkspacePathOverride "vcs-workspace-project-root-path"]"
 	call %writeOutput% " "
@@ -243,7 +263,7 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 	
-	REM # Extact -vcspassword
+	REM # Extract -vcspassword
 	:CONTINUE4
      if "%1"=="-vcspassword" GOTO VCSPASSWORD
  	GOTO CONTINUE5
@@ -299,7 +319,7 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 	
-	REM # Extact -domain
+	REM # Extract -domain
 	:CONTINUE8
      if "%1"=="-domain" GOTO DOMAIN
  	GOTO CONTINUE9
@@ -315,7 +335,7 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 
-	REM # Extact -host
+	REM # Extract -host
 	:CONTINUE9
      if "%1"=="-host" GOTO HOST
  	GOTO CONTINUE10
@@ -331,7 +351,7 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 
-	REM # Extact -includeResourceSecurity
+	REM # Extract -includeResourceSecurity
 	:CONTINUE10
      if "%1"=="-includeResourceSecurity" GOTO INCLUDE_RESOURCE_SECURITY
  	GOTO CONTINUE11
@@ -347,7 +367,7 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 
-	REM # Extact -vcsWorkspacePathOverride
+	REM # Extract -vcsWorkspacePathOverride
 	:CONTINUE11
      if "%1"=="-vcsWorkspacePathOverride" GOTO VCS_WORKSPACE_PATH_OVERRIDE
  	GOTO CONTINUE12
@@ -363,8 +383,32 @@ REM	echo ARG2X=%ARG2X%
             shift
             GOTO:LOOPEND
 			
+	REM # -vcsinitBaseFolders command
+    :CONTINUE12
+    if "%1"=="-vcsinitBaseFolders" GOTO VCSINITBASEFOLDERS
+	GOTO CONTINUE13
+	:VCSINITBASEFOLDERS
+            SET CMD=%ARG1%
+            GOTO:LOOPEND
+			
+	REM # Extract -customCisPathList
+	:CONTINUE13
+     if "%1"=="-customCisPathList" GOTO CUSTOMCISPATHLIST
+ 	GOTO CONTINUE14
+	:CUSTOMCISPATHLIST
+			set ARG=customCisPathList
+            set CUSTOM_CIS_PATH_LIST=%ARG2X%
+			if not defined CUSTOM_CIS_PATH_LIST (
+			   set error=1
+			) else (
+				REM removed double quotes from around the parameter
+			   	set CUSTOM_CIS_PATH_LIST=%CUSTOM_CIS_PATH_LIST:"=%
+			)
+            shift
+            GOTO:LOOPEND
+
 	REM # Unknown paramter found
-	:CONTINUE12
+	:CONTINUE14
  			echo Unknown parameter: %1
 			call:USAGE
 			exit /B 2
@@ -410,11 +454,36 @@ REM #   The PD Tool PROJECT HOME is a substituted
 REM #   path in order to shorten the path and
 REM #   prevent "too long a file name" error
 REM #=======================================
+REM #=======================================
+REM # Substitute PROJECT_HOME path
+REM #=======================================
+REM #   The PD Tool PROJECT HOME is a substituted
+REM #   path in order to shorten the path and
+REM #   prevent "too long a file name" error
+REM #=======================================
 if defined SUBSTITUTE_DRIVE ( 
-	if EXIST %SUBSTITUTE_DRIVE% subst /D %SUBSTITUTE_DRIVE%
-	echo Substitute drive %SUBSTITUTE_DRIVE% for path "%PROJECT_DIR%"
-	subst %SUBSTITUTE_DRIVE% "%PROJECT_DIR%"
+    echo Section: Substitute Drives
+    if EXIST %SUBSTITUTE_DRIVE% goto UNMAP
+    GOTO MAP
+:UNMAP
+    subst /D %SUBSTITUTE_DRIVE%
+    set ERROR=%ERRORLEVEL%
+    if "%ERROR%"=="0" goto MAP
+    echo An error occurred trying to unmap substitute drive=%SUBSTITUTE_DRIVE% ERROR=%ERROR%
+    echo Execute this command manually: subst /D %SUBSTITUTE_DRIVE%
+    exit /b 1
+:MAP
+    echo Substitute drive %SUBSTITUTE_DRIVE% for path "%PROJECT_HOME_PHYSICAL%"
+    subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
+    set ERROR=%ERRORLEVEL%
+    if "%ERROR%"=="0" goto MAPSUCCESS
+    echo An error occurred trying to map substitute drive=%SUBSTITUTE_DRIVE% ERROR=%ERROR%
+    echo If drive %SUBSTITUTE_DRIVE% exists then execute command: subst /D %SUBSTITUTE_DRIVE%
+    echo Execute this command manually: subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
+    echo Re-execute %0
+    exit /b 1
 )
+:MAPSUCCESS   
 
 REM #=======================================
 REM # Validate Paths exist
@@ -429,17 +498,18 @@ if NOT EXIST "%JAVA_HOME%" (
    ENDLOCAL
    exit /B 1
 )
+call %writeOutput% " " 
 REM #=======================================
 REM # Display Licenses
 REM #=======================================
-call %writeOutput% " " 
-call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% "------------------------ PD Tool Licenses ------------------------" 
-call %writeOutput% "------------------------------------------------------------------" 
-type "%PROJECT_HOME%\licenses\Composite_License.txt"
-call %writeOutput% " " 
-type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
-call %writeOutput% " " 
+REM #call %writeOutput% " " 
+REM #call %writeOutput% "------------------------------------------------------------------" 
+REM #call %writeOutput% "------------------------ PD Tool Licenses ------------------------" 
+REM #call %writeOutput% "------------------------------------------------------------------" 
+REM #type "%PROJECT_HOME%\licenses\Composite_License.txt"
+REM #call %writeOutput% " " 
+REM #type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
+REM #call %writeOutput% " " 
 
 REM #=======================================
 REM # Set DeployManager Environment Variables
@@ -464,6 +534,7 @@ if "%CMD%" == "" set CMD=-vcsinit
 
 REM # Branch to the correct commmand area
 if "%CMD%" == "-vcsinit" goto SETUP_VCSINIT
+if "%CMD%" == "-vcsinitBaseFolders" goto SETUP_VCSINIT_BASE_FOLDERS
 if "%CMD%" == "-encrypt" goto SETUP_ENCRYPT
 if "%CMD%" == "-enablevcs" goto SETUP_ENABLE_VCS
 set arg=1
@@ -489,6 +560,29 @@ REM #***********************************************
 set JAVA_ACTION=vcsStudioInitWorkspace
 set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%VCS_PASSWORD%"
 set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
+GOTO START_SCRIPT
+
+:--------------------------
+:SETUP_VCSINIT_BASE_FOLDERS
+:--------------------------
+call %writeOutput% " " 
+call %writeOutput% "------------------------------------------------------------------" 
+call %writeOutput% "----------- COMMAND-LINE VCS BASE FOLDER INITIALIZE --------------" 
+call %writeOutput% "------------------------------------------------------------------" 
+call %writeOutput% " " 
+
+set	PR_VCS_PASSWORD= 
+if defined VCS_PASSWORD set PR_VCS_PASSWORD=********
+if not defined VCS_USERNAME set VCS_USERNAME= 
+if not defined VCS_PASSWORD set VCS_PASSWORD= 
+if not defined CUSTOM_CIS_PATH_LIST set CUSTOM_CIS_PATH_LIST= 
+
+REM #***********************************************
+REM # Invoke: DeployManagerUtil vcsStudioInitializeBaseFolderCheckin "%CUSTOM_CIS_PATH_LIST%" "%VCS_USERNAME%" "%VCS_PASSWORD%"
+REM #***********************************************
+set JAVA_ACTION=vcsStudioInitializeBaseFolderCheckin
+set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_MANAGER% %JAVA_ACTION% "%CUSTOM_CIS_PATH_LIST%" "%VCS_USERNAME%" "%VCS_PASSWORD%"
+set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_MANAGER% %JAVA_ACTION% "%CUSTOM_CIS_PATH_LIST%" "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
 GOTO START_SCRIPT
 
 :--------------

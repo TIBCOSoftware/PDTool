@@ -63,17 +63,18 @@ if NOT EXIST "%JAVA_HOME%" (
 )
 echo.PROJECT_HOME=%PROJECT_HOME%
 echo.JAVA_HOME=%JAVA_HOME%
+echo. 
 REM #=======================================
 REM # Display Licenses
 REM #=======================================
-echo. 
-echo.------------------------------------------------------------------
-echo.------------------------ PD Tool Licenses ------------------------
-echo.------------------------------------------------------------------
-type "%PROJECT_HOME%\licenses\Composite_License.txt"
-echo. 
-type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
-echo. 
+rem #echo. 
+rem #echo.------------------------------------------------------------------
+rem #echo.------------------------ PD Tool Licenses ------------------------
+rem #echo.------------------------------------------------------------------
+rem #type "%PROJECT_HOME%\licenses\Composite_License.txt"
+rem #echo. 
+rem #type "%PROJECT_HOME%\licenses\Project_Specific_License.txt"
+rem #echo. 
 
 REM #=======================================
 REM # Set DeployManager Environment Variables

@@ -94,6 +94,7 @@
 		<mkdir dir="${pdtool-target}/resources/modules/test"/>
 		<mkdir dir="${pdtool-target}/resources/plans"/>
 		<mkdir dir="${pdtool-target}/resources/schema"/>
+		<mkdir dir="${pdtool-target}/resources/vcs_initial"/>
 		<mkdir dir="${pdtool-target}/security"/>
 
 		<!-- Copy the generated Schema HTML file and images directory in preparation for zipping the distribution. -->
@@ -221,6 +222,11 @@
 		        <include name="*.xsd"/>
 		    </fileset>
 		</copy>
+		<copy todir="${pdtool-target}/resources/vcs_initial">
+		    <fileset dir="${resources}/vcs_initial">
+		        <include name="**"/>
+		    </fileset>
+		</copy>
 		<copy todir="${pdtool-target}/security">
 		    <fileset dir="${security}">
 		        <include name="cis_studio_truststore.jks"/>
@@ -247,8 +253,9 @@
 		<mkdir dir="${pdtoolstudio-target}/lib"/>
 		<mkdir dir="${pdtoolstudio-target}/lib/endorsed"/>
 		<mkdir dir="${pdtoolstudio-target}/licenses"/>
-		<mkdir dir="${pdtoolstudio-target}/log"/>
+		<mkdir dir="${pdtoolstudio-target}/logs"/>
 		<mkdir dir="${pdtoolstudio-target}/resources/config"/>
+		<mkdir dir="${pdtoolstudio-target}/resources/vcs_initial"/>
 		<mkdir dir="${pdtoolstudio-target}/security"/>
 		
 		<copy todir="${pdtoolstudio-target}">
@@ -311,6 +318,11 @@
 		        <include name="log*.properties"/>
 			    <include name="studio.properties"/>
 			    <include name="studio*example.properties"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtoolstudio-target}/resources/vcs_initial">
+		    <fileset dir="${resources}/vcs_initial">
+		        <include name="**"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/security">

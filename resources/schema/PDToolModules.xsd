@@ -4144,6 +4144,13 @@ VCS_WORKSPACE_INIT_GET_OPTIONS - these options are used to augment the VCS works
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="VCS_BASE_FOLDER_INIT_ADD" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_BASE_FOLDER_INIT_ADD - these options are used to augment the VCS base folder initialization that focuses on adding resources from the VCS.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="VCS_CHECKIN_OPTIONS" minOccurs="0" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
