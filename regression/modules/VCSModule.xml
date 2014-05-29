@@ -5,8 +5,23 @@
 	<!-- SUBVERSION EXAMPLE -->
     <vcsConnection>
       <id>svn01_win</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>svn</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>SVN</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
       <VCS_HOME>E:/dev/vcs/csvn/bin</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>svn</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
@@ -117,6 +132,22 @@
 		# A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
+
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
 	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
@@ -147,9 +178,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>SVNww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/SVNt</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -187,8 +218,23 @@
  	<!-- PERFORCE EXAMPLE -->
     <vcsConnection>
       <id>perforce01_win</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>p4</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>P4</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
       <VCS_HOME>E:/dev/vcs/perforce</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>p4</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
@@ -301,6 +347,22 @@
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
 	  
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -330,9 +392,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>P4ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/P4t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
  	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -390,8 +452,23 @@
 	<!-- CVS EXAMPLE -->
     <vcsConnection>
       <id>cvs01_win</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>cvs</VCS_TYPE>
-      <VCS_HOME>E:/dev/vcs/cvsnt</VCS_HOME>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>CVS</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
+      <VCS_HOME>E:/dev/vcs/csvnt</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>cvs</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
@@ -504,6 +581,22 @@
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
 	  
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -543,9 +636,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>CVSww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/CVSt</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -587,9 +680,24 @@
 	<!-- TEAM FOUNDATION SERVER (TFS) EXAMPLE -->
     <vcsConnection>
       <id>tfs01_win</id>
-      <VCS_TYPE>tfs2010</VCS_TYPE>
-      <VCS_HOME>E:\\dev\\vcs\\TEE-CLC-11.0.0</VCS_HOME>
-      <VCS_COMMAND>tf.cmd</VCS_COMMAND>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
+      <VCS_TYPE>tfs2013</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>TFS</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
+      <VCS_HOME>E:/dev/vcs/TEE-CLC-11.0.0</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
+     <VCS_COMMAND>tf.cmd</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
 	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
@@ -701,6 +809,22 @@
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
 	  
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -730,9 +854,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>TFSww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/TFSt</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -774,13 +898,44 @@
 	<!-- SUBVERSION EXAMPLE -->
     <vcsConnection>
       <id>svn01_unix</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>svn</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>SVN</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
       <VCS_HOME>/usr/bin</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>svn</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
 	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
       <VCS_OPTIONS>--non-interactive --no-auth-cache --trust-server-cert</VCS_OPTIONS>
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -810,9 +965,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>SVNuw</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/SVNt</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -850,8 +1005,23 @@
  	<!-- PERFORCE EXAMPLE -->
     <vcsConnection>
       <id>perforce01_unix</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>p4</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>P4</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
       <VCS_HOME>/usr/bin</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>p4</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
@@ -964,6 +1134,22 @@
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
 	  
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -993,9 +1179,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>P4uw</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/P4t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
  	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -1053,8 +1239,23 @@
 	<!-- CVS EXAMPLE -->
     <vcsConnection>
       <id>cvs01_unix</id>
+	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+			#     Subversion=svn
+			#     Perforce=p4
+			#     Concurrent Versions Systems=cvs
+			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
+		-->
       <VCS_TYPE>cvs</VCS_TYPE>
+	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
+      <VCS_BASE_TYPE>CVS</VCS_BASE_TYPE>
+	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+			#     Windows example: D:/dev/cvs/bin
+			#        UNIX example: /usr/bin
+		-->
       <VCS_HOME>/usr/bin</VCS_HOME>
+	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>cvs</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
       <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
@@ -1167,6 +1368,22 @@
 		-->
       <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
 	  
+      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
+		# VCS Resource Import Options:
+		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+	  
+      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
+		# VCS Resource Export Options:
+		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+		#   Consult the Archive Module documentation for more options.
+		-->
+      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
+	  
 	  <!--
 		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
 		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
@@ -1206,9 +1423,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>CVSuw</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/CVSt</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  

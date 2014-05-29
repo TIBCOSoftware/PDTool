@@ -55,7 +55,7 @@ public class WsApiHelperObjects {
 		    <clustername>cluster2</clustername>
 		    <site>US East</site>
 		    <useHttps>false</useHttps>
-
+			<allowVariables>false</allowVariables>
 	     */
         CommonUtils.writeOutput("Server Info:",														prefix,"-debug2",logger,debug1,debug2,debug3);
         CommonUtils.writeOutput("  Server-id=               "+serverInfo.getId(),					prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -69,6 +69,7 @@ public class WsApiHelperObjects {
         CommonUtils.writeOutput("  Server-clustername=      "+serverInfo.getClustername(),			prefix,"-debug2",logger,debug1,debug2,debug3);
         CommonUtils.writeOutput("  Server-site=             "+serverInfo.getSite(),					prefix,"-debug2",logger,debug1,debug2,debug3);
         CommonUtils.writeOutput("  Server-useHttps=         "+serverInfo.isUseHttps(),				prefix,"-debug2",logger,debug1,debug2,debug3);
+        CommonUtils.writeOutput("  Server-allowVariables=   "+serverInfo.isAllowVariables(),		prefix,"-debug2",logger,debug1,debug2,debug3);
         CommonUtils.writeOutput("",																	prefix,"-debug2",logger,debug1,debug2,debug3);
 
 		return serverInfo;
@@ -95,37 +96,70 @@ public class WsApiHelperObjects {
 			
 			if (id.equals(serverId)) {
 				
-				
-				
 				retval = new CompositeServer();
-				retval.setId(server.getChildText("id"));
-				retval.setDomain(CommonUtils.extractVariable(prefix, server.getChildText("domain"), propertyFile, true));
-				retval.setHostname(CommonUtils.extractVariable(prefix, server.getChildText("hostname"), propertyFile, true));
-				String encryptedpassword = CommonUtils.extractVariable(prefix, server.getChildText("encryptedpassword"), propertyFile, true);
 				
-				String decryptedpassword = null;
-				
-				if(encryptedpassword != null){
-					decryptedpassword = CommonUtils.decrypt(encryptedpassword);
-				}
-				
-				retval.setPassword(decryptedpassword);
-				retval.setPort(CommonUtils.extractVariable(prefix, server.getChildText("port"), propertyFile, true));
-				retval.setUsage(CommonUtils.extractVariable(prefix, server.getChildText("usage"), propertyFile, true));
-				retval.setUser(CommonUtils.extractVariable(prefix, server.getChildText("user"), propertyFile, true));
-
-				retval.setCishome(CommonUtils.extractVariable(prefix, server.getChildText("cishome"), propertyFile, true));
-				retval.setClustername(CommonUtils.extractVariable(prefix, server.getChildText("clustername"), propertyFile, true));
-				retval.setSite(CommonUtils.extractVariable(prefix, server.getChildText("site"), propertyFile, true));
-
-                String useHttps = CommonUtils.extractVariable(prefix, server.getChildText("useHttps"), propertyFile, true);
-
-                if(useHttps != null) {
-                	retval.setUseHttps(Boolean.parseBoolean(useHttps));
-                } else {
+				// Determine whether to extract variables or not
+                String allowVariables = CommonUtils.extractVariable(prefix, server.getChildText("allowVariables"), propertyFile, true);
+            	retval.setAllowVariables(false);
+                if(allowVariables != null && allowVariables.trim().length() > 0) {
+                	retval.setAllowVariables(Boolean.parseBoolean(allowVariables));
+                } 
+                
+                // Construct server info while extracting variables
+                if (retval.isAllowVariables())
+                {
+					retval.setId(CommonUtils.extractVariable(prefix, server.getChildText("id"), propertyFile, true));
+					retval.setDomain(CommonUtils.extractVariable(prefix, server.getChildText("domain"), propertyFile, true));
+					retval.setHostname(CommonUtils.extractVariable(prefix, server.getChildText("hostname"), propertyFile, true));
+					
+					String encryptedpassword = CommonUtils.extractVariable(prefix, server.getChildText("encryptedpassword"), propertyFile, true);
+					String decryptedpassword = null;
+					if(encryptedpassword != null){
+						decryptedpassword = CommonUtils.decrypt(encryptedpassword);
+					}
+					retval.setPassword(decryptedpassword);
+					
+					retval.setPort(CommonUtils.extractVariable(prefix, server.getChildText("port"), propertyFile, true));
+					retval.setUsage(CommonUtils.extractVariable(prefix, server.getChildText("usage"), propertyFile, true));
+					retval.setUser(CommonUtils.extractVariable(prefix, server.getChildText("user"), propertyFile, true));
+	
+					retval.setCishome(CommonUtils.extractVariable(prefix, server.getChildText("cishome"), propertyFile, true));
+					retval.setClustername(CommonUtils.extractVariable(prefix, server.getChildText("clustername"), propertyFile, true));
+					retval.setSite(CommonUtils.extractVariable(prefix, server.getChildText("site"), propertyFile, true));
+	
+	                String useHttps = CommonUtils.extractVariable(prefix, server.getChildText("useHttps"), propertyFile, true);
                 	retval.setUseHttps(false);
+	                if(useHttps != null && useHttps.trim().length() > 0) {
+	                	retval.setUseHttps(Boolean.parseBoolean(useHttps));
+	                }
+	                
+	             // Construct server info while not extracting variables
+                } else {
+					retval.setId(server.getChildText("id"));
+					retval.setDomain(server.getChildText("domain"));
+					retval.setHostname(server.getChildText("hostname"));
+					
+					String encryptedpassword = server.getChildText("encryptedpassword");
+					String decryptedpassword = null;
+					if(encryptedpassword != null){
+						decryptedpassword = CommonUtils.decrypt(encryptedpassword);
+					}
+					retval.setPassword(decryptedpassword);
+					
+					retval.setPort(server.getChildText("port"));
+					retval.setUsage(server.getChildText("usage"));
+					retval.setUser(server.getChildText("user"));
+	
+					retval.setCishome(server.getChildText("cishome"));
+					retval.setClustername(server.getChildText("clustername"));
+					retval.setSite(server.getChildText("site"));
+	
+	                String useHttps = server.getChildText("useHttps");
+                	retval.setUseHttps(false);
+	                if(useHttps != null && useHttps.trim().length() > 0) {
+	                	retval.setUseHttps(Boolean.parseBoolean(useHttps));
+	                }
                 }
-		
 				break;
 			}
 		}

@@ -4085,6 +4085,14 @@ VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, etc]
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="VCS_BASE_TYPE" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
 			<xs:element name="VCS_HOME" minOccurs="1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
@@ -4180,6 +4188,26 @@ VCS_CHECKOUT_OPTIONS_REQUIRED - A comma separated list of base-level commands th
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+
+			<xs:element name="VCS_CIS_IMPORT_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS Resource Import Options - Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+   Consult the Archive Module documentation for more options.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_CIS_EXPORT_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS Resource Export Options - Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+   Consult the Archive Module documentation for more options.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
 			<xs:element name="VCS_REPOSITORY_URL" minOccurs="1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">

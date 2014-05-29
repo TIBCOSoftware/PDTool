@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <servers>
+  <!-- This shows an example of how variables can be used when allowVariables=true.  
+       However, the default is false to maintain backward compatibility. -->
   <server>
     <id>localhost</id>
     <hostname>localhost</hostname>
     <port>9400</port>
     <usage>DEV-Default</usage>
-    <user>admin</user>
-    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
-    <domain>composite</domain>
+    <user>$CIS_USER</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
     <cishome>C:/CompositeSoftware/CIS6.2.0</cishome>
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>true</allowVariables>
   </server>
     
   <server>
@@ -26,6 +29,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   <server>
     <id>localhost9400https</id>
@@ -39,6 +43,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   
   <server>
@@ -53,6 +58,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   <server>
     <id>localhost9410https</id>
@@ -66,6 +72,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   
   <server>
@@ -80,6 +87,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   <server>
     <id>localhost9420https</id>
@@ -93,6 +101,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
 
   <server>
@@ -100,14 +109,16 @@
     <hostname>localhost</hostname>
     <port>9430</port>
     <usage>DEV6.2</usage>
-    <user>admin</user>
-    <encryptedpassword>Encrypted:7F6324FFD300BE8F</encryptedpassword>
-    <domain>composite</domain>
+    <user>$CIS_USER</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
     <cishome>C:\CompositeSoftware\CIS6.2.0</cishome>
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>true</allowVariables>
   </server>
+  
   <server>
     <id>localhost9430https</id>
     <hostname>localhost</hostname>
@@ -120,6 +131,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
 
   <server>
@@ -134,6 +146,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
   <server>
     <id>localhost9440https</id>
@@ -147,6 +160,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
 
   <server>
@@ -161,6 +175,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
   <server>
     <id>localhost9450https</id>
@@ -174,6 +189,7 @@
     <clustername>cluster2</clustername>
     <site>US East</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
     
   <server>
@@ -188,6 +204,7 @@
     <clustername>cluster1</clustername>
     <site>site1</site>
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   <server>
     <id>qaserver9400https</id>
@@ -201,6 +218,7 @@
     <clustername>cluster1</clustername>
     <site>site1</site>
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
 
   <server>
@@ -215,6 +233,7 @@
     <clustername />
     <site />
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   <server>
     <id>qaserver9410https</id>
@@ -228,6 +247,7 @@
     <clustername />
     <site />
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
   
   <server>
@@ -242,7 +262,8 @@
     <clustername />
     <site />
     <useHttps>false</useHttps>
-  </server>
+	<allowVariables>false</allowVariables>
+   </server>
    <server>
     <id>qaserver9420https</id>
     <hostname>ps-mt1</hostname>
@@ -255,6 +276,7 @@
     <clustername />
     <site />
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>
  
   <server>
@@ -269,6 +291,7 @@
     <clustername />
     <site />
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
    <server>
     <id>qaserver9430https</id>
@@ -282,6 +305,7 @@
     <clustername />
     <site />
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
  
   <server>
@@ -296,6 +320,7 @@
     <clustername />
     <site />
     <useHttps>false</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
   <server>
     <id>qaserver9440https</id>
@@ -309,6 +334,7 @@
     <clustername />
     <site />
     <useHttps>true</useHttps>
+	<allowVariables>false</allowVariables>
   </server>  
 </servers>
 

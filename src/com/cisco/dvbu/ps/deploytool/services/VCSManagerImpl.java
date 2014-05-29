@@ -2847,7 +2847,7 @@ public class VCSManagerImpl implements VCSManager {
 		#------------------------------------------
 		# Execute the script
 		#------------------------------------------
-		echo "${PREFIX1}============= CIS VCS EXPORT ============="
+		echo "${PREFIX1}============= CIS EXPORT ============="
 		"${VCS_SCRIPT_HOME}/cis_import_export/vcs_export.sh" $resourcePath "$VcsTemp" $User $Password $Domain $Host $Port
 
 		echo "${PREFIX1}============= DIFFMERGER CHECKIN ============="
@@ -2878,8 +2878,8 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("      pathToServersXML=   "+pathToServersXML,prefix,"-debug3",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
 
-			CommonUtils.writeOutput("============= CIS VCS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
-			cis_import_export__vcs_export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
+			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 			
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
 			diffmerger__checkin(resourcePath, resourceType, vcsStruct);
@@ -2923,7 +2923,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= VCS CHECKOUT ============="
 		"$VCS_SCRIPT_HOME/vcs_checkin_checkout_${VCS_TYPE}/vcs_checkout.sh" $resourcePath $resourceType $Revision "$Workspace"
 
-		echo "${PREFIX1}============= CIS VCS EXPORT ============="
+		echo "${PREFIX1}============= CIS EXPORT ============="
 		"$VCS_SCRIPT_HOME/cis_import_export/vcs_export.sh" $resourcePath "$VcsTemp" $User $Password $Domain $Host $Port
 
 		echo "${PREFIX1}============ DIFFMERGER ROLLBACK ============="
@@ -2955,8 +2955,8 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, vcsLabel, revision, vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS VCS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
-			cis_import_export__vcs_export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
+			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("========== DIFFMERGER ROLLBACK ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
 			diffmerger__rollback(resourcePath, resourceType, vcsStruct);
@@ -2997,7 +2997,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= VCS CHECKOUT ============="
 		"${VCS_SCRIPT_HOME}/vcs_checkin_checkout_${VCS_TYPE}/vcs_checkout.sh" $resourcePath $resourceType HEAD "$Workspace"
 
-		echo "${PREFIX1}============= CIS VCS EXPORT ============="
+		echo "${PREFIX1}============= CIS EXPORT ============="
 		"${VCS_SCRIPT_HOME}/cis_import_export/vcs_export.sh" $resourcePath "$VcsTemp" $User $Password $Domain $Host $Port
 
 		echo "${PREFIX1}============= DIFFMERGER CHECKIN ============="
@@ -3028,8 +3028,8 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS VCS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
-			cis_import_export__vcs_export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
+			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
 			diffmerger__checkin(resourcePath, resourceType, vcsStruct);
@@ -3069,7 +3069,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= VCS CHECKOUT ============="
 		"${VCS_SCRIPT_HOME}/vcs_checkin_checkout_${VCS_TYPE}/vcs_checkout.sh" ${resourcePath} ${resourceType} HEAD "${Workspace}"
 
-		echo "${PREFIX1}============= CIS VCS EXPORT ============="
+		echo "${PREFIX1}============= CIS EXPORT ============="
 		"${VCS_SCRIPT_HOME}/cis_import_export/vcs_export.sh" ${resourcePath} "${VcsTemp}" ${User} ${Password} ${Domain} ${Host} ${Port}
 
 		echo "${PREFIX1}============= DIFFMERGER CHECKIN ============="
@@ -3096,8 +3096,8 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS VCS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
-			cis_import_export__vcs_export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
+			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
 			diffmerger__checkin(resourcePath, resourceType, vcsStruct);
@@ -3268,8 +3268,11 @@ public class VCSManagerImpl implements VCSManager {
 		# $5 -> CIS Host		 (e.g. localhost)
 		# $6 -> CIS Port		 (e.g. 9400)
 	*/
+		// 2014-05-28 mtinius: Externalized import options
 		// Space separated list of Import Options
-		String importCommandOptions = "-includeaccess";
+		String importCommandOptions = ""; //Default value was "-includeaccess";
+		if (vcsStruct.getVcsCisImportOptions() != null)
+			importCommandOptions = vcsStruct.getVcsCisImportOptions();
 
 		String prefix = "cis_import_export__import";
 		try {	
@@ -3304,9 +3307,9 @@ public class VCSManagerImpl implements VCSManager {
 
 	}
 	// ***********************************************************************************************
-	// Execute a VCS Generalized Scripts  ** CIS_Import_Export VCS_EXPORT **
+	// Execute a VCS Generalized Scripts  ** CIS_Import_Export EXPORT **
 	// ***********************************************************************************************
-	private void cis_import_export__vcs_export(String resourcePath, String resourceType, VcsStruct vcsStruct, String serverId, String pathToServersXML) throws CompositeException {
+	private void cis_import_export__export(String resourcePath, String resourceType, VcsStruct vcsStruct, String serverId, String pathToServersXML) throws CompositeException {
 	/*
 		# $1 -> Resource path 	 (e.g. /shared/MyFolder/My__View), using file system (encoded) names
 		# $2 -> VCS Temp Folder  (e.g. /tmp/workspaces/temp_CIS)
@@ -3316,10 +3319,13 @@ public class VCSManagerImpl implements VCSManager {
 		# $6 -> CIS Host		 (e.g. localhost)
 		# $7 -> CIS Port		 (e.g. 9400)
 	*/
+		// 2014-05-28 mtinius: Externalized export options
 		// Space separated list of Export Options
 		String exportCommandOptions = "";
+		if (vcsStruct.getVcsCisExportOptions() != null)
+			exportCommandOptions = vcsStruct.getVcsCisExportOptions();
 				
-		String prefix = "cis_import_export__vcs_export";
+		String prefix = "cis_import_export__export";
 		try {
 			// Get the server info from the servers.xml file
 			CompositeServer serverInfo = WsApiHelperObjects.getServer(serverId, pathToServersXML);
@@ -5015,6 +5021,8 @@ public class VCSManagerImpl implements VCSManager {
 			String oldProp = null;
 			// VCS_TYPE
 			oldProp = System.clearProperty("VCS_TYPE");
+			// VCS_BASE_TYPE
+			oldProp = System.clearProperty("VCS_BASE_TYPE");
 			// VCS_HOME
 			oldProp = System.clearProperty("VCS_HOME");
 			// VCS_COMMAND
@@ -5052,6 +5060,10 @@ public class VCSManagerImpl implements VCSManager {
 			oldProp = System.clearProperty("VCS_CHECKOUT_OPTIONS");
 			// VCS_CHECKOUT_OPTIONS_REQUIRED
 			oldProp = System.clearProperty("VCS_CHECKOUT_OPTIONS_REQUIRED");
+			// VCS_CIS_IMPORT_OPTIONS
+			oldProp = System.clearProperty("VCS_CIS_IMPORT_OPTIONS");
+			// VCS_CIS_EXPORT_OPTIONS
+			oldProp = System.clearProperty("VCS_CIS_EXPORT_OPTIONS");
 
 			// VCS_USERNAME
 			oldProp = System.clearProperty("VCS_USERNAME");
@@ -5120,6 +5132,15 @@ public class VCSManagerImpl implements VCSManager {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TYPE cannot be emtpy.");						
 							}
 							String oldProp = System.setProperty("VCS_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTYPE(), propertyFile, true));
+
+							// VCS_BASE_TYPE
+							String vcsBaseType = vcsConnection.getVCSBASETYPE();
+							if (vcsBaseType == null || vcsBaseType.isEmpty()) {
+								// If the VCS_BASE_TYPE does not exist then use the VCS_TYPE value.
+								System.setProperty("VCS_BASE_TYPE", vcsType);				
+							} else {
+								oldProp = System.setProperty("VCS_BASE_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASETYPE(), propertyFile, true));
+							}
 							
 							// VCS_HOME
 							if (vcsConnection.getVCSHOME() == null || vcsConnection.getVCSHOME().isEmpty()) {
@@ -5202,6 +5223,12 @@ public class VCSManagerImpl implements VCSManager {
 							// VCS_CHECKOUT_OPTIONS_REQUIRED
 							if (vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED() != null)
 								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED(), propertyFile, true));
+							// VCS_CIS_IMPORT_OPTIONS
+							if (vcsConnection.getVCSCISIMPORTOPTIONS() != null)
+								oldProp = System.setProperty("VCS_CIS_IMPORT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISIMPORTOPTIONS(), propertyFile, true));
+							// VCS_CIS_EXPORT_OPTIONS
+							if (vcsConnection.getVCSCISEXPORTOPTIONS() != null)
+								oldProp = System.setProperty("VCS_CIS_EXPORT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISEXPORTOPTIONS(), propertyFile, true));
 
 							// VCS_USERNAME
 							oldProp = System.setProperty("VCS_USERNAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSUSERNAME(), propertyFile, true));
@@ -5674,6 +5701,7 @@ public class VCSManagerImpl implements VCSManager {
 		private String systemPath;
 	    private String projectHome;
 	    private String vcsType;
+	    private String vcsBaseType;
 	    private String vcsHome;
 	    private String vcsCommand;
 	    private String vcsExecFullPath;
@@ -5686,6 +5714,8 @@ public class VCSManagerImpl implements VCSManager {
 	    private String vcsCheckinOptionsRequired;
 	    private String vcsCheckoutOptions;
 	    private String vcsCheckoutOptionsRequired;
+	    private String vcsCisImportOptions;
+	    private String vcsCisExportOptions;
 	    private String vcsRepositoryUrl;
 	    private String vcsWorkspaceHome;
 	    private String vcsProjectRoot;
@@ -5714,6 +5744,7 @@ public class VCSManagerImpl implements VCSManager {
 	    	systemPath = null;
 	    	projectHome = null;
 		    vcsType = null;
+		    vcsBaseType = null;
 		    vcsHome = null;
 		    vcsCommand = null;
 		    vcsExecFullPath = null;
@@ -5726,6 +5757,8 @@ public class VCSManagerImpl implements VCSManager {
 		    vcsCheckinOptionsRequired = null;
 		    vcsCheckoutOptions = null;
 		    vcsCheckoutOptionsRequired = null;
+		    vcsCisImportOptions = null;
+		    vcsCisExportOptions = null;
 		    vcsRepositoryUrl = null;
 		    vcsWorkspaceHome = null;
 		    vcsProjectRoot = null;
@@ -5779,6 +5812,11 @@ public class VCSManagerImpl implements VCSManager {
 	    	this.setSystemPath(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PATH"), propertyFile, true));
 	    	this.setProjectHome(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PROJECT_HOME"), propertyFile, true));
 	    	this.setVcsType(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_TYPE"), propertyFile, true));
+	    	String vcsBaseType = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_BASE_TYPE"), propertyFile, true);
+	    	// If the VCS_BASE_TYPE is null or empty then set it to the VCS_TYPE
+	    	if (vcsBaseType == null || vcsBaseType.length() == 0)
+	    		vcsBaseType = this.getVcsType();
+	    	this.setVcsBaseType(vcsBaseType);
 	    	this.setVcsHome(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_HOME"), propertyFile, true));
 	    	this.setVcsCommand(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_COMMAND"), propertyFile, true));
 	    	this.setVcsExecFullPath(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_EXEC_FULL_PATH"), propertyFile, true));
@@ -5793,6 +5831,8 @@ public class VCSManagerImpl implements VCSManager {
 	    	this.setVcsCheckinOptionsRequired(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKIN_OPTIONS_REQUIRED"), propertyFile, true));
 	    	this.setVcsCheckoutOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKOUT_OPTIONS"), propertyFile, true));
 	    	this.setVcsCheckoutOptionsRequired(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CHECKOUT_OPTIONS_REQUIRED"), propertyFile, true));
+	    	this.setVcsCisImportOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CIS_IMPORT_OPTIONS"), propertyFile, true));
+	    	this.setVcsCisExportOptions(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_CIS_EXPORT_OPTIONS"), propertyFile, true));
 
 	    	this.setVcsRepositoryUrl(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_REPOSITORY_URL"), propertyFile, true));
 	    	this.setVcsProjectRoot(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_PROJECT_ROOT"), propertyFile, true));
@@ -6165,6 +6205,7 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("---VCS Input Variables from "+propertyFile+" properties file: ",prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_TYPE=                       "+this.getVcsType(),prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VCS_BASE_TYPE=                  "+this.getVcsBaseType(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_HOME=                       "+this.getVcsHome(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_COMMAND=                    "+this.getVcsCommand(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_EXEC_FULL_PATH=             "+this.getVcsExecFullPath(),prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -6177,6 +6218,8 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("      VCS_CHECKIN_OPTIONS_REQUIRED=   "+CommonUtils.maskCommand(this.getVcsCheckinOptionsRequired()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_CHECKOUT_OPTIONS=           "+CommonUtils.maskCommand(this.getVcsCheckoutOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_CHECKOUT_OPTIONS_REQUIRED=  "+CommonUtils.maskCommand(this.getVcsCheckoutOptionsRequired()),prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VCS_CIS_IMPORT_OPTIONS=         "+CommonUtils.maskCommand(this.getVcsCisImportOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("      VCS_CIS_EXPORT_OPTIONS=         "+CommonUtils.maskCommand(this.getVcsCisExportOptions()),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_USER=                       "+this.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_PASSWORD=                   ********",prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS_REPOSITORY_URL=             "+CommonUtils.maskCommand(this.getVcsRepositoryUrl()),prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -6336,6 +6379,14 @@ public class VCSManagerImpl implements VCSManager {
 	    private String getVcsType() {
 	    	return this.vcsType;
 	    }
+	    // Set/Get vcsBaseType
+	    private void setVcsBaseType(String s) {
+	    	this.vcsBaseType = s;
+	    }
+	    private String getVcsBaseType() {
+	    	return this.vcsBaseType;
+	    }
+	    
 	    // Set/Get vcsHome
 	    private void setVcsHome(String s) {
 	    	if (s.startsWith("VCS_HOME=")) {
@@ -6423,6 +6474,21 @@ public class VCSManagerImpl implements VCSManager {
 	    }
 	    private String getVcsCheckoutOptionsRequired() {
 	    	return this.vcsCheckoutOptionsRequired;
+	    }
+
+	    // Set/Get vcsCisImportOptions
+	    private void setVcsCisImportOptions(String s) {
+	    	this.vcsCisImportOptions = s;
+	    }
+	    private String getVcsCisImportOptions() {
+	    	return this.vcsCisImportOptions;
+	    }
+	    // Set/Get vcsCisExportOptions
+	    private void setVcsCisExportOptions(String s) {
+	    	this.vcsCisExportOptions = s;
+	    }
+	    private String getVcsCisExportOptions() {
+	    	return this.vcsCisExportOptions;
 	    }
 
 	    
