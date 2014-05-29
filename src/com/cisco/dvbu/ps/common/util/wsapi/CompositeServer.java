@@ -16,6 +16,7 @@ public class CompositeServer {
 	private String clustername;
 	private String site;
 	private Boolean useHttps;
+	private Boolean allowVariables;
 
 	public String getHostname() {
 		return hostname;
@@ -108,5 +109,15 @@ public class CompositeServer {
 		this.useHttps = useHttps;
 	}
 	
+	/** 
+	 * @param allowVariables allows the use of variables in parameters
+	 */
+	public boolean isAllowVariables() {
+		return allowVariables;
+	}
+	public void setAllowVariables(boolean allowVariables) {
+		this.allowVariables = allowVariables;
+	}
+
 
 }

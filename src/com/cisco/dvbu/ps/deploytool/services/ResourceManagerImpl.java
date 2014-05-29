@@ -73,7 +73,10 @@ public class ResourceManagerImpl implements ResourceManager{
 						 int i = 0;
 						 for (String argument : argumentList) {
 							 
-							 if(argument != null){
+							 if(argument != null) 
+							 {
+								 // If the argument value contains $ or % then treat it as a variable and resolve the variable
+								 argument = CommonUtils.extractVariable(prefix, argument, propertyFile, false);
 								 if(i > 0){
 									 arguments +=",";
 								 }
