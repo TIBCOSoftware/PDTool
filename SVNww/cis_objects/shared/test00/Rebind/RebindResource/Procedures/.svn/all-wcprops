@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindResource/Procedures
+END
+Procedures.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindResource/Procedures/Procedures.cmf
+END
+streamingXSLT_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindResource/Procedures/streamingXSLT_procedure.cmf
+END
+packagedCustomerQuery_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindResource/Procedures/packagedCustomerQuery_procedure.cmf
+END
+getCustomerById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindResource/Procedures/getCustomerById_procedure.cmf
+END

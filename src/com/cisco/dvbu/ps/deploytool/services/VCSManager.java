@@ -458,13 +458,15 @@ public interface VCSManager {
 	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
 	 * 
 	 * @param customPathList - a comma separated list of paths that are added to the base paths of /shared or /services/databases or /services/webservices 
-	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository. 
+	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository.
+	 * @param vcsCheckinOptions - a space separated list of check-in options that are put on the VCS command line at the time of execution.  
+	 * 							  However, if a value exists in the studio.properties file, these values are not used. 
 	 * @param vcsUser - the VCS user passed in from the command line
 	 * @param vcsPassword - the VCS user passed in from the command line
 	 * @return void
 	 * @throws CompositeException
 	 */	
-	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsCheckinOptions, String vcsUser, String vcsPassword) throws CompositeException;
 
 	/**
 	 * Composite Studio integrates with vcsStudioCheckout to checkout the changes from the repository and import the differences into the CIS server.
@@ -515,6 +517,7 @@ public interface VCSManager {
 	 *  like TFS.  Subversion does not have this issue.
 	 *  
 	 * @param serverId - target server name
+	 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
 	 * @param pathToServersXML - path to the server values XML
 	 * @param vcsUser - the VCS user passed in from the command line
@@ -523,7 +526,7 @@ public interface VCSManager {
 	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
 	 * @throws CompositeException
 	 */
-	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsScanPathLength(String serverId, int vcsMaxPathLength, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
 
 	/**
 	 *  This method handles scanning the Composite path and searching for encoded paths
@@ -533,6 +536,7 @@ public interface VCSManager {
 	 *  
 	 * @param serverId - target server name
 	 * @param vcsConnectionId - VCS Connection property information 
+	 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
 	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
 	 * @param pathToServersXML - path to the server values XML
@@ -542,6 +546,6 @@ public interface VCSManager {
 	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
 	 * @throws CompositeException
 	 */
-	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, int vcsMaxPathLength, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
 
 }

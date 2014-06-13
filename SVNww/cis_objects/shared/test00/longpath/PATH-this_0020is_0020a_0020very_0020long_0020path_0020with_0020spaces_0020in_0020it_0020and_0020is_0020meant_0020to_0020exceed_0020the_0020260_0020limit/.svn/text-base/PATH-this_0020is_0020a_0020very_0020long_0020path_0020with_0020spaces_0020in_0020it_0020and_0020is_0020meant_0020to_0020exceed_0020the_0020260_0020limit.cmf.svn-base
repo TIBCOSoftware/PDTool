@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="PATH-this is a very long path with spaces in it and is meant to exceed the 260 limit" path="/shared/test00/longpath/PATH-this is a very long path with spaces in it and is meant to exceed the 260 limit" type="CONTAINER" subtype="FOLDER" changeToken="0">
+  <security>
+    <owner user="admin" domain="composite"/>
+    <privilege group="group1" domain="composite" privileges="READ"/>
+    <privilege group="group2" domain="composite" privileges="READ"/>
+  </security>
+  <attribute name="creationDate" type="LONG">1393476414515</attribute>
+  <attribute name="creatorUserDomain" type="STRING">composite</attribute>
+  <attribute name="creatorUserName" type="STRING">admin</attribute>
+  <attribute name="lastModifiedDate" type="LONG">1393476414530</attribute>
+  <attribute name="lastModifiedUserDomain" type="STRING">composite</attribute>
+  <attribute name="lastModifiedUserName" type="STRING">admin</attribute>
+</metadata>

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/sandbox/!svn/ver/688/PDTOOL/6_2/cis_objects/services/databases/TEST00/CAT2/SCH2
+END
+SCH2.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/sandbox/!svn/ver/688/PDTOOL/6_2/cis_objects/services/databases/TEST00/CAT2/SCH2/SCH2.cmf
+END
+customers_link.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/sandbox/!svn/ver/688/PDTOOL/6_2/cis_objects/services/databases/TEST00/CAT2/SCH2/customers_link.cmf
+END
+getCustomerById_link.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/sandbox/!svn/ver/688/PDTOOL/6_2/cis_objects/services/databases/TEST00/CAT2/SCH2/getCustomerById_link.cmf
+END

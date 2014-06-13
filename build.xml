@@ -74,6 +74,11 @@
 		          locale="en,US"/>
 		</tstamp>
 
+		<!-- 
+		***************************************************************
+		Create PDTool distribution zip file.
+		***************************************************************
+		-->
 		<!-- Create the PD Tool (command-line / Ant) distribution zip file. -->
 		<mkdir dir="${pdtool-target}"/>
 		<mkdir dir="${pdtool-target}/bin"/>
@@ -244,9 +249,17 @@
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtool-target}"/>
 		
+		<!-- 
+		***************************************************************
+		Create PDTool Studio distribution zip file.
+		***************************************************************
+		-->
 		<!-- Create the PD Tool Studio distribution zip file. -->
 		<mkdir dir="${pdtoolstudio-target}"/>
 		<mkdir dir="${pdtoolstudio-target}/bin"/>
+		<mkdir dir="${pdtoolstudio-target}/bin_novars"/>
+		<mkdir dir="${pdtoolstudio-target}/bin_host1"/>
+		<mkdir dir="${pdtoolstudio-target}/bin_host2"/>
 		<mkdir dir="${pdtoolstudio-target}/dist"/>
 		<mkdir dir="${pdtoolstudio-target}/docs/VCS_Specific"/>
 		<mkdir dir="${pdtoolstudio-target}/docs/VCS_Studio"/>
@@ -271,6 +284,28 @@
 		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
+		<copy todir="${pdtoolstudio-target}/bin_novars">
+		    <fileset dir="${bin}/PDToolStudio_bin_novars">
+		        <include name="*.bat"/>
+		        <include name="*.sh"/>
+		        <include name="*.properties"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtoolstudio-target}/bin_host1">
+		    <fileset dir="${bin}/PDToolStudio_bin_host1">
+		        <include name="*.bat"/>
+		        <include name="*.sh"/>
+		        <include name="*.properties"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtoolstudio-target}/bin_host2">
+		    <fileset dir="${bin}/PDToolStudio_bin_host2">
+		        <include name="*.bat"/>
+		        <include name="*.sh"/>
+		        <include name="*.properties"/>
+		    </fileset>
+		</copy>
+		
 		<copy todir="${pdtoolstudio-target}/dist">
 		    <fileset dir="${dist}">
 		        <include name="*.jar"/>
@@ -318,6 +353,7 @@
 		        <include name="log*.properties"/>
 			    <include name="studio.properties"/>
 			    <include name="studio*example.properties"/>
+			    <include name="studio*multi_host.properties"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/resources/vcs_initial">
@@ -342,7 +378,11 @@
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtoolstudio-target}"/>
 
-		
+		<!-- 
+		***************************************************************
+		Create Regression distribution zip file.
+		***************************************************************
+		-->
 		<!-- Create the Regression zip file target directories -->
 		<mkdir dir="${regression-target}"/>
 		<mkdir dir="${regression-target}/carfiles"/>

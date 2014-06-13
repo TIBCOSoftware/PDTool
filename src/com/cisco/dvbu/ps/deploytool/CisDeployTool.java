@@ -108,9 +108,14 @@ public class CisDeployTool {
 			 *    3. Get OS System Environment variables
 			 */
 	        propertyFile = CommonUtils.getFileOrSystemPropertyValue(null, "CONFIG_PROPERTY_FILE");
+	        String propertyOrderPrecedence = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "propertyOrderPrecedence");
+	        if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0)
+	        	propertyOrderPrecedence = CommonConstants.propertyOrderPrecedenceDefault;
+	        
 			logger.info("");
 			logger.info("----------------------------------------------");
 			logger.info("CONFIG_PROPERTY_FILE="+propertyFile);
+			logger.info("propertyOrderPrecedence="+propertyOrderPrecedence);
 			logger.info("----------------------------------------------");
 			
 			if (!PropertyManager.getInstance().doesPropertyFileExist(propertyFile)) {

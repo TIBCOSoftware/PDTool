@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/TestSecurity/CAT1/SCH1
+END
+customers_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/TestSecurity/CAT1/SCH1/customers_table.cmf
+END
+SCH1.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/TestSecurity/CAT1/SCH1/SCH1.cmf
+END
+getCustomerById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/TestSecurity/CAT1/SCH1/getCustomerById_procedure.cmf
+END

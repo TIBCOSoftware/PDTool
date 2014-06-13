@@ -723,26 +723,51 @@ public class CommonUtils {
 				while (st.hasMoreTokens()) {
 					token = st.nextToken();
 					++pathCount;
+			
+					// Convert square bracket characters to angle bracket characters
+					if (token.contains("["))
+						token = token.replace("[", "<");
+					if (token.contains("]"))
+						token = token.replace("]", ">");
+
+					// If this is the first path extracted then assume it is a database token
+					if (pathCount == 1) 
+						templateText = templateDatabase;
 					
-					// Determine if the token is a database type token
-					if (token.toUpperCase().contains("<TYPE=DATABASE>") || pathCount == 1) {
-						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=DATABASE>"), Matcher.quoteReplacement(""));
+					// Determine if the token is a database type token: "/services/databases/My Database[TYPE=DATABASE]/My Catalog[type=catalog]/My Schema[Type=Schema]"
+					if (token.toUpperCase().trim().contains("<TYPE=DATABASE>"))
+					{
+						int beg = token.toUpperCase().indexOf("<");
+						int end = token.toUpperCase().indexOf(">");
+						resourceName = token.substring(0, beg);
+						if (end+1 < token.length())
+							resourceName = resourceName + token.substring(end+1);
 						templateText = templateDatabase;
 					}
-					// Determine if the token is a catalog type token
-					else if (token.toUpperCase().contains("<TYPE=CATALOG>")) {
-						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=CATALOG>"), Matcher.quoteReplacement(""));
+					// Determine if the token is a catalog type token: "/services/databases/My Database[TYPE=DATABASE]/My Catalog[type=catalog]/My Schema[Type=Schema]"
+					else if (token.toUpperCase().trim().contains("<TYPE=CATALOG>"))
+					{
+						int beg = token.toUpperCase().indexOf("<");
+						int end = token.toUpperCase().indexOf(">");
+						resourceName = token.substring(0, beg);
+						if (end+1 < token.length())
+							resourceName = resourceName + token.substring(end+1);
 						templateText = templateCatalog;
 					}
-					// Determine if the token is a schema type token
-					else if (token.toUpperCase().contains("<TYPE=SCHEMA>")) {
-						resourceName = token.replaceAll(Matcher.quoteReplacement("<TYPE=SCHEMA>"), Matcher.quoteReplacement(""));
+					// Determine if the token is a schema type token: "/services/databases/My Database[TYPE=DATABASE]/My Catalog[type=catalog]/My Schema[Type=Schema]"
+					else if (token.toUpperCase().trim().contains("<TYPE=SCHEMA>"))
+					{
+						int beg = token.toUpperCase().indexOf("<");
+						int end = token.toUpperCase().indexOf(">");
+						resourceName = token.substring(0, beg);
+						if (end+1 < token.length())
+							resourceName = resourceName + token.substring(end+1);
 						templateText = templateSchema;
 					// Otherwise default to a folder token
 					} else {
 						resourceName = token;
 						templateText = templateVirtualFolder;
-					}
+					}			
 					resourceNameEncoded = ResourceNameCodec.encode(resourceName);
 					
 					// CIS resource path
@@ -1419,8 +1444,113 @@ public class CommonUtils {
 	
 	// Get a property from the property file specified or the System environment
 	public static String getFileOrSystemPropertyValue(String propertyFile, String property) {
-		String propertyVal = null;
-		try {
+
+		// Initialize variables
+		String propertyVal = "";
+		String jvmPropertVal = null;
+		String propFilePropertyVal = null;
+		String systemPropertyVal = null;
+		int jvmPos = 1;
+		int propFilePos = 2;
+		int systemPos = 3;
+		/* mtinius: 2014-06-12 - the property order defines the order of precedence
+			# The property order of precedence defines which properties are taken first.
+			#   JVM - These are properties that are set on the JVM command line with a -DVAR=value
+			#   PROPERTY_FILE - These are the variables set in the configuration property file like deploy.properties or in the VCSModule.xml
+			#   SYSTEM - These are variables that are set in batch files in the operating system prior to invocation of PDTool.
+			# If left blank, the default=JVM PROPERTY_FILE SYSTEM
+			# However, it may be necessary to be able to override what is in the property file and pick up an environment variable first.
+			# propertyOrderPrecedence=JVM SYSTEM PROPERTY_FILE
+		*/
+		String propertyOrderPrecedence = PropertyManager.getInstance().getProperty(propertyFile, "propertyOrderPrecedence");	
+		if (propertyOrderPrecedence != null && propertyOrderPrecedence.trim().length() > 0) {
+			jvmPos = propertyOrderPrecedence.toUpperCase().indexOf("JVM");
+			if (jvmPos < 0)
+				throw new ApplicationException("Error parsing property file=["+propertyFile+"]  propertyOrderPrecedence="+propertyOrderPrecedence+"  The property \"propertyOrderPrecedence\" must contain \"JVM\".");	
+			
+			propFilePos = propertyOrderPrecedence.toUpperCase().indexOf("PROPERTY_FILE");
+			if (propFilePos < 0)
+				throw new ApplicationException("Error parsing property file=["+propertyFile+"]  propertyOrderPrecedence="+propertyOrderPrecedence+"  The property \"propertyOrderPrecedence\" must contain \"PROPERTY_FILE\".");	
+			
+			systemPos = propertyOrderPrecedence.toUpperCase().indexOf("SYSTEM");
+			if (systemPos < 0)
+				throw new ApplicationException("Error parsing property file=["+propertyFile+"]  propertyOrderPrecedence="+propertyOrderPrecedence+"  The property \"propertyOrderPrecedence\" must contain \"SYSTEM\".");	
+		}
+		
+		try {	
+			// Get the JVM Property and if blank make it null
+			jvmPropertVal = System.getProperty(property);
+			if (jvmPropertVal != null && jvmPropertVal.length() == 0)
+				jvmPropertVal = null;
+			
+			// Get the Property File Property and if blank make it null
+			propFilePropertyVal = PropertyManager.getInstance().getProperty(propertyFile, property);	
+			if (propFilePropertyVal != null && propFilePropertyVal.length() == 0)
+				propFilePropertyVal = null;
+			
+			// Get the Operating System Environment Property and if blank make it null
+			systemPropertyVal = System.getenv(property);
+			if (systemPropertyVal != null && systemPropertyVal.length() == 0)
+				systemPropertyVal = null;
+
+			if (jvmPos < propFilePos && propFilePos < systemPos) {			//jvmPos=1; propFilePos=2; systemPos=3;  (Default Behavior)
+				if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} else if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				} else if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				}
+			} 
+			else if (jvmPos < systemPos && systemPos < propFilePos) {  		//jvmPos=1; systemPos=2; propFilePos=3;	
+				if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} else if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				} else if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				}
+			}
+			else if (propFilePos < jvmPos && jvmPos < systemPos) {  		//propFilePos=1; jvmPos=2; systemPos=3;	
+				if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				} else if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} else if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				} 
+			}
+			else if (propFilePos < systemPos && systemPos < jvmPos) {  		//propFilePos=1; systemPos=2; jvmPos=3;	
+				if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				} else if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				} else if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} 				
+			}
+			else if (systemPos < jvmPos && jvmPos < propFilePos) {  		//systemPos=1; jvmPos=2; propFilePos=3;	
+				if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				} else if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} else if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				} 								
+			}
+			else if (systemPos < propFilePos && propFilePos < jvmPos) {  	//systemPos=1; propFilePos=2; jvmPos=3;	
+				if (systemPropertyVal != null) {
+					propertyVal = systemPropertyVal;
+				} else if (propFilePropertyVal != null) {
+					propertyVal = propFilePropertyVal;
+				} else if (jvmPropertVal != null) {
+					propertyVal = jvmPropertVal;
+				} 												
+			} else {
+				propertyVal = "";
+			}
+
+			/* deprecated code
 			// mtinius: 2012-01-20:  
 			//		Modified to get the JVM environment before the property file.
 			//		This change was put in place so that VCS Module could set the VCS Environment variables that it
@@ -1438,8 +1568,9 @@ public class CommonUtils {
 				propertyVal = PropertyManager.getInstance().getProperty(propertyFile, property);	
 			}
 
+			// mtinius: 2014-06-05: added "||  propertyVal.length() == 0" because environment variables were being ignored since the previous command set a blank and not a null.
 			// Try getting the property from a System Environment variable
-			if (propertyVal == null) {
+			if (propertyVal == null || propertyVal.length() == 0) {
 				propertyVal = System.getenv(property);
 			}
 			
@@ -1447,7 +1578,7 @@ public class CommonUtils {
 			if (propertyVal == null || propertyVal.length() == 0) {
 				propertyVal = "";
 			}
-			
+			*/
 			return propertyVal;
 			
 		} catch (Exception e) {

@@ -8,7 +8,9 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.Matcher;
 import java.net.Authenticator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -109,6 +111,8 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
 		if ( regressionConfig.getTestRunParams().getBaseDir() != null) {
 			baseDir = CommonUtils.extractVariable(prefix, regressionConfig.getTestRunParams().getBaseDir().trim(), propertyFile, true);
 	        if (baseDir != null && baseDir.length() > 0) {
+	        	baseDir = baseDir.replaceAll(Matcher.quoteReplacement("\\\\"), Matcher.quoteReplacement("/"));
+	        	baseDir = baseDir.replaceAll(Matcher.quoteReplacement("\\"), Matcher.quoteReplacement("/"));
 		        // Make the sub-directory for the base directory which is where the result files go for each execution
 		        boolean res = CommonUtils.mkdirs(baseDir);
 	        } else {

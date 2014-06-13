@@ -3,5 +3,5 @@
 # -----------------------------------------
 # Test vcs scan path length
 #
-PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN 259 "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
  

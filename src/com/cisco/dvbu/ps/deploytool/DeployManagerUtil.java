@@ -36,7 +36,7 @@ public class DeployManagerUtil {
 	
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
-
+	
 		if (logger.isDebugEnabled()) {
 			logger.debug("Entering Main method");
 		}

@@ -5,8 +5,8 @@ public class CommonConstants {
 	// Config Root Property
 	public static final String configRootProperty = "com.cisco.dvbu.ps.configroot";
 
-	// Default Property File Name
-	public static final String propertyFile = "deploy.properties";
+	// Default Property File Name from the JAVA system environment.  This gets set by the ExecutePDTool.bat or ExecutePDToolStudio.bat with a -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE%
+	public static final String propertyFile = System.getProperty("CONFIG_PROPERTY_FILE");
 
 	// Default deploy manager name
 	public static final String deployManagerName = "deployManager";
@@ -38,4 +38,7 @@ public class CommonConstants {
 
 	// Maximum windows path length
 	public static final int maxWindowsPathLen = 259;
+	
+	// Default order of precedence for retrieving property files
+	public static final String propertyOrderPrecedenceDefault = "DEFAULT: JVM PROPERTY_FILE SYSTEM";
 }

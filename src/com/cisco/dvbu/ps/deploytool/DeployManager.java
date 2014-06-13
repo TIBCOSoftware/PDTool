@@ -19,9 +19,9 @@ public interface DeployManager
 		// General PD Tool execution with a password
 		"execCisDeployTool[3|3]"+
 		// PD Tool version 1 original methods with a password
-		",vcsInitWorkspace[2|2],vcsInitializeBaseFolderCheckin[3|3],vcsScanPathLength[5|5],vcsCheckout[7|7],vcsCheckout[8|8],vcsCheckouts[6|6],vcsCheckin[7|7],vcsCheckins[6|6],vcsForcedCheckin[7|7],vcsForcedCheckins[6|6],vcsPrepareCheckin[6|6],vcsPrepareCheckins[6|6]"+
+		",vcsInitWorkspace[2|2],vcsInitializeBaseFolderCheckin[3|3],vcsScanPathLength[6|6],vcsCheckout[7|7],vcsCheckout[8|8],vcsCheckouts[6|6],vcsCheckin[7|7],vcsCheckins[6|6],vcsForcedCheckin[7|7],vcsForcedCheckins[6|6],vcsPrepareCheckin[6|6],vcsPrepareCheckins[6|6]"+
 		// PD Tool version 2 methods with a password
-		",vcsInitWorkspace2[4|4],vcsInitializeBaseFolderCheckin2[5|5],vcsScanPathLength2[7|7],vcsCheckout2[9|9],vcsCheckout2[10|10],vcsCheckouts2[7|7],vcsCheckin2[9|9],vcsCheckins2[7|7],vcsForcedCheckin2[9|9],vcsForcedCheckins2[7|7],vcsPrepareCheckin2[8|8],vcsPrepareCheckins2[7|7]"+
+		",vcsInitWorkspace2[4|4],vcsInitializeBaseFolderCheckin2[5|5],vcsScanPathLength2[8|8],vcsCheckout2[9|9],vcsCheckout2[10|10],vcsCheckouts2[7|7],vcsCheckin2[9|9],vcsCheckins2[7|7],vcsForcedCheckin2[9|9],vcsForcedCheckins2[7|7],vcsPrepareCheckin2[8|8],vcsPrepareCheckins2[7|7]"+
 		// PD Tool Studio methods with a password
 		",vcsStudioInitWorkspace[2|2]";
 	
@@ -1344,12 +1344,14 @@ public interface DeployManager
 	 * 
 	 * @param customPathList - a comma separated list of paths that are added to the base paths of /shared or /services/databases or /services/webservices 
 	 *                         these paths and their corresponding .cmf file will be created during initialization of the workspace and vcs repository. 
+	 * @param vcsCheckinOptions - a space separated list of check-in options that are put on the VCS command line at the time of execution.  
+	 * 							  However, if a value exists in the studio.properties file, these values are not used. 
 	 * @param vcsUser - the VCS user passed in from the command line
 	 * @param vcsPassword - the VCS user passed in from the command line
 	 * @return void
 	 * @throws CompositeException
 	 */	
-	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsCheckinOptions, String vcsUser, String vcsPassword) throws CompositeException;
 
 	/**
 	 * Composite Studio integrates with vcsStudioCheckout to checkout the changes from the repository and import the differences into the CIS server.
@@ -1402,6 +1404,7 @@ public interface DeployManager
 	 * This method uses the deployment configuration property file "deploy.properties" for VCS connection properties.
 	 *  
 	 * @param serverId - target server name
+	 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
 	 * @param pathToServersXML - path to the server values XML
 	 * @param vcsUser - the VCS user passed in from the command line
@@ -1410,7 +1413,7 @@ public interface DeployManager
 	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
 	 * @throws CompositeException
 	 */
-	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsScanPathLength(String serverId, String vcsMaxPathLength, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
 
 	/**
 	 *  This method handles scanning the Composite path and searching for encoded paths
@@ -1422,6 +1425,7 @@ public interface DeployManager
 	 *  
 	 * @param serverId - target server name
 	 * @param vcsConnectionId - VCS Connection property information 
+	 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 	 * @param vcsResourcePathList -  a comma separated list of CIS resource paths to scan
 	 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
 	 * @param pathToServersXML - path to the server values XML
@@ -1431,7 +1435,7 @@ public interface DeployManager
 	 * 			[Optional parameter when values are set in studio.properties, deploy.properties or VCSModule.xml.  pass in null.]
 	 * @throws CompositeException
 	 */
-	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsMaxPathLength, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	//--Begin::??? Module-------------------------------------------------------------------------------------------------------------

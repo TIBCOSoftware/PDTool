@@ -1,0 +1,142 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="getCustomerById" path="/shared/test00/TestSecurity/getCustomerById" type="PROCEDURE" subtype="SQL_SCRIPT_PROCEDURE" changeToken="0">
+  <parameters>
+    <parameter name="custId" direction="IN" nullable="true">
+      <datatype name="INTEGER" type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+    </parameter>
+    <parameter name="result" direction="OUT" nullable="true">
+      <datatype name="result" type="TABLE" refId="1">
+        <element name="CustomerID">
+          <datatype name="INTEGER" type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+        </element>
+        <element name="CompanyName">
+          <datatype name="VARCHAR" type="STRING" maxLength="50"/>
+        </element>
+        <element name="ContactFirstName">
+          <datatype name="VARCHAR" type="STRING" maxLength="30"/>
+        </element>
+        <element name="ContactLastName">
+          <datatype name="VARCHAR" type="STRING" maxLength="50"/>
+        </element>
+        <element name="BillingAddress">
+          <datatype name="VARCHAR" type="STRING" maxLength="255"/>
+        </element>
+        <element name="City">
+          <datatype name="VARCHAR" type="STRING" maxLength="50"/>
+        </element>
+        <element name="StateOrProvince">
+          <datatype name="VARCHAR" type="STRING" maxLength="20"/>
+        </element>
+        <element name="PostalCode">
+          <datatype name="VARCHAR" type="STRING" maxLength="20"/>
+        </element>
+        <element name="CountryRegion">
+          <datatype name="VARCHAR" type="STRING" maxLength="50"/>
+        </element>
+        <element name="ContactTitle">
+          <datatype name="VARCHAR" type="STRING" maxLength="50"/>
+        </element>
+        <element name="PhoneNumber">
+          <datatype name="VARCHAR" type="STRING" maxLength="30"/>
+        </element>
+        <element name="FaxNumber">
+          <datatype name="VARCHAR" type="STRING" maxLength="30"/>
+        </element>
+      </datatype>
+    </parameter>
+  </parameters>
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <dependency target="/shared/test00/DataSources/ds_orders/customers" type="TABLE">
+    <datatype type="TABLE" refId="1">
+      <element name="CustomerID" nullable="false">
+        <datatype type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+      </element>
+      <element name="CompanyName">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="ContactFirstName">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+      <element name="ContactLastName">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="BillingAddress">
+        <datatype type="STRING" maxLength="255"/>
+      </element>
+      <element name="City">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="StateOrProvince">
+        <datatype type="STRING" maxLength="20"/>
+      </element>
+      <element name="PostalCode">
+        <datatype type="STRING" maxLength="20"/>
+      </element>
+      <element name="CountryRegion">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="ContactTitle">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="PhoneNumber">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+      <element name="FaxNumber">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+    </datatype>
+  </dependency>
+  <attribute name="Script" type="STRING">/*
+	Get the customer record by Id.
+*/
+PROCEDURE getCustomerById(
+	IN  custId	INTEGER,
+    OUT result CURSOR (
+        CustomerID INTEGER, 
+        CompanyName VARCHAR(50), 
+        ContactFirstName VARCHAR(30), 
+        ContactLastName VARCHAR(50), 
+        BillingAddress VARCHAR(255), 
+        City VARCHAR(50), 
+        StateOrProvince VARCHAR(20), 
+        PostalCode VARCHAR(20), 
+        CountryRegion VARCHAR(50), 
+        ContactTitle VARCHAR(50), 
+        PhoneNumber VARCHAR(30), 
+        FaxNumber VARCHAR(30)
+        )
+    )
+    BEGIN
+        OPEN result FOR 
+            SELECT 
+                customers.CustomerID, 
+                customers.CompanyName, 
+                customers.ContactFirstName, 
+                customers.ContactLastName, 
+                customers.BillingAddress, 
+                customers.City, 
+                customers.StateOrProvince, 
+                customers.PostalCode, 
+                customers.CountryRegion, 
+                customers.ContactTitle, 
+                customers.PhoneNumber, 
+                customers.FaxNumber
+            FROM      
+                /shared/test00/DataSources/ds_orders/customers customers
+			WHERE CustomerID = custId;
+    END</attribute>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="explicitly.designed" type="BOOLEAN">false</attribute>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="lastModifiedDate" type="LONG">1393867030010</attribute>
+  <attribute name="lastModifiedUserDomain" type="STRING">composite</attribute>
+  <attribute name="lastModifiedUserName" type="STRING">admin</attribute>
+  <attribute name="model" type="NULL"/>
+  <attribute name="native_only" type="STRING">false</attribute>
+  <attribute name="references" type="NULL"/>
+</metadata>

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures
+END
+Procedures.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/Procedures.cmf
+END
+getOrdersById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/getOrdersById_procedure.cmf
+END
+packagedCustomerQuery_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/packagedCustomerQuery_procedure.cmf
+END
+getCustomerOrdersById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/getCustomerOrdersById_procedure.cmf
+END
+getCustomerById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/getCustomerById_procedure.cmf
+END
+getOrderDetailsById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/getOrderDetailsById_procedure.cmf
+END
+getShippingMethodsById_procedure.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Procedures/getShippingMethodsById_procedure.cmf
+END
