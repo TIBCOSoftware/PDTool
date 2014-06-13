@@ -1,0 +1,81 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="trigger4" path="/shared/test00/ResourceTrigger/trigger4" type="TRIGGER" subtype="NONE" changeToken="0">
+  <annotation>trigger 4 annotation</annotation>
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <dependency target="/shared/test00/DataSources/ds_orders" type="DATA_SOURCE">
+    <datatype name="Tree" type="TREE" refId="1"></datatype>
+  </dependency>
+  <attribute name="actionProperties" type="MAP">
+    <item>
+      <key type="STRING">PATH</key>
+      <value type="STRING">/shared/test00/DataSources/ds_orders</value>
+    </item>
+  </attribute>
+  <attribute name="actionType" type="STRING">STATISTICS</attribute>
+  <attribute name="conditionProperties" type="MAP">
+    <item>
+      <key type="STRING">NAME</key>
+      <value type="STRING">USER_DEFINED_EVENT1</value>
+    </item>
+  </attribute>
+  <attribute name="conditionSchedule" type="MAP">
+    <item>
+      <key type="STRING">startTime</key>
+      <value type="LONG">1306958137000</value>
+    </item>
+    <item>
+      <key type="STRING">recurringDay</key>
+      <value type="INTEGER">2</value>
+    </item>
+    <item>
+      <key type="STRING">lastScheduledTime</key>
+      <value type="LONG">0</value>
+    </item>
+    <item>
+      <key type="STRING">isCluster</key>
+      <value type="BOOLEAN">true</value>
+    </item>
+    <item>
+      <key type="STRING">count</key>
+      <value type="INTEGER">1</value>
+    </item>
+    <item>
+      <key type="STRING">interval</key>
+      <value type="INTEGER">-1</value>
+    </item>
+    <item>
+      <key type="STRING">fromTimeInADay</key>
+      <value type="LONG">1200</value>
+    </item>
+    <item>
+      <key type="STRING">period</key>
+      <value type="INTEGER">1</value>
+    </item>
+    <item>
+      <key type="STRING">endTime</key>
+      <value type="LONG">0</value>
+    </item>
+    <item>
+      <key type="STRING">endTimeInADay</key>
+      <value type="LONG">1400</value>
+    </item>
+    <item>
+      <key type="STRING">lastRunTime</key>
+      <value type="LONG">0</value>
+    </item>
+    <item>
+      <key type="STRING">mode</key>
+      <value type="STRING">CALENDAR</value>
+    </item>
+  </attribute>
+  <attribute name="conditionType" type="STRING">USER_DEFINED</attribute>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="enabled" type="BOOLEAN">false</attribute>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="maxEventsQueued" type="INTEGER">1</attribute>
+</metadata>

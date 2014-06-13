@@ -1,0 +1,717 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="Definitions" path="/services/webservices/TEST00/testWebService/Definitions" type="DEFINITION_SET" subtype="WSDL_DEFINITION_SET" changeToken="0" virtual="true">
+  <definitions>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortType" type="PORT_TYPE">
+      <datatype name="testServicePortType" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortType" subType="PORT_TYPE" type="TREE" refId="1">
+        <element name="customers" nullable="false">
+          <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="OPERATION" type="TREE" refId="2">
+            <element name="testServicePortcustomersSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="IN" nullable="false">
+              <datatype name="testServicePortcustomersSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="3">
+                <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers">
+                    <schemaDatatype>
+                      <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="4"></datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+            <element name="testServicePortcustomersSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="OUT" nullable="false">
+              <datatype name="testServicePortcustomersSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="5">
+                <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse">
+                    <schemaDatatype>
+                      <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="6">
+                        <element name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers">
+                            <schemaDatatype>
+                              <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="7">
+                                <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                                  <datatype name="customersRow" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow">
+                                    <schemaDatatype>
+                                      <datatype name="customersRow" type="TREE" refId="8">
+                                        <element name="CustomerID">
+                                          <datatype name="CustomerID" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="int" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                                        </element>
+                                        <element name="CompanyName">
+                                          <datatype name="CompanyName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactFirstName">
+                                          <datatype name="ContactFirstName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactLastName">
+                                          <datatype name="ContactLastName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="BillingAddress">
+                                          <datatype name="BillingAddress" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="City">
+                                          <datatype name="City" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="StateOrProvince">
+                                          <datatype name="StateOrProvince" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="PostalCode">
+                                          <datatype name="PostalCode" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="CountryRegion">
+                                          <datatype name="CountryRegion" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactTitle">
+                                          <datatype name="ContactTitle" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="PhoneNumber">
+                                          <datatype name="PhoneNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="FaxNumber">
+                                          <datatype name="FaxNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                      </datatype>
+                                    </schemaDatatype>
+                                  </datatype>
+                                </element>
+                              </datatype>
+                            </schemaDatatype>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </element>
+        <element name="getCustomerById" nullable="false">
+          <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="OPERATION" type="TREE" refId="9">
+            <element name="testServicePortgetCustomerByIdSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="IN" nullable="false">
+              <datatype name="testServicePortgetCustomerByIdSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="10">
+                <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById">
+                    <schemaDatatype>
+                      <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="11">
+                        <element name="custId" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+            <element name="testServicePortgetCustomerByIdSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="OUT" nullable="false">
+              <datatype name="testServicePortgetCustomerByIdSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="12">
+                <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse">
+                    <schemaDatatype>
+                      <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="13">
+                        <element name="result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result">
+                            <schemaDatatype>
+                              <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="14">
+                                <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                                  <datatype type="TREE" refId="15">
+                                    <element name="CustomerID">
+                                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                                    </element>
+                                    <element name="CompanyName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactFirstName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactLastName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="BillingAddress">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="City">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="StateOrProvince">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="PostalCode">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="CountryRegion">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactTitle">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="PhoneNumber">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="FaxNumber">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                  </datatype>
+                                </element>
+                              </datatype>
+                            </schemaDatatype>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="oldNameSpace" type="STRING">http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortgetCustomerByIdSoapOut" type="MESSAGE">
+      <datatype name="testServicePortgetCustomerByIdSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortgetCustomerByIdSoapOut" subType="MESSAGE" type="TREE" refId="1">
+        <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+          <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse">
+            <schemaDatatype>
+              <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="2">
+                <element name="result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                  <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result">
+                    <schemaDatatype>
+                      <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="3">
+                        <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                          <datatype type="TREE" refId="4">
+                            <element name="CustomerID">
+                              <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                            </element>
+                            <element name="CompanyName">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="ContactFirstName">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="ContactLastName">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="BillingAddress">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="City">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="StateOrProvince">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="PostalCode">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="CountryRegion">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="ContactTitle">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="PhoneNumber">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                            <element name="FaxNumber">
+                              <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                            </element>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </schemaDatatype>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortcustomersSoapOut" type="MESSAGE">
+      <datatype name="testServicePortcustomersSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortcustomersSoapOut" subType="MESSAGE" type="TREE" refId="1">
+        <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+          <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse">
+            <schemaDatatype>
+              <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="2">
+                <element name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                  <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers">
+                    <schemaDatatype>
+                      <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="3">
+                        <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                          <datatype name="customersRow" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow">
+                            <schemaDatatype>
+                              <datatype name="customersRow" type="TREE" refId="4">
+                                <element name="CustomerID">
+                                  <datatype name="CustomerID" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="int" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                                </element>
+                                <element name="CompanyName">
+                                  <datatype name="CompanyName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="ContactFirstName">
+                                  <datatype name="ContactFirstName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="ContactLastName">
+                                  <datatype name="ContactLastName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="BillingAddress">
+                                  <datatype name="BillingAddress" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="City">
+                                  <datatype name="City" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="StateOrProvince">
+                                  <datatype name="StateOrProvince" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="PostalCode">
+                                  <datatype name="PostalCode" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="CountryRegion">
+                                  <datatype name="CountryRegion" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="ContactTitle">
+                                  <datatype name="ContactTitle" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="PhoneNumber">
+                                  <datatype name="PhoneNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                                <element name="FaxNumber">
+                                  <datatype name="FaxNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                </element>
+                              </datatype>
+                            </schemaDatatype>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </schemaDatatype>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortcustomersSoapIn" type="MESSAGE">
+      <datatype name="testServicePortcustomersSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortcustomersSoapIn" subType="MESSAGE" type="TREE" refId="1">
+        <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+          <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers">
+            <schemaDatatype>
+              <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="2"></datatype>
+            </schemaDatatype>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortgetCustomerByIdSoapIn" type="MESSAGE">
+      <datatype name="testServicePortgetCustomerByIdSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortgetCustomerByIdSoapIn" subType="MESSAGE" type="TREE" refId="1">
+        <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+          <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById">
+            <schemaDatatype>
+              <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="2">
+                <element name="custId" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                  <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                </element>
+              </datatype>
+            </schemaDatatype>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testPortBinding" type="BINDING">
+      <datatype name="testPortBinding" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testPortBinding" subType="BINDING" type="TREE" refId="1">
+        <element name="customers" nullable="false">
+          <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="OPERATION" type="TREE" refId="2">
+            <element name="testServicePortcustomersSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="IN" nullable="false">
+              <datatype name="testServicePortcustomersSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="3">
+                <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers">
+                    <schemaDatatype>
+                      <datatype name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="4"></datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+            <element name="testServicePortcustomersSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="OUT" nullable="false">
+              <datatype name="testServicePortcustomersSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="5">
+                <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse">
+                    <schemaDatatype>
+                      <datatype name="customersResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="6">
+                        <element name="customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers">
+                            <schemaDatatype>
+                              <datatype name="testService_customers_customers" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="7">
+                                <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                                  <datatype name="customersRow" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow">
+                                    <schemaDatatype>
+                                      <datatype name="customersRow" type="TREE" refId="8">
+                                        <element name="CustomerID">
+                                          <datatype name="CustomerID" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="int" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                                        </element>
+                                        <element name="CompanyName">
+                                          <datatype name="CompanyName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactFirstName">
+                                          <datatype name="ContactFirstName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactLastName">
+                                          <datatype name="ContactLastName" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="BillingAddress">
+                                          <datatype name="BillingAddress" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="City">
+                                          <datatype name="City" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="StateOrProvince">
+                                          <datatype name="StateOrProvince" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="PostalCode">
+                                          <datatype name="PostalCode" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="CountryRegion">
+                                          <datatype name="CountryRegion" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="ContactTitle">
+                                          <datatype name="ContactTitle" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="PhoneNumber">
+                                          <datatype name="PhoneNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                        <element name="FaxNumber">
+                                          <datatype name="FaxNumber" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" superTypeName="string" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" type="STRING" maxLength="2147483647"/>
+                                        </element>
+                                      </datatype>
+                                    </schemaDatatype>
+                                  </datatype>
+                                </element>
+                              </datatype>
+                            </schemaDatatype>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </element>
+        <element name="getCustomerById" nullable="false">
+          <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="OPERATION" type="TREE" refId="9">
+            <element name="testServicePortgetCustomerByIdSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="IN" nullable="false">
+              <datatype name="testServicePortgetCustomerByIdSoapIn" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="10">
+                <element name="inputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById">
+                    <schemaDatatype>
+                      <datatype name="getCustomerById" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="11">
+                        <element name="custId" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+            <element name="testServicePortgetCustomerByIdSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" direction="OUT" nullable="false">
+              <datatype name="testServicePortgetCustomerByIdSoapOut" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" subType="MESSAGE" type="TREE" refId="12">
+                <element name="outputParameters" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" nullable="false">
+                  <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse">
+                    <schemaDatatype>
+                      <datatype name="getCustomerByIdResponse" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" subType="ELEMENT_DECL" type="TREE" refId="13">
+                        <element name="result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService">
+                          <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="TYPE" componentName="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result">
+                            <schemaDatatype>
+                              <datatype name="testService_getCustomerById_result" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" type="TREE" refId="14">
+                                <element name="row" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService" maxOccurs="2147483647" minOccurs="0">
+                                  <datatype type="TREE" refId="15">
+                                    <element name="CustomerID">
+                                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                                    </element>
+                                    <element name="CompanyName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactFirstName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactLastName">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="BillingAddress">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="City">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="StateOrProvince">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="PostalCode">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="CountryRegion">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="ContactTitle">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="PhoneNumber">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                    <element name="FaxNumber">
+                                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                                    </element>
+                                  </datatype>
+                                </element>
+                              </datatype>
+                            </schemaDatatype>
+                          </datatype>
+                        </element>
+                      </datatype>
+                    </schemaDatatype>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="lastModifiedDate" type="LONG">1395774700484</attribute>
+      <attribute name="lastModifiedUserDomain" type="STRING">composite</attribute>
+      <attribute name="lastModifiedUserName" type="STRING">admin</attribute>
+      <attribute name="type" type="STRING">{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testServicePortType</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testService" type="SERVICE">
+      <datatype name="testService" namespace="http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService" referenceDefinitionSet="/services/webservices/TEST00/testWebService/Definitions" referenceType="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService}testService" subType="SERVICE" type="TREE" refId="1">
+        <element name="testPort">
+          <datatype name="testPort" subType="PORT" type="TREE" refId="2"></datatype>
+        </element>
+      </datatype>
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+  </definitions>
+  <security>
+    <owner user="admin" domain="composite"/>
+    <privilege group="group1" domain="composite" privileges="READ WRITE"/>
+    <privilege group="group2" domain="composite" privileges="READ WRITE GRANT"/>
+  </security>
+  <dependency target="/services/webservices/TEST00/testWebService/testService" type="CONTAINER">
+    <datatype name="Tree" type="TREE" refId="1"></datatype>
+  </dependency>
+  <dependency target="/services/webservices/TEST00/testWebService/testService/operations/customers" type="LINK">
+    <datatype type="TABLE" refId="1">
+      <element name="CustomerID">
+        <datatype type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+      </element>
+      <element name="CompanyName">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="ContactFirstName">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+      <element name="ContactLastName">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="BillingAddress">
+        <datatype type="STRING" maxLength="255"/>
+      </element>
+      <element name="City">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="StateOrProvince">
+        <datatype type="STRING" maxLength="20"/>
+      </element>
+      <element name="PostalCode">
+        <datatype type="STRING" maxLength="20"/>
+      </element>
+      <element name="CountryRegion">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="ContactTitle">
+        <datatype type="STRING" maxLength="50"/>
+      </element>
+      <element name="PhoneNumber">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+      <element name="FaxNumber">
+        <datatype type="STRING" maxLength="30"/>
+      </element>
+    </datatype>
+  </dependency>
+  <dependency target="/services/webservices/TEST00/testWebService/testService/operations/getCustomerById" type="LINK">
+    <datatype type="PROCEDURE" refId="1">
+      <element name="custId" direction="IN">
+        <datatype type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+      </element>
+      <element name="result" direction="OUT">
+        <datatype type="TABLE" refId="2">
+          <element name="CustomerID">
+            <datatype type="INTEGER" minValue="-2147483648" maxValue="2147483647"/>
+          </element>
+          <element name="CompanyName">
+            <datatype type="STRING" maxLength="50"/>
+          </element>
+          <element name="ContactFirstName">
+            <datatype type="STRING" maxLength="30"/>
+          </element>
+          <element name="ContactLastName">
+            <datatype type="STRING" maxLength="50"/>
+          </element>
+          <element name="BillingAddress">
+            <datatype type="STRING" maxLength="255"/>
+          </element>
+          <element name="City">
+            <datatype type="STRING" maxLength="50"/>
+          </element>
+          <element name="StateOrProvince">
+            <datatype type="STRING" maxLength="20"/>
+          </element>
+          <element name="PostalCode">
+            <datatype type="STRING" maxLength="20"/>
+          </element>
+          <element name="CountryRegion">
+            <datatype type="STRING" maxLength="50"/>
+          </element>
+          <element name="ContactTitle">
+            <datatype type="STRING" maxLength="50"/>
+          </element>
+          <element name="PhoneNumber">
+            <datatype type="STRING" maxLength="30"/>
+          </element>
+          <element name="FaxNumber">
+            <datatype type="STRING" maxLength="30"/>
+          </element>
+        </datatype>
+      </element>
+    </datatype>
+  </dependency>
+  <dependency target="/services/webservices/TEST00/testWebService/testService/testPort" type="CONTAINER">
+    <datatype name="Tree" type="TREE" refId="1"></datatype>
+  </dependency>
+  <attribute name="creationDate" type="LONG">1391923839663</attribute>
+  <attribute name="creatorUserDomain" type="STRING">composite</attribute>
+  <attribute name="creatorUserName" type="STRING">admin</attribute>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="lastModifiedDate" type="LONG">1395774700484</attribute>
+  <attribute name="lastModifiedUserDomain" type="STRING">composite</attribute>
+  <attribute name="lastModifiedUserName" type="STRING">admin</attribute>
+  <attribute name="selectionState" type="INTEGER">2</attribute>
+  <attribute name="sourceText" type="STRING">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wsdl:definitions targetNamespace=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService&quot; xmlns:ns2=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService&quot; xmlns:ns1=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&gt;
+  &lt;wsdl:types&gt;
+    &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService&quot; xmlns:ns2=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService&quot;&gt;&lt;xs:element name=&quot;getCustomerByIdResponse&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;result&quot; nillable=&quot;true&quot; type=&quot;ns2:testService_getCustomerById_result&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;xs:complexType name=&quot;testService_customers_customers&quot;&gt;&lt;xs:sequence&gt;&lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;row&quot; nillable=&quot;true&quot; type=&quot;ns2:customersRow&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;xs:element name=&quot;customersResponse&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;customers&quot; nillable=&quot;true&quot; type=&quot;ns2:testService_customers_customers&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;xs:element name=&quot;customers&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;getCustomerById&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;custId&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;xs:complexType name=&quot;customersRow&quot;&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;CustomerID&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;&lt;xs:element name=&quot;CompanyName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactFirstName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactLastName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;BillingAddress&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;City&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;StateOrProvince&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;PostalCode&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;CountryRegion&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactTitle&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;PhoneNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;FaxNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;xs:complexType name=&quot;testService_getCustomerById_result&quot;&gt;&lt;xs:sequence&gt;&lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;row&quot; nillable=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;CustomerID&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;&lt;xs:element name=&quot;CompanyName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactFirstName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactLastName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;BillingAddress&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;City&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;StateOrProvince&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;PostalCode&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;CountryRegion&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;ContactTitle&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;PhoneNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;xs:element name=&quot;FaxNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:schema&gt;
+  &lt;/wsdl:types&gt;
+  &lt;wsdl:message name=&quot;testServicePortgetCustomerByIdSoapIn&quot;&gt;
+    &lt;wsdl:part name=&quot;inputParameters&quot; element=&quot;ns2:getCustomerById&quot;&gt;
+    &lt;/wsdl:part&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortcustomersSoapIn&quot;&gt;
+    &lt;wsdl:part name=&quot;inputParameters&quot; element=&quot;ns2:customers&quot;&gt;
+    &lt;/wsdl:part&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortcustomersSoapOut&quot;&gt;
+    &lt;wsdl:part name=&quot;outputParameters&quot; element=&quot;ns2:customersResponse&quot;&gt;
+    &lt;/wsdl:part&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortgetCustomerByIdSoapOut&quot;&gt;
+    &lt;wsdl:part name=&quot;outputParameters&quot; element=&quot;ns2:getCustomerByIdResponse&quot;&gt;
+    &lt;/wsdl:part&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:portType name=&quot;testServicePortType&quot;&gt;
+    &lt;wsdl:operation name=&quot;customers&quot;&gt;
+      &lt;wsdl:input message=&quot;ns1:testServicePortcustomersSoapIn&quot;&gt;
+    &lt;/wsdl:input&gt;
+      &lt;wsdl:output message=&quot;ns1:testServicePortcustomersSoapOut&quot;&gt;
+    &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+    &lt;wsdl:operation name=&quot;getCustomerById&quot;&gt;
+      &lt;wsdl:input message=&quot;ns1:testServicePortgetCustomerByIdSoapIn&quot;&gt;
+    &lt;/wsdl:input&gt;
+      &lt;wsdl:output message=&quot;ns1:testServicePortgetCustomerByIdSoapOut&quot;&gt;
+    &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+  &lt;/wsdl:portType&gt;
+  &lt;wsdl:binding name=&quot;testPortBinding&quot; type=&quot;ns1:testServicePortType&quot;&gt;
+    &lt;soap:binding style=&quot;document&quot; transport=&quot;http://schemas.xmlsoap.org/soap/http&quot;/&gt;
+    &lt;wsdl:operation name=&quot;customers&quot;&gt;
+      &lt;soap:operation soapAction=&quot;customers&quot; style=&quot;document&quot;/&gt;
+      &lt;wsdl:input&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:input&gt;
+      &lt;wsdl:output&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+    &lt;wsdl:operation name=&quot;getCustomerById&quot;&gt;
+      &lt;soap:operation soapAction=&quot;getCustomerById&quot; style=&quot;document&quot;/&gt;
+      &lt;wsdl:input&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:input&gt;
+      &lt;wsdl:output&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+  &lt;/wsdl:binding&gt;
+  &lt;wsdl:service name=&quot;testService&quot;&gt;
+    &lt;wsdl:port name=&quot;testPort&quot; binding=&quot;ns1:testPortBinding&quot;&gt;
+      &lt;soap:address location=&quot;http://mtinius-WS.cisco.com:9420/services/TEST00/testWebService/testService/testPort.ws&quot;/&gt;
+    &lt;/wsdl:port&gt;
+  &lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</attribute>
+</metadata>

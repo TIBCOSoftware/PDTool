@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="testnoparams" path="/services/databases/TEST00/testnoparams" type="LINK" subtype="NONE" changeToken="0" virtual="true">
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <dependency target="/shared/test00/executeProc/testnoparams" type="PROCEDURE">
+    <datatype type="PROCEDURE" refId="1">
+      <element name="error" direction="OUT">
+        <datatype type="STRING" maxLength="255"/>
+      </element>
+    </datatype>
+  </dependency>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="targetPath" type="STRING">/shared/test00/executeProc/testnoparams</attribute>
+  <attribute name="targetType" type="SHORT">3</attribute>
+</metadata>

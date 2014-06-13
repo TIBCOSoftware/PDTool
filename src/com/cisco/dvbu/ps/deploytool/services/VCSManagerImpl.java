@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
+
 import com.cisco.dvbu.cmdline.vcs.spi.LifecycleListener;
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
@@ -1226,10 +1227,10 @@ public class VCSManagerImpl implements VCSManager {
 		}
 
 		/* (non-Javadoc)
-		 * @see com.cisco.dvbu.ps.deploytool.resource.VCSManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+		 * @see com.cisco.dvbu.ps.deploytool.resource.VCSManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 		 */
 	//	@Override
-		public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
+		public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsCheckinOptions, String vcsUser, String vcsPassword) throws CompositeException {
 
 			try {
 				logger.info("--------------------------------------------------------");
@@ -1243,6 +1244,8 @@ public class VCSManagerImpl implements VCSManager {
 				// Set the global suppress and debug flags for this class based on properties found in the property file
 				setGlobalProperties();
 
+				String oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", CommonUtils.extractVariable("vcsStudioInitializeBaseFolderCheckin", vcsCheckinOptions, propertyFile, true));
+				
 				vcsInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
 				
 			} catch (CompositeException e) {
@@ -1415,8 +1418,8 @@ public class VCSManagerImpl implements VCSManager {
 	        			int beg = message.indexOf("VCS_CHECKIN_OPTIONS");
 	        			if (beg >= 0) 
 	        			{
-	        				int pbeg = message.indexOf("(");
-	        				int pend = message.indexOf(")");
+	        				int pbeg = message.indexOf("(", beg);
+	        				int pend = message.indexOf(")", beg);
 	        				if (beg > 0)
 	        					tempMessage = message.substring(0, beg);
 	        				if (pbeg > 0 && pend > 0 && pbeg != pend) {
@@ -1445,33 +1448,33 @@ public class VCSManagerImpl implements VCSManager {
 	        				message = tempMessage + message.substring(pend+1);
 	        			}
 	        		}
-
+	        
 			        // Prepend the property VCS_MESSAGE_PREPEND to message
 			        String messagePrepend = vcsStruct.getVcsMessagePrepend();
 			        if (messagePrepend != null && messagePrepend.length() > 0) {
 			        	if (message == null) {
 			        		message = messagePrepend;
-			        	} 
-			        	else
-			        	{
+			        	} else {
 			        		message = messagePrepend+" "+message;	        		
 			        	}
 			        }
-			        
+
 			        /*****************************************
 					 * PERFORM VCS STUDIO CHECKIN
 					 *****************************************/
 					CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] Studio Checkin ========",prefix,"-debug2",logger,debug1,debug2,debug3);
 					CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 					CommonUtils.writeOutput("---VCS Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      resourcePath=       "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      resourceType=       "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      Message=            "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsWorkspace=       "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsWorkspaceProject="+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsTemp=            "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsUser=            "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsPassword=        ********",prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      resourcePath=             "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      resourceType=             "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      Message=                  "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsCheckinOptions=        "+vcsStruct.getVcsCheckinOptions(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsCheckinOptionsRequired="+vcsStruct.getVcsCheckinOptionsRequired(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsWorkspace=             "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsWorkspaceProject=      "+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsTemp=                  "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsUser=                  "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("      VcsPassword=              ********",prefix,"-debug2",logger,debug1,debug2,debug3);
 					CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
 									
 					CommonUtils.writeOutput("========== DIFFMERGER CHECKIN ============",prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -1553,7 +1556,45 @@ public class VCSManagerImpl implements VCSManager {
 		        	}
 		        }
 */
-		        // Prepend the property VCS_MESSAGE_PREPEND to message
+        		// Extract the vcs checkin command template from the studio comment:  VCS_CHECKIN_OPTIONS(<command>)
+        		if (message.toUpperCase().contains("VCS_CHECKIN_OPTIONS")) 
+        		{
+        			String tempMessage = "";
+        			int beg = message.indexOf("VCS_CHECKIN_OPTIONS");
+        			if (beg >= 0) 
+        			{
+        				int pbeg = message.indexOf("(", beg);
+        				int pend = message.indexOf(")", beg);
+        				if (beg > 0)
+        					tempMessage = message.substring(0, beg);
+        				if (pbeg > 0 && pend > 0 && pbeg != pend) {
+        					String command = message.substring(pbeg+1, pend);
+        					String vcsCheckinOptions = "";
+        					if (vcsStruct.getVcsCheckinOptions() != null) 
+        					{
+        						vcsCheckinOptions = vcsStruct.getVcsCheckinOptions().trim();
+        						if (!command.equalsIgnoreCase(vcsCheckinOptions)) {
+        							if (vcsCheckinOptions.toLowerCase().contains(command.toLowerCase())) 
+        							{
+        								command = vcsCheckinOptions;
+        							} else {
+        								if (command.toLowerCase().contains(vcsCheckinOptions.toLowerCase())) {
+        									// no operation required since the command contains all commands
+        								} else {
+        									command = command + " " + vcsCheckinOptions;
+        								}
+        							}
+        						}
+        					}
+        					
+        					// Add the studio command to any existing command options
+        					vcsStruct.setVcsCheckinOptions(command);
+        				}
+        				message = tempMessage + message.substring(pend+1);
+        			}
+        		}
+
+        		// Prepend the property VCS_MESSAGE_PREPEND to message
 		        String messagePrepend = vcsStruct.getVcsMessagePrepend();
 		        if (messagePrepend != null && messagePrepend.length() > 0) {
 		        	if (message == null) {
@@ -1569,14 +1610,16 @@ public class VCSManagerImpl implements VCSManager {
 				CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] Studio Forced Checkin ========",prefix,"-debug2",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("---VCS Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      resourcePath=       "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      resourceType=       "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      Message=            "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      VcsWorkspace=       "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      VcsWorkspaceProject="+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      VcsTemp=            "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      VcsUser=            "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      VcsPassword=        ********",prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      resourcePath=             "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      resourceType=             "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      Message=                  "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsCheckinOptions=        "+vcsStruct.getVcsCheckinOptions(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsCheckinOptionsRequired="+vcsStruct.getVcsCheckinOptionsRequired(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsWorkspace=             "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsWorkspaceProject=      "+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsTemp=                  "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsUser=                  "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      VcsPassword=              ********",prefix,"-debug2",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
 			
 				CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -1612,6 +1655,7 @@ public class VCSManagerImpl implements VCSManager {
 		 * @param serverId - target server name
 		 * @param vcsConnectionId - VCS Connection property information 
 		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
+		 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
 		 * @param pathToVcsXML - path including name to the VCS Module XML containing a list of vcsIds to execute against. 
 		 * 			[Optional parameter when studio.properties or deploy.properties is being used.  pass in null.]
@@ -1625,7 +1669,7 @@ public class VCSManagerImpl implements VCSManager {
 		/* (non-Javadoc)
 		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword)	throws CompositeException {	
+		public void vcsScanPathLength2(String serverId, String vcsConnectionId, int vcsMaxPathLength, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword)	throws CompositeException {	
 			if(logger.isDebugEnabled()){
 				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsConnectionId="+vcsConnectionId+", vcsResourcePathList: "+vcsResourcePathList+", pathToVcsXML="+pathToVcsXML+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
 			}
@@ -1635,7 +1679,7 @@ public class VCSManagerImpl implements VCSManager {
 				vcsConnId = vcsConnectionId;
 
 				// Invoke the command
-				vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);
+				vcsScanPathLength(serverId, vcsMaxPathLength, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);
 				
 			} catch (CompositeException e) {
 				throw new ApplicationContextException(e.getMessage(), e);
@@ -1649,6 +1693,7 @@ public class VCSManagerImpl implements VCSManager {
 		 *  like TFS.  Subversion does not have this issue.
 		 *  
 		 * @param serverId - target server name
+		 * @param vcsMaxPathLength - a positive integer length from which to compare path lengths found in vcsResourcePathList.  When 0, use the default CommonConstants.maxWindowsPathLen=259.
 		 * @param vcsResourcePathList - a comma separated list of CIS resource paths to scan
 		 * @param pathToServersXML - path to the server values XML
 		 * @param vcsUser - the VCS user passed in from the command line
@@ -1661,7 +1706,7 @@ public class VCSManagerImpl implements VCSManager {
 		 * (non-Javadoc)
 		 * @see com.cisco.dvbu.ps.deploytool.services.VCSManager#vcsScanPathLength(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		public void vcsScanPathLength(String serverId, int vcsMaxPathLength, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
 			if(logger.isDebugEnabled()){
 				logger.debug("Entering VCSManagerImpl.vcsCheckin() with following params "+" serverName: "+serverId+", vcsResourcePathList: "+vcsResourcePathList+", pathToServersXML: "+pathToServersXML+", vcsUser="+vcsUser);
 			}
@@ -1726,6 +1771,12 @@ public class VCSManagerImpl implements VCSManager {
 				String workspaceProjectDir = vcsStruct.getVcsWorkspaceProject();
 				int workspaceProjectDirLen = workspaceProjectDir.length();
 				int totalPathsTooLong = 0;
+				// If the max path length passed in is zero then set it to the default max windows path length
+				if (vcsMaxPathLength == 0)
+					vcsMaxPathLength = CommonConstants.maxWindowsPathLen;
+				// If the max path length passed in is greater than the max windows path length then set it to the default max windows path length
+				if (vcsMaxPathLength > CommonConstants.maxWindowsPathLen)
+					vcsMaxPathLength = CommonConstants.maxWindowsPathLen;
 
 				/*****************************************
 				 * PRINT OUT VCS INFO VARIABLES
@@ -1735,7 +1786,7 @@ public class VCSManagerImpl implements VCSManager {
 				CommonUtils.writeOutput("      vcsResourcePathList=            "+vcsResourcePathList,prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT=          "+vcsStruct.getVcsWorkspaceProject(),prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("      VCS_WORKSPACE_PROJECT Length=   "+workspaceProjectDirLen,prefix,"-info",logger,debug1,debug2,debug3);
-				CommonUtils.writeOutput("      Max Windows Path Len=           "+CommonConstants.maxWindowsPathLen,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("     Maximum Path Length to verify=   "+vcsMaxPathLength,prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 				
 				//--------------------------------------------------------------
@@ -1773,7 +1824,7 @@ public class VCSManagerImpl implements VCSManager {
 								int vcsTotalPathLen = workspaceProjectDirLen + vcsResourcePathLen;
 								
 								// Validate the length against the maximum length allowed
-								if (vcsTotalPathLen >= CommonConstants.maxWindowsPathLen) {
+								if (vcsTotalPathLen >= vcsMaxPathLength) {
 									CommonUtils.writeOutput("      TotalPathLen="+CommonUtils.rpad(Integer.toString(vcsTotalPathLen), 4, " ")+"   EncodedPathLen="+CommonUtils.rpad(Integer.toString(vcsResourcePathLen), 4, " ")+"  ResourceType="+resource.getType()+"  EncodedPath="+vcsResourcePath+"  *****OriginalPath*****="+resource.getPath(),prefix,"-info",logger,debug1,debug2,debug3);
 									++pathsTooLong;
 									++totalPathsTooLong;
@@ -1788,7 +1839,7 @@ public class VCSManagerImpl implements VCSManager {
 				
 				// Display the final message
 				CommonUtils.writeOutput("Final Scan Report:",prefix,"-info",logger,debug1,debug2,debug3);				
-				CommonUtils.writeOutput("      CIS Paths found >= "+CommonConstants.maxWindowsPathLen+" chars.  Total="+totalPathsTooLong,prefix,"-info",logger,debug1,debug2,debug3);
+				CommonUtils.writeOutput("      CIS Paths found >= "+vcsMaxPathLength+" chars.  Total="+totalPathsTooLong,prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("      Note: Subversion has no limitations with long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
 				CommonUtils.writeOutput("      Note: TFS implementation on windows is affected by long path names.",prefix,"-info",logger,debug1,debug2,debug3);				
@@ -4860,9 +4911,14 @@ public class VCSManagerImpl implements VCSManager {
 
 		// Validate the configuration property file exists
         propertyFile = CommonUtils.getFileOrSystemPropertyValue(null, "CONFIG_PROPERTY_FILE");
+        String propertyOrderPrecedence = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "propertyOrderPrecedence");
+        if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0)
+        	propertyOrderPrecedence = CommonConstants.propertyOrderPrecedenceDefault;
+
 		logger.info("");
 		logger.info("----------------------------------------------");
 		logger.info("CONFIG_PROPERTY_FILE="+propertyFile);
+		logger.info("propertyOrderPrecedence="+propertyOrderPrecedence);
 		logger.info("----------------------------------------------");
 		if (!PropertyManager.getInstance().doesPropertyFileExist(propertyFile)) {
 			throw new ApplicationException("The property file does not exist for CONFIG_PROPERTY_FILE="+propertyFile);

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders
+END
+cache__tracking_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/cache__tracking_table.cmf
+END
+customers_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/customers_table.cmf
+END
+cache__status_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/cache__status_table.cmf
+END
+shippingmethods_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/shippingmethods_table.cmf
+END
+customers__cache_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/customers__cache_table.cmf
+END
+ds__orders.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/ds__orders.cmf
+END
+orders_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/orders_table.cmf
+END
+orders__cache_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/orders__cache_table.cmf
+END
+orderdetails_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/DataSources/ds__orders/orderdetails_table.cmf
+END

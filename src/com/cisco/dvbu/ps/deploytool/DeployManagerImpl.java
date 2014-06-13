@@ -1093,11 +1093,11 @@ public class DeployManagerImpl implements DeployManager{
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioInitializeBaseFolderCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsUser, String vcsPassword) throws CompositeException {
-		getVCSManager().vcsStudioInitializeBaseFolderCheckin(customPathList, vcsUser, vcsPassword);
+	public void vcsStudioInitializeBaseFolderCheckin(String customPathList, String vcsCheckinOptions, String vcsUser, String vcsPassword) throws CompositeException {
+		getVCSManager().vcsStudioInitializeBaseFolderCheckin(customPathList, vcsCheckinOptions, vcsUser, vcsPassword);
 	}
 
 	/*
@@ -1129,20 +1129,26 @@ public class DeployManagerImpl implements DeployManager{
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsScanPathLength(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void vcsScanPathLength(String serverId, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
-		getVCSManager().vcsScanPathLength(serverId, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);		
+	public void vcsScanPathLength(String serverId, String vcsMaxPathLength, String vcsResourcePathList, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		int ivcsMaxPathLength = 0;
+		if (vcsMaxPathLength != null && vcsMaxPathLength.trim().length() > 0)
+			ivcsMaxPathLength = Integer.valueOf(vcsMaxPathLength.trim());
+		getVCSManager().vcsScanPathLength(serverId, ivcsMaxPathLength, vcsResourcePathList, pathToServersXML, vcsUser, vcsPassword);		
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsStudioForcedCheckin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#vcsScanPathLength2(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
-		getVCSManager().vcsScanPathLength2(serverId, vcsConnectionId, vcsResourcePathList, pathToVcsXML, pathToServersXML, vcsUser, vcsPassword);		
+	public void vcsScanPathLength2(String serverId, String vcsConnectionId, String vcsMaxPathLength, String vcsResourcePathList, String pathToVcsXML, String pathToServersXML, String vcsUser, String vcsPassword) throws CompositeException {
+		int ivcsMaxPathLength = 0;
+		if (vcsMaxPathLength != null && vcsMaxPathLength.trim().length() > 0)
+			ivcsMaxPathLength = Integer.valueOf(vcsMaxPathLength.trim());
+		getVCSManager().vcsScanPathLength2(serverId, vcsConnectionId, ivcsMaxPathLength, vcsResourcePathList, pathToVcsXML, pathToServersXML, vcsUser, vcsPassword);		
 	}
 
 	/**

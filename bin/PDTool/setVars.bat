@@ -18,9 +18,8 @@ if exist %MY_VARS_PATH% echo.Invoking %MY_VARS_PATH%
 if exist %MY_VARS_PATH% call %MY_VARS_PATH%
 :CONTINUE
 REM #
-REM # For Command-line execution - Set to JRE 1.6 Home Directory
-REM # For Ant execution - set to JDK 1.6 Home Directory
-set JAVA_HOME=C:\Program Files\Java\jre6
+REM # For Command-line execution - Set to JRE 1.6 or 1.7 Home Directory
+set JAVA_HOME=C:\Program Files\Java\jre7
 REM #
 REM # Configure the Java Heap Min and Max memory
 set MIN_MEMORY=-Xms256m

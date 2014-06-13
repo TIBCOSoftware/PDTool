@@ -1,0 +1,343 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="customXSLT" path="/shared/test00/CisResources/customXSLT" type="PROCEDURE" subtype="XSLT_TRANSFORM_PROCEDURE" changeToken="0">
+  <parameters>
+    <parameter name="outputs" direction="OUT" nullable="false">
+      <datatype name="outputs" type="TABLE" refId="1">
+        <element name="id">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="name">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="type">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="Name" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="annotation">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="defaultValue">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="displayName">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="maxValue">
+          <datatype name="DECIMAL" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="decimal" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DECIMAL" maxDigits="32" maxFractionalDigits="0"/>
+        </element>
+        <element name="pattern">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="minValue">
+          <datatype name="DECIMAL" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="decimal" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DECIMAL" maxDigits="32" maxFractionalDigits="0"/>
+        </element>
+        <element name="unitName">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+        <element name="updateRule">
+          <datatype name="VARCHAR" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="Name" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="32768"/>
+        </element>
+      </datatype>
+    </parameter>
+  </parameters>
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <dependency target="/shared/test00/DataSources/ServerAttributeDefinitions/getServerAttributeDefinitionModule.xml" type="TREE">
+    <datatype name="ServerAttributeModule" namespace="http://www.cisco.dvbu.com/ps/deploytool/modules" referenceDefinitionSet="/shared/test00/DataSources/ServerAttributeDefinitions/getServerAttributeDefinitionModuleDefinitions" referenceType="{http://www.cisco.dvbu.com/ps/deploytool/modules}ServerAttributeModule" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://www.cisco.dvbu.com/ps/deploytool/modules}ServerAttributeModule">
+      <schemaDatatype>
+        <datatype name="ServerAttributeModule" namespace="http://www.cisco.dvbu.com/ps/deploytool/modules" superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="ELEMENT_DECL" anonymous="true" type="TREE" refId="1">
+          <element name="serverAttributeDef" maxOccurs="2147483647">
+            <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="2">
+              <element name="id">
+                <datatype name="NCName" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="Name" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="name">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="type">
+                <datatype name="NCName" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="Name" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="annotation" minOccurs="0">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="defaultValue" minOccurs="0">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="displayName" minOccurs="0">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="maxValue" minOccurs="0">
+                <datatype name="integer" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="decimal" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DECIMAL" maxDigits="32" maxFractionalDigits="0"/>
+              </element>
+              <element name="pattern" minOccurs="0">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="minValue" minOccurs="0">
+                <datatype name="integer" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="decimal" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DECIMAL" maxDigits="32" maxFractionalDigits="0"/>
+              </element>
+              <element name="unitName" minOccurs="0">
+                <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+              <element name="updateRule" minOccurs="0">
+                <datatype name="NCName" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="Name" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+              </element>
+            </datatype>
+          </element>
+        </datatype>
+      </schemaDatatype>
+    </datatype>
+  </dependency>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="explicitly.designed" type="BOOLEAN">false</attribute>
+  <attribute name="sourcePath" type="STRING">/shared/test00/DataSources/ServerAttributeDefinitions/getServerAttributeDefinitionModule.xml</attribute>
+  <attribute name="sourceType" type="SHORT">4</attribute>
+  <attribute name="transformModel" type="STRING">
+&lt;transformModel customized=&quot;false&quot;&gt;
+  &lt;signature&gt;
+    &lt;datatype type=&quot;TREE&quot; refId=&quot;1&quot;&gt;
+      &lt;element name=&quot;inputs&quot;&gt;
+        &lt;datatype name=&quot;inputs&quot; type=&quot;TREE&quot; refId=&quot;2&quot;&gt;
+          &lt;element name=&quot;ServerAttributeModule&quot; namespace=&quot;http://www.cisco.dvbu.com/ps/deploytool/modules&quot; nullable=&quot;false&quot;&gt;
+            &lt;datatype name=&quot;ServerAttributeModule&quot; namespace=&quot;http://www.cisco.dvbu.com/ps/deploytool/modules&quot; referenceDefinitionSet=&quot;/shared/test00/DataSources/ServerAttributeDefinitions/getServerAttributeDefinitionModuleDefinitions&quot; referenceType=&quot;{http://www.cisco.dvbu.com/ps/deploytool/modules}ServerAttributeModule&quot; subType=&quot;ELEMENT_DECL&quot; type=&quot;XML&quot; contentConstraint=&quot;SEQUENCE&quot; schemaConstraint=&quot;ANY&quot; componentType=&quot;ELEMENT&quot; componentName=&quot;{http://www.cisco.dvbu.com/ps/deploytool/modules}ServerAttributeModule&quot;&gt;
+              &lt;schemaDatatype&gt;
+                &lt;datatype name=&quot;ServerAttributeModule&quot; namespace=&quot;http://www.cisco.dvbu.com/ps/deploytool/modules&quot; superTypeName=&quot;anyType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; subType=&quot;ELEMENT_DECL&quot; anonymous=&quot;true&quot; type=&quot;TREE&quot; refId=&quot;3&quot;&gt;
+                  &lt;element name=&quot;serverAttributeDef&quot; maxOccurs=&quot;2147483647&quot;&gt;
+                    &lt;datatype superTypeName=&quot;anyType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; subType=&quot;COMPLEX_TYPE&quot; type=&quot;TREE&quot; refId=&quot;4&quot;&gt;
+                      &lt;element name=&quot;id&quot;&gt;
+                        &lt;datatype name=&quot;NCName&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;Name&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;name&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;type&quot;&gt;
+                        &lt;datatype name=&quot;NCName&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;Name&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;annotation&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;defaultValue&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;displayName&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;maxValue&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;integer&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;decimal&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;DECIMAL&quot; maxDigits=&quot;32&quot; maxFractionalDigits=&quot;0&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;pattern&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;minValue&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;integer&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;decimal&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;DECIMAL&quot; maxDigits=&quot;32&quot; maxFractionalDigits=&quot;0&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;unitName&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;string&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                      &lt;element name=&quot;updateRule&quot; minOccurs=&quot;0&quot;&gt;
+                        &lt;datatype name=&quot;NCName&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;Name&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;2147483647&quot;/&gt;
+                      &lt;/element&gt;
+                    &lt;/datatype&gt;
+                  &lt;/element&gt;
+                &lt;/datatype&gt;
+              &lt;/schemaDatatype&gt;
+            &lt;/datatype&gt;
+          &lt;/element&gt;
+        &lt;/datatype&gt;
+      &lt;/element&gt;
+      &lt;element name=&quot;outputs&quot;&gt;
+        &lt;datatype name=&quot;outputs&quot; type=&quot;TREE&quot; refId=&quot;5&quot;&gt;
+          &lt;element name=&quot;outputs&quot;&gt;
+            &lt;datatype name=&quot;outputs&quot; type=&quot;TABLE&quot; refId=&quot;6&quot;&gt;
+              &lt;element name=&quot;id&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;name&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;type&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;Name&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;annotation&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;defaultValue&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;displayName&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;maxValue&quot;&gt;
+                &lt;datatype name=&quot;DECIMAL&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;decimal&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;DECIMAL&quot; maxDigits=&quot;32&quot; maxFractionalDigits=&quot;0&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;pattern&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;minValue&quot;&gt;
+                &lt;datatype name=&quot;DECIMAL&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;decimal&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;DECIMAL&quot; maxDigits=&quot;32&quot; maxFractionalDigits=&quot;0&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;unitName&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;anySimpleType&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+              &lt;element name=&quot;updateRule&quot;&gt;
+                &lt;datatype name=&quot;VARCHAR&quot; namespace=&quot;http://www.w3.org/2001/XMLSchema&quot; superTypeName=&quot;Name&quot; superTypeNamespace=&quot;http://www.w3.org/2001/XMLSchema&quot; type=&quot;STRING&quot; maxLength=&quot;32768&quot;/&gt;
+              &lt;/element&gt;
+            &lt;/datatype&gt;
+          &lt;/element&gt;
+        &lt;/datatype&gt;
+      &lt;/element&gt;
+    &lt;/datatype&gt;
+  &lt;/signature&gt;
+  &lt;xslt&gt;
+&amp;lt;xslt:stylesheet version=&amp;quot;2.0&amp;quot; xmlns:csw-xform=&amp;quot;http://www.compositesw.com/2003/xform&amp;quot; xmlns:ns1=&amp;quot;http://www.cisco.dvbu.com/ps/deploytool/modules&amp;quot; xmlns:xs=&amp;quot;http://www.w3.org/2001/XMLSchema&amp;quot; xmlns:xslt=&amp;quot;http://www.w3.org/1999/XSL/Transform&amp;quot;&amp;gt;
+  &amp;lt;xslt:template match=&amp;quot;/&amp;quot;&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_id&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_name&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_type&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_annotation&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_defaultValue&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_displayName&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_maxValue&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_pattern&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_minValue&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_unitName&amp;quot;/&amp;gt;
+    &amp;lt;xslt:variable name=&amp;quot;_updateRule&amp;quot;/&amp;gt;
+    &amp;lt;xslt:element name=&amp;quot;results&amp;quot;&amp;gt;
+      &amp;lt;xslt:for-each select=&amp;quot;ns1:ServerAttributeModule&amp;quot;&amp;gt;
+        &amp;lt;xslt:for-each select=&amp;quot;serverAttributeDef&amp;quot;&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_id&amp;quot; select=&amp;quot;id&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_name&amp;quot; select=&amp;quot;name&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_type&amp;quot; select=&amp;quot;type&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_annotation&amp;quot; select=&amp;quot;annotation&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_defaultValue&amp;quot; select=&amp;quot;defaultValue&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_displayName&amp;quot; select=&amp;quot;displayName&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_maxValue&amp;quot; select=&amp;quot;maxValue&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_pattern&amp;quot; select=&amp;quot;pattern&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_minValue&amp;quot; select=&amp;quot;minValue&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_unitName&amp;quot; select=&amp;quot;unitName&amp;quot;/&amp;gt;
+          &amp;lt;xslt:variable name=&amp;quot;_updateRule&amp;quot; select=&amp;quot;updateRule&amp;quot;/&amp;gt;
+          &amp;lt;xslt:element name=&amp;quot;result&amp;quot;&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;id&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_id&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;name&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_name&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;type&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_type&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;annotation&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_annotation&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;defaultValue&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_defaultValue&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;displayName&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_displayName&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;maxValue&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_maxValue&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;pattern&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_pattern&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;minValue&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_minValue&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;unitName&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_unitName&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+            &amp;lt;xslt:element name=&amp;quot;updateRule&amp;quot;&amp;gt;
+              &amp;lt;xslt:value-of select=&amp;quot;$_updateRule&amp;quot;/&amp;gt;
+            &amp;lt;/xslt:element&amp;gt;
+          &amp;lt;/xslt:element&amp;gt;
+        &amp;lt;/xslt:for-each&amp;gt;
+      &amp;lt;/xslt:for-each&amp;gt;
+    &amp;lt;/xslt:element&amp;gt;
+  &amp;lt;/xslt:template&amp;gt;
+&amp;lt;/xslt:stylesheet&amp;gt;&lt;/xslt&gt;
+  &lt;links&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/annotation&quot; target=&quot;/outputs/outputs/annotation&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/name&quot; target=&quot;/outputs/outputs/name&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/maxValue&quot; target=&quot;/outputs/outputs/maxValue&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/type&quot; target=&quot;/outputs/outputs/type&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/minValue&quot; target=&quot;/outputs/outputs/minValue&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/defaultValue&quot; target=&quot;/outputs/outputs/defaultValue&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/id&quot; target=&quot;/outputs/outputs/id&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/pattern&quot; target=&quot;/outputs/outputs/pattern&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/displayName&quot; target=&quot;/outputs/outputs/displayName&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/unitName&quot; target=&quot;/outputs/outputs/unitName&quot;/&gt;
+    &lt;link source=&quot;/inputs/ServerAttributeModule/serverAttributeDef/updateRule&quot; target=&quot;/outputs/outputs/updateRule&quot;/&gt;
+  &lt;/links&gt;
+&lt;/transformModel&gt;</attribute>
+  <attribute name="xqueryModel" type="NULL"/>
+  <attribute name="xslt" type="STRING">
+&lt;xslt:stylesheet version=&quot;2.0&quot; xmlns:csw-xform=&quot;http://www.compositesw.com/2003/xform&quot; xmlns:ns1=&quot;http://www.cisco.dvbu.com/ps/deploytool/modules&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xslt=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+  &lt;xslt:template match=&quot;/&quot;&gt;
+    &lt;xslt:variable name=&quot;_id&quot;/&gt;
+    &lt;xslt:variable name=&quot;_name&quot;/&gt;
+    &lt;xslt:variable name=&quot;_type&quot;/&gt;
+    &lt;xslt:variable name=&quot;_annotation&quot;/&gt;
+    &lt;xslt:variable name=&quot;_defaultValue&quot;/&gt;
+    &lt;xslt:variable name=&quot;_displayName&quot;/&gt;
+    &lt;xslt:variable name=&quot;_maxValue&quot;/&gt;
+    &lt;xslt:variable name=&quot;_pattern&quot;/&gt;
+    &lt;xslt:variable name=&quot;_minValue&quot;/&gt;
+    &lt;xslt:variable name=&quot;_unitName&quot;/&gt;
+    &lt;xslt:variable name=&quot;_updateRule&quot;/&gt;
+    &lt;xslt:element name=&quot;results&quot;&gt;
+      &lt;xslt:for-each select=&quot;ns1:ServerAttributeModule&quot;&gt;
+        &lt;xslt:for-each select=&quot;serverAttributeDef&quot;&gt;
+          &lt;xslt:variable name=&quot;_id&quot; select=&quot;id&quot;/&gt;
+          &lt;xslt:variable name=&quot;_name&quot; select=&quot;name&quot;/&gt;
+          &lt;xslt:variable name=&quot;_type&quot; select=&quot;type&quot;/&gt;
+          &lt;xslt:variable name=&quot;_annotation&quot; select=&quot;annotation&quot;/&gt;
+          &lt;xslt:variable name=&quot;_defaultValue&quot; select=&quot;defaultValue&quot;/&gt;
+          &lt;xslt:variable name=&quot;_displayName&quot; select=&quot;displayName&quot;/&gt;
+          &lt;xslt:variable name=&quot;_maxValue&quot; select=&quot;maxValue&quot;/&gt;
+          &lt;xslt:variable name=&quot;_pattern&quot; select=&quot;pattern&quot;/&gt;
+          &lt;xslt:variable name=&quot;_minValue&quot; select=&quot;minValue&quot;/&gt;
+          &lt;xslt:variable name=&quot;_unitName&quot; select=&quot;unitName&quot;/&gt;
+          &lt;xslt:variable name=&quot;_updateRule&quot; select=&quot;updateRule&quot;/&gt;
+          &lt;xslt:element name=&quot;result&quot;&gt;
+            &lt;xslt:element name=&quot;id&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_id&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;name&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_name&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;type&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_type&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;annotation&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_annotation&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;defaultValue&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_defaultValue&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;displayName&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_displayName&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;maxValue&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_maxValue&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;pattern&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_pattern&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;minValue&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_minValue&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;unitName&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_unitName&quot;/&gt;
+            &lt;/xslt:element&gt;
+            &lt;xslt:element name=&quot;updateRule&quot;&gt;
+              &lt;xslt:value-of select=&quot;$_updateRule&quot;/&gt;
+            &lt;/xslt:element&gt;
+          &lt;/xslt:element&gt;
+        &lt;/xslt:for-each&gt;
+      &lt;/xslt:for-each&gt;
+    &lt;/xslt:element&gt;
+  &lt;/xslt:template&gt;
+&lt;/xslt:stylesheet&gt;</attribute>
+</metadata>

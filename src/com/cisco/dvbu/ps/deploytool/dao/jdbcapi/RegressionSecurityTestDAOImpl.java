@@ -9,7 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.net.Authenticator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -93,6 +95,8 @@ public class RegressionSecurityTestDAOImpl implements RegressionSecurityTestDAO
 		if ( regressionConfig.getTestRunParams().getBaseDir() != null) {
 			baseDir = CommonUtils.extractVariable(prefix, regressionConfig.getTestRunParams().getBaseDir().trim(), propertyFile, true);
 	        if (baseDir != null && baseDir.length() > 0) {
+	        	baseDir = baseDir.replaceAll(Matcher.quoteReplacement("\\\\"), Matcher.quoteReplacement("/"));
+	        	baseDir = baseDir.replaceAll(Matcher.quoteReplacement("\\"), Matcher.quoteReplacement("/"));
 		        // Make the sub-directory for the base directory which is where the result files go for each execution
 		        boolean res = CommonUtils.mkdirs(baseDir);
 	        } else {

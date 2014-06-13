@@ -3,4 +3,4 @@
 # -----------------------------------------
 # Initialize Base-Level and Custom Folders in the VCS
 #
-PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database<TYPE=DATABASE>/My.Catalog<TYPE=CATALOG>/My$$Schema<TYPE=SCHEMA>"
+PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]"

@@ -110,13 +110,15 @@ public class ScriptUtil {
 	 * @param vcsIncludeResourceSecurity - the value is either "true" or "false"
 	 * @param vcsWorkspacePathOverride - this is a way of overriding the vcs workspace path.  The vcsWorkspacePath is derived from the studio.properties file properties:
 	 *                                   VCS_WORKSPACE_DIR+"/"+VCS_PROJECT_ROOT.  It will use the substitute drive by default.
+	 * @param vcsScriptBinFolderOverride - this is the bin folder name only for PDTool Studio.  Since PDTool Studio can now support multiple hosts via multiple /bin folders,
+	 * 									 it is optional to pass in the /bin folder location.  e.g. bin_host1, bin_host2.  The default will be bin if the input is null or blank.                                 
 	 * @param studioPropertyName - the name of the PDTool configuration property file.  The default is studio.properties
 	 * @param PDToolHomeDir - the directory of the PDToolStudio home directory
 	 * @param propertyFilePath - this is the full path to the output file.  For windows 7 the location will be in %USERPROFILE%\.compositesw
 	 * 
 	 * usage createStudioEnableVCSPropertyFile true studio.properties D/:/CompositeSoftware/CIS6.2.0/conf/studio/PDToolStudio62 C:/Users/mike/.compositesw/admin.composite.localhost.properties
 	 */
-	public static void createStudioEnableVCSPropertyFile(String vcsIncludeResourceSecurity, String vcsWorkspacePathOverride, String studioPropertyName, String PDToolHomeDir, String propertyFilePath){
+	public static void createStudioEnableVCSPropertyFile(String vcsIncludeResourceSecurity, String vcsWorkspacePathOverride, String vcsScriptBinFolderOverride, String studioPropertyName, String PDToolHomeDir, String propertyFilePath){
 
 		String prefix = "createStudioEnableVCSPropertyFile";
 		// Set the global suppress and debug properties used throughout this class
@@ -134,12 +136,15 @@ public class ScriptUtil {
 		if (vcsWorkspacePathOverride != null)
 			vcsWorkspacePathOverride = vcsWorkspacePathOverride.trim();
 
+		if (vcsScriptBinFolderOverride != null)
+			vcsScriptBinFolderOverride = vcsScriptBinFolderOverride.trim();
 		
 		CommonUtils.writeOutput("",prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("--- INPUT PARAMETERS ----",prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("",prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("    vcsIncludeResourceSecurity="+vcsIncludeResourceSecurity,prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("    vcsWorkspacePathOverride=["+vcsWorkspacePathOverride+"]  len="+vcsWorkspacePathOverride.length(),prefix,"-debug1",logger,debug1,false,false);
+		CommonUtils.writeOutput("    vcsScriptFolderOverride=["+vcsScriptBinFolderOverride+"]  len="+vcsScriptBinFolderOverride.length(),prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("    studioPropertyName="+studioPropertyName,prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("    PDToolHomeDir="+PDToolHomeDir,prefix,"-debug1",logger,debug1,false,false);
 		CommonUtils.writeOutput("    propertyFilePath="+propertyFilePath,prefix,"-debug1",logger,debug1,false,false);
@@ -168,6 +173,7 @@ public class ScriptUtil {
 				System.out.println("VCS_PROJECT_ROOT="+VCS_PROJECT_ROOT);			
 				System.out.println("vcsWorkspacePath=["+vcsWorkspacePath+"]");
 			}
+			
 			CommonUtils.writeOutput("--- INTERNAL WORKING PARAMETERS ----",prefix,"-debug1",logger,debug1,false,false);
 			CommonUtils.writeOutput("",prefix,"-debug1",logger,debug1,false,false);
 			CommonUtils.writeOutput("VCS_WORKSPACE_DIR="+VCS_WORKSPACE_DIR_ABS,prefix,"-debug1",logger,debug1,false,false);
@@ -184,15 +190,26 @@ public class ScriptUtil {
 
 			// Create a double backslash for paths
 			vcsWorkspacePath = vcsWorkspacePath.replaceAll(Matcher.quoteReplacement("/"), Matcher.quoteReplacement("\\\\"));
+//			System.out.println("vcsWorkspacePath="+vcsWorkspacePath);
 
 			// Add \ in front of the C: so it will be C\:
-			vcsWorkspacePath = vcsWorkspacePath.replaceAll(Matcher.quoteReplacement(":"), Matcher.quoteReplacement("\\:"));
+			if (!vcsWorkspacePath.contains("\\:"))
+				vcsWorkspacePath = vcsWorkspacePath.replaceAll(Matcher.quoteReplacement(":"), Matcher.quoteReplacement("\\:"));
+//			System.out.println("vcsWorkspacePath="+vcsWorkspacePath);
 
-			System.out.println("vcsWorkspacePath=["+vcsWorkspacePath+"]");
+			// Change C\\: to C\:
+			if (vcsWorkspacePath.contains("\\\\:"))
+				vcsWorkspacePath = vcsWorkspacePath.replaceAll(Matcher.quoteReplacement("\\\\:"), Matcher.quoteReplacement("\\:"));
+//			System.out.println("vcsWorkspacePath="+vcsWorkspacePath);
+
+//			System.out.println("vcsWorkspacePath=["+vcsWorkspacePath+"]");
 			CommonUtils.writeOutput("post-mod: vcsWorkspacePath=["+vcsWorkspacePath+"]",prefix,"-debug1",logger,debug1,false,false);
 
-			
+			// If the vcs script bin folder name override is null then derive the path from the default /bin location.
 			String vcsScriptFolder = (PDToolHomeDir+"/bin");
+			if (vcsScriptBinFolderOverride != null && vcsScriptBinFolderOverride.length() > 0)
+				vcsScriptFolder = (PDToolHomeDir+"/"+ vcsScriptBinFolderOverride);
+				
 			CommonUtils.writeOutput("pre-mod: vcsScriptFolder=["+vcsScriptFolder+"]",prefix,"-debug1",logger,debug1,false,false);
 //			System.out.println("vcsScriptFolder="+vcsScriptFolder);
 
@@ -206,11 +223,18 @@ public class ScriptUtil {
 
 			// Create a double backslash for paths
 			vcsScriptFolder = vcsScriptFolder.replaceAll(Matcher.quoteReplacement("/"), Matcher.quoteReplacement("\\\\"));
-
+		
 			// Add \ in front of the C: so it will be C\:
-			vcsScriptFolder = vcsScriptFolder.replaceAll(Matcher.quoteReplacement(":"), Matcher.quoteReplacement("\\:"));
-			
-			System.out.println("vcsScriptFolder=["+vcsScriptFolder+"]");
+			if (!vcsScriptFolder.contains("\\:"))
+				vcsScriptFolder = vcsScriptFolder.replaceAll(Matcher.quoteReplacement(":"), Matcher.quoteReplacement("\\:"));
+//			System.out.println("vcsScriptFolder="+vcsScriptFolder);
+
+			// Change C\\: to C\:
+			if (vcsScriptFolder.contains("\\\\:"))
+				vcsScriptFolder = vcsScriptFolder.replaceAll(Matcher.quoteReplacement("\\\\:"), Matcher.quoteReplacement("\\:"));
+//			System.out.println("vcsScriptFolder="+vcsScriptFolder);
+
+//			System.out.println("vcsScriptFolder=["+vcsScriptFolder+"]");
 			CommonUtils.writeOutput("post-mod: vcsScriptFolder=["+vcsScriptFolder+"]",prefix,"-debug1",logger,debug1,false,false);
 
 			sb.append("# Generated by ExecutePDToolStudio.bat\n");

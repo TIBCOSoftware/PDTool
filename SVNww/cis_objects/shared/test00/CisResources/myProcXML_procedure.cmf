@@ -1,0 +1,167 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="myProcXML" path="/shared/test00/CisResources/myProcXML" type="PROCEDURE" subtype="SQL_SCRIPT_PROCEDURE" changeToken="0">
+  <parameters>
+    <parameter name="request" direction="IN" nullable="true">
+      <datatype name="InventoryTransactions" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" referenceDefinitionSet="/shared/test00/CisResources/InventoryTransactions" referenceType="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions">
+        <schemaDatatype>
+          <datatype name="InventoryTransactions" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" superTypeName="InventoryTransactions" superTypeNamespace="http://www.compositesw.com/services/webservices/system/admin/resource" subType="ELEMENT_DECL" type="TREE" refId="1">
+            <element name="Transaction" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" maxOccurs="2147483647" minOccurs="0">
+              <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="2">
+                <element name="TransactionID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                </element>
+                <element name="TransactionDate" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="date" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DATE"/>
+                </element>
+                <element name="TransactionDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                </element>
+                <element name="PurchaseOrder" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="3">
+                    <element name="PurchaseOrderID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="PONumber" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="PurchaseOrderDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                    </element>
+                    <element name="Supplier" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="4">
+                        <element name="SupplierID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                          <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                        </element>
+                        <element name="SupplierName" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                          <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                        </element>
+                      </datatype>
+                    </element>
+                  </datatype>
+                </element>
+                <element name="Product" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="5">
+                    <element name="ProductID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="ProductName" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="date" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DATE"/>
+                    </element>
+                    <element name="ProductDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                    </element>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </schemaDatatype>
+      </datatype>
+    </parameter>
+    <parameter name="response" direction="OUT" nullable="true">
+      <datatype name="InventoryTransactions" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" referenceDefinitionSet="/shared/test00/CisResources/InventoryTransactions" referenceType="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions" subType="ELEMENT_DECL" type="XML" contentConstraint="SEQUENCE" schemaConstraint="ANY" componentType="ELEMENT" componentName="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions">
+        <schemaDatatype>
+          <datatype name="InventoryTransactions" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" superTypeName="InventoryTransactions" superTypeNamespace="http://www.compositesw.com/services/webservices/system/admin/resource" subType="ELEMENT_DECL" type="TREE" refId="1">
+            <element name="Transaction" namespace="http://www.compositesw.com/services/webservices/system/admin/resource" maxOccurs="2147483647" minOccurs="0">
+              <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="2">
+                <element name="TransactionID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                </element>
+                <element name="TransactionDate" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="date" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DATE"/>
+                </element>
+                <element name="TransactionDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                </element>
+                <element name="PurchaseOrder" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="3">
+                    <element name="PurchaseOrderID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="PONumber" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="PurchaseOrderDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                    </element>
+                    <element name="Supplier" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="4">
+                        <element name="SupplierID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                          <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                        </element>
+                        <element name="SupplierName" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                          <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                        </element>
+                      </datatype>
+                    </element>
+                  </datatype>
+                </element>
+                <element name="Product" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                  <datatype superTypeName="anyType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" subType="COMPLEX_TYPE" type="TREE" refId="5">
+                    <element name="ProductID" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="int" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="long" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="INTEGER" minValue="-2207" maxValue="2147483647"/>
+                    </element>
+                    <element name="ProductName" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="date" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="DATE"/>
+                    </element>
+                    <element name="ProductDescription" namespace="http://www.compositesw.com/services/webservices/system/admin/resource">
+                      <datatype name="string" namespace="http://www.w3.org/2001/XMLSchema" superTypeName="anySimpleType" superTypeNamespace="http://www.w3.org/2001/XMLSchema" type="STRING" maxLength="2147483647"/>
+                    </element>
+                  </datatype>
+                </element>
+              </datatype>
+            </element>
+          </datatype>
+        </schemaDatatype>
+      </datatype>
+    </parameter>
+  </parameters>
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <dependency target="/shared/test00/CisResources/InventoryTransactions" type="DEFINITION_SET">
+    <datatype name="Tree" type="TREE" refId="1"></datatype>
+  </dependency>
+  <attribute name="Script" type="STRING">/*
+Sample Input for testing this service:
+
+&lt;ns1:InventoryTransactions xmlns:ns1=&quot;http://www.compositesw.com/services/webservices/system/admin/resource&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+	&lt;ns1:Transaction&gt;
+		&lt;ns1:TransactionID&gt;1&lt;/ns1:TransactionID&gt;
+		&lt;ns1:TransactionDate&gt;2011-01-01&lt;/ns1:TransactionDate&gt;
+		&lt;ns1:TransactionDescription&gt;desc&lt;/ns1:TransactionDescription&gt;
+		&lt;ns1:PurchaseOrder&gt;
+			&lt;ns1:PurchaseOrderID xs:nil=&quot;true&quot;/&gt;
+			&lt;ns1:PONumber xs:nil=&quot;true&quot;/&gt;
+			&lt;ns1:PurchaseOrderDescription xs:nil=&quot;true&quot;/&gt;
+			&lt;ns1:Supplier&gt;
+				&lt;ns1:SupplierID xs:nil=&quot;true&quot;/&gt;
+				&lt;ns1:SupplierName xs:nil=&quot;true&quot;/&gt;
+			&lt;/ns1:Supplier&gt;
+		&lt;/ns1:PurchaseOrder&gt;
+		&lt;ns1:Product&gt;
+			&lt;ns1:ProductID xs:nil=&quot;true&quot;/&gt;
+			&lt;ns1:ProductName xs:nil=&quot;true&quot;/&gt;
+			&lt;ns1:ProductDescription xs:nil=&quot;true&quot;/&gt;
+		&lt;/ns1:Product&gt;
+	&lt;/ns1:Transaction&gt;
+&lt;/ns1:InventoryTransactions&gt;
+*/
+PROCEDURE myProcXML(
+	in request /shared/test00/CisResources/InventoryTransactions.&quot;{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions&quot;,
+	out response /shared/test00/CisResources/InventoryTransactions.&quot;{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions&quot;
+)
+BEGIN
+  -- Add your code here
+	set response = request;
+END</attribute>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="explicitly.designed" type="BOOLEAN">false</attribute>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="model" type="NULL"/>
+  <attribute name="native_only" type="STRING">false</attribute>
+  <attribute name="references" type="NULL"/>
+</metadata>

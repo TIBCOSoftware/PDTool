@@ -1,0 +1,282 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="Definitions" path="/shared/test00/DataSources/testWebService/Definitions" type="DEFINITION_SET" subtype="WSDL_DEFINITION_SET" changeToken="0">
+  <definitions>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_customers_customers" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersRow" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}testService_getCustomerById_result" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerByIdResponse" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customersResponse" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}customers" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+    <definition name="{http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService}getCustomerById" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+      <attribute name="selectionState" type="INTEGER">2</attribute>
+    </definition>
+  </definitions>
+  <security>
+    <owner user="admin" domain="composite"/>
+    <privilege group="group1" domain="composite" privileges="READ"/>
+    <privilege group="group2" domain="composite" privileges="READ"/>
+  </security>
+  <attribute name="creationDate" type="LONG">1391738797850</attribute>
+  <attribute name="creatorUserDomain" type="STRING">composite</attribute>
+  <attribute name="creatorUserName" type="STRING">admin</attribute>
+  <attribute name="selectionState" type="INTEGER">2</attribute>
+  <attribute name="sourceText" type="STRING">&lt;wsdl:definitions xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; xmlns:ns2=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService&quot; xmlns:ns1=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; targetNamespace=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService&quot;&gt;
+  &lt;wsdl:types&gt;
+    &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://mtinius-WS.cisco.com/services/webservices/TEST00/testWebService/testService&quot;&gt;
+      &lt;xs:element name=&quot;getCustomerByIdResponse&quot;&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:sequence&gt;
+            &lt;xs:element name=&quot;result&quot; nillable=&quot;true&quot; type=&quot;ns2:testService_getCustomerById_result&quot;/&gt;
+          &lt;/xs:sequence&gt;
+        &lt;/xs:complexType&gt;
+      &lt;/xs:element&gt;
+      &lt;xs:complexType name=&quot;testService_customers_customers&quot;&gt;
+        &lt;xs:sequence&gt;
+          &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;row&quot; nillable=&quot;true&quot; type=&quot;ns2:customersRow&quot;/&gt;
+        &lt;/xs:sequence&gt;
+      &lt;/xs:complexType&gt;
+      &lt;xs:element name=&quot;customersResponse&quot;&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:sequence&gt;
+            &lt;xs:element name=&quot;customers&quot; nillable=&quot;true&quot; type=&quot;ns2:testService_customers_customers&quot;/&gt;
+          &lt;/xs:sequence&gt;
+        &lt;/xs:complexType&gt;
+      &lt;/xs:element&gt;
+      &lt;xs:element name=&quot;customers&quot; type=&quot;xs:string&quot;/&gt;
+      &lt;xs:element name=&quot;getCustomerById&quot;&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:sequence&gt;
+            &lt;xs:element name=&quot;custId&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;
+          &lt;/xs:sequence&gt;
+        &lt;/xs:complexType&gt;
+      &lt;/xs:element&gt;
+      &lt;xs:complexType name=&quot;customersRow&quot;&gt;
+        &lt;xs:sequence&gt;
+          &lt;xs:element name=&quot;CustomerID&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;
+          &lt;xs:element name=&quot;CompanyName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;ContactFirstName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;ContactLastName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;BillingAddress&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;City&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;StateOrProvince&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;PostalCode&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;CountryRegion&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;ContactTitle&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;PhoneNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+          &lt;xs:element name=&quot;FaxNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+        &lt;/xs:sequence&gt;
+      &lt;/xs:complexType&gt;
+      &lt;xs:complexType name=&quot;testService_getCustomerById_result&quot;&gt;
+        &lt;xs:sequence&gt;
+          &lt;xs:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;row&quot; nillable=&quot;true&quot;&gt;
+            &lt;xs:complexType&gt;
+              &lt;xs:sequence&gt;
+                &lt;xs:element name=&quot;CustomerID&quot; nillable=&quot;true&quot; type=&quot;xs:int&quot;/&gt;
+                &lt;xs:element name=&quot;CompanyName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;ContactFirstName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;ContactLastName&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;BillingAddress&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;City&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;StateOrProvince&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;PostalCode&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;CountryRegion&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;ContactTitle&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;PhoneNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+                &lt;xs:element name=&quot;FaxNumber&quot; nillable=&quot;true&quot; type=&quot;xs:string&quot;/&gt;
+              &lt;/xs:sequence&gt;
+            &lt;/xs:complexType&gt;
+          &lt;/xs:element&gt;
+        &lt;/xs:sequence&gt;
+      &lt;/xs:complexType&gt;
+    &lt;/xs:schema&gt;
+  &lt;/wsdl:types&gt;
+  &lt;wsdl:message name=&quot;testServicePortgetCustomerByIdSoapIn&quot;&gt;
+    &lt;wsdl:part name=&quot;inputParameters&quot; element=&quot;ns2:getCustomerById&quot;/&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortcustomersSoapIn&quot;&gt;
+    &lt;wsdl:part name=&quot;inputParameters&quot; element=&quot;ns2:customers&quot;/&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortcustomersSoapOut&quot;&gt;
+    &lt;wsdl:part name=&quot;outputParameters&quot; element=&quot;ns2:customersResponse&quot;/&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:message name=&quot;testServicePortgetCustomerByIdSoapOut&quot;&gt;
+    &lt;wsdl:part name=&quot;outputParameters&quot; element=&quot;ns2:getCustomerByIdResponse&quot;/&gt;
+  &lt;/wsdl:message&gt;
+  &lt;wsdl:portType name=&quot;testServicePortType&quot;&gt;
+    &lt;wsdl:operation name=&quot;customers&quot;&gt;
+      &lt;wsdl:input message=&quot;ns1:testServicePortcustomersSoapIn&quot;/&gt;
+      &lt;wsdl:output message=&quot;ns1:testServicePortcustomersSoapOut&quot;/&gt;
+    &lt;/wsdl:operation&gt;
+    &lt;wsdl:operation name=&quot;getCustomerById&quot;&gt;
+      &lt;wsdl:input message=&quot;ns1:testServicePortgetCustomerByIdSoapIn&quot;/&gt;
+      &lt;wsdl:output message=&quot;ns1:testServicePortgetCustomerByIdSoapOut&quot;/&gt;
+    &lt;/wsdl:operation&gt;
+  &lt;/wsdl:portType&gt;
+  &lt;wsdl:binding name=&quot;testPortBinding&quot; type=&quot;ns1:testServicePortType&quot;&gt;
+    &lt;soap:binding style=&quot;document&quot; transport=&quot;http://schemas.xmlsoap.org/soap/http&quot;/&gt;
+    &lt;wsdl:operation name=&quot;customers&quot;&gt;
+      &lt;soap:operation soapAction=&quot;customers&quot; style=&quot;document&quot;/&gt;
+      &lt;wsdl:input&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:input&gt;
+      &lt;wsdl:output&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+    &lt;wsdl:operation name=&quot;getCustomerById&quot;&gt;
+      &lt;soap:operation soapAction=&quot;getCustomerById&quot; style=&quot;document&quot;/&gt;
+      &lt;wsdl:input&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:input&gt;
+      &lt;wsdl:output&gt;
+        &lt;soap:body use=&quot;literal&quot;/&gt;
+      &lt;/wsdl:output&gt;
+    &lt;/wsdl:operation&gt;
+  &lt;/wsdl:binding&gt;
+  &lt;wsdl:service name=&quot;testService&quot;&gt;
+    &lt;wsdl:port name=&quot;testPort&quot; binding=&quot;ns1:testPortBinding&quot;&gt;
+      &lt;soap:address location=&quot;http://mtinius-WS.cisco.com:9420/services/TEST00/testWebService/testService/testPort.ws&quot;/&gt;
+    &lt;/wsdl:port&gt;
+  &lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</attribute>
+  <attribute name="sources" type="LIST">
+    <list type="OBJECT">rO0ABXNyADVjb20uY29tcG9zaXRlc3cuY29tbW9uLnJlcG9zaXRvcnkuRGVmaW5pdGlvblNldFNv
+dXJjZVYpv6Zr2hqJAgACTAAIbG9jYXRpb250ABJMamF2YS9sYW5nL1N0cmluZztMAApzb3VyY2VU
+ZXh0cQB+AAF4cHQADnRlc3RXZWJTZXJ2aWNldBZiPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGlu
+Zz0iVVRGLTgiPz4NCjx3c2RsOmRlZmluaXRpb25zIHRhcmdldE5hbWVzcGFjZT0iaHR0cDovL210
+aW5pdXMtV1MuY2lzY28uY29tL3NlcnZpY2VzL3dlYnNlcnZpY2VzL1RFU1QwMC90ZXN0V2ViU2Vy
+dmljZSIgeG1sbnM6bnMyPSJodHRwOi8vbXRpbml1cy1XUy5jaXNjby5jb20vc2VydmljZXMvd2Vi
+c2VydmljZXMvVEVTVDAwL3Rlc3RXZWJTZXJ2aWNlL3Rlc3RTZXJ2aWNlIiB4bWxuczpuczE9Imh0
+dHA6Ly9tdGluaXVzLVdTLmNpc2NvLmNvbS9zZXJ2aWNlcy93ZWJzZXJ2aWNlcy9URVNUMDAvdGVz
+dFdlYlNlcnZpY2UiIHhtbG5zOndzZGw9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzZGwv
+IiB4bWxuczpzb2FwPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93c2RsL3NvYXAvIj4NCiAg
+PHdzZGw6dHlwZXM+DQogICAgPHhzOnNjaGVtYSBlbGVtZW50Rm9ybURlZmF1bHQ9InF1YWxpZmll
+ZCIgdGFyZ2V0TmFtZXNwYWNlPSJodHRwOi8vbXRpbml1cy1XUy5jaXNjby5jb20vc2VydmljZXMv
+d2Vic2VydmljZXMvVEVTVDAwL3Rlc3RXZWJTZXJ2aWNlL3Rlc3RTZXJ2aWNlIiB4bWxuczpuczI9
+Imh0dHA6Ly9tdGluaXVzLVdTLmNpc2NvLmNvbS9zZXJ2aWNlcy93ZWJzZXJ2aWNlcy9URVNUMDAv
+dGVzdFdlYlNlcnZpY2UvdGVzdFNlcnZpY2UiIHhtbG5zOnhzPSJodHRwOi8vd3d3LnczLm9yZy8y
+MDAxL1hNTFNjaGVtYSI+PHhzOmVsZW1lbnQgbmFtZT0iZ2V0Q3VzdG9tZXJCeUlkUmVzcG9uc2Ui
+Pjx4czpjb21wbGV4VHlwZT48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQgbmFtZT0icmVzdWx0IiBu
+aWxsYWJsZT0idHJ1ZSIgdHlwZT0ibnMyOnRlc3RTZXJ2aWNlX2dldEN1c3RvbWVyQnlJZF9yZXN1
+bHQiLz48L3hzOnNlcXVlbmNlPjwveHM6Y29tcGxleFR5cGU+PC94czplbGVtZW50Pjx4czpjb21w
+bGV4VHlwZSBuYW1lPSJ0ZXN0U2VydmljZV9jdXN0b21lcnNfY3VzdG9tZXJzIj48eHM6c2VxdWVu
+Y2U+PHhzOmVsZW1lbnQgbWF4T2NjdXJzPSJ1bmJvdW5kZWQiIG1pbk9jY3Vycz0iMCIgbmFtZT0i
+cm93IiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ibnMyOmN1c3RvbWVyc1JvdyIvPjwveHM6c2VxdWVu
+Y2U+PC94czpjb21wbGV4VHlwZT48eHM6ZWxlbWVudCBuYW1lPSJjdXN0b21lcnNSZXNwb25zZSI+
+PHhzOmNvbXBsZXhUeXBlPjx4czpzZXF1ZW5jZT48eHM6ZWxlbWVudCBuYW1lPSJjdXN0b21lcnMi
+IG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJuczI6dGVzdFNlcnZpY2VfY3VzdG9tZXJzX2N1c3RvbWVy
+cyIvPjwveHM6c2VxdWVuY2U+PC94czpjb21wbGV4VHlwZT48L3hzOmVsZW1lbnQ+PHhzOmVsZW1l
+bnQgbmFtZT0iY3VzdG9tZXJzIiB0eXBlPSJ4czpzdHJpbmciLz48eHM6ZWxlbWVudCBuYW1lPSJn
+ZXRDdXN0b21lckJ5SWQiPjx4czpjb21wbGV4VHlwZT48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQg
+bmFtZT0iY3VzdElkIiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6aW50Ii8+PC94czpzZXF1ZW5j
+ZT48L3hzOmNvbXBsZXhUeXBlPjwveHM6ZWxlbWVudD48eHM6Y29tcGxleFR5cGUgbmFtZT0iY3Vz
+dG9tZXJzUm93Ij48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQgbmFtZT0iQ3VzdG9tZXJJRCIgbmls
+bGFibGU9InRydWUiIHR5cGU9InhzOmludCIvPjx4czplbGVtZW50IG5hbWU9IkNvbXBhbnlOYW1l
+IiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+PHhzOmVsZW1lbnQgbmFtZT0iQ29u
+dGFjdEZpcnN0TmFtZSIgbmlsbGFibGU9InRydWUiIHR5cGU9InhzOnN0cmluZyIvPjx4czplbGVt
+ZW50IG5hbWU9IkNvbnRhY3RMYXN0TmFtZSIgbmlsbGFibGU9InRydWUiIHR5cGU9InhzOnN0cmlu
+ZyIvPjx4czplbGVtZW50IG5hbWU9IkJpbGxpbmdBZGRyZXNzIiBuaWxsYWJsZT0idHJ1ZSIgdHlw
+ZT0ieHM6c3RyaW5nIi8+PHhzOmVsZW1lbnQgbmFtZT0iQ2l0eSIgbmlsbGFibGU9InRydWUiIHR5
+cGU9InhzOnN0cmluZyIvPjx4czplbGVtZW50IG5hbWU9IlN0YXRlT3JQcm92aW5jZSIgbmlsbGFi
+bGU9InRydWUiIHR5cGU9InhzOnN0cmluZyIvPjx4czplbGVtZW50IG5hbWU9IlBvc3RhbENvZGUi
+IG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4czpzdHJpbmciLz48eHM6ZWxlbWVudCBuYW1lPSJDb3Vu
+dHJ5UmVnaW9uIiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+PHhzOmVsZW1lbnQg
+bmFtZT0iQ29udGFjdFRpdGxlIiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+PHhz
+OmVsZW1lbnQgbmFtZT0iUGhvbmVOdW1iZXIiIG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4czpzdHJp
+bmciLz48eHM6ZWxlbWVudCBuYW1lPSJGYXhOdW1iZXIiIG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4
+czpzdHJpbmciLz48L3hzOnNlcXVlbmNlPjwveHM6Y29tcGxleFR5cGU+PHhzOmNvbXBsZXhUeXBl
+IG5hbWU9InRlc3RTZXJ2aWNlX2dldEN1c3RvbWVyQnlJZF9yZXN1bHQiPjx4czpzZXF1ZW5jZT48
+eHM6ZWxlbWVudCBtYXhPY2N1cnM9InVuYm91bmRlZCIgbWluT2NjdXJzPSIwIiBuYW1lPSJyb3ci
+IG5pbGxhYmxlPSJ0cnVlIj48eHM6Y29tcGxleFR5cGU+PHhzOnNlcXVlbmNlPjx4czplbGVtZW50
+IG5hbWU9IkN1c3RvbWVySUQiIG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4czppbnQiLz48eHM6ZWxl
+bWVudCBuYW1lPSJDb21wYW55TmFtZSIgbmlsbGFibGU9InRydWUiIHR5cGU9InhzOnN0cmluZyIv
+Pjx4czplbGVtZW50IG5hbWU9IkNvbnRhY3RGaXJzdE5hbWUiIG5pbGxhYmxlPSJ0cnVlIiB0eXBl
+PSJ4czpzdHJpbmciLz48eHM6ZWxlbWVudCBuYW1lPSJDb250YWN0TGFzdE5hbWUiIG5pbGxhYmxl
+PSJ0cnVlIiB0eXBlPSJ4czpzdHJpbmciLz48eHM6ZWxlbWVudCBuYW1lPSJCaWxsaW5nQWRkcmVz
+cyIgbmlsbGFibGU9InRydWUiIHR5cGU9InhzOnN0cmluZyIvPjx4czplbGVtZW50IG5hbWU9IkNp
+dHkiIG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4czpzdHJpbmciLz48eHM6ZWxlbWVudCBuYW1lPSJT
+dGF0ZU9yUHJvdmluY2UiIG5pbGxhYmxlPSJ0cnVlIiB0eXBlPSJ4czpzdHJpbmciLz48eHM6ZWxl
+bWVudCBuYW1lPSJQb3N0YWxDb2RlIiBuaWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+
+PHhzOmVsZW1lbnQgbmFtZT0iQ291bnRyeVJlZ2lvbiIgbmlsbGFibGU9InRydWUiIHR5cGU9Inhz
+OnN0cmluZyIvPjx4czplbGVtZW50IG5hbWU9IkNvbnRhY3RUaXRsZSIgbmlsbGFibGU9InRydWUi
+IHR5cGU9InhzOnN0cmluZyIvPjx4czplbGVtZW50IG5hbWU9IlBob25lTnVtYmVyIiBuaWxsYWJs
+ZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+PHhzOmVsZW1lbnQgbmFtZT0iRmF4TnVtYmVyIiBu
+aWxsYWJsZT0idHJ1ZSIgdHlwZT0ieHM6c3RyaW5nIi8+PC94czpzZXF1ZW5jZT48L3hzOmNvbXBs
+ZXhUeXBlPjwveHM6ZWxlbWVudD48L3hzOnNlcXVlbmNlPjwveHM6Y29tcGxleFR5cGU+PC94czpz
+Y2hlbWE+DQogIDwvd3NkbDp0eXBlcz4NCiAgPHdzZGw6bWVzc2FnZSBuYW1lPSJ0ZXN0U2Vydmlj
+ZVBvcnRnZXRDdXN0b21lckJ5SWRTb2FwSW4iPg0KICAgIDx3c2RsOnBhcnQgbmFtZT0iaW5wdXRQ
+YXJhbWV0ZXJzIiBlbGVtZW50PSJuczI6Z2V0Q3VzdG9tZXJCeUlkIj4NCiAgICA8L3dzZGw6cGFy
+dD4NCiAgPC93c2RsOm1lc3NhZ2U+DQogIDx3c2RsOm1lc3NhZ2UgbmFtZT0idGVzdFNlcnZpY2VQ
+b3J0Y3VzdG9tZXJzU29hcEluIj4NCiAgICA8d3NkbDpwYXJ0IG5hbWU9ImlucHV0UGFyYW1ldGVy
+cyIgZWxlbWVudD0ibnMyOmN1c3RvbWVycyI+DQogICAgPC93c2RsOnBhcnQ+DQogIDwvd3NkbDpt
+ZXNzYWdlPg0KICA8d3NkbDptZXNzYWdlIG5hbWU9InRlc3RTZXJ2aWNlUG9ydGN1c3RvbWVyc1Nv
+YXBPdXQiPg0KICAgIDx3c2RsOnBhcnQgbmFtZT0ib3V0cHV0UGFyYW1ldGVycyIgZWxlbWVudD0i
+bnMyOmN1c3RvbWVyc1Jlc3BvbnNlIj4NCiAgICA8L3dzZGw6cGFydD4NCiAgPC93c2RsOm1lc3Nh
+Z2U+DQogIDx3c2RsOm1lc3NhZ2UgbmFtZT0idGVzdFNlcnZpY2VQb3J0Z2V0Q3VzdG9tZXJCeUlk
+U29hcE91dCI+DQogICAgPHdzZGw6cGFydCBuYW1lPSJvdXRwdXRQYXJhbWV0ZXJzIiBlbGVtZW50
+PSJuczI6Z2V0Q3VzdG9tZXJCeUlkUmVzcG9uc2UiPg0KICAgIDwvd3NkbDpwYXJ0Pg0KICA8L3dz
+ZGw6bWVzc2FnZT4NCiAgPHdzZGw6cG9ydFR5cGUgbmFtZT0idGVzdFNlcnZpY2VQb3J0VHlwZSI+
+DQogICAgPHdzZGw6b3BlcmF0aW9uIG5hbWU9ImN1c3RvbWVycyI+DQogICAgICA8d3NkbDppbnB1
+dCBtZXNzYWdlPSJuczE6dGVzdFNlcnZpY2VQb3J0Y3VzdG9tZXJzU29hcEluIj4NCiAgICA8L3dz
+ZGw6aW5wdXQ+DQogICAgICA8d3NkbDpvdXRwdXQgbWVzc2FnZT0ibnMxOnRlc3RTZXJ2aWNlUG9y
+dGN1c3RvbWVyc1NvYXBPdXQiPg0KICAgIDwvd3NkbDpvdXRwdXQ+DQogICAgPC93c2RsOm9wZXJh
+dGlvbj4NCiAgICA8d3NkbDpvcGVyYXRpb24gbmFtZT0iZ2V0Q3VzdG9tZXJCeUlkIj4NCiAgICAg
+IDx3c2RsOmlucHV0IG1lc3NhZ2U9Im5zMTp0ZXN0U2VydmljZVBvcnRnZXRDdXN0b21lckJ5SWRT
+b2FwSW4iPg0KICAgIDwvd3NkbDppbnB1dD4NCiAgICAgIDx3c2RsOm91dHB1dCBtZXNzYWdlPSJu
+czE6dGVzdFNlcnZpY2VQb3J0Z2V0Q3VzdG9tZXJCeUlkU29hcE91dCI+DQogICAgPC93c2RsOm91
+dHB1dD4NCiAgICA8L3dzZGw6b3BlcmF0aW9uPg0KICA8L3dzZGw6cG9ydFR5cGU+DQogIDx3c2Rs
+OmJpbmRpbmcgbmFtZT0idGVzdFBvcnRCaW5kaW5nIiB0eXBlPSJuczE6dGVzdFNlcnZpY2VQb3J0
+VHlwZSI+DQogICAgPHNvYXA6YmluZGluZyBzdHlsZT0iZG9jdW1lbnQiIHRyYW5zcG9ydD0iaHR0
+cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9odHRwIi8+DQogICAgPHdzZGw6b3BlcmF0aW9u
+IG5hbWU9ImN1c3RvbWVycyI+DQogICAgICA8c29hcDpvcGVyYXRpb24gc29hcEFjdGlvbj0iY3Vz
+dG9tZXJzIiBzdHlsZT0iZG9jdW1lbnQiLz4NCiAgICAgIDx3c2RsOmlucHV0Pg0KICAgICAgICA8
+c29hcDpib2R5IHVzZT0ibGl0ZXJhbCIvPg0KICAgICAgPC93c2RsOmlucHV0Pg0KICAgICAgPHdz
+ZGw6b3V0cHV0Pg0KICAgICAgICA8c29hcDpib2R5IHVzZT0ibGl0ZXJhbCIvPg0KICAgICAgPC93
+c2RsOm91dHB1dD4NCiAgICA8L3dzZGw6b3BlcmF0aW9uPg0KICAgIDx3c2RsOm9wZXJhdGlvbiBu
+YW1lPSJnZXRDdXN0b21lckJ5SWQiPg0KICAgICAgPHNvYXA6b3BlcmF0aW9uIHNvYXBBY3Rpb249
+ImdldEN1c3RvbWVyQnlJZCIgc3R5bGU9ImRvY3VtZW50Ii8+DQogICAgICA8d3NkbDppbnB1dD4N
+CiAgICAgICAgPHNvYXA6Ym9keSB1c2U9ImxpdGVyYWwiLz4NCiAgICAgIDwvd3NkbDppbnB1dD4N
+CiAgICAgIDx3c2RsOm91dHB1dD4NCiAgICAgICAgPHNvYXA6Ym9keSB1c2U9ImxpdGVyYWwiLz4N
+CiAgICAgIDwvd3NkbDpvdXRwdXQ+DQogICAgPC93c2RsOm9wZXJhdGlvbj4NCiAgPC93c2RsOmJp
+bmRpbmc+DQogIDx3c2RsOnNlcnZpY2UgbmFtZT0idGVzdFNlcnZpY2UiPg0KICAgIDx3c2RsOnBv
+cnQgbmFtZT0idGVzdFBvcnQiIGJpbmRpbmc9Im5zMTp0ZXN0UG9ydEJpbmRpbmciPg0KICAgICAg
+PHNvYXA6YWRkcmVzcyBsb2NhdGlvbj0iaHR0cDovL210aW5pdXMtV1MuY2lzY28uY29tOjk0MjAv
+c2VydmljZXMvVEVTVDAwL3Rlc3RXZWJTZXJ2aWNlL3Rlc3RTZXJ2aWNlL3Rlc3RQb3J0LndzIi8+
+DQogICAgPC93c2RsOnBvcnQ+DQogIDwvd3NkbDpzZXJ2aWNlPg0KPC93c2RsOmRlZmluaXRpb25z
+Pg0K</list>
+  </attribute>
+</metadata>

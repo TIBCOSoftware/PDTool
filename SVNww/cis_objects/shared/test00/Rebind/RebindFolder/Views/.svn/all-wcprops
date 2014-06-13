@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views
+END
+Customers_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/Customers_table.cmf
+END
+ShippingMethods_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/ShippingMethods_table.cmf
+END
+Views.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/sandbox/!svn/ver/725/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/Views.cmf
+END
+Orders_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/Orders_table.cmf
+END
+CustomerOrders_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/CustomerOrders_table.cmf
+END
+OrderDetails_table.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/sandbox/!svn/ver/689/PDTOOL/6_2/cis_objects/shared/test00/Rebind/RebindFolder/Views/OrderDetails_table.cmf
+END

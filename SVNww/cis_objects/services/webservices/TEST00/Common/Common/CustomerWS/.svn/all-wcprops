@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/sandbox/!svn/ver/733/PDTOOL/6_2/cis_objects/services/webservices/TEST00/Common/Common/CustomerWS
+END
+CustomerWS.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/sandbox/!svn/ver/733/PDTOOL/6_2/cis_objects/services/webservices/TEST00/Common/Common/CustomerWS/CustomerWS.cmf
+END
+customers_link.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/sandbox/!svn/ver/733/PDTOOL/6_2/cis_objects/services/webservices/TEST00/Common/Common/CustomerWS/customers_link.cmf
+END
+getCustomerById_link.cmf
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/sandbox/!svn/ver/733/PDTOOL/6_2/cis_objects/services/webservices/TEST00/Common/Common/CustomerWS/getCustomerById_link.cmf
+END

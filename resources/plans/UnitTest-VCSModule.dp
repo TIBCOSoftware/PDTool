@@ -61,7 +61,7 @@ PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "import01"   	"$MODULE_HOME/Arch
 PASS	TRUE	ExecuteAction  	vcsInitWorkspace
 #
 PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin ""
-#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database<TYPE=DATABASE>/My.Catalog<TYPE=CATALOG>/My$$Schema<TYPE=SCHEMA>"
+#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]"
 #
 PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "check in"	"$MODULE_HOME/servers.xml"
@@ -87,7 +87,7 @@ PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/webservices/
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
-PASS	TRUE	ExecuteAction  	vcsScanPathLength 		$SERVERID "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsScanPathLength 		$SERVERID 0 "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" 	"$MODULE_HOME/servers.xml"
 #
 # Import with overwrite the TES00_x_x.car file to re-initialize and prepare for a perforce label checkout
 #PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "vcs01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
@@ -105,7 +105,7 @@ PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "import01"   	"$MODULE_HOME/Arch
 PASS	TRUE	ExecuteAction  	vcsInitWorkspace2			 	  $VCONN												"$MODULE_HOME/VCSModule.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN ""                                             "$MODULE_HOME/VCSModule.xml"
-#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database<TYPE=DATABASE>/My.Catalog<TYPE=CATALOG>/My$$Schema<TYPE=SCHEMA>" "$MODULE_HOME/VCSModule.xml"
+#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]" "$MODULE_HOME/VCSModule.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
@@ -131,7 +131,7 @@ PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /shared/test00
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckins2 	$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
-PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN 259 "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
 # Import with overwrite the TES00_x_x.car file to re-initialize and prepare for a perforce label checkout
 #PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "vcs01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"

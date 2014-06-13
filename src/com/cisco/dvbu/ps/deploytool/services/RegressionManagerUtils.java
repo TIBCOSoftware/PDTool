@@ -99,7 +99,7 @@ public class RegressionManagerUtils {
         	BufferedReader rd = new BufferedReader(new FileReader(f));
         	while ((line = rd.readLine()) != null)
         	{
-        		lines.add(line.trim());
+        		lines.add(line);
         	}
         	rd.close();
         }
@@ -902,7 +902,7 @@ public class RegressionManagerUtils {
 		try
 		{
 			stmt = conn.createStatement();
-	        stmt.execute(item.input);
+	        stmt.execute(item.input.replaceAll("\n", " "));
 			rs = stmt.getResultSet();
 	        ResultSetMetaData rsmd = rs.getMetaData();
 	        int columns = rsmd.getColumnCount();
@@ -1011,7 +1011,7 @@ public class RegressionManagerUtils {
 		
 		try
 		{
-			String query = item.input.replaceAll("\n", "");
+			String query = item.input.replaceAll("\n", " ");
 			// Convert a CALL statement into a SELECT * FROM statement
 			
 			// { CALL SCH1.LookupProduct( 3 ) } --> SCH1.LookupProduce( 3 )

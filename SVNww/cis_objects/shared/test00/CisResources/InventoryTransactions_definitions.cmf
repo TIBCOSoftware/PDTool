@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<metadata name="InventoryTransactions" path="/shared/test00/CisResources/InventoryTransactions" type="DEFINITION_SET" subtype="XML_SCHEMA_DEFINITION_SET" changeToken="0">
+  <definitions>
+    <definition name="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions" type="TYPE">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+    <definition name="{http://www.compositesw.com/services/webservices/system/admin/resource}InventoryTransactions" type="ELEMENT">
+      <attribute name="creationDate" type="LONG">0</attribute>
+      <attribute name="creatorUserDomain" type="STRING"/>
+      <attribute name="creatorUserName" type="STRING"/>
+    </definition>
+  </definitions>
+  <security>
+    <owner user="admin" domain="composite"/>
+  </security>
+  <attribute name="creationDate" type="LONG">0</attribute>
+  <attribute name="creatorUserDomain" type="STRING"/>
+  <attribute name="creatorUserName" type="STRING"/>
+  <attribute name="explicitly.designed" type="BOOLEAN">true</attribute>
+  <attribute name="impactLevel" type="INTEGER">0</attribute>
+  <attribute name="impactMessage" type="NULL"/>
+  <attribute name="schemaLocation" type="NULL"/>
+  <attribute name="sourceText" type="NULL"/>
+  <attribute name="sourceURI" type="NULL"/>
+  <attribute name="sources" type="LIST">
+    <list type="OBJECT">rO0ABXNyADVjb20uY29tcG9zaXRlc3cuY29tbW9uLnJlcG9zaXRvcnkuRGVmaW5pdGlvblNldFNv
+dXJjZVYpv6Zr2hqJAgACTAAIbG9jYXRpb250ABJMamF2YS9sYW5nL1N0cmluZztMAApzb3VyY2VU
+ZXh0cQB+AAF4cHQAFkludmVudG9yeVRyYW5zYWN0aW9uczJ0Bb48eHM6c2NoZW1hIHRhcmdldE5h
+bWVzcGFjZT0iaHR0cDovL3d3dy5jb21wb3NpdGVzdy5jb20vc2VydmljZXMvd2Vic2VydmljZXMv
+c3lzdGVtL2FkbWluL3Jlc291cmNlIiBhdHRyaWJ1dGVGb3JtRGVmYXVsdD0idW5xdWFsaWZpZWQi
+IGVsZW1lbnRGb3JtRGVmYXVsdD0icXVhbGlmaWVkIiB4bWxuczpuczE9Imh0dHA6Ly93d3cuY29t
+cG9zaXRlc3cuY29tL3NlcnZpY2VzL3dlYnNlcnZpY2VzL3N5c3RlbS9hZG1pbi9yZXNvdXJjZSIg
+eG1sbnM6eHM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hIj48eHM6Y29tcGxleFR5
+cGUgbmFtZT0iSW52ZW50b3J5VHJhbnNhY3Rpb25zIj48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQg
+bWluT2NjdXJzPSIwIiBtYXhPY2N1cnM9InVuYm91bmRlZCIgbmFtZT0iVHJhbnNhY3Rpb24iPjx4
+czpjb21wbGV4VHlwZT48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQgbmFtZT0iVHJhbnNhY3Rpb25J
+RCIgdHlwZT0ieHM6aW50Ii8+PHhzOmVsZW1lbnQgbmFtZT0iVHJhbnNhY3Rpb25EYXRlIiB0eXBl
+PSJ4czpkYXRlIi8+PHhzOmVsZW1lbnQgbmFtZT0iVHJhbnNhY3Rpb25EZXNjcmlwdGlvbiIgdHlw
+ZT0ieHM6c3RyaW5nIi8+PHhzOmVsZW1lbnQgbmFtZT0iUHVyY2hhc2VPcmRlciI+PHhzOmNvbXBs
+ZXhUeXBlPjx4czpzZXF1ZW5jZT48eHM6ZWxlbWVudCBuYW1lPSJQdXJjaGFzZU9yZGVySUQiIHR5
+cGU9InhzOmludCIvPjx4czplbGVtZW50IG5hbWU9IlBPTnVtYmVyIiB0eXBlPSJ4czppbnQiLz48
+eHM6ZWxlbWVudCBuYW1lPSJQdXJjaGFzZU9yZGVyRGVzY3JpcHRpb24iIHR5cGU9InhzOnN0cmlu
+ZyIvPjx4czplbGVtZW50IG5hbWU9IlN1cHBsaWVyIj48eHM6Y29tcGxleFR5cGU+PHhzOnNlcXVl
+bmNlPjx4czplbGVtZW50IG5hbWU9IlN1cHBsaWVySUQiIHR5cGU9InhzOmludCIvPjx4czplbGVt
+ZW50IG5hbWU9IlN1cHBsaWVyTmFtZSIgdHlwZT0ieHM6c3RyaW5nIi8+PC94czpzZXF1ZW5jZT48
+L3hzOmNvbXBsZXhUeXBlPjwveHM6ZWxlbWVudD48L3hzOnNlcXVlbmNlPjwveHM6Y29tcGxleFR5
+cGU+PC94czplbGVtZW50Pjx4czplbGVtZW50IG5hbWU9IlByb2R1Y3QiPjx4czpjb21wbGV4VHlw
+ZT48eHM6c2VxdWVuY2U+PHhzOmVsZW1lbnQgbmFtZT0iUHJvZHVjdElEIiB0eXBlPSJ4czppbnQi
+Lz48eHM6ZWxlbWVudCBuYW1lPSJQcm9kdWN0TmFtZSIgdHlwZT0ieHM6ZGF0ZSIvPjx4czplbGVt
+ZW50IG5hbWU9IlByb2R1Y3REZXNjcmlwdGlvbiIgdHlwZT0ieHM6c3RyaW5nIi8+PC94czpzZXF1
+ZW5jZT48L3hzOmNvbXBsZXhUeXBlPjwveHM6ZWxlbWVudD48L3hzOnNlcXVlbmNlPjwveHM6Y29t
+cGxleFR5cGU+PC94czplbGVtZW50PjwveHM6c2VxdWVuY2U+PC94czpjb21wbGV4VHlwZT48eHM6
+ZWxlbWVudCBuYW1lPSJJbnZlbnRvcnlUcmFuc2FjdGlvbnMiIHR5cGU9Im5zMTpJbnZlbnRvcnlU
+cmFuc2FjdGlvbnMiLz48L3hzOnNjaGVtYT4=</list>
+  </attribute>
+</metadata>
