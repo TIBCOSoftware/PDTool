@@ -1,9 +1,0 @@
-<?xml version="1.1" encoding="UTF-8"?>
-<metadata name="test00_longpath" path="/shared/test00_longpath" type="CONTAINER" subtype="FOLDER" changeToken="0">
-  <security>
-    <owner user="admin" domain="composite"/>
-  </security>
-  <attribute name="creationDate" type="LONG">1394391650673</attribute>
-  <attribute name="creatorUserDomain" type="STRING">composite</attribute>
-  <attribute name="creatorUserName" type="STRING">admin</attribute>
-</metadata>

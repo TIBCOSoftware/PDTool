@@ -111,7 +111,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 				System.getProperties().setProperty("java.security.policy", javaPolicyLocation);  
 
 				// Create a new System.out Logger
-	            Logger exportLogger = Logger.getLogger(ExportCommand.class);
+	            Logger exportLogger = Logger.getLogger(ImportCommand.class);
 	            System.setOut(new PrintStream(new LogOutputStream(exportLogger, Level.INFO)));
 	            System.setErr(new PrintStream(new LogOutputStream(exportLogger, Level.ERROR)));
 				// Create a new security manager
@@ -222,7 +222,9 @@ public class VCSWSDAOImpl implements VCSDAO {
 	}
 
 	public void vcsDiffMergerCommand(String prefix, String arguments, String vcsIgnoreMessages, String propertyFile) throws CompositeException {
-		
+
+		String identifier = "VCSWSDAOImpl.vcsDiffMergerCommand"; // some unique identifier that characterizes this invocation.
+
 		try {
 		    boolean preserveQuotes = false;
 		    boolean initArgsList = true;
@@ -231,8 +233,57 @@ public class VCSWSDAOImpl implements VCSDAO {
 
 			String[] args = argsList.toArray(new String[0]) ;
 			
-			DiffMerger.startCommand(null, null, args);
+			/*
+			 * 2014-06-30 (mtinius): Removed the PDTool Diffmerger capability
+			 */
+//			DiffMerger.startCommand(null, null, args);
+			/*
+			 * 2014-06-30 (mtinius): Added security manager around the Composite native Diffmerger code because
+			 * 						 it has System.out.println and System.exit commands.  Need to trap both.
+			 */
+			String maskedargsList = CommonUtils.getArgumentListMasked(argsList);
+			if ( logger.isDebugEnabled() ) {
+				logger.debug(identifier+":: argument list=[" + maskedargsList+"]" );
+			}
 			
+			// Get the existing security manager
+	        SecurityManager sm = System.getSecurityManager();
+	        PrintStream originalOut = System.out;
+	        PrintStream originalErr = System.err;
+			String command = "DiffMerger.startCommand";
+	        try {
+	    		// Get the offset location of the java.policy file [offset from PDTool home].
+	    		String javaPolicyOffset = CommonConstants.javaPolicy;
+	    		String javaPolicyLocation = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PROJECT_HOME_PHYSICAL"), propertyFile, true) + javaPolicyOffset;	
+				// Set the java security policy
+				System.getProperties().setProperty("java.security.policy", javaPolicyLocation);  
+
+				// Create a new System.out Logger
+				Logger exportLogger = Logger.getLogger(DiffMerger.class);
+	            System.setOut(new PrintStream(new LogOutputStream(exportLogger, Level.INFO)));
+	            System.setErr(new PrintStream(new LogOutputStream(exportLogger, Level.ERROR)));
+				// Create a new security manager
+	            System.setSecurityManager(new NoExitSecurityManager());
+
+	            // Invoke the Composite native DiffMerger command.
+	            DiffMerger.startCommand(null, null, args);
+	        }
+	        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
+	        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(null, null, "+maskedargsList+")";
+	            logger.error(error);
+	            throw new CompositeException(error);
+	        }
+	        catch (NoExitSecurityExceptionStatusZero nesezero) {
+				if ( logger.isDebugEnabled() ) {
+					logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(null, null, "+maskedargsList+")");
+				}
+	        }
+	        finally {
+	            System.setSecurityManager(sm);
+	            System.setOut(originalOut);
+	            System.setErr(originalErr);
+	        }
+	        
 		} catch (Exception e) {
 			if (resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
 				ApplicationException applicationException = new ApplicationException("DiffMerger execution returned an error="+e.getMessage().toString());

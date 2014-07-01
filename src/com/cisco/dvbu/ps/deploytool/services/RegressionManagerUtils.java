@@ -61,6 +61,7 @@ import com.cisco.dvbu.ps.deploytool.modules.RegressionTestType;
  *  2014-01-31 (mtinius): added a check for useHttps to override encrypt flag when useHttps=true.
  *  2014-02-03 (mtinius): findResourceMatch() - Fixed resourceURL comparison to use equals when no wildcard "*" is present instead of startsWith.
  *  2014-02-09 (mtinius): executeWS() - added base64 encoding and basic authorization to the URL connection to allow for connections with new users.
+ *  2014-06-30 (mtinius): Enhanced parseItems so that the position of the option does not matter and added the option: outputFilename=
  */
 
 public class RegressionManagerUtils {
@@ -92,7 +93,8 @@ public class RegressionManagerUtils {
 // Read all the lines
         
         List<String> lines = new ArrayList<String>();
-        String line;
+        String line;	// trimmed line
+        String oline; 	// original line
         try
         {
         	File f = new File(filePath);
@@ -111,7 +113,8 @@ public class RegressionManagerUtils {
         while (lines.size() > 0)
         {
             lineNum[0]++;
-            line = (String)lines.remove(0);
+            oline = (String)lines.remove(0);
+            line = oline.trim();
             if (line.length() == 0 || line.startsWith("#")) 
             {
                 continue;
@@ -122,54 +125,90 @@ public class RegressionManagerUtils {
             {
             	/*  Item Class         [QUERY]
             	 *  ----------         ---------------
-            	 *  item.type        = TYPE_QUERY       
-				 *	item.database    = database=MYTEST
-				 *	item.input       = SELECT * FROM CAT1.SCH1.ViewSales
+            	 *  item.type           = TYPE_QUERY       
+				 *	item.database       = database=MYTEST
+				 *  item.outputFilename = outputFilename=CAT1.SCH1.ViewSales.txt (optional parameter)
+				 *	item.input          = SELECT * FROM CAT1.SCH1.ViewSales
 				 */
             	item.type = TYPE_QUERY;
-                item.database = getAttr(lines, lineNum);
-            }
+            	while (lines.size() > 0 && (
+                        ((String)lines.get(0)).startsWith("database=") ||
+                        ((String)lines.get(0)).startsWith("outputFilename=")
+                        ))
+                {
+                    if ( ((String)lines.get(0)).startsWith("database=") )
+                     	item.database = getAttr(lines, lineNum);
+                    if ( ((String)lines.get(0)).startsWith("outputFilename=") )
+                     	item.outputFilename = getAttr(lines, lineNum);
+                }
+             }
             else if (line.equals("[WEB_SERVICE]"))
             {
             	/*  Item Class         [WEB_SERVICE]
             	 *  ----------         ---------------
-            	 *  item.type        = TYPE_WS        
-				 *	item.database    = database=ProductWebService
-				 *	item.path        = path=/soap12/ProductWebService
-				 *	item.action      = action=LookupProduct
-				 *  item.encrypt     = encrypt=false
-				 *	item.contentType = contentType=application/soap+xml;charset=UTF-8
-				 *	item.input       = <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
-				 *						   <soap:Header/>
-				 *						   <soap:Body>
-				 *						      <tem:LookupProduct>
+            	 *  item.type           = TYPE_WS        
+				 *	item.database       = database=ProductWebService
+				 *	item.path           = path=/soap12/ProductWebService
+				 *	item.action         = action=LookupProduct
+				 *  item.encrypt        = encrypt=false
+				 *	item.contentType    = contentType=application/soap+xml;charset=UTF-8
+				 *  item.outputFilename = outputFilename=LookupProduct.txt (optional parameter)
+				 *	item.input          = <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
+				 *			  			      <soap:Header/>
+				 *						      <soap:Body>
+				 *						         <tem:LookupProduct>
 				 *						         <tem:LookupProductDesiredproduct>10</tem:LookupProductDesiredproduct>
-				 *						      </tem:LookupProduct>
-				 *						   </soap:Body>
-				 *						</soap:Envelope>
+				 *						         </tem:LookupProduct>
+				 *						      </soap:Body>
+				 *						   </soap:Envelope>
             	 */
                 item.type = TYPE_WS;
-                item.database = getAttr(lines, lineNum);
-                item.path = getAttr(lines, lineNum);
-                item.action = getAttr(lines, lineNum);
-                item.encrypt = Boolean.valueOf(getAttr(lines, lineNum));
-                item.contentType = getAttr(lines, lineNum);
+            	while (lines.size() > 0 && (
+            			((String)lines.get(0)).startsWith("database=") ||
+                    	((String)lines.get(0)).startsWith("path=") ||
+                        ((String)lines.get(0)).startsWith("action=") ||
+                        ((String)lines.get(0)).startsWith("encrypt=") ||
+                        ((String)lines.get(0)).startsWith("contentType=") ||
+                        ((String)lines.get(0)).startsWith("outputFilename=")
+                                                ))
+                {
+                    if ( ((String)lines.get(0)).startsWith("database=") )
+                     	item.database = getAttr(lines, lineNum);
+                    if ( ((String)lines.get(0)).startsWith("path=") )
+                     	item.path = getAttr(lines, lineNum);
+                    if ( ((String)lines.get(0)).startsWith("action=") )
+                     	item.action = getAttr(lines, lineNum);
+                    if ( ((String)lines.get(0)).startsWith("encrypt=") )
+                    	item.encrypt = Boolean.valueOf(getAttr(lines, lineNum));
+                    if ( ((String)lines.get(0)).startsWith("contentType=") )
+                     	item.contentType = getAttr(lines, lineNum);
+                    if ( ((String)lines.get(0)).startsWith("outputFilename=") )
+                     	item.outputFilename = getAttr(lines, lineNum);
+               }
             }
             else if (line.equals("[PROCEDURE]")) {
                	/*  Item Class         [PROCEDURE]
             	 *  ----------         ---------------
-            	 *  item.type        = TYPE_PROCEDURE       
-				 *	item.database    = database=MYTEST
-				 *  item.outTypes    = outTypes=INTEGER
-				 *	item.input       = SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1  ) 
+            	 *  item.type           = TYPE_PROCEDURE       
+				 *	item.database       = database=MYTEST
+				 *  item.outTypes       = outTypes=INTEGER
+				 *  item.outputFilename = outputFilename=CAT1.SCH1.LookupProduct.txt (optional parameter)
+				 *	item.input          = SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1  ) 
 				 */
                 item.type = TYPE_PROCEDURE;
-                item.database = getAttr(lines, lineNum);
-                if (lines.size() > 0 
-                      && ((String)lines.get(0)).startsWith("outTypes="))
-                {
-                    item.outTypes = getAttr(lines, lineNum).split(",");
-                }
+            	while (lines.size() > 0 && (
+                        ((String)lines.get(0)).startsWith("database=") ||
+                    	((String)lines.get(0)).startsWith("outTypes=") ||
+                        ((String)lines.get(0)).startsWith("outputFilename=")
+                                           	))
+               {
+            	   if ( ((String)lines.get(0)).startsWith("database=") )
+                    	item.database = getAttr(lines, lineNum);
+            	   if ( ((String)lines.get(0)).startsWith("outTypes=") )
+            		   item.outTypes = getAttr(lines, lineNum).split(",");
+                   if ( ((String)lines.get(0)).startsWith("outputFilename=") )
+                    	item.outputFilename = getAttr(lines, lineNum);
+               }
             }
             else
             {
@@ -180,12 +219,13 @@ public class RegressionManagerUtils {
             StringBuffer buf = new StringBuffer();
             while (lines.size() > 0) {
                 lineNum[0]++;
-                line = (String)lines.remove(0);
+                oline = (String)lines.remove(0);
+                line = oline.trim();
                 if (line.length() == 0) {
                     break;
                 }
                 if (line.length() > 0 && !line.startsWith("#")) {
-	                buf.append(line+"\n");
+	                buf.append(oline+"\n");
                 }
             }
             item.input = buf.toString();
@@ -241,6 +281,7 @@ public class RegressionManagerUtils {
         return (RegressionItem[])items.toArray(new RegressionItem[items.size()]);
     }
 
+ 
     /**
      * Parses a line of the form a=b and return b.
      */
@@ -249,17 +290,19 @@ public class RegressionManagerUtils {
         lineNum[0]++;
         if (lines.size() == 0)
         {
-            error(lineNum[0], null, "Unexpected EOF");
+            error(lineNum[0], null, "getAttr(): Unexpected EOF");
         }
         String line = (String)lines.remove(0);
         if (line.indexOf("=") < 0)
         {
-            error(lineNum[0], line, "Syntax error");
+            error(lineNum[0], line, "getAttr(): Syntax error");
         }
         String[] ss = line.split("=",2);
         if (ss.length == 1)
         {
             return "";
+        } else {
+        	ss[1] = ss[1].trim();
         }
         return ss[1];
     }

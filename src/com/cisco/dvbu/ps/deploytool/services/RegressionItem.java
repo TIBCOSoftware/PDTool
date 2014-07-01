@@ -16,6 +16,7 @@ public class RegressionItem
 		public int type;
 		public int lineNum;
 		public String input;
+		public String outputFilename;
 		public String path;
 		public String action;
 		public boolean encrypt;
@@ -37,6 +38,7 @@ public class RegressionItem
 			buf.append("outTypes = " + Arrays.asList(outTypes) + "\n");
 	        buf.append("resourcePath = "+resourcePath+"\n");
 	        buf.append("resourceType = "+resourceType+"\n");
+	        buf.append("outputFilename = "+outputFilename+"\n");
 			buf.append("input = " + input + "\n");
 			return buf.toString();
 		}		
