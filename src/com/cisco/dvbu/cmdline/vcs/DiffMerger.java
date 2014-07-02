@@ -507,6 +507,8 @@ public class DiffMerger {
                              "4. The specified resource is built-in and hence not amenable to versioning.";
             
             System.err.println(message);
+            // 2014-06-30 mtinius: Added an explicit error when the resource cannot be located.
+            System.exit(1);
         }
         
         /** 

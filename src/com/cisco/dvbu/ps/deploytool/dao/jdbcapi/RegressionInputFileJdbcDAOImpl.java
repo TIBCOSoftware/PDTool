@@ -104,7 +104,9 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 			"ALL_PROCEDURES procs, " +
 			"ALL_PARAMETERS params " +
 		"WHERE " +
-			"params.PROCEDURE_ID = procs.PROCEDURE_ID ";
+			"params.PROCEDURE_ID = procs.PROCEDURE_ID " +
+		"AND (params.DIRECTION = " + PROC_PARAM_DIRECTION_IN + 
+		      " OR params.DIRECTION = " + PROC_PARAM_DIRECTION_INOUT + ") ";
 		
 	/**
 	 * Sql to CIS system tables to obtain information about all published procedures.
@@ -151,7 +153,7 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 	 *  for the same procedure vs. starting a new procedure file entry is based on comparison of the PROCEDURE_NAMEs
 	 *  for the current and previous ResultSet rows.  
 	 */
-	private static String orderByForProcs = " ORDER BY procs.PROCEDURE_NAME, params.ORDINAL_POSITION";
+	private static String orderByForProcs = " ORDER BY procs.PROCEDURE_ID, params.ORDINAL_POSITION";
 	
 	/**
 	 * Statement ending for Web Services
@@ -359,6 +361,8 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
             	item = items[i];
 				buf.append("[QUERY]\n");
 	        	buf.append("database=" + item.database + "\n");	// datasource
+	        	if (item.outputFilename != null)
+	        		buf.append("outputFilename="+item.outputFilename+"\n"); // outputFilename
 	        	buf.append(item.input + "\n\n"); // patterns: table | schema.table | cat.schema.table
 	        	queriesStr = queriesStr + buf.toString();
 
@@ -397,6 +401,8 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 		        		}
 		        		buf.append("outTypes="+outTypes + "\n");
 		        	}
+		        	if (item.outputFilename != null)
+		        		buf.append("outputFilename="+item.outputFilename+"\n"); // outputFilename
 		        	buf.append(item.input + "\n\n"); // patterns: table | schema.table | cat.schema.table
 		        	proceduresStr = proceduresStr + buf.toString();
 					
@@ -433,6 +439,8 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 		        		}
 		        		buf.append("outTypes="+outTypes + "\n");
 		        	}
+		        	if (item.outputFilename != null)
+		        		buf.append("outputFilename="+item.outputFilename+"\n"); // outputFilename
 		        	buf.append(item.input + "\n\n"); // patterns: table | schema.table | cat.schema.table
 		        	proceduresStr = proceduresStr + buf.toString();
 		        	 
@@ -473,6 +481,8 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 	        	buf.append("action=" + item.action + "\n");
 	        	buf.append("encrypt="+ item.encrypt + "\n");
 	        	buf.append("contentType=" + item.contentType + "\n");
+	        	if (item.outputFilename != null)
+	        		buf.append("outputFilename="+item.outputFilename+"\n"); // outputFilename
 	        	buf.append(item.input + "\n\n");
 	        	wsStr = wsStr + buf.toString();
 	        	
@@ -942,13 +952,13 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 					} else {
 						viewQry = publishedViewQry + fromClause;
 					}
-	            	/*  Item Class         [QUERY]
-	            	 *  ----------         ---------------
-	            	 *  item.type        = TYPE_QUERY       
-					 *	item.database    = database=MYTEST
-					 *	iemt.input       = SELECT * FROM CAT1.SCH1.ViewSales
+	            	/*  Item Class         	[QUERY]
+	            	 *  ----------         	---------------
+	            	 *  item.type        	= TYPE_QUERY       
+					 *	item.database    	= database=MYTEST
+					 *  item.outputFilename = outputFilename=CAT1.SCH1.ViewSales.txt
+					 *	iemt.input       	= SELECT * FROM CAT1.SCH1.ViewSales
 					 */
-	
 					// Output the query to the input file
 					RegressionItem item = new RegressionItem();
 					item.type = TYPE_QUERY;
@@ -957,7 +967,10 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 					item.resourcePath = resourcePath;
 					item.resourceType = resourceType;
 
-					items.add(item);
+		        	// Retrieve only the FROM clause table URL with no where clause and no projections in order to create a file name.
+		        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+
+		        	items.add(item);
 		        	
 		        	// Count a query
 		        	totalQueriesGenerated++;
@@ -1068,7 +1081,10 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		        			if (!queryProvided) {
 		        				item.input = item.input + ")";
 		        			}
-				        	// Add to the list of items
+		    	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
+		    	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+
+		    	        	// Add to the list of items
 							items.add(item);
 							item = new RegressionItem();
 		        		}
@@ -1084,12 +1100,13 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 							procQry = publishedProcQry + fromClause + "( ";
 							queryProvided = false;
 						}
-		               	/*  Item Class         [PROCEDURE]
-		            	 *  ----------         ---------------
-		            	 *  item.type        = TYPE_PROCEDURE       
-						 *	item.database    = database=MYTEST
-						 *  item.outTypes    = outTypes=INTEGER
-						 *	item.input       = SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1  ) 
+		               	/*  Item Class         	[PROCEDURE]
+		            	 *  ----------         	---------------
+		            	 *  item.type        	= TYPE_PROCEDURE       
+						 *	item.database    	= database=MYTEST
+						 *  item.outTypes    	= outTypes=INTEGER
+						 *  item.outputFilename = outputFilename=CAT1.SCH1.LookupProduct.txt
+						 *	item.input       	= SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1  ) 
 						 */
 						// Output the query to the input file
 						item.type = TYPE_PROCEDURE;
@@ -1121,6 +1138,9 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        	if (!queryProvided) {
 	        		item.input = item.input + ")";
 	        	}
+	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
+	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+	        	
 	        	// Add to the list of items
 				items.add(item);
         	}
@@ -1231,7 +1251,10 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		        			if (!queryProvided) {
 			        			item.input = item.input + " )}";
 		        			}
-				        	// Add to the list of items
+		    	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
+		    	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+
+		    	        	// Add to the list of items
 							items.add(item);
 							item = new RegressionItem();
 		        		}
@@ -1247,12 +1270,13 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 							procQry = "{ CALL " + fromClause + "( "; 
 							queryProvided = false;
 						}        		
-		               	/*  Item Class         [PROCEDURE]
-		            	 *  ----------         ---------------
-		            	 *  item.type        = TYPE_PROCEDURE       
-						 *	item.database    = database=MYTEST
-						 *  item.outTypes    = outTypes=INTEGER
-						 *	item.input       = { CALL LookupProduct(1) }
+		               	/*  Item Class         	[PROCEDURE]
+		            	 *  ----------         	---------------
+		            	 *  item.type        	= TYPE_PROCEDURE       
+						 *	item.database    	= database=MYTEST
+						 *  item.outTypes    	= outTypes=INTEGER
+						 *  item.outputFilename = outputFilename=LookupProduct.txt
+						 *	item.input       	= { CALL LookupProduct(1) }
 						 */
 						// Output the query to the input file
 						item.type = TYPE_PROCEDURE;
@@ -1268,8 +1292,12 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        			}
 		        	}
 	    			if (!queryProvided) {
-			        	item.input = item.input + paramName + " "; 	// param name
-			        	item.input = item.input + dataType;			// param type
+			        	String defaultParamValue = defaultParamValuesMap.get(dataType); // default value for the given param type
+			        	if (defaultParamValue == null)
+			        	{
+			        		throw new CompositeException("defaultParamValuesMap doesn't contain param type " + dataType);
+			        	}
+						item.input = item.input + defaultParamValue + " ";
 	    			}
 		        	lastProcId = currentProcId;
 	        	}
@@ -1279,6 +1307,9 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        	if (!queryProvided) {
 	        		item.input = item.input + ")}";
 	        	}
+	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
+	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+
 	        	// Add to the list of items
 				items.add(item);
         	}
@@ -2008,14 +2039,15 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 							queryProvided = false;
 						}
 	
-		            	/*  Item Class         [WEB_SERVICE]
-		            	 *  ----------         ---------------
-		            	 *  item.type        = TYPE_WS        
-						 *	item.database    = database=ProductWebService
-						 *	item.path        = path=/soap12/ProductWebService
-						 *	item.action      = action=LookupProduct
-						 *	item.contentType = contentType=application/soap+xml;charset=UTF-8
-						 *	item.input       = <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/">
+		            	/*  Item Class         	[WEB_SERVICE]
+		            	 *  ----------         	---------------
+		            	 *  item.type        	= TYPE_WS        
+						 *	item.database    	= database=ProductWebService
+						 *	item.path        	= path=/soap12/ProductWebService
+						 *	item.action      	= action=LookupProduct
+						 *	item.contentType 	= contentType=application/soap+xml;charset=UTF-8
+						 *  item.outputFilename = outputFilename=soap12.ProductWebService.LookupProduct.txt
+						 *	item.input       	= <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://tempuri.org/">
 						 *						   <soap:Header/>
 						 *						   <soap:Body>
 						 *						      <ns1:LookupProduct>
@@ -2033,7 +2065,13 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		        		item.contentType = contentType;
 		        		item.resourcePath = resourcePath;
 		        		item.resourceType = resourceType;
-			        	
+	
+			        	// Retrieve only the WS path and action in order to create a file name.
+		            	String wsURL = (item.path + "/" + item.action).replaceAll("//", "/").replaceAll("/", "."); // construct ws path from the path and action combined.
+		            	if (wsURL.indexOf(".") == 0)
+		            		wsURL = wsURL.substring(1);
+		               	item.outputFilename = wsURL.replaceAll("\"", "") + ".txt";
+
 			        	// The query was provided by the RegressionModule.xml (or equivalent) file.
 		        		StringBuffer buf = new StringBuffer("");
 			        	if (queryProvided) 
@@ -2278,20 +2316,27 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		"# \n" +
 		"#   [QUERY] \n" +
 		"#   database=<name of published database> \n" +
-		"#   <one or more lines containing the query ended by a blank line> \n" +
+		"#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the \"FROM\" clause.> \n" +
+		"#   <one or more lines containing the query ended by a blank line.> \n" +
+		"# \n" +
+		"#    Query Governor:  Use SELECT TOP n column-list to limit the number of rows returned. \n" +
 		"# \n" +
 		"# The format of a SQL stored procedure call is \n" +
 		"# \n" +
 		"#   [PROCEDURE] \n" +
 		"#   database=<name of published database> \n" +
 		"#   outTypes=<list of comma separated java.sql.Types JDBC type names> \n" +
-		"#   <one or more lines containing the call statement or select statement ended by a blank line > \n" +
-		"#   For select statements only IN and INOUT parameter values need to be provided. \n" +
-		"#   Select will not work for procedures containg more than one OUT or INOUT parameter if one of them is a cursor. \n" +
+		"#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the \"FROM\" clause.> \n" +
+		"#   <one or more lines containing the call statement or select statement ended by a blank line.> \n" +
 		"# \n" +
-		"# outTypes should only be used if the procedure has non-cursor output values. \n" +
-		"# Each non-cursor output value is represented by a ? in the query. \n" +
-		"# The number of type names in outTypes should match the number of ? in the query. \n" +
+		"#    Query Governor:  Use SELECT TOP n column-list to limit the number of rows returned.\n" +
+		"# \n" +
+		"#    For SELECT or CALL statements only IN and INOUT parameter values need to be provided. \n" +
+		"#    Select will not work for procedures containg more than one OUT or INOUT parameter if one of them is a cursor. \n" +
+		"# \n" +
+		"#    outTypes should only be used if the procedure has non-cursor output values. \n" +
+		"#    Each non-cursor output value is represented by a ? in the query. \n" +
+		"#    The number of type names in outTypes should match the number of ? in the query. \n" +
 		"# \n" +
 		"# The format of a web service call is \n" +
 		"# \n" +
@@ -2301,6 +2346,7 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		"#   action=<the web service operation to execute> \n" +
 		"#   encrypt=<use http (unencrypted) or https (encrypted) [true|false] > \n" +
 		"#   contentType=<soap header content type: [soap11=text/xml;charset=UTF-8 | soap12=application/soap+xml;charset=UTF-8] > \n" +
+		"#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the \"path\" + \"action\".> \n" +
 		"#   <input document> \n" +
 		"# \n" +
 		"# The path will be prefixed with \"http://<host>:<wsPort>/\". \n" +

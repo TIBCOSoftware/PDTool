@@ -224,6 +224,7 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
            	String result = "SKIPPED"; // [SKIPPED,SUCCESS,ERROR]
         	String duration = "";
         	String database = item.database;
+        	String outputFilename = item.outputFilename;
         	int rows = 0;
         	String query = "";     	
         	String resourceType = "";
@@ -236,6 +237,8 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
             	
             	// Retrieve only the FROM clause table URL with no where clause and no SELECT * FROM projections
             	resourceURL = RegressionManagerUtils.getTableUrl(query);
+            	if (outputFilename == null || outputFilename.length() == 0)
+            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
 
             	// Only use the this for functional testing
             	if (FUNCTIONAL.equalsIgnoreCase(testType)) 
@@ -246,7 +249,7 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
         		            	
             	// Derive the base directory for the output file (remove any double quotes from the file name).
             	if (baseDir != null) 
-            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + resourceURL.replaceAll("\"", "") + ".txt").replaceAll("//", "/");
+            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + outputFilename).replaceAll("//", "/");
         	}
         	// Execute Procedures
         	if (item.type == RegressionManagerUtils.TYPE_PROCEDURE) {
@@ -256,7 +259,9 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
 
             	// Retrieve only the FROM clause procedure URL with no where clause and no SELECT * FROM projections and no parameters.
             	resourceURL = RegressionManagerUtils.getTableUrl(query); 
-            	
+            	if (outputFilename == null)
+            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
+          	
             	// Only use the this for functional testing
             	if (FUNCTIONAL.equalsIgnoreCase(testType)) 
             	{
@@ -266,7 +271,7 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
             	
             	// Derive the base directory for the output file (remove any double quotes from the file name).
             	if (baseDir != null) 
-            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + resourceURL.replaceAll("\"", "") + ".txt").replaceAll("//", "/");
+            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + outputFilename).replaceAll("//", "/");
         	}
         	// Execute Web Services
         	if (item.type == RegressionManagerUtils.TYPE_WS) {
@@ -275,9 +280,12 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
             	resourceURL = (item.path + "/" + item.action).replaceAll("//", "/").replaceAll("/", "."); // construct ws path from the path and action combined.
             	if (resourceURL.indexOf(".") == 0)
             		resourceURL = resourceURL.substring(1);
-            	// Derive the base directory for the output file (remove any double quotes from the file name).
+               	if (outputFilename == null)
+            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
+
+               	// Derive the base directory for the output file (remove any double quotes from the file name).
             	if (baseDir != null) 
-            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + resourceURL.replaceAll("\"", "") + ".txt").replaceAll("//", "/");
+            		outputFile = (baseDir + "/" + database.replaceAll("\"", "") + "/" + outputFilename).replaceAll("//", "/");
         	}
         	
         	String message = "";

@@ -1,6 +1,0 @@
-<?xml version="1.1" encoding="UTF-8"?>
-<metadata name="INSERT" path="/shared/test00/reserved_words/SELECT/INSERT" type="CONTAINER" subtype="FOLDER" changeToken="0">
-  <security>
-    <owner user="admin" domain="composite"/>
-  </security>
-</metadata>

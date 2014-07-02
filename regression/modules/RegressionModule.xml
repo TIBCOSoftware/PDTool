@@ -29,7 +29,6 @@
 				<dsName>My Orders</dsName>
 				<dsName>MYTEST</dsName>
 				<dsName/>
-				<dsName>examplesWS</dsName>
 				<dsName>testWebService</dsName>
 				<dsName>testWebService_Params_bare</dsName>
 				<dsName>testWebService_Params_wrapped</dsName>
@@ -58,13 +57,11 @@
 						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
 					-->
 		  <resources>
-			<resource>CAT*</resource>
-			<resource>TEST00.testWebService*</resource>
 		  </resources>
 		  
 		  <defaultProcParamValues>
 				<bit>1</bit>
-				<varchar>'dummyStr'</varchar>
+				<varchar>'A'</varchar>
 				<char>'a'</char>
 				<clob>A</clob>
 				<integer>1</integer>
