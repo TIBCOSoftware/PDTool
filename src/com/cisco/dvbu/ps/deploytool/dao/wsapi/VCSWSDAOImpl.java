@@ -589,7 +589,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			if (error.toLowerCase().contains(message.toLowerCase())) {
 				throwOriginalError = false;
 				if (logger.isErrorEnabled()) {
-					logger.error(prefix+"Error message ignored.  Error Message matches VCS_IGNORE_MESSAGES="+message);
+					logger.info(prefix+"Warning::Error message ignored.  Error Message matches VCS_IGNORE_MESSAGES="+message);
 				}
 			}
 		}

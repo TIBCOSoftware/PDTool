@@ -44,8 +44,11 @@ public class LogOutputStream extends ByteArrayOutputStream {
         throws IOException
     {
         if (size() > 0) {
-            logger.log(level, toString());
-            reset();    
+        	if (level.equals(Level.ERROR)) 
+        		logger.log(level, CommonConstants.applicationErrorPrependMessage+toString());
+        	else
+        		logger.log(level, toString());
+        	reset();    
         }
     }
 

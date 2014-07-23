@@ -243,7 +243,7 @@ set error=0
                 shift
                 GOTO:LOOPEND
             )
-    echo Unknown parameter: %1
+    echo Execution Failed::Unknown parameter: %1
     call:USAGE
     exit /B 2
  
@@ -321,7 +321,7 @@ if NOT EXIST "%JAVA_HOME%" (
    ENDLOCAL
    exit /B 1
 )
-call %writeOutput% " " 
+echo.
 REM #=======================================
 REM # Display Licenses
 REM #=======================================
@@ -495,7 +495,7 @@ REM #------------------------------------------------------------------------
 call %COMMAND%
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 (
-   call %writeOutput% "Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
    exit /B %ERROR%
 )

@@ -2265,12 +2265,24 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						//CommonUtils.writeOutput("Error is:" + e.getMessage(),prefix,"-info",logger,debug1,debug2,debug3);
-						if (e.getMessage().contains("does not exist") || e.getMessage().contains("could not be found") ||
-							e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("does not exist")) {
+							errorFound = true;
+							ignoreMessage = "does not exist";
+						}
+						if (e.getMessage().contains("could not be found")) {
+							errorFound = true;
+							ignoreMessage = "could not be found";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
-							if (logger.isInfoEnabled()) {
-						    	logger.info(prefix+":: "+command+" returned error but was ignored");
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
 						    }
 						} else {
 							throw new ApplicationException(e);
@@ -2299,12 +2311,24 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						CommonUtils.writeOutput("Error is: "+e.getMessage(),prefix,"-info",logger,debug1,debug2,debug3);
-						if (e.getMessage().contains("No working folder assigned") || e.getMessage().contains("could not be found") ||
-							e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("No working folder assigned")) {
+							errorFound = true;
+							ignoreMessage = "No working folder assigned";
+						}
+						if (e.getMessage().contains("could not be found")) {
+							errorFound = true;
+							ignoreMessage = "could not be found";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
-							if (logger.isInfoEnabled()) {
-						    	logger.info(prefix+":: "+command+" returned error but was ignored");
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
 						    }
 						} else {
 							throw new ApplicationException(e);
@@ -2449,9 +2473,21 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						if (e.getMessage().contains("does not exist") ||
-								e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("does not exist")) {
+							errorFound = true;
+							ignoreMessage = "does not exist";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
+						    }
 						} else {
 							throw new ApplicationException(e);
 						}

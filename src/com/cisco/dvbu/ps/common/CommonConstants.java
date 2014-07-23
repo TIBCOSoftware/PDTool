@@ -41,4 +41,7 @@ public class CommonConstants {
 	
 	// Default order of precedence for retrieving property files
 	public static final String propertyOrderPrecedenceDefault = "DEFAULT: JVM PROPERTY_FILE SYSTEM";
+	
+	// PDTool-wide string which prepends all errors.
+	public static final String applicationErrorPrependMessage = "Application Error::";
 }
