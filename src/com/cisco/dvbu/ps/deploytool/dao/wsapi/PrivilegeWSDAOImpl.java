@@ -18,10 +18,13 @@ import com.compositesw.services.system.admin.GetResourcePrivilegesSoapFault;
 import com.compositesw.services.system.admin.ResourcePortType;
 import com.compositesw.services.system.admin.UpdateResourcePrivilegesSoapFault;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesRequest.Entries;
+import com.compositesw.services.system.admin.resource.PathTypeOrColumnPair;
 import com.compositesw.services.system.admin.resource.Privilege;
 import com.compositesw.services.system.admin.resource.PrivilegeEntry;
+import com.compositesw.services.system.admin.resource.PrivilegeEntry.Privileges;
 import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries;
 import com.compositesw.services.system.admin.resource.UpdatePrivilegesMode;
+import com.compositesw.services.system.util.common.AttributeTypeValueMap.Entry;
 
 public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 
@@ -79,6 +82,14 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 	 */
 	public void takePrivilegeAction(String actionName, boolean recurse, boolean updateDependenciesRecursively, boolean updateDependentsRecursively, String mode, PrivilegeEntries privilegeEntries, String serverId, String pathToServersXML, Integer CisVersion) throws CompositeException {
 		
+		// For debugging
+		int privSize = 0;
+		if(logger.isDebugEnabled()) {
+			if (privilegeEntries != null & privilegeEntries.getPrivilegeEntry() != null) 
+				privSize = privilegeEntries.getPrivilegeEntry().size();
+			logger.debug("PrivilegeWSDAOImpl.takePrivilegeAction(actionName , recurse, updateDependenciesRecursively, updateDependentsRecursively, mode, privilegeEntries, serverId, pathToServersXML, CisVersion).  actionName="+actionName+"  recurse="+recurse+"  updateDependenciesRecursively="+updateDependenciesRecursively+"  updateDependentsRecursively="+updateDependentsRecursively+"  mode="+mode+"  #privilegeEntries="+privSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML+"  CisVersion="+CisVersion);
+		}
+
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "PrivilegeWSDAOImpl.takePrivilegeAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -165,8 +176,43 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 					port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
 				}
 */
+				if(logger.isDebugEnabled()) {
+					String privList = "";
+					if (privilegeEntries != null && privilegeEntries.getPrivilegeEntry() != null) {
+						for (PrivilegeEntry privEntry:privilegeEntries.getPrivilegeEntry()) {
+							if (privList.length() != 0)
+								privList = privList + ", ";
+							privList = privList + "PRIVILEGE_ENTRY:[";
+							privList = privList + "path="+privEntry.getPath() + ", ";
+							privList = privList + "type="+privEntry.getType();
+							String privStr = "";
+							if (privEntry.getPrivileges() != null && privEntry.getPrivileges().getPrivilege() != null) {
+								for (Privilege privs:privEntry.getPrivileges().getPrivilege()) {
+									if (privStr.length() != 0)
+										privStr = privStr + ", ";
+									privStr = privStr + ", PRIVILEGES:[";
+									privStr = privStr + "name=" + privs.getName() + ", ";
+									privStr = privStr + "type=" + privs.getNameType() + ", ";
+									privStr = privStr + "domain=" + privs.getDomain() + ", ";
+									privStr = privStr + "privs=" + privs.getPrivs() + ", ";
+									privStr = privStr + "combined=" + privs.getCombinedPrivs() + ", ";
+									privStr = privStr + "inherited=" + privs.getInheritedPrivs();
+									privStr = privStr + "]";
+								}
+								privList = privList + privStr;
+							}
+							privList = privList + "]";
+						}
+					}
+					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.updateResourcePrivileges(\""+recurse+"\", \""+updateDependenciesRecursively+"\", \""+privList+"\", \""+mode+"\").  #privilegeEntries="+privSize);
+				}
+				
 				port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
-}
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Success: port.updateResourcePrivileges().");
+				}
+			}
 		} catch (UpdateResourcePrivilegesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", "recurse:"+recurse+" mode:"+mode, targetServer),e.getFaultInfo());
 			throw new ApplicationException(e.getMessage(), e);
@@ -214,6 +260,13 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 	public com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries
 			getResourcePrivileges(Entries privilegeEntries, String filter, boolean includeColumnPrivileges, String serverId, String pathToServersXML){
 
+		// For debugging
+		int privSize = 0;
+		if(logger.isDebugEnabled()) {
+			if (privilegeEntries != null & privilegeEntries.getEntry() != null) 
+				privSize = privilegeEntries.getEntry().size();
+			logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges(privilegeEntries , filter, includeColumnPrivileges, serverId, pathToServersXML).  #privilegeEntries="+privSize+"  filter="+filter+"  includeColumnPrivileges="+includeColumnPrivileges+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries privlegeEntries = null;
 
 		// read target server properties from xml and build target server object based on target server name 
@@ -225,7 +278,26 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 		
 		try {
+			if(logger.isDebugEnabled()) {
+				String pathTypeList = "";
+				if (privilegeEntries != null && privilegeEntries.getEntry() != null) {
+					for (PathTypeOrColumnPair pathType:privilegeEntries.getEntry()) {
+						if (pathTypeList.length() != 0)
+							pathTypeList = pathTypeList + ", ";
+						pathTypeList = pathTypeList + "PATH_TYPE_ENTRY:[";
+						pathTypeList = pathTypeList + "path="+pathType.getPath() + ", ";
+						pathTypeList = pathTypeList + "type="+pathType.getType();
+						pathTypeList = pathTypeList + "]";
+					}
+				}
+				logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.getResourcePrivileges(\""+pathTypeList+"\", \""+filter+"\", \""+includeColumnPrivileges+"\").");
+			}
+			
 			privlegeEntries = port.getResourcePrivileges(privilegeEntries, filter, includeColumnPrivileges);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Success: port.getResourcePrivileges().");
+			}
 
 		} catch (GetResourcePrivilegesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResourcePrivileges", "Privilege", "privilegeEntries", targetServer),e.getFaultInfo());

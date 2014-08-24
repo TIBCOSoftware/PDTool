@@ -6,6 +6,7 @@ package com.cisco.dvbu.ps.deploytool.dao.wsapi;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
  
+
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
@@ -17,6 +18,7 @@ import com.cisco.dvbu.ps.deploytool.dao.ServerDAO;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
 import com.compositesw.services.system.admin.ServerPortType;
 import com.compositesw.services.system.admin.server.LicenseList;
+import com.compositesw.services.system.util.common.AttributeDefList;
 import com.cs.admin.monitor.MonitorConnectionFactory;
 
 public class ServerWSDAOImpl implements ServerDAO {
@@ -34,9 +36,20 @@ public class ServerWSDAOImpl implements ServerDAO {
 		// Use the simple getLicesense invocation that takes no parameters.  This either works or it does not.
 		// This method is used to test whether the "targetServer" information is correct or not.
 		// Any exception with this method call indicates the "targetServer" information is incorrect.
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerWSDAOImpl.pingServer(targetServer).  id="+targetServer.getId()+"  host="+targetServer.getHostname()+"  port="+targetServer.getPort()+"  domain="+targetServer.getDomain()+"  user="+targetServer.getUser());
+		}
 		try {
 			ServerPortType port = CisApiFactory.getServerPort(targetServer);
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerWSDAOImpl.pingServer().  Invoking port.getLicenses().");
+			}
+			
 			LicenseList licenses = port.getLicenses();
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerWSDAOImpl.pingServer().  Success: port.getLicenses().");
+			}
 		} catch(Exception e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "pingServer::The Server identified by id=["+targetServer.getId()+"] is unavailable.", "ServerManager", "serverId", targetServer));
 			throw new ValidationException(e.getMessage(), e);
@@ -46,6 +59,9 @@ public class ServerWSDAOImpl implements ServerDAO {
 //	@Override
 	public void takeServerManagerAction(String actionName, String serverId, String pathToServersXML) throws CompositeException {	
 		
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerWSDAOImpl.takeServerManagerAction(actionName, serverId, pathToServersXML).  actionName="+actionName+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		// -- read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ServerWSDAOImpl.takeServerManagerAction("+actionName+")", logger);
 		
@@ -71,12 +87,18 @@ public class ServerWSDAOImpl implements ServerDAO {
 			
 			String server = servers[0];
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").getServerStatus(new String[] {server}).");
+			}
+			
 			// -- You can get back multiple status values from a single server
 			//    You want to use MonitorConnectionFactory because the return class
 			//    has only package visibility
-			String[] statuses = MonitorConnectionFactory.createConnection(hostname, port, 
-					userAtDomain, password, timeout)
-				.getServerStatus(new String[] {server});
+			String[] statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+			}
 			
 			// -- I've not seen a situation where multiple status messages from the
 			//    same server were different
@@ -94,14 +116,18 @@ public class ServerWSDAOImpl implements ServerDAO {
 				
 				logger.info("Status of server " + server + " is: " + status + ". Starting server.");
 				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").startServer(server).");
+				}
+
 				// -- this is a blocking call
-				MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.startServer(server);
+				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).startServer(server);
 				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.getServerStatus(new String[] {server});
+				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				}
 				
 				status = statuses[statuses.length - 1];	
 				
@@ -126,14 +152,18 @@ public class ServerWSDAOImpl implements ServerDAO {
 				
 				logger.info("Status of server " + server + " is: " + status + ". Stopping server.");
 				
-				MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.stopServer(server);
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").stopServer(server).");
+				}
+
+				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).stopServer(server);
 				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.getServerStatus(new String[] {server});
+				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
 				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				}
+
 				status = statuses[statuses.length - 1];	
 				
 				logger.info("Status of server " + server + " is now: " + status + ".");
@@ -158,14 +188,18 @@ public class ServerWSDAOImpl implements ServerDAO {
 				
 				logger.info("Status of server " + server + " is: " + status + ". Restarting server.");
 				
-				MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.restartServer(server);
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").restartServer(server).");
+				}
+
+				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).restartServer(server);
 				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, 
-						userAtDomain, password, timeout)
-					.getServerStatus(new String[] {server});
-				
+				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				}
+
 				status = statuses[statuses.length - 1];	
 				
 				logger.info("Status of server " + server + " is now: " + status + ".");
