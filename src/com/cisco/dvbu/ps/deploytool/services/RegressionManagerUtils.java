@@ -939,12 +939,22 @@ public class RegressionManagerUtils {
     	start = System.currentTimeMillis();
     	long firstRowLatency = 0L;
 		    	
-	    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
-	    RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
-		
 		try
 		{
-			stmt = conn.createStatement();
+		    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
+
+			String URL = null;
+			String userName = null;
+			if (conn.getMetaData() != null) {
+				if (conn.getMetaData().getURL() != null)
+					URL = conn.getMetaData().getURL();
+				if (conn.getMetaData().getUserName() != null)
+					userName = conn.getMetaData().getUserName();
+			}
+			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
+			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
+
+		    stmt = conn.createStatement();
 	        stmt.execute(item.input.replaceAll("\n", " "));
 			rs = stmt.getResultSet();
 	        ResultSetMetaData rsmd = rs.getMetaData();
@@ -1050,11 +1060,22 @@ public class RegressionManagerUtils {
     	start = System.currentTimeMillis();
     	long firstRowLatency = 0L;
 		
-	    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
-		
 		try
 		{
-			String query = item.input.replaceAll("\n", " ");
+		    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
+		    
+			String URL = null;
+			String userName = null;
+			if (conn.getMetaData() != null) {
+				if (conn.getMetaData().getURL() != null)
+					URL = conn.getMetaData().getURL();
+				if (conn.getMetaData().getUserName() != null)
+					userName = conn.getMetaData().getUserName();
+			}
+			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
+			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
+
+		    String query = item.input.replaceAll("\n", " ");
 			// Convert a CALL statement into a SELECT * FROM statement
 			
 			// { CALL SCH1.LookupProduct( 3 ) } --> SCH1.LookupProduce( 3 )
@@ -1275,8 +1296,9 @@ public class RegressionManagerUtils {
      * @param dsName - a datasource name
      * @param cisConnections - a CIS JDBC Connection Map
      * @return  java.sql.Connection object  - live connection to CIS for the given dsName
+     * @throws SQLException 
      */
-    public static Connection getJdbcConnection(String dsName, HashMap<String,Connection> cisConnections) throws CompositeException
+    public static Connection getJdbcConnection(String dsName, HashMap<String,Connection> cisConnections) throws CompositeException, SQLException
     {
         if (dsName.isEmpty())
         {
@@ -1332,6 +1354,7 @@ public class RegressionManagerUtils {
 		        if (encrypt) {
 		            urlString = "https://"+host+":"+(wsPort+2)+item.path;
 		        }
+	        	RegressionManagerUtils.printOutputStr(printOutputType, "summary", "urlString="+urlString, "");
 		        URL url = new URL(urlString);
 		        urlConn = url.openConnection();
 		        if (encrypt) {

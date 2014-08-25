@@ -12,6 +12,8 @@ import java.io.IOException;
 
 import org.apache.log4j.*;
 
+import com.cisco.dvbu.ps.common.util.CommonUtils;
+
 public class LogOutputStream extends ByteArrayOutputStream {
     private Logger logger;
     private Level level;
@@ -44,10 +46,13 @@ public class LogOutputStream extends ByteArrayOutputStream {
         throws IOException
     {
         if (size() > 0) {
+        	// Mask any passwords in the string
+    		String buf = CommonUtils.maskCommand(toString());
         	if (level.equals(Level.ERROR)) 
-        		logger.log(level, CommonConstants.applicationErrorPrependMessage+toString());
-        	else
-        		logger.log(level, toString());
+        		logger.log(level, CommonConstants.applicationErrorPrependMessage+buf);
+        	else {
+        		logger.log(level, buf);
+        	}
         	reset();    
         }
     }

@@ -42,6 +42,9 @@ public class GroupWSDAOImpl implements GroupDAO {
 
 	public void takeGroupAction(String actionName, String groupName, String groupDomain, String userNames, String privileges, String serverId, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("GroupWSDAOImpl.takeGroupAction(actionName, groupName, groupDomain, userNames, privileges, serverId, pathToServersXML).  actionName="+actionName+"  groupName="+groupName+"  groupDomain="+groupDomain+"  userNames="+userNames+"  privileges="+privileges+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "GroupWSDAOImpl.takeGroupAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
 		WsApiHelperObjects.pingServer(targetServer, true);
@@ -51,16 +54,38 @@ public class GroupWSDAOImpl implements GroupDAO {
 			try {
 				if(actionName.equalsIgnoreCase(GroupDAO.action.CREATE.name())){
 
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.createGroup(\""+groupDomain+"\", \""+groupName+"\", \""+privileges+"\", null).");
+					}
+					
 					port.createGroup(groupDomain,groupName,privileges, null);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.createGroup().");
+					}
 
 				}else if(actionName.equalsIgnoreCase(GroupDAO.action.UPDATE.name())){
 
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.updateGroup(\""+groupDomain+"\", \""+groupName+"\", null, \""+privileges+"\", null).");
+					}
+					
 					port.updateGroup(groupDomain, groupName, null, privileges, null);
 
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.updateGroup().");
+					}
+
 				}else if(actionName.equalsIgnoreCase(GroupDAO.action.DELETE.name())){
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.destroyGroup(\""+groupDomain+"\", \""+groupName+"\").");
+					}
 
 					port.destroyGroup(groupDomain, groupName);
 
+					if(logger.isDebugEnabled()) {
+						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.destroyGroup().");
+					}
 				}else if(actionName.equalsIgnoreCase(GroupDAO.action.ADDUSER.name())){
 
 					if(userNames!= null){
@@ -69,8 +94,24 @@ public class GroupWSDAOImpl implements GroupDAO {
 							String userName = st.nextToken();
 							if(userName != null){
 								DomainMemberReferenceList domainMemberReferenceList = getDomainMemberReferenceList(groupName, groupDomain);
+							
+								if(logger.isDebugEnabled()) {
+									String mbrList = "";
+									if (domainMemberReferenceList != null && domainMemberReferenceList.getEntry() != null) {
+										for (DomainMemberReference member:domainMemberReferenceList.getEntry()) {
+											if (mbrList.length() != 0)
+												mbrList = mbrList + ", ";
+											mbrList = mbrList + member.getName() + "@" + member.getDomain();
+										}
+									}
+									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.addUserToGroups(\""+groupDomain+"\", \""+userName.trim()+"\", MEMBER_LIST:[\""+mbrList+"\"]).");
+								}
+
 								port.addUserToGroups(groupDomain, userName.trim(), domainMemberReferenceList);
 
+								if(logger.isDebugEnabled()) {
+									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.addUserToGroups().");
+								}
 							}
 						}
 					}
@@ -84,7 +125,24 @@ public class GroupWSDAOImpl implements GroupDAO {
 							if(userName != null){
 
 			                	DomainMemberReferenceList domainMemberReferenceList = getDomainMemberReferenceList(groupName, groupDomain);
+
+								if(logger.isDebugEnabled()) {
+									String mbrList = "";
+									if (domainMemberReferenceList != null && domainMemberReferenceList.getEntry() != null) {
+										for (DomainMemberReference member:domainMemberReferenceList.getEntry()) {
+											if (mbrList.length() != 0)
+												mbrList = mbrList + ", ";
+											mbrList = mbrList + member.getName() + "@" + member.getDomain();
+										}
+									}
+									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.removeUserFromGroups(\""+groupDomain+"\", \""+userName.trim()+"\", MEMBER_LIST:[\""+mbrList+"\"]).");
+								}
+
 								port.removeUserFromGroups(groupDomain, userName.trim(), domainMemberReferenceList);
+
+								if(logger.isDebugEnabled()) {
+									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.removeUserFromGroups().");
+								}
 							}
 						}
 					}
@@ -124,13 +182,27 @@ public class GroupWSDAOImpl implements GroupDAO {
 
 //	@Override
 	public Group getGroup(String groupName, String groupDomain,String serverId, String pathToServersXML) {
+
+		if(logger.isDebugEnabled()) {
+			logger.debug("GroupWSDAOImpl.getGroup(groupName, groupDomain, serverId, pathToServersXML).  groupName="+groupName+"  groupDomain="+groupDomain+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
+
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
 		WsApiHelperObjects.pingServer(targetServer, true);
 
 		UserPortType port = CisApiFactory.getUserPort(targetServer);
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("GroupWSDAOImpl.getGroup().  Invoking port.getDomainGroups(\""+groupDomain+"\", \"LOCAL_ONLY\").");
+			}
+			
 			GroupList groupsList = port.getDomainGroups(groupDomain, ScopeValue.LOCAL_ONLY);
+
+			if(logger.isDebugEnabled()) {
+				logger.debug("GroupWSDAOImpl.getGroup().  Success: port.getDomainGroups().");
+			}
+
 			if(groupsList != null && groupsList.getGroup() != null){
 				List<Group> groups = groupsList.getGroup();
 				for (Group group : groups) {
@@ -148,6 +220,11 @@ public class GroupWSDAOImpl implements GroupDAO {
 
 //	@Override
 	public GroupList getAllGroups(String groupDomain, String serverId, String pathToServersXML) {
+
+		if(logger.isDebugEnabled()) {
+			logger.debug("GroupWSDAOImpl.getAllGroups(groupDomain, serverId, pathToServersXML).  groupDomain="+groupDomain+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
+
 		GroupList groupsList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "GroupWSDAOImpl.getAllGroups", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -156,7 +233,16 @@ public class GroupWSDAOImpl implements GroupDAO {
 		UserPortType port = CisApiFactory.getUserPort(targetServer);
 		try {
 			if(groupDomain != null && groupDomain.trim().length() > 0 && !groupDomain.trim().equals("\"\"")){
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("GroupWSDAOImpl.getAllGroups().  Invoking port.getDomainGroups(\""+groupDomain+"\", \"LOCAL_ONLY\").");
+				}
+
 				groupsList = port.getDomainGroups(groupDomain, ScopeValue.LOCAL_ONLY);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("GroupWSDAOImpl.getAllGroups().  Success: port.getDomainGroups().");
+				}
 
 			}else{
 				DomainList domainsList = port.getDomains(DetailLevel.SIMPLE);
@@ -187,6 +273,11 @@ public class GroupWSDAOImpl implements GroupDAO {
 	
 //	@Override
 	public GroupList getGroupsByUser(String userName, String domainName, String serverId, String pathToServersXML) throws CompositeException {
+
+		if(logger.isDebugEnabled()) {
+			logger.debug("GroupWSDAOImpl.getGroupsByUser(groupDomain, serverId, pathToServersXML).  userName="+userName+"  domainName="+domainName+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
+
 		GroupList groupList = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -195,7 +286,15 @@ public class GroupWSDAOImpl implements GroupDAO {
 		UserPortType port = CisApiFactory.getUserPort(targetServer);
 		try {
 			if(domainName != null && domainName.trim().length() > 0 && !domainName.trim().equals("\"\"") && userName != null && userName.trim().length() > 0){
+				if(logger.isDebugEnabled()) {
+					logger.debug("GroupWSDAOImpl.getGroupsByUser().  Invoking port.getGroupsByUser(\""+userName+"\", \""+domainName+"\").");
+				}
+
 				groupList = port.getGroupsByUser(userName, domainName);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("GroupWSDAOImpl.getGroupsByUser().  Success: port.getGroupsByUser().");
+				}
 			}
 		} catch (GetGroupsByUserSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getGroupsByUser", "Group", userName+", "+domainName, targetServer),e.getFaultInfo());
