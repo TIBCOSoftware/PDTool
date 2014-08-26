@@ -22,8 +22,9 @@ public class CommonConstants {
 	public static final String CVSLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.cvs.CVSLifecycleListener";
 	public static final String P4LifecycleListener  = "com.cisco.dvbu.cmdline.vcs.spi.p4.P4LifecycleListener";
 	public static final String TFSLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.tfs.TFSLifecycleListener";
+	public static final String GITLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.git.GITLifecycleListener";
 	// Add a new Life Cycle Listener following this template
-	public static final String NEWLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.tfs.NEWLifecycleListener";
+	public static final String NEWLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.new.NEWLifecycleListener";
 	
 	// List of constants for encrypting passwords
 	public static final String encryptPropertiesList = "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD CIS_PASSWORD";
@@ -41,4 +42,7 @@ public class CommonConstants {
 	
 	// Default order of precedence for retrieving property files
 	public static final String propertyOrderPrecedenceDefault = "DEFAULT: JVM PROPERTY_FILE SYSTEM";
+	
+	// PDTool-wide string which prepends all errors.
+	public static final String applicationErrorPrependMessage = "Application Error::";
 }

@@ -8,6 +8,8 @@ package com.cisco.dvbu.ps.deploytool.dao.wsapi;
  * 
  */
 
+import java.util.List;
+
 import javax.xml.ws.Holder;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +30,7 @@ import com.compositesw.services.system.admin.ClearResourceCacheSoapFault;
 import com.compositesw.services.system.admin.RefreshResourceCacheSoapFault;
 import com.compositesw.services.system.admin.ResourcePortType;
 import com.compositesw.services.system.admin.resource.CacheConfig;
+import com.compositesw.services.system.admin.resource.RebindRule;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.util.common.DetailLevel;
 
@@ -40,6 +43,14 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 	 */
 	public void takeResourceCacheAction(String actionName, String resourceCachePath, String resourceCacheType, CacheConfig resourceCacheConfig, String serverId, String pathToServersXML, Boolean validateResourceExists) throws CompositeException {
 		
+		// For debugging
+		if(logger.isDebugEnabled()) {
+
+			logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction(actionName, resourceCachePath, resourceCacheType, resourceCacheConfig, serverId, pathToServersXML, validateResourceExists)."+
+					"  actionName=" + actionName + "  resourceCachePath=" + resourceCachePath +	"  resourceCacheType=" + resourceCacheType +
+					"  resourceCacheConfig:" + "  serverId=" + serverId + "  pathToServersXML=" + pathToServersXML + "  validateResourceExists=" + validateResourceExists);
+		}
+
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -60,8 +71,92 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 			if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.UPDATE.name())){
 
 				Holder<CacheConfig> cacheConfig = new Holder<CacheConfig>(resourceCacheConfig);			
+
+				if(logger.isDebugEnabled()) {
+					String clearRule = null;
+					String refreshMode = null;
+					String expirationPeriod = null;
+					int scheduleCount = 0;
+					String scheduleInterval = null;
+					String scheduleRecurringDay = null;
+					String scheduleEndTimeInADay = null;
+					String scheduleFromTimeInADay = null;
+					String scheduleMode = null;
+					String schedulePeriod = null;
+					String scheduleStartTime = null;
+					String storagePath = null;
+					String storageMode = null;
+					int storageTargetEntrySize = 0;
+					String cacheConfigText = "";
+					if (resourceCacheConfig != null) {
+						if (resourceCacheConfig.getExpirationPeriod() != null)
+							expirationPeriod = resourceCacheConfig.getExpirationPeriod().toString();
+						if (resourceCacheConfig.getClearRule() != null)
+							clearRule = resourceCacheConfig.getClearRule().toString();
+						
+						// Check the refresh entry
+						if (resourceCacheConfig.getRefresh() != null) {
+							if (resourceCacheConfig.getRefresh().getMode() != null)
+								refreshMode = resourceCacheConfig.getRefresh().getMode().toString();
+							if (resourceCacheConfig.getRefresh().getSchedule() != null) {
+								if (resourceCacheConfig.getRefresh().getSchedule().getCount() != null)
+									scheduleCount = resourceCacheConfig.getRefresh().getSchedule().getCount();
+								if (resourceCacheConfig.getRefresh().getSchedule().getInterval() != null)
+									scheduleInterval = resourceCacheConfig.getRefresh().getSchedule().getInterval().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getRecurringDay() != null)
+									scheduleRecurringDay = resourceCacheConfig.getRefresh().getSchedule().getRecurringDay().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getEndTimeInADay() != null)
+									scheduleEndTimeInADay = resourceCacheConfig.getRefresh().getSchedule().getEndTimeInADay().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getFromTimeInADay() != null)
+									scheduleFromTimeInADay = resourceCacheConfig.getRefresh().getSchedule().getFromTimeInADay().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getMode() != null)
+									scheduleMode = resourceCacheConfig.getRefresh().getSchedule().getMode().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getPeriod() != null)
+									schedulePeriod = resourceCacheConfig.getRefresh().getSchedule().getPeriod().toString();
+								if (resourceCacheConfig.getRefresh().getSchedule().getStartTime() != null)
+									scheduleStartTime = resourceCacheConfig.getRefresh().getSchedule().getStartTime().toString();
+							}
+						}
+
+						// Check the storage entry
+						if (resourceCacheConfig.getStorage() != null) {
+							if (resourceCacheConfig.getStorage().getStorageDataSourcePath() != null)
+								storagePath = resourceCacheConfig.getStorage().getStorageDataSourcePath();
+							if (resourceCacheConfig.getStorage().getMode() != null)
+								storageMode = resourceCacheConfig.getStorage().getMode().toString();
+							if (resourceCacheConfig.getStorage().getStorageTargets() != null && resourceCacheConfig.getStorage().getStorageTargets().getEntry() != null)
+							storageTargetEntrySize = resourceCacheConfig.getStorage().getStorageTargets().getEntry().size();
+						}
+						cacheConfigText = cacheConfigText + "\n               expirationPeriod=" + expirationPeriod;
+		   				cacheConfigText = cacheConfigText + "\n                      clearRule=" + clearRule;
+						cacheConfigText = cacheConfigText + "\n                    RefreshMode=" + refreshMode;
+						cacheConfigText = cacheConfigText + "\n                    RefreshSchedule:";
+						cacheConfigText = cacheConfigText + "\n                                       Count=" + scheduleCount;
+						cacheConfigText = cacheConfigText + "\n                                    Interval=" + scheduleInterval;
+						cacheConfigText = cacheConfigText + "\n                              RecurringDaynt=" + scheduleRecurringDay;
+						cacheConfigText = cacheConfigText + "\n                               EndTimeInADay=" + scheduleEndTimeInADay;
+						cacheConfigText = cacheConfigText + "\n                              FromTimeInADay=" + scheduleFromTimeInADay;
+						cacheConfigText = cacheConfigText + "\n                                        Mode=" + scheduleMode;
+						cacheConfigText = cacheConfigText + "\n                                      Period=" + schedulePeriod;
+						cacheConfigText = cacheConfigText + "\n                                   StartTime=" + scheduleStartTime;
+						cacheConfigText = cacheConfigText + "\n                            Storage:";
+						cacheConfigText = cacheConfigText + "\n                              DataSourcePath=" + storagePath;
+						cacheConfigText = cacheConfigText + "\n                                        Mode=" + storageMode;
+						cacheConfigText = cacheConfigText + "\n                            TargetsEntrySize=" + storageTargetEntrySize;
+					}
+					logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Invoking port.updateResourceCacheConfig("+
+							"\n                  path=\""+resourceCachePath+"\","+
+							"\n                  type=\""+resourceCacheType+"\","+
+							"\n           detailLevel=\"FULL\","+
+							"\n           cacheConfig:"+cacheConfigText+").");
+				}
 				
 				port.updateResourceCacheConfig(resourceCachePath, ResourceType.valueOf(resourceCacheType), DetailLevel.FULL, cacheConfig);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.updateResourceCacheConfig().");
+				}
+
 				/*
 				Update the cache configuration for a resource.
 				
@@ -125,7 +220,15 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 			}else if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.REFRESH.name())){
 		
 				if (isCacheEnabled(resourceCachePath, resourceCacheType, serverId, pathToServersXML)) {
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Invoking port.refreshResourceCache(\""+resourceCachePath+"\", \""+resourceCacheType+"\").");
+					}
+					
 					port.refreshResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.refreshResourceCache().");
+					}
 				} 
 				/*
 				Refreshes the cache on a resource.
@@ -153,7 +256,15 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 			} else if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.CLEAR.name())){
 
 				if (isCacheEnabled(resourceCachePath, resourceCacheType, serverId, pathToServersXML)) {
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Invoking port.clearResourceCache(\""+resourceCachePath+"\", \""+resourceCacheType+"\").");
+					}
+					
 					port.clearResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
+
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.clearResourceCache().");
+					}
 				} 
 				/*
 				Clears an existing resource cache. Only purposefully configured resources of type TABLE and
@@ -256,6 +367,10 @@ Faults:
     Security: If the user does not have the ACCESS_TOOLS right.
 */
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceCacheWSDAOImpl.getResourceCacheConfig(resourceCachePath , resourceCacheType, serverId, pathToServersXML, validateResourceExists).  resourceCachePath="+resourceCachePath+"  resourceCacheType="+resourceCacheType+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML+"  validateResourceExists="+validateResourceExists);
+		}
+
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -273,12 +388,16 @@ Faults:
 				}
 			}
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceCacheWSDAOImpl.getResourceCacheConfig().  Invoking port.getResourceCacheConfig(\""+resourceCachePath+"\", \""+resourceCacheType+"\").");
+			}
+
 			// Get the cache configuration for the resource path
 			cacheConfig = port.getResourceCacheConfig(resourceCachePath, ResourceType.valueOf(resourceCacheType));			
 			
 			if(logger.isDebugEnabled())
 			{
-				logger.debug("ResourceCacheWSDAOImpl.getResourceCacheConfig::resourceCachePath="+resourceCachePath);
+				logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction().  Success: port.getResourceCacheConfig().");
 			}
 		} catch (GetResourceCacheConfigSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResourceCacheConfig", "ResourceCache", resourceCachePath, targetServer),e.getFaultInfo());
@@ -293,6 +412,9 @@ Faults:
 //	@Override
 	public boolean isCacheEnabled(String resourceCachePath,	String resourceCacheType, String serverId, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceCacheWSDAOImpl.isCacheEnabled(resourceCachePath , resourceCacheType, serverId, pathToServersXML).  resourceCachePath="+resourceCachePath+"  resourceCacheType="+resourceCacheType+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		boolean enabled = false;
 		try {
 			// Make sure the resource exists before executing any actions

@@ -95,7 +95,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			 */
 			String maskedargsList = CommonUtils.getArgumentListMasked(argsList);
 			if ( logger.isDebugEnabled() ) {
-				logger.debug(identifier+":: argument list=[" + maskedargsList+"]" );
+				logger.debug(identifier+"(prefix, arguments, vcsIngoreMessages, propertyFile).  prefix="+prefix+"  arguments=[" + maskedargsList+"]"+"  vcsIgnoreMessages="+vcsIgnoreMessages+"  propertyFile="+propertyFile);
 			}
 			
 			// Get the existing security manager
@@ -169,7 +169,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			 */
 			String maskedargsList = CommonUtils.getArgumentListMasked(argsList);
 			if ( logger.isDebugEnabled() ) {
-				logger.debug(identifier+":: argument list=[" + maskedargsList+"]" );
+				logger.debug(identifier+"(prefix, arguments, vcsIgnoreMessages, propertyFile).  prefix="+prefix+"  arguments=[" + maskedargsList+"]"+"  vcsIgnoreMessages="+vcsIgnoreMessages+"  propertyFile="+propertyFile);
 			}
 			
 			// Get the existing security manager
@@ -243,7 +243,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			 */
 			String maskedargsList = CommonUtils.getArgumentListMasked(argsList);
 			if ( logger.isDebugEnabled() ) {
-				logger.debug(identifier+":: argument list=[" + maskedargsList+"]" );
+				logger.debug(identifier+"(prefix, arguments, vcsIgnoreMessages, propertyFile).  prefix="+prefix+"  arguments=[" + maskedargsList+"]"+"  vcsIgnoreMessages="+vcsIgnoreMessages+"  propertyFile="+propertyFile);
 			}
 			
 			// Get the existing security manager
@@ -298,6 +298,23 @@ public class VCSWSDAOImpl implements VCSDAO {
 	// Execute the Command Line for VCS
 	public void execCommandLineVCS(String prefix, String execFromDir, String command, List<String> args, List<String> envList, String vcsIgnoreMessages) throws CompositeException {
 		
+		String identifier = "VCSWSDAOImpl.execCommandLineVCS"; // some unique identifier that characterizes this invocation.
+		// For debugging
+		if ( logger.isDebugEnabled() ) {
+			String[] argsString = args.toArray(new String[0]);
+			String maskedArgsList = "";
+			for (String arg:argsString) {
+				maskedArgsList = maskedArgsList + " " + CommonUtils.maskCommand(arg);
+			}
+			String[] envString = envList.toArray(new String[0]);
+			String maskedEnvList = "";
+			for (String env:envString) {
+				maskedEnvList = maskedEnvList + " " + CommonUtils.maskCommand(env);
+			}
+
+			logger.debug(identifier+"(prefix, execFromDir, command, args, envList, vcsIgnoreMessages).  prefix="+prefix+"  execFromDir="+execFromDir+"  args=[" + maskedArgsList+"]  envList=["+envList+"]  vcsIgnoreMessages="+vcsIgnoreMessages);
+		}
+		
 		if (prefix == null) {
 			prefix = "";
 		} else {
@@ -318,7 +335,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			}else{
 			    StringBuilder stdout = se.getStandardOutputFromCommand();
 			    if (logger.isDebugEnabled()) {
-			    	logger.debug(prefix+CommonUtils.maskCommand(command)+" executed successfully");
+			    	logger.debug(identifier+": "+prefix+CommonUtils.maskCommand(command)+" executed successfully");
 			    }
 			}
 		} catch (CompositeException e) {
@@ -333,6 +350,10 @@ public class VCSWSDAOImpl implements VCSDAO {
 //	@Override
 	public void generateVCSXML(String serverId, String startPath, String pathToVCSXML, String pathToServersXML) throws CompositeException {
 		
+		// For debugging
+		if(logger.isDebugEnabled()) {
+			logger.debug("VCSWSDAOImpl.generateVCSXML(serverId , startPath, pathToVCSXML, pathToServersXML).  serverId="+serverId+"  startPath="+startPath+"  pathToVCSXML="+pathToVCSXML+"  pathToServersXML="+pathToServersXML);
+		}
 		// -- these are class level to avoid excessive object creation
 		distinctResourcesToAdd = new ArrayList<Resource>();
 		resourcesRecursedFromVcsPath = new ArrayList<Resource>();
@@ -353,8 +374,15 @@ public class VCSWSDAOImpl implements VCSDAO {
 		
 		// -- get parent resource
 		try {
-			startResourceList = (ArrayList<Resource>) 
-				port.getResource(startPath, null, DetailLevel.SIMPLE).getResource();
+			if(logger.isDebugEnabled()) {
+				logger.debug("VCSWSDAOImpl.generateVCSXML().  Invoking port.getResource(\""+startPath+"\", null, \"SIMPLE)\".getResource().");
+			}
+			
+			startResourceList = (ArrayList<Resource>) port.getResource(startPath, null, DetailLevel.SIMPLE).getResource();
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("VCSWSDAOImpl.generateVCSXML().  Success: port.getResource().");
+			}
 		} catch (GetResourceSoapFault e) {
 			throw new ApplicationException("Error getting resource: " + e.getMessage());
 		}
@@ -448,8 +476,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 	}	
 	
 	// -- recurse to find all resources used by resource passed in
-    private void getUsedResourcesRecursive(Resource parentResource, 
-    		ResourcePortType port) {
+    private void getUsedResourcesRecursive(Resource parentResource, ResourcePortType port) {
 
     	ArrayList<Resource> usedResources = null;
 		try {
@@ -518,10 +545,16 @@ public class VCSWSDAOImpl implements VCSDAO {
     	// -- get this container's child resources
     	ArrayList<Resource> childResources = null;
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("VCSWSDAOImpl.getChildResourcesRecursive().  Invoking port.getChildResources(\""+parentResource.getPath()+"\", \""+parentResource.getType()+"\", \"SIMPLE\").getResource().");
+			}
+			
 			// -- this is the list of child resources
-			childResources = (ArrayList<Resource>) port.getChildResources(
-					parentResource.getPath(), parentResource.getType(), 
-					DetailLevel.SIMPLE).getResource();
+			childResources = (ArrayList<Resource>) port.getChildResources(parentResource.getPath(), parentResource.getType(), DetailLevel.SIMPLE).getResource();
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("VCSWSDAOImpl.getChildResourcesRecursive().  Success: port.getChildResources().");
+			}
 		} catch (GetChildResourcesSoapFault e) {
 			throw new ApplicationException("Error getting child resources: " + e.getMessage());
 		}
@@ -589,7 +622,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 			if (error.toLowerCase().contains(message.toLowerCase())) {
 				throwOriginalError = false;
 				if (logger.isErrorEnabled()) {
-					logger.error(prefix+"Error message ignored.  Error Message matches VCS_IGNORE_MESSAGES="+message);
+					logger.info(prefix+"Warning::Error message ignored.  Error Message matches VCS_IGNORE_MESSAGES="+message);
 				}
 			}
 		}

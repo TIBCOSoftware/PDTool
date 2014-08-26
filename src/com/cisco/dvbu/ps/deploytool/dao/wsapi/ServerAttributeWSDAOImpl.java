@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -44,6 +45,14 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public void takeServerAttributeAction(String actionName, AttributeList attributeList, String serverId, String pathToServersXML) throws CompositeException {
 		
+		int attrSize = 0;
+		if(logger.isDebugEnabled()) {
+			if (attributeList != null && attributeList.getAttribute() != null)
+				attrSize = attributeList.getAttribute().size();
+			
+			logger.debug("ServerAttributeWSDAOImpl.takeServerAttributeAction(actionName , attributeList, serverId, pathToServersXML).  actionName="+actionName+"  #attributeList="+attrSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
+
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ServerAttributeWSDAOImpl.takeServerAttributeAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -54,12 +63,27 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 
 		try {
 			if(actionName.equalsIgnoreCase(ServerAttributeDAO.action.UPDATE.name())){
-				port.updateServerAttributes(attributeList);
-			}
-			if(logger.isDebugEnabled())	{
-				logger.debug("ServerAttributeWSDAOImpl.takeServerAttributeAction::actionName="+actionName+" was successful.");
-			}
+				if(logger.isDebugEnabled()) {
+					String attrList = "";
+					if (attributeList != null && attributeList.getAttribute() != null) {
+						for (Attribute attr:attributeList.getAttribute()) {
+							if (attrList.length() != 0)
+								attrList = attrList + ", ";
+							if (attr.getType().toString().equalsIgnoreCase("PASSWORD_STRING"))
+								attrList = attrList + attr.getName() + "=********";
+							else
+								attrList = attrList + attr.getName() + "=" + attr.getValue();
+						}
+					}
+					logger.debug("ServerAttributeWSDAOImpl.takeServerAttributeAction().  Invoking port.updateServerAttributes(\"["+attrList+"]\").  #attributeList="+attrSize);
+				}
 
+				port.updateServerAttributes(attributeList);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ServerAttributeWSDAOImpl.takeServerAttributeAction().  Success: port.updateServerAttributes().");
+				}
+			}
 		} catch (UpdateServerAttributesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), ServerAttributeDAO.action.UPDATE.name(), "ServerAttribute", "attributeList", targetServer),e.getFaultInfo());
 			throw new ApplicationException(e.getMessage(), e);
@@ -73,6 +97,9 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public Attribute getServerAttribute(String serverId, String serverAttrPath, String pathToServersXML)  throws CompositeException {
 
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerAttributeWSDAOImpl.getServerAttribute(serverId, serverAttrPath, pathToServersXML).  serverId="+serverId+"  serverAttrPath="+serverAttrPath+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ServerAttributeWSDAOImpl.getServerAttribute", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -85,7 +112,16 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 			PathList paths = new PathList();
 			paths.getPath().add(serverAttrPath);
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerAttribute().  Invoking port.getServerAttributes(\""+serverAttrPath+"\").");
+			}
+			
 			AttributeList attributeList = port.getServerAttributes(paths);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerAttribute().  Success: port.getServerAttributes().");
+			}
+
 			if(attributeList != null && attributeList.getAttribute() != null && !attributeList.getAttribute().isEmpty()){
 				
 				List<Attribute> attributes = attributeList.getAttribute();
@@ -112,6 +148,9 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public String getServerVersion(String serverId, String pathToServersXML)  throws CompositeException {
 
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerAttributeWSDAOImpl.getServerVersion(serverId, pathToServersXML).  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		// Get the CIS Version
 		String serverAttrPath = "/server/config/info/versionFull";
 		
@@ -127,7 +166,15 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 			PathList paths = new PathList();
 			paths.getPath().add(serverAttrPath);
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerVersion().  Invoking port.getServerAttributes(\""+serverAttrPath+"\").");
+			}
+			
 			AttributeList attributeList = port.getServerAttributes(paths);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerVersion().  Success: port.getServerAttributes().");
+			}
 			if(attributeList != null && attributeList.getAttribute() != null && !attributeList.getAttribute().isEmpty()){
 				
 				List<Attribute> attributes = attributeList.getAttribute();
@@ -154,6 +201,9 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public AttributeList getServerAttributesFromPath(String serverId, String startpath, String pathToServersXML) {
 
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerAttributeWSDAOImpl.getServerAttributesFromPath(serverId, startpath, pathToServersXML).  serverId="+serverId+"  startpath="+startpath+"  pathToServersXML="+pathToServersXML);
+		}
 		AttributeList returnAttributeList = new AttributeList();
 		
 		// read target server properties from server xml and build target server object based on target server name 
@@ -171,7 +221,15 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	
 	private void addServerAttributesFromPath(ServerPortType port, AttributeList attributeList, String startpath, CompositeServer targetServer){
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Invoking port.getServerAttributeDefChildren(\""+startpath+"\").");
+			}
+			
 			AttributeDefList attributeDefList = port.getServerAttributeDefChildren(startpath);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Success: port.getServerAttributeDefChildren().");
+			}
 			if(attributeDefList!= null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
 
 				List<AttributeDef> attributeDefs = attributeDefList.getAttributeDef();
@@ -188,7 +246,15 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 							PathList paths = new PathList();
 							paths.getPath().add(currentPath);
 							
+							if(logger.isDebugEnabled()) {
+								logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Invoking port.getServerAttributes(\""+currentPath+"\").");
+							}
+							
 							AttributeList attrList = port.getServerAttributes(paths);
+							
+							if(logger.isDebugEnabled()) {
+								logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Success: port.getServerAttributes().");
+							}
 							if(attrList != null && attrList.getAttribute() != null && !attrList.getAttribute().isEmpty()){
 								
 								List<Attribute> attributes = attrList.getAttribute();
@@ -219,6 +285,9 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public AttributeDef getServerAttributeDefinition(String serverId, String serverAttrPath, String pathToServersXML) {
 
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefinition(serverId, serverAttrPath, pathToServersXML).  serverId="+serverId+"  serverAttrPath="+serverAttrPath+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ServerAttributeWSDAOImpl.getServerAttributeDefinition", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -231,7 +300,15 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 			PathList paths = new PathList();
 			paths.getPath().add(serverAttrPath);
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefinition().  Invoking port.getServerAttributeDefs(\""+serverAttrPath+"\").");
+			}
+			
 			AttributeDefList attributeDefList = port.getServerAttributeDefs(paths);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefinition().  Success: port.getServerAttributeDefs().");
+			}
 			if(attributeDefList != null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
 				
 				List<AttributeDef> attributeDefs = attributeDefList.getAttributeDef();
@@ -258,6 +335,9 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 //	@Override
 	public AttributeDefList getServerAttributeDefsFromPath(String serverId, String startpath, String pathToServersXML) {
 
+		if(logger.isDebugEnabled()) {		
+			logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefsFromPath(serverId, startpath, pathToServersXML).  serverId="+serverId+"  startpath="+startpath+"  pathToServersXML="+pathToServersXML);
+		}
 		AttributeDefList returnAttributeDefList = new AttributeDefList();
 		
 		// read target server properties from server xml and build target server object based on target server name 
@@ -275,7 +355,15 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 	
 	private void addServerAttributeDefsFromPath(ServerPortType port, AttributeDefList attributeList, String startpath, CompositeServer targetServer){
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("private ServerAttributeWSDAOImpl.addServerAttributeDefsFromPath().  Invoking port.getServerAttributeDefChildren(\""+startpath+"\").");
+			}
+			
 			AttributeDefList attributeDefList = port.getServerAttributeDefChildren(startpath);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("private ServerAttributeWSDAOImpl.addServerAttributeDefsFromPath().  Success: port.getServerAttributeDefChildren().");
+			}
 			if(attributeDefList!= null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
 
 				List<AttributeDef> attributeDefs = attributeDefList.getAttributeDef();

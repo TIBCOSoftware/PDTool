@@ -9,12 +9,16 @@ import java.net.URL;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.cisco.dvbu.ps.common.BasicAuthenticator;
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.Sleep;
+import com.cisco.dvbu.ps.deploytool.services.GroupManagerImpl;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
 import com.compositesw.client.CaSession;
 import com.compositesw.client.port.CaExecutePort;
@@ -32,6 +36,8 @@ import com.compositesw.services.system.admin.UserPortType;
 //import com.compositesw.services.system.util.;
 
 public class CisApiFactory {
+
+	private static Log logger = LogFactory.getLog(CisApiFactory.class);
 
 	public static final String nsResourceUrl = "http://www.compositesw.com/services/system/admin";
 	public static final String nsResourceUrl623 = "http://www.623.compositesw.com/services/system/admin";
@@ -83,6 +89,9 @@ public class CisApiFactory {
                 }
 		try {
 			url = new URL(protocol + "://" + server.getHostname() + ":" + wsPort + "/services/system/admin?wsdl");
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering CisApiFactory.getResourcePort() with following params "+" url: "+url);
+			}
 		} catch (MalformedURLException e) {
 			String errorMessage = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "Creating Resource Port", "Admin API", "ExecutePort" , server);
 			CompositeLogger.logException(e, errorMessage);
@@ -93,9 +102,16 @@ public class CisApiFactory {
 		while (retry < numRetries) {
 			retry++;
 			try {
-				Resource res = new Resource(url, new QName(nsResourceUrl, nsResourceName)); // Get the connection to the server.
-			
+				Resource res = new Resource(url, new QName(nsResourceUrl, nsResourceName)); // Get the connection to the server.		
+				if(logger.isDebugEnabled()){
+					if (res != null)
+					logger.debug("Entering CisApiFactory.getResourcePort(). Resource acquired "+" Resource: "+res.toString());
+				}
 				ResourcePortType port = res.getResourcePort(); // Get the server port
+				if(logger.isDebugEnabled()){
+					if (port != null)
+					logger.debug("Entering CisApiFactory.getResourcePort(). Port acquired "+" Port: "+port.toString());
+				}
 				return port; // Return the port connection to the server.
 			}
 			catch (Exception e) {
@@ -178,6 +194,10 @@ public class CisApiFactory {
 				retry++;
 				try {
 					CaSession caSession = new CaSession(server.getId(),server.getCishome(),server.getPort(),server.getUser(),server.getDomain(),server.getPassword(),3600,false,false);
+					if(logger.isDebugEnabled()){
+						if (caSession != null)
+						logger.debug("Entering CisApiFactory.getCaResourcePort(). Session acquired "+" Session: "+caSession.toString());
+					}
 					return caSession.getResourcePort();
 				}
 				catch (Exception e) {
@@ -212,6 +232,10 @@ public class CisApiFactory {
 				retry++;
 				try {
 					CaSession caSession = new CaSession(server.getId(),server.getCishome(),server.getPort(),server.getUser(),server.getDomain(),server.getPassword(),3600,false,false);
+					if(logger.isDebugEnabled()){
+						if (caSession != null)
+						logger.debug("Entering CisApiFactory.getCaUserPort(). Session acquired "+" Session: "+caSession.toString());
+					}
 					return caSession.getUserPort();
 				}
 				catch (Exception e) {
@@ -246,6 +270,10 @@ public class CisApiFactory {
 				retry++;
 				try {
 					CaSession caSession = new CaSession(server.getId(),server.getCishome(),server.getPort(),server.getUser(),server.getDomain(),server.getPassword(),3600,false,false);
+					if(logger.isDebugEnabled()){
+						if (caSession != null)
+						logger.debug("Entering CisApiFactory.getCaServerPort(). Session acquired "+" Session: "+caSession.toString());
+					}
 					return caSession.getServerPort();
 				}
 				catch (Exception e) {
@@ -281,6 +309,10 @@ public class CisApiFactory {
 				retry++;
 				try {
 					CaSession caSession = new CaSession(server.getId(),server.getCishome(),server.getPort(),server.getUser(),server.getDomain(),server.getPassword(),3600,false,false);
+					if(logger.isDebugEnabled()){
+						if (caSession != null)
+						logger.debug("Entering CisApiFactory.getCaExecutePort(). Session acquired "+" Session: "+caSession.toString());
+					}
 					return caSession.getExecutePort();
 				}
 				catch (Exception e) {
@@ -321,6 +353,9 @@ public class CisApiFactory {
                 }
 		try {
 			url = new URL(protocol + "://" + server.getHostname() + ":" + wsPort + "/services/system/admin?wsdl");
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering CisApiFactory.getExecutePort() with following params "+" url: "+url);
+			}
 		} catch (MalformedURLException e) {
 			String errorMessage = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "Creating Execute Port", "Admin API", "ExecutePort" , server);
 			CompositeLogger.logException(e, errorMessage);
@@ -332,7 +367,15 @@ public class CisApiFactory {
 			retry++;
 			try {
 				Execute exec = new Execute(url, new QName(nsExecuteUrl, nsExecuteName)); // Get the connection to the server.
+				if(logger.isDebugEnabled()){
+					if (exec != null)
+					logger.debug("Entering CisApiFactory.getExecutePort(). Execute acquired "+" Execute: "+exec.toString());
+				}
 				ExecutePortType port = exec.getExecutePort(); // Get the server port
+				if(logger.isDebugEnabled()){
+					if (port != null)
+					logger.debug("Entering CisApiFactory.getExecutePort(). Port acquired "+" Port: "+port.toString());
+				}
 				return port; // Return the port connection to the server.
 			}
 			catch (Exception e) {
@@ -367,6 +410,9 @@ public class CisApiFactory {
                 }
 		try {
 			url = new URL(protocol + "://" + server.getHostname() + ":" + wsPort + "/services/system/admin?wsdl");
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering CisApiFactory.getUserPort() with following params "+" url: "+url);
+			}
 		} catch (MalformedURLException e) {
 			String errorMessage = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "Creating User Port", "Admin API", "UserPort" , server);
 			CompositeLogger.logException(e, errorMessage);
@@ -378,7 +424,15 @@ public class CisApiFactory {
 			retry++;
 			try {
 				User user = new User(url, new QName(nsUserUrl, nsUserName)); // Get the connection to the server.
+				if(logger.isDebugEnabled()){
+					if (user != null)
+					logger.debug("Entering CisApiFactory.getUserPort(). User acquired "+" User: "+user.toString());
+				}
 				UserPortType port = user.getUserPort(); // Get the server port
+				if(logger.isDebugEnabled()){
+					if (port != null)
+					logger.debug("Entering CisApiFactory.getUserPort(). Port acquired "+" Port: "+port.toString());
+				}
 				return port; // Return the port connection to the server.
 			}
 			catch (Exception e) {
@@ -413,6 +467,9 @@ public class CisApiFactory {
                 }
 		try {
 			url = new URL(protocol + "://" + server.getHostname() + ":" + wsPort + "/services/system/admin?wsdl");
+			if(logger.isDebugEnabled()){
+				logger.debug("Entering CisApiFactory.getServerPort() with following params "+" url: "+url);
+			}
 		} catch (MalformedURLException e) {
 			String errorMessage = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "Creating Server Port", "Admin API", "ServerPort" , server);
 			CompositeLogger.logException(e, errorMessage);
@@ -424,7 +481,15 @@ public class CisApiFactory {
 			retry++;
 			try {
 				Server srvr = new Server(url, new QName(nsServerUrl, nsServerName)); // Get the connection to the server.
+				if(logger.isDebugEnabled()){
+					if (srvr != null)
+					logger.debug("Entering CisApiFactory.getServerPort(). Server acquired "+" Server: "+srvr.toString());
+				}
 				ServerPortType port = srvr.getServerPort(); // Get the server port
+				if(logger.isDebugEnabled()){
+					if (port != null)
+					logger.debug("Entering CisApiFactory.getServerPort(). Port acquired "+" Port: "+port.toString());
+				}
 				return port; // Return the port connection to the server.
 			}
 			catch (Exception e) {

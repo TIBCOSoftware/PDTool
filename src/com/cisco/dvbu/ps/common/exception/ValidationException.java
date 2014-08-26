@@ -3,12 +3,14 @@
  */
 package com.cisco.dvbu.ps.common.exception;
 
+import com.cisco.dvbu.ps.common.CommonConstants;
+
 /** Exception class used to report validation errors **/
 
 public class ValidationException extends ApplicationException {
 
 	private static final long serialVersionUID = 8097724675052679554L;
-	
+
     /** Constructs a new exception with <code>null</code> as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.

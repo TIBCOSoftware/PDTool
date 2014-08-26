@@ -2265,12 +2265,24 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						//CommonUtils.writeOutput("Error is:" + e.getMessage(),prefix,"-info",logger,debug1,debug2,debug3);
-						if (e.getMessage().contains("does not exist") || e.getMessage().contains("could not be found") ||
-							e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("does not exist")) {
+							errorFound = true;
+							ignoreMessage = "does not exist";
+						}
+						if (e.getMessage().contains("could not be found")) {
+							errorFound = true;
+							ignoreMessage = "could not be found";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
-							if (logger.isInfoEnabled()) {
-						    	logger.info(prefix+":: "+command+" returned error but was ignored");
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
 						    }
 						} else {
 							throw new ApplicationException(e);
@@ -2299,12 +2311,24 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						CommonUtils.writeOutput("Error is: "+e.getMessage(),prefix,"-info",logger,debug1,debug2,debug3);
-						if (e.getMessage().contains("No working folder assigned") || e.getMessage().contains("could not be found") ||
-							e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("No working folder assigned")) {
+							errorFound = true;
+							ignoreMessage = "No working folder assigned";
+						}
+						if (e.getMessage().contains("could not be found")) {
+							errorFound = true;
+							ignoreMessage = "could not be found";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
-							if (logger.isInfoEnabled()) {
-						    	logger.info(prefix+":: "+command+" returned error but was ignored");
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
 						    }
 						} else {
 							throw new ApplicationException(e);
@@ -2449,9 +2473,21 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 						
 					} catch (CompositeException e) {
-						if (e.getMessage().contains("does not exist") ||
-								e.getMessage().contains("Unable to determine the source control server")) {
+						boolean errorFound = false;
+						String ignoreMessage = "";
+						if (e.getMessage().contains("does not exist")) {
+							errorFound = true;
+							ignoreMessage = "does not exist";
+						}
+						if (e.getMessage().contains("Unable to determine the source control server")) {
+							errorFound = true;
+							ignoreMessage = "Unable to determine the source control server";
+						}
+						if (errorFound) {
 							//continue processing, this is OK
+							if (logger.isErrorEnabled()) {
+								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
+						    }
 						} else {
 							throw new ApplicationException(e);
 						}
@@ -5918,9 +5954,10 @@ public class VCSManagerImpl implements VCSManager {
 				!this.getVcsType().equalsIgnoreCase("TFS2005") && 
 				!this.getVcsType().equalsIgnoreCase("TFS2010") &&
 				!this.getVcsType().equalsIgnoreCase("TFS2012") &&
-				!this.getVcsType().equalsIgnoreCase("TFS2013")
+				!this.getVcsType().equalsIgnoreCase("TFS2013") &&
+				!this.getVcsType().equalsIgnoreCase("GIT")
 				) {
-				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013].  The VCS_TYPE="+this.getVcsType());							
+				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT].  The VCS_TYPE="+this.getVcsType());							
 			}
 			// Validate that the VCS_PROJECT_ROOT is not null
 			this.setVcsProjectRoot(CommonUtils.setCanonicalPath(this.getVcsProjectRoot()));
@@ -6173,6 +6210,52 @@ public class VCSManagerImpl implements VCSManager {
 				}
 			}
 						
+			//-------------------------------------------------------------------
+			// loadVcs: GitHub (git) specific settings
+			//-------------------------------------------------------------------
+			if (this.getVcsType().equalsIgnoreCase("GIT")) {
+				
+				// Get the VCS LifecycleListener class used by DiffMerger
+				this.setVcsLifecycleListener(CommonConstants.GITLifecycleListener);
+				
+				String propertyValue = null;
+				// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+				// This is to insure backward compatability with the original VCS methods
+				if (!vcsV2Method) {
+					propertyValue = System.clearProperty("GIT_ENV");
+				}
+				// Get the Subversion specific environment variables
+				String envVars = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"GIT_ENV");
+				// Remove any inadvertant $ or % signs from the variables.  This is a list of variable.  Not actual variables for substitution
+				envVars = envVars.replaceAll(Matcher.quoteReplacement("$"), "");
+				envVars = envVars.replaceAll(Matcher.quoteReplacement("%"), "");
+				// Get the list of variables
+				StringTokenizer st = new StringTokenizer(envVars,","); 
+				while(st.hasMoreTokens()){
+					String property = st.nextToken().trim();
+					// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+					// This is to insure backward compatability with the original VCS methods
+					if (!vcsV2Method) {
+						propertyValue = System.clearProperty(property);
+					}
+					// Resolve the variables in the list
+					propertyValue = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,property), propertyFile, true);
+					this.setVcsEnvironment(this.getVcsEnvironment() + substituteVariables(property + "=" + propertyValue, this.getVcsSubstitutionVars()) + envPropSep);
+				}
+
+				// Set the username/password authorization
+				/* 
+				 * Git uses SSH to authenticate with the GitHub server. no username/password options are available
+				 * 
+				if (getVcsUsername() != null && getVcsUsername().length() > 0) {
+					this.setVcsOptions(this.getVcsOptions() + " --username "+this.getVcsUsername());					
+				}
+				if (getVcsPassword() != null && getVcsPassword().length() > 0) {
+					this.setVcsOptions(this.getVcsOptions() + " --password "+this.getVcsPassword());			
+				}
+				*/
+			}
+			
 			/*
 			 * This section is a template.  Copy this template for the new VCS and modify it as needed.
 			 * 

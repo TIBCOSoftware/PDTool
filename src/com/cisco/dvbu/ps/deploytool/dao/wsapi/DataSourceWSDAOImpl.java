@@ -34,11 +34,13 @@ import com.compositesw.services.system.admin.resource.DataSourceTypeInfo;
 import com.compositesw.services.system.admin.resource.GetDataSourceTypesResponse.DataSourceTypes;
 import com.compositesw.services.system.admin.resource.IntrospectionChangeEntry;
 import com.compositesw.services.system.admin.resource.IntrospectionPlan;
+import com.compositesw.services.system.admin.resource.IntrospectionPlanEntries;
 import com.compositesw.services.system.admin.resource.IntrospectionPlanEntry;
 import com.compositesw.services.system.admin.resource.IntrospectionStatus;
 import com.compositesw.services.system.admin.resource.Resource;
 import com.compositesw.services.system.admin.resource.ResourceList;
 import com.compositesw.services.system.admin.resource.ResourceType;
+import com.compositesw.services.system.util.common.Attribute;
 import com.compositesw.services.system.util.common.AttributeDef;
 import com.compositesw.services.system.util.common.AttributeDefList;
 import com.compositesw.services.system.util.common.AttributeList;
@@ -126,7 +128,18 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.DataSourceDAO#takeDataSourceAction(java.lang.String,java.lang.String, com.compositesw.services.system.util.common.AttributeList, java.lang.String, java.lang.String)
 	 */
-	public ResourceList takeDataSourceAction(String actionName, String dataSourcePath, IntrospectionPlan plan, boolean runInBackgroundTransaction, String reportDetail, AttributeList dataSourceAttributes,String serverId,String pathToServersXML) throws CompositeException {
+	public ResourceList takeDataSourceAction(String actionName, String dataSourcePath, IntrospectionPlan plan, boolean runInBackgroundTransaction, String reportDetail, AttributeList dataSourceAttributes, String serverId, String pathToServersXML) throws CompositeException {
+		
+		// For debugging
+		if(logger.isDebugEnabled()) {
+			int planSize = 0;
+			if (plan != null && plan.getEntries() != null && plan.getEntries().getEntry() != null)
+				planSize = plan.getEntries().getEntry().size();
+			int attrSize = 0;
+			if (dataSourceAttributes != null && dataSourceAttributes.getAttribute() != null)
+				attrSize = dataSourceAttributes.getAttribute().size();
+			logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(actionName , dataSourcePath, plan, runInBackgroundTransaction, reportDetail, dataSourceAttributes, serverId, pathToServersXML).  actionName="+actionName+"  dataSourcePath="+dataSourcePath+"  #plans="+planSize+"  runInBackgroundTransaction="+runInBackgroundTransaction+"  reportDetail="+reportDetail+"  #dataSourceAttributes="+attrSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		
 		ResourceList returnResList = null;
 
@@ -142,36 +155,123 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, dataSourcePath, ResourceType.DATA_SOURCE.name(), pathToServersXML)) {
 				
-				if(actionName.equalsIgnoreCase(DataSourceDAO.action.UPDATE.name())){
-
+				if(actionName.equalsIgnoreCase(DataSourceDAO.action.UPDATE.name()))
+				{
+					if(logger.isDebugEnabled()) {
+						int dsAttrSize = 0;
+						String dsAttrString = "";
+						if (dataSourceAttributes != null && dataSourceAttributes.getAttribute() != null) {
+							for (Attribute attr:dataSourceAttributes.getAttribute()) {
+								if (dsAttrString.length() != 0)
+									dsAttrString = dsAttrString + ", ";
+								if (attr.getType().toString().equals("PASSWORD_STRING"))
+									dsAttrString = dsAttrString + attr.getName() + "=********";
+								else
+									dsAttrString = dsAttrString + attr.getName() + "=" + attr.getValue();
+							}
+							dsAttrSize = dataSourceAttributes.getAttribute().size();
+						}
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.updateDataSource(\""+dataSourcePath+"\", \"FULL\", null, DS_ATTRIBUTES:[\""+dsAttrString+"]\").  #dataSourceAttributes="+dsAttrSize);
+					}
+					
 					returnResList = port.updateDataSource(dataSourcePath, DetailLevel.FULL, null, dataSourceAttributes);
 				
-				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.ENABLE.name())){
-			
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateDataSource().");
+					}
+				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.ENABLE.name()))
+				{
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.updateResourceEnabled(\""+dataSourcePath+"\", \"DATA_SOURCE\", \"FULL\", true).");
+					}
+					
 					returnResList = port.updateResourceEnabled(dataSourcePath, ResourceType.DATA_SOURCE, DetailLevel.FULL, true);			
 
-				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.REINTROSPECT.name())){
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateResourceEnabled().");
+					}
+				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.REINTROSPECT.name()))
+				{
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.reintrospectDataSource(\""+dataSourcePath+"\", true, null, null, null, null).");
+					}
 
 					// Errors were being thrown when attributes were present for dataSourceAttributes.  Setting to null.
-					//port.reintrospectDataSource(dataSourcePath, true, dataSourceAttributes, null, null, null);			
+					//port.reintrospectDataSource(dataSourcePath, true, dataSourceAttributes, null, null, null);	
 					port.reintrospectDataSource(dataSourcePath, true, null, null, null, null);			
-					
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.reintrospectDataSource().");
+					}
 				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.INTROSPECT.name())){
 
 					Holder<String> taskId = new Holder<String>();
 					Holder<BigInteger> totalResults = new Holder<BigInteger>();
 					Holder<Boolean> completed = new Holder<Boolean>();
 					
+
+					if(logger.isDebugEnabled()) {
+						int dsAttrSize = 0;
+						String dsAttrString = "";
+						if (dataSourceAttributes != null && dataSourceAttributes.getAttribute() != null) {
+							for (Attribute attr:dataSourceAttributes.getAttribute()) {
+								if (dsAttrString.length() != 0)
+									dsAttrString = dsAttrString + ", ";
+								if (attr.getType().toString().equals("PASSWORD_STRING"))
+									dsAttrString = dsAttrString + attr.getName() + "=********";
+								else
+									dsAttrString = dsAttrString + attr.getName() + "=" + attr.getValue();
+							}
+							dsAttrSize = dataSourceAttributes.getAttribute().size();
+						}
+						String planString = "";
+						if (plan != null && plan.getEntries() != null && plan.getEntries().getEntry() != null) {
+							for (IntrospectionPlanEntry entry:plan.getEntries().getEntry()) {
+								if (planString.length() != 0)
+									planString = "], " + planString;
+								planString = planString + "PLAN:[";
+								planString = planString + "action=" + entry.getAction();
+								planString = planString + "path=" + entry.getResourceId().getPath();
+								planString = planString + "type=" + entry.getResourceId().getType();
+								String attrList = "";
+								if (entry.getAttributes() != null && entry.getAttributes().getAttribute() != null) {
+									for (Attribute attr:entry.getAttributes().getAttribute()) {
+										if (attrList.length() != 0)
+											attrList = attrList + ", ";
+										if (attr.getType().toString().equalsIgnoreCase("PASSWORD_STRING"))
+											attrList = attrList + attr.getName() + "=********";
+										else
+											attrList = attrList + attr.getName() + "=" + attr.getValue();	
+									}		
+								}
+								planString = planString + attrList + "]";
+							}
+						}
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesTask(\""+dataSourcePath+"\", \""+planString+"\", \""+runInBackgroundTransaction+"\", DS_ATTRIBUTES:[\""+dsAttrString+"]\", taskId, totalResults, completed).   #dataSourceAttributes="+dsAttrSize);
+					}
 					// Invoke the method to introspect and add, update or remove data source resources
 					port.introspectResourcesTask(dataSourcePath, plan, runInBackgroundTransaction, dataSourceAttributes, taskId, totalResults, completed);
-					
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesTask().");
+					}
+
 					Boolean block = true; // Make this a blocking call
 					Page page = new Page();
 			
 					Holder<IntrospectionStatus> status = new Holder<IntrospectionStatus>();
 					
+					if(logger.isDebugEnabled()) {
+						String simpleStatus = "";
+						if (status != null && status.value != null && status.value.getStatus() != null)
+							simpleStatus = status.value.getStatus().value();										
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesResult(\""+taskId.value.toString()+"\", \""+block.toString()+"\", page, \"FULL\", \""+totalResults.value.toString()+"\", \""+completed.value.toString()+"\", \""+simpleStatus+"\").");
+					}
 					// Since a blocking call is used, a single call to get results is all that is needed
 					port.introspectResourcesResult(taskId, block, page, DetailLevel.FULL, totalResults, completed, status);
+
+					if(logger.isDebugEnabled()) {
+						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesResult().");
+					}
 
 					boolean errorDetected = false;
 					String errorEntryPaths = "";
@@ -359,6 +459,9 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 	
 	public ResourceList getDataSourceChildResourcesFromPath(String serverId, String resourcePath, String parentResourceType, String resourceTypeFilter, boolean includeContainers, String detailLevel, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("DataSourceWSDAOImpl.getDataSourceChildResourcesFromPath(serverId, resourcePath, parentResourceType, resourceTypeFilter, includeContainers, detailLevel, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  parentResourceType="+parentResourceType+"  resourceTypeFilter="+resourceTypeFilter+"  includeContainers="+includeContainers+"  detailLevel="+detailLevel+"  pathToServersXML="+pathToServersXML);
+		}
 		// Make sure the resource exists before executing any actions
 		if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, parentResourceType, pathToServersXML)) {
 			return getAllDataSourceChildResourcesFromPath(serverId, resourcePath, parentResourceType, resourceTypeFilter, includeContainers, detailLevel, pathToServersXML, true);
@@ -369,7 +472,15 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 
 	private void getDataSourceChildResourcesFromPath(ResourcePortType port,ResourceList resourceList, String resourcePath, String parentResourceType, String resourceTypeFilter, boolean includeContainers, String detailLevel,CompositeServer targetServer, boolean recurse){
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceChildResourcesFromPath().  Invoking port.getChildResources(\""+resourcePath+"\", \""+parentResourceType+"\", \""+detailLevel+"\").");
+			}
 			ResourceList childResourceList = port.getChildResources(resourcePath, ResourceType.valueOf(parentResourceType), DetailLevel.fromValue(detailLevel));
+
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceChildResourcesFromPath().  Success: port.getChildResources().");
+			}
+
 			if(childResourceList!= null && childResourceList.getResource() != null && !childResourceList.getResource().isEmpty()){
 
 				List<Resource> resources = childResourceList.getResource();
@@ -413,7 +524,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 
 		// Construct the resource port based on target server name
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
-		
+
 		getDataSourceChildResourcesFromPath(port, returnResourceList, resourcePath, parentResourceType, resourceTypeFilter, includeContainers, detailLevel, targetServer, recurse);
 		
 		return returnResourceList;
@@ -433,8 +544,15 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 		
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceAttributeDefs().  Invoking port.getDataSourceAttributeDefs(\""+dataSourceType+"\").");
+			}
 			AttributeDefList attributeDefsList = port.getDataSourceAttributeDefs(dataSourceType);
-			
+	
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceAttributeDefs().  Success: port.getDataSourceAttributeDefs().");
+			}
+
 			if(attributeDefsList != null ) {
 				return attributeDefsList.getAttributeDef();
 			}
@@ -459,8 +577,15 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 		
 		try {
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceTypes().  Invoking port.getDataSourceTypes(\"FULL\").");
+			}
 			DataSourceTypes dsTypes = port.getDataSourceTypes(DetailLevel.FULL);
-			
+		
+			if(logger.isDebugEnabled()) {
+				logger.debug("DataSourceWSDAOImpl.getDataSourceTypes().  Success: port.getDataSourceTypes().");
+			}
+
 			if(dsTypes != null ) {
 				return dsTypes.getDataSourceType();
 			}

@@ -51,6 +51,8 @@ import com.compositesw.services.system.util.common.DetailLevel;
 
 public class PrivilegeManagerImpl implements PrivilegeManager{
 
+	private static String className = "PrivilegeManagerImpl";
+	
 	private static Log logger = LogFactory.getLog(PrivilegeManagerImpl.class);
 	
 	// Get the configuration property file set in the environment with a default of deploy.properties
@@ -452,6 +454,8 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 	 */
 //	@Override
 	public void generatePrivilegesXML(String serverId, String startPath, String pathToPrivilegeXML, String pathToServersXML, String filter, String options, String domainList) throws CompositeException {
+		
+		String prefix = "generatePrivilegesXML";
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {

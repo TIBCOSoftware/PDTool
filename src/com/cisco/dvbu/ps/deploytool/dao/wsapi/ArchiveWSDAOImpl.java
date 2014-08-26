@@ -69,6 +69,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 	 */
 	public void takeArchiveAction(String actionName, ArchiveType archive, String serverId, String pathToServersXML, String prefix, String propertyFile) throws CompositeException {
 		
+		if(logger.isDebugEnabled()) {
+			logger.debug("ArchiveWSDAOImpl.takeArchiveAction(actionName, archive, serverId, pathToServersXML, prefix, propertyFile).  actionName="+actionName+"  archive object="+archive.toString()+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML+"  prefix="+prefix+"  propertyFile="+propertyFile);
+		}
 		// Set the debug options
 		setDebug();
 		
@@ -129,8 +132,16 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					// Create a new security manager
 		            System.setSecurityManager(new NoExitSecurityManager());
 
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Invoking ImportCommand.startCommand(\".\", \".\", args).");
+					}
+					
 		            // Invoke the Composite native import command.
 		            ImportCommand.startCommand(".", ".", args);
+		            
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Successfully imported.");
+					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
@@ -186,8 +197,16 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					// Create a new security manager
 		            System.setSecurityManager(new NoExitSecurityManager());
 
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Invoking RestoreCommand.startCommand(\".\", \".\", args).");
+					}
+					
 		            // Invoke the Composite native restore command.
 		            RestoreCommand.startCommand(".", ".", args) ;
+
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Successfully restored.");
+					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
@@ -243,8 +262,16 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					// Create a new security manager
 		            System.setSecurityManager(new NoExitSecurityManager());
 
-		            // Invoke the Composite native export command.
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Invoking ExportCommand.startCommand(\".\", \".\", args).");
+					}
+
+					// Invoke the Composite native export command.
 		            ExportCommand.startCommand(".", ".", args);
+
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Successfully exported.");
+					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
@@ -300,8 +327,15 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					// Create a new security manager
 		            System.setSecurityManager(new NoExitSecurityManager());
 
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Invoking BackupCommand.startCommand(\".\", \".\", args).");
+					}
+
 		            // Invoke the Composite native backup command.
 		            BackupCommand.startCommand(".", ".", args);
+					if(logger.isDebugEnabled()) {
+						logger.debug(identifier+"().  Successfully backed up.");
+					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";

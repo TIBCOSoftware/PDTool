@@ -45,8 +45,11 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void executeProcedure(String serverId, String procedureName,String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
+	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments).  serverId="+serverId+"  procedureName="+procedureName+"  dataServiceName="+dataServiceName+"  pathToServersXML="+pathToServersXML+"  arguments="+arguments);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.executeProcedure", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -68,8 +71,16 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 			if(logger.isInfoEnabled()){
 				logger.info("Calling executeSql with sql "+procedureScript);
 			}
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.executeProcedure().  Invoking port.executeSql(\""+procedureScript+"\", true, false, 0, 1, false, null, null, \""+dataServiceName+"\", null, null, null, null, null, null, null).");
+			}
+			
 			port.executeSql(procedureScript, true, false, 0, 1, false, null, null, dataServiceName, null, null, null, null, null, null, null);
-		
+
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.executeProcedure().  Success: port.executeSql().");
+			}
+
 		} catch (ExecuteSqlSoapFault e) {
 			/*		
 			if (e.getFaultInfo().getErrorEntry() != null) {
@@ -95,6 +106,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void deleteResource(String serverId, String resourcePath, String resourceType, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.deleteResource(serverId, resourcePath, resourceType, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.deleteResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -106,7 +120,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.deleteResource().  Invoking port.destroyResource(\""+resourcePath+"\", \""+resourceType+"\", true).");
+				}
+				
 				port.destroyResource(resourcePath, ResourceType.valueOf(resourceType), true);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.deleteResource().  Success: port.destroyResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}				
@@ -125,6 +147,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void renameResource(String serverId, String resourcePath, String resourceType, String newName, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.renameResource(serverId, resourcePath, resourceType, newName, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  newName="+newName+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.renameResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -136,7 +161,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.renameResource().  Invoking port.renameResource(\""+resourcePath+"\", \""+resourceType+"\", \""+newName+"\").");
+				}
+
 				port.renameResource(resourcePath, ResourceType.valueOf(resourceType), newName);
+
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.renameResource().  Success: port.renameResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}				
@@ -154,6 +187,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void copyResource(String serverId, String resourcePath, String resourceType, String targetContainerPath, String newName, String copyMode, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.copyResource(serverId, resourcePath, resourceType, targetContainerPath, newName, copyMode, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  targetContainerPath="+targetContainerPath+"  newName="+newName+"  copyMode="+copyMode+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.copyResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -165,7 +201,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.copyResource().  Invoking port.copyResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", \""+copyMode+"\").");
+				}
+				
 				port.copyResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, CopyMode.valueOf(copyMode));
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.copyResource().  Success: port.copyResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}				
@@ -183,6 +227,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void moveResource(String serverId, String resourcePath, String resourceType, String targetContainerPath, String newName, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.moveResource(serverId, resourcePath, resourceType, targetContainerPath, newName, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  targetContainerPath="+targetContainerPath+"  newName="+newName+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.moveResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -194,7 +241,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.moveResource().  Invoking port.moveResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", true).");
+				}
+				
 				port.moveResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, true);
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.moveResource().  Success: port.moveResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}				
@@ -212,6 +267,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void lockResource(String serverId, String resourcePath, String resourceType, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.lockResource(serverId, resourcePath, resourceType, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.lockResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -223,7 +281,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.lockResource().  Invoking port.lockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\").");
+				}
+				
 				port.lockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL);
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.lockResource().  Success: port.lockResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}				
@@ -241,6 +307,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public void unlockResource(String serverId, String resourcePath, String resourceType, String pathToServersXML, String comment) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.unlockResource(serverId, resourcePath, resourceType, pathToServersXML, arguments).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  pathToServersXML="+pathToServersXML+"  comment="+comment);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.unlockResource", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -252,7 +321,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.unlockResource().  Invoking port.unlockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\", \""+comment+"\").");
+				}
+				
 				port.unlockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL, comment);
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("ResourceWSDAOImpl.unlockResource().  Success: port.unlockResource().");
+				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
 			}		
@@ -270,6 +347,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public Resource getResource(String serverId, String resourcePath, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.getResource(serverId, resourcePath, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -279,17 +359,26 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 
 		try {
-				ResourceList resourceList = port.getAllResourcesByPath(resourcePath, DetailLevel.FULL);
-				if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()){
-					
-					List<Resource> resources = resourceList.getResource();
-					
-					for (Resource resource : resources) {
-						if(resource.getPath().equalsIgnoreCase(resourcePath)){
-							return resource;
-						}
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getResource().  Invoking port.getAllResourcesByPath(\""+resourcePath+"\", \"FULL\").");
+			}
+			
+			ResourceList resourceList = port.getAllResourcesByPath(resourcePath, DetailLevel.FULL);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getResource().  Success: port.getAllResourcesByPath().");
+			}
+
+			if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()){
+				
+				List<Resource> resources = resourceList.getResource();
+				
+				for (Resource resource : resources) {
+					if(resource.getPath().equalsIgnoreCase(resourcePath)){
+						return resource;
 					}
 				}
+			}
 
 		} catch (GetAllResourcesByPathSoapFault e) {
 			String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResource", "Resource", resourcePath, targetServer) +
@@ -306,21 +395,33 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public Resource getResourceCompositeServer(CompositeServer targetServer, String resourcePath) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.getResourceCompositeServer(targetServer, resourcePath).  serverId="+targetServer.getId()+"  hostname="+targetServer.getHostname()+"  resourcePath="+resourcePath);
+		}
 		// Construct the resource port based on target server name
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 
 		try {
-				ResourceList resourceList = port.getAllResourcesByPath(resourcePath, DetailLevel.FULL);
-				if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()){
-					
-					List<Resource> resources = resourceList.getResource();
-					
-					for (Resource resource : resources) {
-						if(resource.getPath().equalsIgnoreCase(resourcePath)){
-							return resource;
-						}
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getResourceCompositeServer().  Invoking port.getAllResourcesByPath(\""+resourcePath+"\", \"FULL\").");
+			}
+			
+			ResourceList resourceList = port.getAllResourcesByPath(resourcePath, DetailLevel.FULL);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getResourceCompositeServer().  Success: port.getAllResourcesByPath().");
+			}
+
+			if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()){
+				
+				List<Resource> resources = resourceList.getResource();
+				
+				for (Resource resource : resources) {
+					if(resource.getPath().equalsIgnoreCase(resourcePath)){
+						return resource;
 					}
 				}
+			}
 
 		} catch (GetAllResourcesByPathSoapFault e) {
 			String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResource", "Resource", resourcePath, targetServer) +
@@ -337,6 +438,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public boolean resourceExists(String serverId, String resourcePath, String resourceType, String pathToServersXML) {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.resourceExists(serverId, resourcePath, resourceType, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  pathToServersXML="+pathToServersXML);
+		}
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -346,10 +450,17 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 
 		boolean exists = false;
-		try {
+		try {			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.resourceExists().  Invoking port.resourceExists(\""+resourcePath+"\", \""+resourceType+"\", null).");
+			}
 			
 			exists = port.resourceExists(resourcePath, ResourceType.valueOf(resourceType), null);
 			
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.resourceExists().  Success: port.resourceExists().");
+			}
+		
 		} catch (ResourceExistsSoapFault e) {
 			String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "resourceExists", "Resource", resourcePath, targetServer) +
 				"\nErrorMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
@@ -365,6 +476,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public ResourceList getResourcesFromPath(String serverId, String resourcePath, String resourceType, String resourceTypeFilter, String detailLevel, String pathToServersXML) throws CompositeException{
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.getResourcesFromPath(serverId, resourcePath, resourceType, resourceTypeFilter, detailLevel, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  resourceTypeFilter="+resourceTypeFilter+"  detailLevel="+detailLevel+"  pathToServersXML="+pathToServersXML);
+		}
 		String validateResourceType = resourceType;
 		if (resourceType == null) {
 			validateResourceType = ResourceType.CONTAINER.name();
@@ -381,8 +495,11 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#getImmediateResourcesFromPath(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public ResourceList getImmediateResourcesFromPath(String serverId,String resourcePath, String resourceType, String detailLevel,String pathToServersXML) throws CompositeException {
+	public ResourceList getImmediateResourcesFromPath(String serverId, String resourcePath, String resourceType, String detailLevel, String pathToServersXML) throws CompositeException {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.getImmediateResourcesFromPath(serverId, resourcePath, resourceType, detailLevel, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  detailLevel="+detailLevel+"  pathToServersXML="+pathToServersXML);
+		}
 		String validateResourceType = resourceType;
 		if (resourceType == null) {
 			validateResourceType = ResourceType.CONTAINER.name();
@@ -397,6 +514,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	
 	private ResourceList getAllResourcesFromPath(String serverId, String resourcePath, String resourceType, String resourceTypeFilter, String detailLevel, String pathToServersXML, boolean recurse) {
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("private ResourceWSDAOImpl.getAllResourcesFromPath(serverId, resourcePath, resourceType, resourceTypeFilter, detailLevel, pathToServersXML, recurse).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  resourceTypeFilter="+resourceTypeFilter+"  detailLevel="+detailLevel+"  pathToServersXML="+pathToServersXML+"  recurse="+recurse);
+		}
 		ResourceList returnResourceList = new ResourceList();
 
 		// Add the resource to the list if no resourceTypeFilter specified or if the resource matches the passed in resourceTypeFilter
@@ -423,7 +543,16 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 			if (resourceType == null) {
 				resourceType = ResourceType.CONTAINER.name();
 			}
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.addResourcesFromPath().  Invoking port.getChildResources(\""+resourcePath+"\", \""+resourceType+"\", \""+detailLevel+"\").");
+			}
+
 			ResourceList childResourceList = port.getChildResources(resourcePath, ResourceType.fromValue(resourceType), DetailLevel.fromValue(detailLevel));
+
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.addResourcesFromPath().  Success: port.getChildResources().");
+			}
+
 			if(childResourceList!= null && childResourceList.getResource() != null && !childResourceList.getResource().isEmpty()){
 
 				List<Resource> resources = childResourceList.getResource();
@@ -463,16 +592,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 //	@Override
 	public ResourceList getUsedResources(String serverId, String resourcePath, String resourceType, String detailLevel, String pathToServersXML) throws CompositeException {
 
-		if(logger.isDebugEnabled()){
-			logger.debug("Entering ResourceWSDAOImpl.getUsedResources() with following params: " +
-					"\n            serverId: " + serverId + 
-					"\n                path: " + resourcePath +
-					"\n                type: " + resourceType +
-					"\n              detail: " + detailLevel + 
-					"\n    pathToServersXML: " + pathToServersXML +
-					"\n");
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.getUsedResources(serverId, resourcePath, resourceType, detailLevel, pathToServersXML).  serverId="+serverId+"  resourcePath="+resourcePath+"  resourceType="+resourceType+"  detailLevel="+detailLevel+"  pathToServersXML="+pathToServersXML);
 		}
-
 		ResourceList returnResourceList = new ResourceList();
 
 		// read target server properties from server xml and build target server object based on target server name 
@@ -485,7 +607,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		
 		try 
 		{
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getUsedResources().  Invoking port.getUsedResources(\""+resourcePath+"\", \""+resourceType+"\", \""+detailLevel+"\").");
+			}
+			
 			returnResourceList = port.getUsedResources(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.valueOf(detailLevel));
+
+			if(logger.isDebugEnabled()) {
+				logger.debug("ResourceWSDAOImpl.getUsedResources().  Success: port.getUsedResources().");
+			}
 		} 
 		catch (GetUsedResourcesSoapFault e) 
 		{
@@ -504,6 +634,9 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
 //		 * @param recursive false=only create the folder specified, true=create all folders recursively
 
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.createFolder(serverId, resourcePath, pathToServersXML, recursive).  serverId="+serverId+"  resourcePath="+resourcePath+"  pathToServersXML="+pathToServersXML+"  recursive="+recursive);
+		}
 		// Init variables
 		int lastIndex = 0;
 		String path = null;
@@ -537,9 +670,16 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 									lastIndex = resourcePath.lastIndexOf("/");
 									path = resourcePath.substring(0, lastIndex);
 									name = resourcePath.substring(lastIndex+1);
+									if(logger.isDebugEnabled()) {
+										logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+path+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
+									}
+									
 									port.createResource(path, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
 									
-									// Initialize checked path exists the first time through here so that it does not check the path the next time through 
+									if(logger.isDebugEnabled()) {
+										logger.debug("ResourceWSDAOImpl.createFolder().  Success: port.createResource().");
+									}
+								// Initialize checked path exists the first time through here so that it does not check the path the next time through 
 									checkedPathExists = true;
 								}
 							}
@@ -553,7 +693,15 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 							lastIndex = resourcePath.lastIndexOf("/");
 							path = resourcePath.substring(0, lastIndex);
 							name = resourcePath.substring(lastIndex+1);
+							if(logger.isDebugEnabled()) {
+								logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+path+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
+							}
+							
 							port.createResource(path, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
+							
+							if(logger.isDebugEnabled()) {
+								logger.debug("ResourceWSDAOImpl.createFolder().  Success: port.createResource().");
+							}
 						}
 					}
 				}

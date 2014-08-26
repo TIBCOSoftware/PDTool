@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.compositesw.services.system.util.common.Fault;
@@ -34,10 +35,11 @@ public class CompositeLogger  {
 	 * the problem
 	 */
 	public static void logException(Throwable ex, String logMessage) {
+		String prependMsg = CommonConstants.applicationErrorPrependMessage;
 		Throwable e = ex;
 		if (e == null) {
 			if (logger.isErrorEnabled()) {
-				logger.error(logMessage);
+				logger.error(prependMsg+logMessage);
 			}
 			return;
 		}
@@ -58,10 +60,10 @@ public class CompositeLogger  {
 		
 		String message = e.getMessage();
 		if (message == null) {
-			message = defaultMessage;
+			message = prependMsg+defaultMessage;
 		}
 		if (logMessage != null) {
-			message = message + "\n" + logMessage;
+			message = prependMsg+message + "\n" + logMessage;
 		}
 
 

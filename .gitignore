@@ -11,6 +11,7 @@
 # local settings #
 .DS_Store
 user.properties
+/classes
 /logs
 /svnt
 /svnww
@@ -22,3 +23,6 @@ user.properties
 /CVSt
 /SVNww
 /SVNt
+
+
+*.class

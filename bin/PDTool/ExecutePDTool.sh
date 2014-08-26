@@ -287,7 +287,7 @@ do
     *) 
 		# unknown option
 		writeOutput " " 																					"" $SEP -nodate
-		writeOutput "Unknown parameter: $1"																	$SCRIPT $SEP
+		writeOutput "Execution Failed::Unknown parameter: $1"																	$SCRIPT $SEP
 		writeOutput " " 																					"" $SEP -nodate
 		usage $1
 		exit 2 
@@ -452,7 +452,7 @@ writeOutput " "																								"" $SEP -nodate
 eval ${COMMAND}
 ERROR=$?
 if [ $ERROR -ne 0 ]; then
-    writeOutput "Script ${SCRIPT} Failed. Abnormal Script Termination. Exit code is: ${ERROR}"				$SCRIPT $SEP
+    writeOutput "Execution Failed::Script ${SCRIPT} Failed. Abnormal Script Termination. Exit code is: ${ERROR}"				$SCRIPT $SEP
     exit ${ERROR}
 fi
 

@@ -3,6 +3,8 @@
  */
 package com.cisco.dvbu.ps.common.exception;
 
+import com.cisco.dvbu.ps.common.CommonConstants;
+
 /**
  * Application exception to represent exceptions generated from the application
  * for business logic related exceptions such as validation exception. 

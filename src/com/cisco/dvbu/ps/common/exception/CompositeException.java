@@ -2,6 +2,9 @@
  * (c) 2014 Cisco and/or its affiliates. All rights reserved.
  */
 package com.cisco.dvbu.ps.common.exception;
+
+import com.cisco.dvbu.ps.common.CommonConstants;
+
 /**
  * Composite exception is the base exception for all exceptions generated in the application.
  * This is a Runtime exception that can be directly instantiated or extended.
