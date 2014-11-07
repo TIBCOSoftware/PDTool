@@ -3,7 +3,11 @@
  */
 package com.cisco.dvbu.ps.deploytool.dao.wsapi;
 
+import java.math.BigInteger;
 import java.util.List;
+
+import javax.xml.ws.Holder;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +34,12 @@ import com.compositesw.services.system.admin.RenameResourceSoapFault;
 import com.compositesw.services.system.admin.ResourceExistsSoapFault;
 import com.compositesw.services.system.admin.ResourcePortType;
 import com.compositesw.services.system.admin.UnlockResourceSoapFault;
+import com.compositesw.services.system.admin.execute.RequestStatus;
+import com.compositesw.services.system.admin.execute.TabularValue;
+import com.compositesw.services.system.admin.execute.Value;
+import com.compositesw.services.system.admin.execute.ValueList;
+import com.compositesw.services.system.admin.resource.Column;
+import com.compositesw.services.system.admin.resource.ColumnList;
 import com.compositesw.services.system.admin.resource.CopyMode;
 import com.compositesw.services.system.admin.resource.Resource;
 import com.compositesw.services.system.admin.resource.ResourceList;
@@ -42,9 +52,14 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	private static Log logger = LogFactory.getLog(ResourceWSDAOImpl.class);
 
 	/* (non-Javadoc)
+	 * This method only supports all scalar values or one cursor output. 
+	 * This method does not support procedure calls with no output.
+	 * This method does not support procedure calls with mixed scalar and cursor output.
+	 * 
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
+	@SuppressWarnings("unused")
 	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
 
 		if(logger.isDebugEnabled()) {
@@ -69,20 +84,130 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 		
 		try {
 			if(logger.isInfoEnabled()){
-				logger.info("Calling executeSql with sql "+procedureScript);
+				logger.info("ResourceWSDAOImpl.executeProcedure(). Calling executeSql with sql "+procedureScript);
 			}
 			if(logger.isDebugEnabled()) {
-				logger.debug("ResourceWSDAOImpl.executeProcedure().  Invoking port.executeSql(\""+procedureScript+"\", true, false, 0, 1, false, null, null, \""+dataServiceName+"\", null, null, null, null, null, null, null).");
+				logger.debug("ResourceWSDAOImpl.executeProcedure(). Invoking port.executeSql(\""+procedureScript+"\", true, false, 0, 1, false, null, null, \""+dataServiceName+"\", null, null, null, null, null, null, null).");
 			}
-			
-			port.executeSql(procedureScript, true, false, 0, 1, false, null, null, dataServiceName, null, null, null, null, null, null, null);
+			/*
+			 * void com.compositesw.services.system.admin.ExecutePortType.executeSql(
+			 * 		@WebParam(name="sqlText", targetNamespace="http://www.compositesw.com/services/system/admin/execute") String sqlText, 
+			 * 		@WebParam(name="isBlocking", targetNamespace="http://www.compositesw.com/services/system/admin/execute") Boolean isBlocking, 
+			 * 		@WebParam(name="includeMetadata", targetNamespace="http://www.compositesw.com/services/system/admin/execute") Boolean includeMetadata, 
+			 * 		@WebParam(name="skipRows", targetNamespace="http://www.compositesw.com/services/system/admin/execute") Integer skipRows, 
+			 * 		@WebParam(name="maxRows", targetNamespace="http://www.compositesw.com/services/system/admin/execute") Integer maxRows, 
+			 * 		@WebParam(name="consumeRemainingRows", targetNamespace="http://www.compositesw.com/services/system/admin/execute") Boolean consumeRemainingRows, 
+			 * 		@WebParam(name="users", targetNamespace="http://www.compositesw.com/services/system/admin/execute") DomainMemberReferenceList users, 
+			 * 		@WebParam(name="groups", targetNamespace="http://www.compositesw.com/services/system/admin/execute") DomainMemberReferenceList groups, 
+			 * 		@WebParam(name="dataServiceName", targetNamespace="http://www.compositesw.com/services/system/admin/execute") String dataServiceName, 
+			 * 		@WebParam(name="completed", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<Boolean> completed, 
+			 * 		@WebParam(name="requestStatus", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<RequestStatus> requestStatus, 
+			 * 		@WebParam(name="metadata", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<ColumnList> metadata, 
+			 * 		@WebParam(name="rowsAffected", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<Integer> rowsAffected, 
+			 * 		@WebParam(name="result", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<TabularValue> result, 
+			 * 		@WebParam(name="resultId", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<String> resultId, 
+			 * 		@WebParam(name="requestId", targetNamespace="http://www.compositesw.com/services/system/admin/execute", mode=Mode.OUT) Holder<Long> requestId) 
+			 * 	throws ExecuteSqlSoapFault
+
+					@WebMethod(action="executeSql")
+					@RequestWrapper(localName="executeSql", targetNamespace="http://www.compositesw.com/services/system/admin/execute", className="com.compositesw.services.system.admin.execute.ExecuteSqlRequest")
+					@ResponseWrapper(localName="executeSqlResponse", targetNamespace="http://www.compositesw.com/services/system/admin/execute", className="com.compositesw.services.system.admin.execute.ExecuteSqlResponse")
+			*/
+			Holder<Boolean> completed = new Holder<Boolean>();
+			Holder<RequestStatus> requestStatus = new Holder<RequestStatus>();
+			Holder<ColumnList> metadata = new Holder<ColumnList>();
+			Holder<Integer> rowsAffected = new Holder<Integer>();
+			Holder<TabularValue> result = new Holder<TabularValue>();
+			Holder<String> resultId = new Holder<String>();
+			Holder<Long> requestId = new Holder<Long>();
+			 
+
+			port.executeSql(procedureScript, true, true, 0, null, true, null, null, dataServiceName, completed, requestStatus, metadata, rowsAffected, result, resultId, requestId);
 
 			if(logger.isDebugEnabled()) {
 				logger.debug("ResourceWSDAOImpl.executeProcedure().  Success: port.executeSql().");
 			}
 
+			if (completed != null && logger.isDebugEnabled())
+				logger.info("ResourceWSDAOImpl.executeProcedure(). completed="+completed.value.toString());
+			if (requestStatus != null)
+				logger.info("ResourceWSDAOImpl.executeProcedure(). requestStatus="+requestStatus.value.toString());
+			if (rowsAffected != null)
+				logger.info("ResourceWSDAOImpl.executeProcedure(). rowsAffected="+rowsAffected.value.toString());
+			if (resultId != null && logger.isDebugEnabled())
+				logger.info("ResourceWSDAOImpl.executeProcedure(). resultId="+resultId.value.toString());
+			if (requestId != null && logger.isDebugEnabled())
+				logger.info("ResourceWSDAOImpl.executeProcedure(). requestId="+requestId.value.toString());
+			
+			// Extract metadata
+			String[] columnList = new String[0];
+			if (metadata != null) {
+				List<Column> columns = metadata.value.getColumn();
+				int size = columns.size();
+				columnList = new String[size];
+				int i = 0;
+				for (Column col : columns) {
+					columnList[i++] = col.getName();
+				}
+			}
+	
+			// Extract values
+			String[] values = new String[0];
+			if (result != null) {
+				TabularValue res = result.value;
+				if (res != null) {
+					List<ValueList> rows = res.getRows().getRow();
+					
+					if (rows != null) {
+						// Determine the size of the value array
+						int size = 0;
+						for (ValueList row : rows) {
+							for (Value val : row.getValue()) {
+								size++;
+							}
+						}
+						// Declare the size
+						values = new String[size];					
+						int i = 0;
+						for (ValueList row : rows) {
+							for (Value val : row.getValue()) {
+								values[i++] = val.getValue();
+							}
+						}
+					}
+				}
+			}
+			// Process the columns and values
+			if (columnList != null) {
+				int valuelen = 0;
+				String columname = null;
+				for (int i=0; i < columnList.length; i++) {
+					String val = null;
+					columname = columnList[i];
+					if (i < values.length) {
+						val = values[i];
+						valuelen = i + 1;
+					}
+					
+					logger.info(columname+'='+val);
+				}
+				if (valuelen < values.length) {
+					for (int i=valuelen; i < values.length; i++) {
+						String val = values[i];
+						logger.info(columname+'='+val);
+					}
+				}
+			}
+
 		} catch (ExecuteSqlSoapFault e) {
-			/*		
+			/*	
+			 * 		List<ResourceType> resourceList = getResources(serverId, procedureIds, pathToResourceXML, pathToServersXML);
+
+		if (resourceList != null && resourceList.size() > 0) {
+			
+			for (ResourceType resource : resourceList) 
+
+	
 			if (e.getFaultInfo().getErrorEntry() != null) {
 				for (MessageEntry me : e.getFaultInfo().getErrorEntry()) {
 					logger.error("ExecuteSqlSoapFault ------------------- Composite Server SOAP Fault MessageEntry Begin -------------------");
