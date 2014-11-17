@@ -51,8 +51,10 @@
 # -------------------
 # Direct invocations
 # -------------------
-# Execute a Configured Procedure (defined in ResourceModule.xml
-PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 					TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+# Execute a Composite Procedure without output
+PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 						TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+# Execute a Composite Procedure with output
+PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testprocsimple 				TEST00 	"$MODULE_HOME/servers.xml" "'myname','1'" true
 # Copy a resource at a given path
 PASS	FALSE	ExecuteAction   	copyResource 			$SERVERID /shared/test00/f1/p1			"$MODULE_HOME/servers.xml" /shared/test00/f1 p1copy OVERWRITE_REPLACE_IF_EXISTS
 # Rename a resource at a given path
@@ -75,8 +77,10 @@ PASS	FALSE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1/test
 # -----------------------
 # Check for existence of resources configured in ResourceModule.xml
 PASS	FALSE	ExecuteAction   	doResourcesExist 		$SERVERID "exist1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
-# Execute a Composite procedure
+# Execute a Composite Configured Procedure (defined in ResourceModule.xml) with no output
 PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Execute a Composite Configured Procedure (defined in ResourceModule.xml) with output
+PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testprocsimple-success-output-true "$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 # Copy resources configured in ResourceModule.xml
 PASS	FALSE	ExecuteAction   	copyResources 			$SERVERID "copy1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 # Rename resources configured in ResourceModule.xml

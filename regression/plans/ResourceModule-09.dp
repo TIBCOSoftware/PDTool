@@ -5,5 +5,5 @@
 # -----------------------
 # Module XML invocations
 # -----------------------
-# Execute a Composite procedure
+# Execute a Composite Configured Procedure (defined in ResourceModule.xml) with no output
 PASS	TRUE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"

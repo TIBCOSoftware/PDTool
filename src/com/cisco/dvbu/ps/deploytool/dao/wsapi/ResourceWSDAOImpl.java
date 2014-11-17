@@ -47,6 +47,8 @@ import com.compositesw.services.system.admin.resource.ResourceSubType;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.util.common.DetailLevel;
 
+import cs.jdbc.driver.protocol.Logger;
+
 public class ResourceWSDAOImpl implements ResourceDAO {
 
 	private static Log logger = LogFactory.getLog(ResourceWSDAOImpl.class);
@@ -56,11 +58,11 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	 * This method does not support procedure calls with no output.
 	 * This method does not support procedure calls with mixed scalar and cursor output.
 	 * 
-	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, Boolean)
 	 */
 //	@Override
 	@SuppressWarnings("unused")
-	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
+	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments, Boolean outputReturnVariables) throws CompositeException {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("ResourceWSDAOImpl.executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments).  serverId="+serverId+"  procedureName="+procedureName+"  dataServiceName="+dataServiceName+"  pathToServersXML="+pathToServersXML+"  arguments="+arguments);
@@ -124,77 +126,94 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 			port.executeSql(procedureScript, true, true, 0, null, true, null, null, dataServiceName, completed, requestStatus, metadata, rowsAffected, result, resultId, requestId);
 
-			if(logger.isDebugEnabled()) {
-				logger.debug("ResourceWSDAOImpl.executeProcedure().  Success: port.executeSql().");
-			}
 
-			if (completed != null && logger.isDebugEnabled())
-				logger.info("ResourceWSDAOImpl.executeProcedure(). completed="+completed.value.toString());
-			if (requestStatus != null)
-				logger.info("ResourceWSDAOImpl.executeProcedure(). requestStatus="+requestStatus.value.toString());
-			if (rowsAffected != null)
-				logger.info("ResourceWSDAOImpl.executeProcedure(). rowsAffected="+rowsAffected.value.toString());
-			if (resultId != null && logger.isDebugEnabled())
-				logger.info("ResourceWSDAOImpl.executeProcedure(). resultId="+resultId.value.toString());
-			if (requestId != null && logger.isDebugEnabled())
-				logger.info("ResourceWSDAOImpl.executeProcedure(). requestId="+requestId.value.toString());
+			if (!outputReturnVariables) {
+				logger.info("ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql().");
 			
-			// Extract metadata
-			String[] columnList = new String[0];
-			if (metadata != null) {
-				List<Column> columns = metadata.value.getColumn();
-				int size = columns.size();
-				columnList = new String[size];
-				int i = 0;
-				for (Column col : columns) {
-					columnList[i++] = col.getName();
+			} else {
+				String resultStatistics = "ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql(). ";
+
+				if (completed != null && logger.isDebugEnabled())
+					resultStatistics = resultStatistics + "completed="+completed.value.toString()+",   ";
+				if (requestStatus != null)
+					resultStatistics = resultStatistics + "requestStatus="+requestStatus.value.toString()+",   ";
+				if (rowsAffected != null)
+					resultStatistics = resultStatistics + "rowsAffected="+rowsAffected.value.toString()+",   ";
+				if (resultId != null && logger.isDebugEnabled())
+					resultStatistics = resultStatistics + "resultId="+resultId.value.toString()+",   ";
+				if (requestId != null && logger.isDebugEnabled())
+					resultStatistics = resultStatistics + "requestId="+requestId.value.toString()+",   ";
+				resultStatistics = resultStatistics.trim();
+				resultStatistics = resultStatistics.substring(0, resultStatistics.length()-1);
+				logger.info(resultStatistics);
+				
+				resultStatistics = "Procedure output for variables: [";
+				// Extract metadata
+				String[] columnList = new String[0];
+				if (metadata != null) {
+					List<Column> columns = metadata.value.getColumn();
+					int size = columns.size();
+					columnList = new String[size];
+					int i = 0;
+					for (Column col : columns) {
+						columnList[i] = col.getName();
+						if (i > 0)
+							resultStatistics = resultStatistics + ", ";
+						resultStatistics = resultStatistics + col.getName();
+						i = i + 1;
+					}
 				}
-			}
-	
-			// Extract values
-			String[] values = new String[0];
-			if (result != null) {
-				TabularValue res = result.value;
-				if (res != null) {
-					List<ValueList> rows = res.getRows().getRow();
-					
-					if (rows != null) {
-						// Determine the size of the value array
-						int size = 0;
-						for (ValueList row : rows) {
-							for (Value val : row.getValue()) {
-								size++;
+				resultStatistics = resultStatistics + "]";
+				logger.info(resultStatistics);
+		
+				// Extract values
+				String[] values = new String[0];
+				if (result != null) {
+					TabularValue res = result.value;
+					if (res != null) {
+						List<ValueList> rows = res.getRows().getRow();
+						
+						if (rows != null) {
+							// Determine the size of the value array
+							int size = 0;
+							for (ValueList row : rows) {
+								for (Value val : row.getValue()) {
+									size++;
+								}
 							}
-						}
-						// Declare the size
-						values = new String[size];					
-						int i = 0;
-						for (ValueList row : rows) {
-							for (Value val : row.getValue()) {
-								values[i++] = val.getValue();
+							// Declare the size
+							values = new String[size];					
+							int i = 0;
+							for (ValueList row : rows) {
+								for (Value val : row.getValue()) {
+									if (val != null)
+										values[i++] = val.getValue();
+									else
+										values[i++] = null;
+								}
 							}
 						}
 					}
 				}
-			}
-			// Process the columns and values
-			if (columnList != null) {
-				int valuelen = 0;
-				String columname = null;
-				for (int i=0; i < columnList.length; i++) {
-					String val = null;
-					columname = columnList[i];
-					if (i < values.length) {
-						val = values[i];
-						valuelen = i + 1;
-					}
-					
-					logger.info(columname+'='+val);
-				}
-				if (valuelen < values.length) {
-					for (int i=valuelen; i < values.length; i++) {
-						String val = values[i];
+				// Process the columns and values
+				if (columnList != null) {
+					int valuelen = 0;
+					String columname = null;
+					for (int i=0; i < columnList.length; i++) {
+						String val = null;
+						columname = columnList[i];
+						if (i < values.length) {
+							val = values[i];
+							valuelen = i + 1;
+						}
+						
 						logger.info(columname+'='+val);
+					}
+					if (valuelen < values.length) {
+						for (int i=valuelen; i < values.length; i++) {
+							String val = values[i];
+							logger.info(columname+'='+val);
+						}
 					}
 				}
 			}

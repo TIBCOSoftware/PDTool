@@ -3001,6 +3001,19 @@ group replace the previous value for that user or group.
 			<xs:element name="comment" minOccurs="0" type="xs:string"/>
 			<xs:element name="dataServiceName" minOccurs="0" type="xs:string"/>
 			<xs:element name="argument" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="outputReturnVariables" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						outputReturnVariables true=(default) output the values of the return variables from the procedure call, false=do not output the return variable values.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 <!-- END: ResourceModule Property Definition-->

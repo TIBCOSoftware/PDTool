@@ -34,9 +34,10 @@ public class ResourceManagerImpl implements ResourceManager{
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#executeConfiguredProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void executeConfiguredProcedures(String serverId,String procedureIds, String pathToResourceXML,String pathToServersXML) throws CompositeException {
+	public void executeConfiguredProcedures(String serverId, String procedureIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "executeConfiguredProcedures";
+		String outputReturnVariables = "false";
 		
 		// Extract variables for the procedureIds
 		procedureIds = CommonUtils.extractVariable(prefix, procedureIds, propertyFile, true);
@@ -84,12 +85,14 @@ public class ResourceManagerImpl implements ResourceManager{
 							 }
 							 i++;
 						 }
-
 					 }
+					 if (resource.getOutputReturnVariables() != null) 
+						 outputReturnVariables = resource.getOutputReturnVariables();
+					 
 					if(logger.isInfoEnabled()){
-						 logger.info("Executing Procedure "+resource.getResourcePath()+" with arguments "+arguments);
+						 logger.info("Executing Procedure "+resource.getResourcePath()+" with arguments "+arguments+"  outputReturnVariables="+outputReturnVariables);
 					 }
-					 executeProcedure(serverId, resource.getResourcePath(), resource.getDataServiceName(), pathToServersXML, arguments); 
+					 executeProcedure(serverId, resource.getResourcePath(), resource.getDataServiceName(), pathToServersXML, arguments, outputReturnVariables); 
 				 }
 			}
 		}
@@ -102,6 +105,8 @@ public class ResourceManagerImpl implements ResourceManager{
 //	@Override
 	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException {
 
+		boolean outputReturnVariables = false;
+		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -111,7 +116,29 @@ public class ResourceManagerImpl implements ResourceManager{
 			 logger.info("Executing Procedure "+procedureName+" with arguments "+arguments);
 		 }
 
-		getResourceDAO().executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments);
+		getResourceDAO().executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments, outputReturnVariables);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments, String outputReturnVariables) throws CompositeException {
+
+		Boolean outputReturnVariablesBool = true;
+		if (outputReturnVariables != null && (outputReturnVariables.equalsIgnoreCase("true") || outputReturnVariables.equalsIgnoreCase("false"))) 
+			outputReturnVariablesBool = Boolean.valueOf(outputReturnVariables);
+		
+		// Validate whether the files exist or not
+		if (!CommonUtils.fileExists(pathToServersXML)) {
+			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
+		}
+
+		if(logger.isInfoEnabled()){
+			 logger.info("Executing Procedure "+procedureName+" with arguments "+arguments);
+		 }
+
+		getResourceDAO().executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments, outputReturnVariablesBool);
 	}
 
 	/* (non-Javadoc)

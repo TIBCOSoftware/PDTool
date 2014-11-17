@@ -466,6 +466,14 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#executeProcedure(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void executeProcedure(String serverId, String procedureName,String dataServiceName,  String pathToServersXML,String arguments, String outputReturnVariables) throws CompositeException {
+		getResourceManager().executeProcedure(serverId, procedureName, dataServiceName, pathToServersXML, arguments, outputReturnVariables);
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#deleteResource(java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override

@@ -55,6 +55,8 @@ ResourceModule-14.dp
 ResourceModule-15.dp
 ResourceModule-16.dp
 ResourceModule-17.dp
+ResourceModule-18.dp
+ResourceModule-19.dp
 
 RebindModule-01.dp
 RebindModule-02.dp

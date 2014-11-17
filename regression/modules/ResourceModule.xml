@@ -36,6 +36,22 @@
         <argument>0</argument> 
     </resource>    
     <resource>
+        <id>testprocsimple-success-output-true</id>
+        <resourcePath>testprocsimple</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proce Simple Success</argument>
+        <argument>0</argument> 
+		<outputReturnVariables>true</outputReturnVariables>
+    </resource>    
+    <resource>
+        <id>testprocsimple-success-output-false</id>
+        <resourcePath>testprocsimple</resourcePath>
+        <dataServiceName>TEST00</dataServiceName>
+        <argument>Test Proce Simple Success</argument>
+        <argument>0</argument> 
+		<outputReturnVariables>false</outputReturnVariables>
+    </resource>    
+    <resource>
         <id>testprocsimple-fail</id>
         <resourcePath>testprocsimple</resourcePath>
         <dataServiceName>TEST00</dataServiceName>

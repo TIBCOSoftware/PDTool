@@ -5,5 +5,5 @@
 # -------------------
 # Direct invocations
 # -------------------
-# Execute a Configured Procedure (defined in ResourceModule.xml
+# Execute a Composite Procedure without output
 PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 					TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"

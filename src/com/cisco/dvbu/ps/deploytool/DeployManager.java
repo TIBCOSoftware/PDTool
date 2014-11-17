@@ -490,6 +490,20 @@ public interface DeployManager
 	public void executeProcedure(String serverId, String procedureName, String dataServiceName, String pathToServersXML, String arguments) throws CompositeException;
 
 	/**
+	 * Execute a published procedure that outputs the return variable values to the log.
+	 * The executed procdure is associated with passed in name along with passed in arguments and
+	 * arguments should be passed in the format 'arg1','arg2','arg3'....
+	 * @param serverId target server config name
+	 * @param procedureName published procedure name
+	 * @param dataServiceName data service name (equivalent to schema name)
+	 * @param pathToServersXML path to the server values xml
+	 * @param arguments string with arguments in the format 'arg1','arg2','arg3'....
+	 * @param outputReturnVariables true=(default) output the values of the return variables from the procedure call, false=do not output the return variable values.
+	 * @throws CompositeException if the execution of the procedure fails
+	 */
+	public void executeProcedure(String serverId,String procedureName, String dataServiceName, String pathToServersXML, String arguments, String outputReturnVariables) throws CompositeException;
+
+	/**
 	 * Delete a resource associated with passed in resource path 
 	 * @param serverId target server id from servers config xml
 	 * @param resourcePath resource path
