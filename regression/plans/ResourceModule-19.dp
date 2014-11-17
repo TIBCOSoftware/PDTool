@@ -1,0 +1,9 @@
+# -----------------------------------------
+# Resource Module:
+# -----------------------------------------
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Execute a Composite Procedure with output
+PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testprocsimple 				TEST00 	"$MODULE_HOME/servers.xml" "'myname','1'" true
