@@ -1476,7 +1476,24 @@ public class CommonUtils {
 			# However, it may be necessary to be able to override what is in the property file and pick up an environment variable first.
 			# propertyOrderPrecedence=JVM SYSTEM PROPERTY_FILE
 		*/
-		String propertyOrderPrecedence = PropertyManager.getInstance().getProperty(propertyFile, "propertyOrderPrecedence");	
+		// Retrieve the propertyOrderPrecedence each time according to the default precedence of "JVM PROPERTY_FILE SYSTEM"
+		String propertyOrderPrecedence = null;
+		// If propertyOrderPrecedence is null get the JVM Property
+		if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0) 
+			propertyOrderPrecedence = System.getProperty("propertyOrderPrecedence");			
+
+		// If propertyOrderPrecedence is null get the Property File Property
+		if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0) 
+			propertyOrderPrecedence = PropertyManager.getInstance().getProperty(propertyFile, "propertyOrderPrecedence");			
+
+		// If propertyOrderPrecedence is null get the System Property
+		if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0) 
+			propertyOrderPrecedence = System.getenv("propertyOrderPrecedence");
+
+		// If propertyOrderPrecedence is null or length is 0 then insure it is set to null 
+		if (propertyOrderPrecedence == null || propertyOrderPrecedence.trim().length() == 0)
+			propertyOrderPrecedence = null;
+		
 		if (propertyOrderPrecedence != null && propertyOrderPrecedence.trim().length() > 0) {
 			jvmPos = propertyOrderPrecedence.toUpperCase().indexOf("JVM");
 			if (jvmPos < 0)

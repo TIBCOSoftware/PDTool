@@ -67,7 +67,7 @@
 # Quick Test
 PASS	FALSE	ExecuteAction	generateGroupsXML		$SERVERID composite 		"$MODULE_HOME/generated/getGroupModule.xml" "$MODULE_HOME/servers.xml"
 PASS	FALSE	ExecuteAction   deleteGroups 			$SERVERID group1 			"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
-PASS	FALSE	ExecuteAction   createOrUpdateGroups 	$SERVERID "group* " 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
+PASS	FALSE	ExecuteAction   createOrUpdateGroups 	$SERVERID "group* " 		"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml" 
 PASS	FALSE	ExecuteAction	addUsersToGroups		$SERVERID group3 "user3" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
 PASS	FALSE	ExecuteAction	deleteUsersFromGroups 	$SERVERID group3 "user3" 	"$MODULE_HOME/GroupModule.xml" "$MODULE_HOME/servers.xml"
 #

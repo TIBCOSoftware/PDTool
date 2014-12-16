@@ -50,7 +50,7 @@
             <id>ds2</id>
             <resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
             <hostname>localhost</hostname>
-            <port>9408</port>
+            <port>$CIS_REPO_PORT</port>
             <databaseName>orders</databaseName>
             <login>tutorial</login>
             <encryptedPassword>Encrypted:A49A5A0FAFF13F4A</encryptedPassword>
@@ -173,7 +173,7 @@
             <genericAttribute>
                 <name>url</name>
                 <type>STRING</type>
-                <value>$HTTP_TYPE$://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
+                <value>$CIS_HTTP_TYPE$://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
             </genericAttribute>
         </genericDataSource>
     </datasource>

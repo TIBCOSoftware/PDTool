@@ -16,56 +16,79 @@ REM # This software is released AS-IS!. Support for this software is not covered
 REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 REM # 
 REM ######################################################################
+REM #==========================================================
+REM # setVars.bat :: Set Environment Variables
+REM #==========================================================
+REM # Instructions: 
+REM #    1. Modify variables as needed.
+REM #    2. Add new variables to the function :writeOutput at the bottom of this batch file when new variables are added.
+REM #=======================================================================================================
+REM # CREATE/MODIFY VARIABLES BELOW THIS POINT
+REM #=======================================================================================================
+REM # Initialize variables to unset them [required]
+set MY_PRE_VARS_PATH=
+set MY_POST_VARS_PATH=
+REM #
+REM # The My Vars path provides with the user the ability to set specific environment variables for their login
+REM #   The location of these batch files is typically outside of the PDTOOL_HOME in the user's directory space.
+REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool
+set MY_VARS_HOME=
+REM #
+if not defined MY_VARS_HOME goto MAIN
+  set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolVars.bat
+  set MY_POST_VARS_PATH=%MY_VARS_HOME%\setMyPostPDToolVars.bat
+  if not defined MY_PRE_VARS_PATH goto MAIN
+  if exist "%MY_PRE_VARS_PATH%" call "%MY_PRE_VARS_PATH%"
+:MAIN
 REM ###################################################
-REM # Set customer variables
+REM # Set customer variables and add to writeOutput
 REM ###################################################
-echo ########################################################################################################################################
-echo.
-echo Setting custom variables
-echo.
-echo ########################################################################################################################################
 
-REM # CIS Port
-REM # Used to define the SERVERID in deploy.properties
-set PORT=9400
-echo PORT=%PORT%
+REM #
+REM #=======================================================================================================
+REM # CREATE/MODIFY VARIABLES ABOVE THIS POINT
+REM #=======================================================================================================
+REM #
+if not defined PRINT_VARS echo PRINT_VARS is not defined.  Set default PRINT_VARS=1
+if not defined PRINT_VARS set PRINT_VARS=1
+REM # Print out the setVars.bat variables
+if %PRINT_VARS%==1 call:writeOutput %0
+REM #
+REM #---------------------------------------------
+REM # POST-PROCESSING CUSTOM VARIABLES:
+REM #---------------------------------------------
+if not defined MY_POST_VARS_PATH goto END
+  if exist "%MY_POST_VARS_PATH%" call "%MY_POST_VARS_PATH%"
+REM #
+goto END
+REM #==========================================================
+REM # FUNCTIONS
+REM #==========================================================
+:writeOutput
+::#---------------------------------------------
+::# Print out the setVars.bat variables
+::#---------------------------------------------
+set filename=%1
+SETLOCAL ENABLEDELAYEDEXPANSION
+REM # LF must have 2 blank lines following it to create a line feed
+set LF=^
 
-REM # HTTP_TYPE is set in the OS prior to execution giving greater flexibility to choose at runtime.  
-REM #    set HTTP_TYPE=http to connect over regular http.
-REM #    set HTTP_TYPE=https to connect PDTool over SSL (htts).
-REM # This is used to compose the SERVERID for selecting the correct servers.xml id.
-REM # This is used in ArchiveModule.xml for selecting the correct car file to import.
-REM # This is used in DataSourceModule.xml for updating the URL for the web service data source.
-set HTTP_TYPE=http
-echo HTTP_TYPE=%HTTP_TYPE%
 
-REM # Web Service Port
-REM #   for HTTP set WSPORT=9400
-REM #   for HTTPS set WSPORT=9402
-REM # This is used in DataSourceModule.xml for updating the URL for the web service data source.
-set WSPORT=9400
-echo WSPORT=%WSPORT%
+set MSG=!MSG!########################################################################################################################################!LF!
+set MSG=!MSG!%filename%: Setting PDTool variables!LF!
+set MSG=!MSG!########################################################################################################################################!LF!
+set MSG=!MSG!MY_VARS_HOME         =%MY_VARS_HOME%!LF!
+set MSG=!MSG!MY_PRE_VARS_PATH     =%MY_PRE_VARS_PATH%!LF!
+set MSG=!MSG!MY_POST_VARS_PATH    =%MY_POST_VARS_PATH%!LF!
 
-REM # VCS Qualified host name (host.domain.com)
-set SVN_VCS_HOST=
-echo SVN_VCS_HOST=%SVN_VCS_HOST%
-set P4_VCS_HOST=
-echo P4_VCS_HOST=%P4_VCS_HOST%
-set CVS_VCS_HOST=
-echo CVS_VCS_HOST=%CVS_VCS_HOST%
-set TFS_VCS_HOST=
-echo TFS_VCS_HOST=%TFS_VCS_HOST%
-
-REM # Set the different VCS Users and Passwords as needed for testing
-set SVN_VCS_USERNAME=
-set SVN_VCS_PASSWORD=
-echo SVN_VCS_USERNAME=%SVN_VCS_USERNAME%
-set P4_VCS_USERNAME=
-set P4_VCS_PASSWORD=
-echo P4_VCS_USERNAME=%P4_VCS_USERNAME%
-set CVS_VCS_USERNAME=
-set CVS_VCS_PASSWORD=
-echo CVS_VCS_USERNAME=%CVS_VCS_USERNAME%
-set TFS_VCS_USERNAME=
-set TFS_VCS_PASSWORD=
-echo TFS_VCS_USERNAME=%TFS_VCS_USERNAME%
+echo.!MSG!
+REM # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.bat
+if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
+   echo.!MSG!>>%DEFAULT_LOG_PATH%
+:WRITEOUTPUTEND
+ENDLOCAL
+GOTO:EOF
+REM #==========================================================
+REM # END FUNCTIONS
+REM #==========================================================
+:END

@@ -159,7 +159,7 @@
 			<genericAttribute>
 				<name>url</name>
 				<type>STRING</type>
-				<value>$HTTP_TYPE$://localhost:$WSPORT/services/TEST$STUDENTID/testWebService?wsdl</value>
+				<value>$CIS_HTTP_TYPE$://localhost:$CIS_WSPORT/services/TEST$STUDENTID/testWebService?wsdl</value>
 			</genericAttribute>
         </genericDataSource>
     </datasource>

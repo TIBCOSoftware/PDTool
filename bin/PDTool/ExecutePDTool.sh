@@ -65,6 +65,7 @@
 #---------------------------------------------
 # Set environment variables
 #---------------------------------------------
+export RELEASE_FOLDER=""
 if [ ! -f setVars.sh ]; then
    echo "Cannot find setVars.sh environment variable file."
    exit 1
@@ -174,7 +175,8 @@ SEP="::"
 writeOutput " " 																							"" $SEP -nodate
 writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
 writeOutput "-----------                                            -----------" 							"" $SEP -nodate
-writeOutput "----------- Composite PS Promotion and Deployment Tool -----------" 							"" $SEP -nodate
+writeOutput "----------- Cisco Advanced Services                    -----------" 							"" $SEP -nodate
+writeOutput "----------- PDTool: Promotion and Deployment Tool      -----------" 							"" $SEP -nodate
 writeOutput "-----------                                            -----------" 							"" $SEP -nodate
 writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
 writeOutput " " 																							"" $SEP -nodate
@@ -263,6 +265,16 @@ do
 		#echo "CMD=$CMD   PROPERTY_FILE=$PROPERTY_FILE"
 		ARG="PROPERTY_FILE"
 		if [ "$PROPERTY_FILE" == "" ]; then
+			error="1"
+		fi
+		shift
+		;;
+    -release)
+		export CMD="-release"
+		export RELEASE_FOLDER="$2"
+		#echo "CMD=$CMD   RELEASE_FOLDER=$RELEASE_FOLDER"
+		ARG="RELEASE_FOLDER"
+		if [ "$RELEASE_FOLDER" == "" ]; then
 			error="1"
 		fi
 		shift

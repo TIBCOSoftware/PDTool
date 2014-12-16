@@ -20,6 +20,6 @@
 # -----------------------------------------
 # Start by executing the following:
 # Import with overwrite the TES00_x_x.car file to re-initialize and prepare for a check-in
-PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   pkg_import  $SERVERID "import01,import02"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 
 

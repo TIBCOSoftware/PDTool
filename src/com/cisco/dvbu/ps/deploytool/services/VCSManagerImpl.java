@@ -1893,6 +1893,7 @@ public class VCSManagerImpl implements VCSManager {
 		    String arguments = null;
 		    String execFromDir = null;
 		    String commandDesc = null;
+		    boolean initializeWorkspaceLink = true;
 		    
 			try {
 				/*****************************************
@@ -1932,8 +1933,8 @@ public class VCSManagerImpl implements VCSManager {
 		        vcsStruct.displayVcs(prefix);
 
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
-				 *      INIT VCS WORKSPACE FOR CONCURRENT VERSIONS SYSTEMS [cvs]
+				 * [CVS] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR CONCURRENT VERSIONS SYSTEMS
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
 														   
@@ -1996,8 +1997,8 @@ public class VCSManagerImpl implements VCSManager {
 				}
 				
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
-				 *      INIT VCS WORKSPACE FOR PERFORCE [p4]
+				 * [P4] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR PERFORCE
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
 		
@@ -2174,8 +2175,8 @@ public class VCSManagerImpl implements VCSManager {
 				}
 				
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
-				 *      INIT VCS WORKSPACE FOR SUBVERSION [svn]
+				 * [SVN] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR SUBVERSION
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
 						   
@@ -2205,24 +2206,33 @@ public class VCSManagerImpl implements VCSManager {
 					
 					// Set the VCS command
 					command = vcsStruct.getVcsExecCommand();
+				
+					// If the special option "-IGNORE_INIT_LINK" is set then do not execute the initialization linking of the workspace.
+					//   Otherwise maintain backward compatibility.
+					if (vcsStruct.getVcsWorkspaceInitLinkOptions() != null && vcsStruct.getVcsWorkspaceInitLinkOptions().contains("-IGNORE_INIT_LINK"))
+						initializeWorkspaceLink = false;
 					
-					// Link the VCS Repository URL and Project Root to the local workspace						
-					// svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-					arguments=" import . "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" --message Linking_workspace_to_VCS_repository "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
-
-					// Print out command
-					commandDesc = "    Linking local worksapce to VCS Repository...";
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					// To maintain backward compatibility, execute the VCS workspace initialization to link the workspace with the repository.
+					//   However, this requires Read/Write access to the repository folders.
+					if (initializeWorkspaceLink) {
+						// Link the VCS Repository URL and Project Root to the local workspace						
+						// svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+						arguments=" import . "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" --message Linking_workspace_to_VCS_repository "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
+	
+						// Print out command
+						commandDesc = "    Linking local worksapce to VCS Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}
 					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-
 					// Check out the repository to the local workspace						
 					// svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 					arguments=" co "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" "+execFromDir+" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
@@ -2243,8 +2253,8 @@ public class VCSManagerImpl implements VCSManager {
 				}
 
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
-				 *      INIT VCS WORKSPACE FOR MICROSOFT TEAM FOUNDATION SERVER [tfs2010|tfs2012|tfs2013]
+				 * [TFS] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR MICROSOFT TEAM FOUNDATION SERVER 2010, 2012, 2013
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
 					vcsStruct.getVcsType().equalsIgnoreCase("TFS2012") || 
@@ -2456,8 +2466,8 @@ public class VCSManagerImpl implements VCSManager {
 				}
 				
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
-				 *      INIT VCS WORKSPACE FOR MICROSOFT TEAM FOUNDATION SERVER [tfs2005]
+				 * [TFS] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR MICROSOFT TEAM FOUNDATION SERVER 2005
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2005")) {
 					
@@ -3641,7 +3651,7 @@ public class VCSManagerImpl implements VCSManager {
 	    
 		try {
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkin: 
+			 * [CVS] vcs_checkin_checkout__vcs_checkin: 
 			 *     CVS=Concurrent Versions System
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
@@ -3707,7 +3717,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkin:
+			 * [P4] vcs_checkin_checkout__vcs_checkin:
 			 *      P4=Perforce
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
@@ -3759,7 +3769,7 @@ public class VCSManagerImpl implements VCSManager {
 
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkin:
+			 * [SVN] vcs_checkin_checkout__vcs_checkin:
 			 *      SVN=Subversion
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
@@ -3825,7 +3835,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkin:
+			 * [TFS] vcs_checkin_checkout__vcs_checkin:
 			 *      TFS=Team Foundation Server
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
@@ -4003,7 +4013,7 @@ public class VCSManagerImpl implements VCSManager {
 
 		try {
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkout:
+			 * [CVS] vcs_checkin_checkout__vcs_checkout:
 			 *      CVS=Concurrent Versions System
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
@@ -4079,7 +4089,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkout:
+			 * [P4] vcs_checkin_checkout__vcs_checkout:
 			 *      P4=Perforce
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
@@ -4261,7 +4271,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkout:
+			 * [SVN] vcs_checkin_checkout__vcs_checkout:
 			 *      SVN=Subversion
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
@@ -4333,7 +4343,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_checkin_checkout__vcs_checkout:
+			 * [TFS] vcs_checkin_checkout__vcs_checkout:
 			 *      TFS=Team Foundation Server
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
@@ -4477,7 +4487,7 @@ public class VCSManagerImpl implements VCSManager {
 
 		try {
 			/********************************************
-			 * vcs_add__vcs_checkout:
+			 * [CVS] vcs_add__vcs_checkout:
 			 *      CVS=Concurrent Versions System
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
@@ -4527,7 +4537,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_add__vcs_checkout:
+			 * [P4] vcs_add__vcs_checkout:
 			 *      P4=Perforce
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
@@ -4567,7 +4577,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_add__vcs_checkout:
+			 * [SVN] vcs_add__vcs_checkout:
 			 *      SVN=Subversion
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
@@ -4606,7 +4616,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * vcs_add__vcs_checkout:
+			 * [TFS] vcs_add__vcs_checkout:
 			 *      TFS=Team Foundation Server
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
@@ -4693,7 +4703,7 @@ public class VCSManagerImpl implements VCSManager {
 		    
 			try {
 				/********************************************
-				 * vcs_add__vcs_checkin: 
+				 * [CVS] vcs_add__vcs_checkin: 
 				 *     CVS=Concurrent Versions System
 				 ********************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
@@ -4742,7 +4752,7 @@ public class VCSManagerImpl implements VCSManager {
 				}
 				
 				/********************************************
-				 * vcs_add__vcs_checkin:
+				 * [P4] vcs_add__vcs_checkin:
 				 *      P4=Perforce
 				 ********************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
@@ -4793,7 +4803,7 @@ public class VCSManagerImpl implements VCSManager {
 
 				
 				/********************************************
-				 * vcs_add__vcs_checkin:
+				 * [SVN] vcs_add__vcs_checkin:
 				 *      SVN=Subversion
 				 ********************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
@@ -4841,7 +4851,7 @@ public class VCSManagerImpl implements VCSManager {
 				}
 				
 				/********************************************
-				 * vcs_add__vcs_checkin:
+				 * [TFS] vcs_add__vcs_checkin:
 				 *      TFS=Team Foundation Server
 				 ********************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
@@ -5369,7 +5379,7 @@ public class VCSManagerImpl implements VCSManager {
 									}
 									envList = envList + envName;
 								}
-								// Set then JVM property if it has values
+						    	// Set then JVM property for the VCS type being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, etc]
 								if (envList.length() > 0) {
 								    if (vcsType.equalsIgnoreCase("P4")) {
 										oldProp = System.setProperty("P4_ENV", envList);
@@ -5960,7 +5970,7 @@ public class VCSManagerImpl implements VCSManager {
 			if (this.getVcsType() == null || this.getVcsType().length() == 0) {
 				throw new ValidationException("VCS_TYPE is null or empty.  VCS_TYPE must be set via the "+propertyFile+" file.");
 			}
-	    	//Validate the VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
+	    	//Validate the VCS_TYPE - The type of VCS being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, etc]
 			if (
 				!this.getVcsType().equalsIgnoreCase("SVN") &&
 				!this.getVcsType().equalsIgnoreCase("P4") &&
@@ -6033,7 +6043,7 @@ public class VCSManagerImpl implements VCSManager {
 		    setVcsEnvironment("");
 			String envPropSep = "|";
 			//-------------------------------------------------------------------
-			// loadVcs: Concurrent Versions Systems (cvs) specific settings
+			// [CVS] loadVcs: Concurrent Versions Systems (cvs) specific settings
 			//-------------------------------------------------------------------
 			if (this.getVcsType().equalsIgnoreCase("CVS")) {
 				// Get the VCS LifecycleListener class used by DiffMerger
@@ -6070,7 +6080,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			//-------------------------------------------------------------------
-			// loadVcs: Perforce (p4) specific settings
+			// [P4] loadVcs: Perforce (p4) specific settings
 			//-------------------------------------------------------------------
 			if (this.getVcsType().equalsIgnoreCase("P4")) {
 				// Get the VCS LifecycleListener class used by DiffMerger
@@ -6107,7 +6117,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			//-------------------------------------------------------------------
-			// loadVcs: Subversion (svn) specific settings
+			// [SVN] loadVcs: Subversion (svn) specific settings
 			//-------------------------------------------------------------------
 			if (this.getVcsType().equalsIgnoreCase("SVN")) {
 				// Get the VCS LifecycleListener class used by DiffMerger
@@ -6154,7 +6164,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			//-------------------------------------------------------------------
-			// loadVcs: Team Foundation Server (tfs) specific settings
+			// [TFS] loadVcs: Team Foundation Server (tfs) specific settings
 			//-------------------------------------------------------------------
 			if (this.getVcsType().equalsIgnoreCase("TFS2005") || 
 				this.getVcsType().equalsIgnoreCase("TFS2010") ||

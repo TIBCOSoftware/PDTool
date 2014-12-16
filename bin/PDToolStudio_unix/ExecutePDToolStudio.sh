@@ -121,11 +121,12 @@ SCRIPT="ExecutePDToolStudio"
 SEP="::"
 REM # Print out the Banner
 writeOutput " " 																							"" $SEP -nodate
-writeOutput "----------------------------------------------------------" 									"" $SEP -nodate
-writeOutput "----                                                   ---" 									"" $SEP -nodate
-writeOutput "---- Composite PS Promotion and Deployment Tool Studio ---" 									"" $SEP -nodate
-writeOutput "----                                                   ---" 									"" $SEP -nodate
-writeOutput "----------------------------------------------------------" 									"" $SEP -nodate
+writeOutput "-------------------------------------------------------------------" 							"" $SEP -nodate
+writeOutput "-----------                                             -----------" 							"" $SEP -nodate
+writeOutput "----------- Cisco Advanced Services                     -----------" 							"" $SEP -nodate
+writeOutput "----------- PDToolStudio: Promotion and Deployment Tool -----------" 							"" $SEP -nodate
+writeOutput "-----------                                             -----------" 							"" $SEP -nodate
+writeOutput "-------------------------------------------------------------------" 							"" $SEP -nodate
 writeOutput " " 																							"" $SEP -nodate
 writeOutput " " 																							"" $SEP -nodate
 writeOutput "***** BEGIN COMMAND: $SCRIPT *****" 															$SCRIPT $SEP

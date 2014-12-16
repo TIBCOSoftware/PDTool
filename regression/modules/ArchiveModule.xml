@@ -31,7 +31,7 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>host</attribute>
-				<value>http://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
+				<value>http://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
 			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
@@ -51,7 +51,7 @@
 	<archive>
 		<id>export01</id>
 		<archiveMethod>CAR</archiveMethod>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/test00_$CIS_VERSION$%HTTP_TYPE%.car</archiveFileName>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
 		<includeDependencies>false</includeDependencies>
 		<overwrite></overwrite> 
 		<resources>
@@ -63,7 +63,7 @@
 	<archive>
 		<id>import01</id>
 		<archiveMethod>CAR</archiveMethod>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%HTTP_TYPE%.car</archiveFileName>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
 		<includeaccess>true</includeaccess>
 		<includecaching>true</includecaching>
 		<includejars>true</includejars>
@@ -74,7 +74,7 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>host</attribute>
-				<value>http://localhost:$WSPORT/services/TEST00/testWebService?wsdl</value>
+				<value>http://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
 			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
@@ -88,7 +88,29 @@
 				<attribute>password</attribute>
 				<value>admin</value>
 			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>port</attribute>
+				<value>$CIS_REPO_PORT</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/test00/DataSourcesCopy/ds_orders</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>port</attribute>
+				<value>$CIS_REPO_PORT</value>
+			</resourceAttribute>
 		</setAttributes>
+	</archive>
+	<archive>
+		<id>import02</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%_longpath.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>false</includecaching>
+		<includejars>false</includejars>
+		<includesourceinfo>false</includesourceinfo>
+		<overwrite>true</overwrite> 
 	</archive>
 	
 	<!-- Used for Regression Module Testing -->
@@ -97,6 +119,32 @@
 		<archiveMethod>CAR</archiveMethod>
 		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\Regression_Test_$CIS_VERSION$.car</archiveFileName>
 		<overwrite>true</overwrite> 
+		<setAttributes>
+			<resourceAttribute>
+				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/INVENTORY/ds_inventory</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>port</attribute>
+				<value>$CIS_REPO_PORT</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/ORDERS1/ds_orders1</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>port</attribute>
+				<value>$CIS_REPO_PORT</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/ORDERS2/ds_orders2</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>port</attribute>
+				<value>$CIS_REPO_PORT</value>
+			</resourceAttribute>
+			<resourceAttribute>
+				<resourcePath>/shared/_regression/Physical/Metadata/XML/ds_XML</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>path</attribute>
+				<value>C:\CompositeSoftware\CIS6.2.5\docs\examples</value>
+			</resourceAttribute>
+		</setAttributes>
 	</archive>
 	
 	<archive>

@@ -683,14 +683,19 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 		}
 		
 		// Add attribute if not null and greater than 0
-		if (datasource.getRelationalDataSource().getPort() != null && datasource.getRelationalDataSource().getPort().compareTo(BigInteger.ZERO) == 1) {
+		if (datasource.getRelationalDataSource().getPort() != null) {
 			Attribute attrUrlPort = new Attribute();
 			attrUrlPort.setName("urlPort");
 			attrUrlPort.setType(AttributeType.INTEGER);
 			// Extract and resolve variables used in the value attribute
 			String value = CommonUtils.extractVariable(prefix, datasource.getRelationalDataSource().getPort().toString(), propertyFile, false);
-			attrUrlPort.setValue(value);
-			dsAttributeList.getAttribute().add(attrUrlPort);
+			// Convert the resolved string value to big integer to verify that it is an integer value.
+			BigInteger intPort = new BigInteger(value);
+			// Only set the value if the port number is greater than 0
+			if (intPort.compareTo(BigInteger.ZERO) == 1) {
+				attrUrlPort.setValue(value);
+				dsAttributeList.getAttribute().add(attrUrlPort);
+			}
 		}
 		
 		// Add attribute if not null and empty
@@ -1192,7 +1197,7 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 
 		} else if (attribute.getName().equalsIgnoreCase("urlPort")) {
 
-			dataSourceChoiceType.getRelationalDataSource().setPort(new BigInteger(attribute.getValue()));
+			dataSourceChoiceType.getRelationalDataSource().setPort(attribute.getValue());
 
 		} else if (attribute.getName().equalsIgnoreCase("urlDatabaseName")) {
 

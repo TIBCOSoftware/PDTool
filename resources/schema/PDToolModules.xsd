@@ -794,10 +794,10 @@ This software is released AS-IS!. Support for this software is not covered by st
 					</xs:documentation>
 				</xs:annotation>
 		   </xs:element>
-			<xs:element name="port" minOccurs="0" type="xs:integer">
+			<xs:element name="port" minOccurs="0" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						AttributeName=urlPort, AttributeType=INTEGER
+						AttributeName=urlPort, AttributeType=INTEGER, string allowed for use with variables.
 					</xs:documentation>
 				</xs:annotation>
 		   </xs:element>

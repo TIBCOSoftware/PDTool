@@ -119,9 +119,9 @@ set P=PLAN_FILE_LIST
 set PLAN_FILE_LIST=%~2
 if "%PLAN_FILE_LIST%" == "" goto USAGE
 
-set P=PDTOOL_HOME
-set PDTOOL_HOME=%~3
-if "%PDTOOL_HOME%" == "" goto USAGE
+set P=INP_PDTOOL_HOME
+set INP_PDTOOL_HOME=%~3
+if "%INP_PDTOOL_HOME%" == "" goto USAGE
 
 set P=REGRESSION_HOME
 set REGRESSION_HOME=%~4
@@ -148,7 +148,7 @@ set CONFIG_FILE_PROP=%CONFIG_FILE%.properties
 set REGRESSION_CONFIG=%REGRESSION_HOME%\config
 set REGRESSION_PLANS=%REGRESSION_HOME%\plans
 set REGRESSION_PLAN_LISTS=%REGRESSION_HOME%\plan_lists
-set PDTOOL_CONFIG=%PDTOOL_HOME%\resources\config
+set PDTOOL_CONFIG=%INP_PDTOOL_HOME%\resources\config
 
 REM # Check existence of files and directories
 IF NOT EXIST status mkdir status
@@ -157,8 +157,8 @@ if NOT EXIST %REGRESSION_HOME% (
   echo TRUE > %STATUS_DIR%\status_exit.txt
   exit /B 3
 )
-if NOT EXIST %PDTOOL_HOME% (
-  echo The PDtool home directory that was provided does not exist: %PDTOOL_HOME%
+if NOT EXIST %INP_PDTOOL_HOME% (
+  echo The PDtool home directory that was provided does not exist: %INP_PDTOOL_HOME%
   echo TRUE > %STATUS_DIR%\status_exit.txt
   exit /B 3
 )
@@ -198,7 +198,7 @@ if NOT EXIST %LOG_HOME% (
 cd %REGRESSION_HOME%
 
 REM # Save the current log file
-copy %PDTOOL_HOME%\logs\app.log  %PDTOOL_HOME%\logs\app.log.sav
+copy %INP_PDTOOL_HOME%\logs\app.log  %INP_PDTOOL_HOME%\logs\app.log.sav
 
 REM # Copy the regression configuration file to PDTool\config
 copy /Y %REGRESSION_CONFIG%\%CONFIG_FILE_PROP% %PDTOOL_CONFIG%
@@ -223,11 +223,11 @@ FOR /F "eol=# tokens=1,2*" %%i IN (%REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST%) DO 
   @echo.###########################################################################
   @echo.
   REM # Initialize the PDTool log file (app.log)
-  echo.> %PDTOOL_HOME%\logs\app.log
+  echo.> %INP_PDTOOL_HOME%\logs\app.log
 
   if NOT EXIST %REGRESSION_PLANS%\%%i (
 	echo FAIL: Plan file does not exist at location: %REGRESSION_PLANS%\%%i >> %LOG_PATH%
-    echo Plan file does not exist at location: %REGRESSION_PLANS%\%%i >> %PDTOOL_HOME%\logs\app.log 
+    echo Plan file does not exist at location: %REGRESSION_PLANS%\%%i >> %INP_PDTOOL_HOME%\logs\app.log 
 	echo Plan file does not exist at location: %REGRESSION_PLANS%\%%i 
 	set STATUS_EXIT=TRUE
 	echo TRUE > %STATUS_DIR%\status_exit.txt
@@ -237,7 +237,7 @@ FOR /F "eol=# tokens=1,2*" %%i IN (%REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST%) DO 
 	goto BYPASS
   )
   
-  call :ExecPDTool retval %CONFIG_FILE_PROP% "%PDTOOL_HOME%" "%REGRESSION_PLANS%\%%i" "%LOG_PATH%"
+  call :ExecPDTool retval %CONFIG_FILE_PROP% "%INP_PDTOOL_HOME%" "%REGRESSION_PLANS%\%%i" "%LOG_PATH%"
   
   REM # Increment the number of plans executed by 1
   SET /A NUM_PLANS+=1
@@ -246,7 +246,7 @@ FOR /F "eol=# tokens=1,2*" %%i IN (%REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST%) DO 
   :BYPASS 
   :: ------
   REM # Copy the PDTool log (app.log) to the specified plan file log
-  copy %PDTOOL_HOME%\logs\app.log  %LOG_HOME%\%CONFIG_FILE%-%%i.log
+  copy %INP_PDTOOL_HOME%\logs\app.log  %LOG_HOME%\%CONFIG_FILE%-%%i.log
   
   REM # Check for exit status
   set /P STATUS_EXIT=< %STATUS_DIR%\status_exit.txt
@@ -269,7 +269,7 @@ echo ----------------------------------------------------- >> %LOG_PATH%
 echo.>> %LOG_PATH%
 
 REM # Restore the current log file
-move %PDTOOL_HOME%\logs\app.log.sav  %PDTOOL_HOME%\logs\app.log
+move %INP_PDTOOL_HOME%\logs\app.log.sav  %INP_PDTOOL_HOME%\logs\app.log
 
 if "%STATUS_PLAN_OVERALL%" == "FAIL" goto FAIL2
   call :debug "return OVERALL PLAN STATUS=%STATUS_PLAN_OVERALL%" 0
