@@ -1,6 +1,20 @@
 #!/bin/bash 
 ######################################################################
 # (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+# optional version number) are provided as a convenience, but are covered under the licensing for the 
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+# through a valid license for that product.
+# 
+# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
 ######################################################################
 #=======================================================================================
 # Example Execution Statement:
@@ -51,6 +65,7 @@
 #---------------------------------------------
 # Set environment variables
 #---------------------------------------------
+export RELEASE_FOLDER=""
 if [ ! -f setVars.sh ]; then
    echo "Cannot find setVars.sh environment variable file."
    exit 1
@@ -160,7 +175,8 @@ SEP="::"
 writeOutput " " 																							"" $SEP -nodate
 writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
 writeOutput "-----------                                            -----------" 							"" $SEP -nodate
-writeOutput "----------- Composite PS Promotion and Deployment Tool -----------" 							"" $SEP -nodate
+writeOutput "----------- Cisco Advanced Services                    -----------" 							"" $SEP -nodate
+writeOutput "----------- PDTool: Promotion and Deployment Tool      -----------" 							"" $SEP -nodate
 writeOutput "-----------                                            -----------" 							"" $SEP -nodate
 writeOutput "------------------------------------------------------------------" 							"" $SEP -nodate
 writeOutput " " 																							"" $SEP -nodate
@@ -249,6 +265,16 @@ do
 		#echo "CMD=$CMD   PROPERTY_FILE=$PROPERTY_FILE"
 		ARG="PROPERTY_FILE"
 		if [ "$PROPERTY_FILE" == "" ]; then
+			error="1"
+		fi
+		shift
+		;;
+    -release)
+		export CMD="-release"
+		export RELEASE_FOLDER="$2"
+		#echo "CMD=$CMD   RELEASE_FOLDER=$RELEASE_FOLDER"
+		ARG="RELEASE_FOLDER"
+		if [ "$RELEASE_FOLDER" == "" ]; then
 			error="1"
 		fi
 		shift

@@ -2,6 +2,20 @@
 setlocal
 REM ######################################################################
 REM # (c) 2014 Cisco and/or its affiliates. All rights reserved.
+REM # 
+REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
+REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+REM # through a valid license for that product.
+REM # 
+REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # 
 REM ######################################################################
 REM ##############################################################################################
 REM # script_name: regression_config_driver.bat
@@ -26,7 +40,7 @@ REM ############################################################################
 REM #
 REM # Retrieve input variables and remove double quotes
 set CONFIG_FILE_LIST=%~1
-set PDTOOL_HOME=%~2
+set INP_PDTOOL_HOME=%~2
 REM # Debug Y or N
 set DEBUG=%~3
 
@@ -108,7 +122,7 @@ set REGRESSION_CONFIG_LISTS=%REGRESSION_HOME%\config_lists
 REM # Validate the input parameters
 if "%CONFIG_FILE_LIST%" == "" (
   echo.
-  echo USAGE: %0 [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y or N]
+  echo USAGE: %0 [regression_config_list.txt] [INP_PDTOOL_HOME] [DEBUG=Y or N]
   echo    Provide a regression list of deployment plan files
   echo.
   echo    e.g. regression_config_driver.bat regression_win_6_2_config.txt "D:\dev\PDTool62" Y
@@ -120,7 +134,7 @@ if NOT EXIST %REGRESSION_CONFIG_LISTS%\%CONFIG_FILE_LIST% (
   echo Regression configuration list directory: %REGRESSION_CONFIG_LISTS%
   exit /B 2
 )
-if "%PDTOOL_HOME%" == "" (
+if "%INP_PDTOOL_HOME%" == "" (
   echo.
   echo USAGE: %0 [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y or N]
   echo    Provide the PDTOOL_HOME directory in quotes.
@@ -128,15 +142,15 @@ if "%PDTOOL_HOME%" == "" (
   echo    e.g. regression_config_driver.bat regression_win_6_2_config.txt "D:\dev\PDTool62" Y
   exit /B 2
 )
-if NOT EXIST %PDTOOL_HOME% (
+if NOT EXIST %INP_PDTOOL_HOME% (
   echo.
-  echo The PDTOOL_HOME directory does not exist: %PDTOOL_HOME%
+  echo The PDTOOL_HOME directory does not exist: %INP_PDTOOL_HOME%
   exit /B 2
 )
 if "%DEBUG%" == "" set DEBUG=N
 
-REM # Set PDTOOL_HOME environment variables
-set PDTOOL_CONFIG=%PDTOOL_HOME%\resources\config
+REM # Set INP_PDTOOL_HOME environment variables
+set PDTOOL_CONFIG=%INP_PDTOOL_HOME%\resources\config
 
 REM # Initialize the log file
 CALL :getBaseFileName %CONFIG_FILE_LIST% BASE_FILE_NAME
@@ -186,8 +200,8 @@ FOR /F "eol=# tokens=1,2,3*" %%i  IN (%REGRESSION_CONFIG_LISTS%\%CONFIG_FILE_LIS
 
   REM # Execute the plan driver script: 
   call :debug "call regression_plan_driver.bat [CONFIG_FILE]  [PLAN_FILE_LIST]  [PDTOOL_HOME]  [REGRESSION_HOME]  [LOG_PATH] [LOG_HOME] [STATUS_DIR] [DEBUG]"
-  call :debug "call regression_plan_driver.bat %%i %%j "%PDTOOL_HOME%" "%REGRESSION_HOME%" "%LOG_PATH%" "%LOG_HOME%" "%STATUS_DIR%" "%DEBUG%"" 1
-  call regression_plan_driver.bat %%i %%j "%PDTOOL_HOME%" "%REGRESSION_HOME%" "%LOG_PATH%" "%LOG_HOME%" "%STATUS_DIR%" "%DEBUG%"
+  call :debug "call regression_plan_driver.bat %%i %%j "%INP_PDTOOL_HOME%" "%REGRESSION_HOME%" "%LOG_PATH%" "%LOG_HOME%" "%STATUS_DIR%" "%DEBUG%"" 1
+  call regression_plan_driver.bat %%i %%j "%INP_PDTOOL_HOME%" "%REGRESSION_HOME%" "%LOG_PATH%" "%LOG_HOME%" "%STATUS_DIR%" "%DEBUG%"
   
   echo.
   set /P STATUS_PLAN_OVERALL=< %STATUS_DIR%\status_plan_overall.txt
