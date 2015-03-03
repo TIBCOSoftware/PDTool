@@ -130,7 +130,18 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 				logger.debug("ServerAttributeWSDAOImpl.getServerAttribute().  Invoking port.getServerAttributes(\""+serverAttrPath+"\").");
 			}
 			
+			/***************************************************
+			 * CIS VERSION 6.2.x
+			 ***************************************************/
 			AttributeList attributeList = port.getServerAttributes(paths);
+
+			/***************************************************
+			 * CIS VERSION 7.0.x
+			 ***************************************************/
+		    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+			//     This parameter is valid only when paths parameter is empty or null.
+			//Boolean getAllAttributes = null;
+			//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
 			
 			if(logger.isDebugEnabled()) {
 				logger.debug("ServerAttributeWSDAOImpl.getServerAttribute().  Success: port.getServerAttributes().");
@@ -184,7 +195,18 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 				logger.debug("ServerAttributeWSDAOImpl.getServerVersion().  Invoking port.getServerAttributes(\""+serverAttrPath+"\").");
 			}
 			
+			/***************************************************
+			 * CIS VERSION 6.2.x
+			 ***************************************************/
 			AttributeList attributeList = port.getServerAttributes(paths);
+
+			/***************************************************
+			 * CIS VERSION 7.0.x
+			 ***************************************************/
+		    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+			//     This parameter is valid only when paths parameter is empty or null.
+			//Boolean getAllAttributes = null;
+			//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
 			
 			if(logger.isDebugEnabled()) {
 				logger.debug("ServerAttributeWSDAOImpl.getServerVersion().  Success: port.getServerAttributes().");
@@ -233,7 +255,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 		return returnAttributeList;
 	}
 	
-	private void addServerAttributesFromPath(ServerPortType port, AttributeList attributeList, String startpath, CompositeServer targetServer){
+	private void addServerAttributesFromPath(ServerPortType port, AttributeList attrList, String startpath, CompositeServer targetServer){
 		try {
 			if(logger.isDebugEnabled()) {
 				logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Invoking port.getServerAttributeDefChildren(\""+startpath+"\").");
@@ -253,7 +275,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 					String currentPath = attributeDef.getName().toString();
 					if(attributeDef.getType().equals(AttributeType.FOLDER)){
 
-						addServerAttributesFromPath(port, attributeList, currentPath, targetServer);
+						addServerAttributesFromPath(port, attrList, currentPath, targetServer);
 
 					} else {
 						try {
@@ -264,18 +286,29 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 								logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Invoking port.getServerAttributes(\""+currentPath+"\").");
 							}
 							
-							AttributeList attrList = port.getServerAttributes(paths);
+							/***************************************************
+							 * CIS VERSION 6.2.x
+							 ***************************************************/
+							AttributeList attributeList = port.getServerAttributes(paths);
+
+							/***************************************************
+							 * CIS VERSION 7.0.x
+							 ***************************************************/
+						    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+							//     This parameter is valid only when paths parameter is empty or null.
+							//Boolean getAllAttributes = null;
+							//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
 							
 							if(logger.isDebugEnabled()) {
 								logger.debug("private ServerAttributeWSDAOImpl.addServerAttributesFromPath().  Success: port.getServerAttributes().");
 							}
-							if(attrList != null && attrList.getAttribute() != null && !attrList.getAttribute().isEmpty()){
+							if(attributeList != null && attributeList.getAttribute() != null && !attributeList.getAttribute().isEmpty()){
 								
-								List<Attribute> attributes = attrList.getAttribute();
+								List<Attribute> attributes = attributeList.getAttribute();
 								
 								for (Attribute attribute : attributes) {
 									if(attribute.getName().equalsIgnoreCase(currentPath)){
-										attributeList.getAttribute().add(attribute);
+										attrList.getAttribute().add(attribute);
 									}
 								}
 							}

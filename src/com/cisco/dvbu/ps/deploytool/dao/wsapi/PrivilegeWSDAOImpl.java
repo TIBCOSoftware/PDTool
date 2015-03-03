@@ -221,8 +221,16 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.updateResourcePrivileges(\""+recurse+"\", \""+updateDependenciesRecursively+"\", \""+privList+"\", \""+mode+"\").  #privilegeEntries="+privSize);
 				}
 				
+				/***************************************************
+				 * CIS VERSION 6.2.x
+				 ***************************************************/
 				port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
-				
+
+				/***************************************************
+				 * CIS VERSION 7.0.x
+				 ***************************************************/
+				//port.updateResourcePrivileges(recurse, updateDependenciesRecursively, updateDependentsRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
+
 				if(logger.isDebugEnabled()) {
 					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Success: port.updateResourcePrivileges().");
 				}
