@@ -22,8 +22,6 @@ package com.cisco.dvbu.ps.deploytool.dao.wsapi;
  * 
  */
 
-import java.util.List;
-
 import javax.xml.ws.Holder;
 
 import org.apache.commons.logging.Log;
@@ -44,7 +42,6 @@ import com.compositesw.services.system.admin.ClearResourceCacheSoapFault;
 import com.compositesw.services.system.admin.RefreshResourceCacheSoapFault;
 import com.compositesw.services.system.admin.ResourcePortType;
 import com.compositesw.services.system.admin.resource.CacheConfig;
-import com.compositesw.services.system.admin.resource.RebindRule;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.util.common.DetailLevel;
 
@@ -409,9 +406,17 @@ Faults:
 			// Get the cache configuration for the resource path
 			cacheConfig = port.getResourceCacheConfig(resourceCachePath, ResourceType.valueOf(resourceCacheType));			
 			
+			String configured = "false";
+			String enabled = "false";
+			if (cacheConfig != null) {
+				if (cacheConfig.isConfigured() != null) 
+					configured = cacheConfig.isConfigured().toString();
+				if (cacheConfig.isEnabled() != null)
+					enabled = cacheConfig.isEnabled().toString();
+			}
 			if(logger.isDebugEnabled())
 			{
-				logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction().  Success: port.getResourceCacheConfig().");
+				logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction().  Success: port.getResourceCacheConfig(). configured="+configured+"  enabled="+enabled);
 			}
 		} catch (GetResourceCacheConfigSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResourceCacheConfig", "ResourceCache", resourceCachePath, targetServer),e.getFaultInfo());

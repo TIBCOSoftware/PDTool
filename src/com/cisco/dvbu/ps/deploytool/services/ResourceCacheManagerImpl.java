@@ -152,10 +152,11 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 
-		String prefix = "resourceCacheAction";
+		String prefix = "dataSourceAction";
+
 		try {
 			List<ResourceCacheType> resourceCacheModuleList = getResourceCache(serverId, resourceIds, pathToResourceCacheXML, pathToServersXML);
-			
+
 			// Get the configuration property file set in the environment with a default of deploy.properties
 			String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
 
@@ -180,8 +181,8 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 					 if(DeployUtil.canProcessResource(resourceIds, identifier)) 
 					 {
 						CacheConfig cacheConfig = new CacheConfig();			 
-						String resourceCachePath = resourceCacheModule.getResourcePath();
-						String resourceCacheType = resourceCacheModule.getResourceType().toString();
+						String resourceCachePath = CommonUtils.extractVariable(prefix, resourceCacheModule.getResourcePath(), propertyFile, true);
+						String resourceCacheType = CommonUtils.extractVariable(prefix, resourceCacheModule.getResourceType().toString(), propertyFile, false);
 						
 						if(logger.isInfoEnabled()){
 							logger.info("processing action "+actionName+" on resource cache "+resourceCachePath);
@@ -214,7 +215,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 										storage.setMode(StorageMode.valueOf(resourceCacheModule.getCacheConfig().getStorage().getMode()));
 									}
 									if (resourceCacheModule.getCacheConfig().getStorage().getStorageDataSourcePath() != null) {
-										storage.setStorageDataSourcePath(resourceCacheModule.getCacheConfig().getStorage().getStorageDataSourcePath());
+										storage.setStorageDataSourcePath(CommonUtils.extractVariable(prefix, resourceCacheModule.getCacheConfig().getStorage().getStorageDataSourcePath(), propertyFile, true));
 									}
 									if (resourceCacheModule.getCacheConfig().getStorage().getStorageTargets() != null) {
 										// Define the Target Storage List
@@ -224,8 +225,8 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 											// Define the Target Storage Entry
 											TargetPathTypePair targetPair = new TargetPathTypePair();
 											// Set the target pair entry
-											targetPair.setPath(storageTarget.getPath());
-											targetPair.setTargetName(storageTarget.getTargetName());
+											targetPair.setPath(CommonUtils.extractVariable(prefix, storageTarget.getPath(), propertyFile, true));
+											targetPair.setTargetName(CommonUtils.extractVariable(prefix, storageTarget.getTargetName(), propertyFile, false));
 											targetPair.setType(ResourceType.valueOf(storageTarget.getType().toUpperCase()));
 											// Add the target pair entry to the list
 											entry.getEntry().add(targetPair);						
@@ -284,7 +285,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 							
 							// Validate that the resource exists before acting on it.
 							Boolean validateResourceExists = true;
-							
+
 							// Execute takeResourceCacheAction()
 							getResourceCacheDAO().takeResourceCacheAction(actionName, resourceCachePath, resourceCacheType, cacheConfig, serverId, pathToServersXML, validateResourceExists);
 							
@@ -322,6 +323,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 	
 		// Set the cache enabled flag for all cache configured resources found within this starting resource path
 		if (resourceType.equalsIgnoreCase(ResourceType.CONTAINER.name())) {
+
 			// Don't set any filters
 			String filter = null;
 			
@@ -351,7 +353,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 					Boolean enabledOrig = null;
 	
 					// Get the resource cache configuration from the CIS server for a given path and type
-					CacheConfig cacheConfig = getResourceCacheDAO().getResourceCacheConfig(resource.getPath(), resource.getType().toString(), serverId, pathToServersXML, validateResourceExists);
+					CacheConfig cacheConfig = getResourceCacheDAO().getResourceCacheConfig(resourceCachePath, resourceCacheType, serverId, pathToServersXML, validateResourceExists);
 	
 					if (cacheConfig != null) {
 						
@@ -431,6 +433,12 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 
+		String prefix = "generateResourceCacheXML";
+		// Get the configuration property file set in the environment with a default of deploy.properties
+		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
+		// Extract any variables from the startPath
+		startPath = CommonUtils.extractVariable(prefix, startPath, propertyFile, true);
+		
 		// Prepare a local ResourceCacheModule XML variable for creating a list of "ResourceCache" nodes
 		// This XML variable will be written out to the specified file. 
 		ResourceCacheModule resourceCacheModule = new ObjectFactory().createResourceCacheModule();

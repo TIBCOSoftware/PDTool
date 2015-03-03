@@ -266,8 +266,8 @@ public class RebindManagerImpl implements RebindManager {
 					if(DeployUtil.canProcessResource(rebindIds, identifier)){
 
 						// Get the path and type of the single resource to rebind
-						String resourcePath = rebindResource.getResourcePath();
-						String resourceType = rebindResource.getResourceType().value();
+						String resourcePath = CommonUtils.extractVariable(prefix, rebindResource.getResourcePath(), propertyFile, true);
+						String resourceType = CommonUtils.extractVariable(prefix, rebindResource.getResourceType().value(), propertyFile, true);
 						if(logger.isInfoEnabled()){
 							logger.info("processing rebindResource on " + resourcePath);
 						}
@@ -284,10 +284,10 @@ public class RebindManagerImpl implements RebindManager {
 							for (RebindRuleType rule : rules)
 							{
 								RebindRule newRule = new RebindRule();
-								newRule.setNewPath(rule.getNewPath());
-								newRule.setNewType(ResourceType.fromValue(rule.getNewType().value()));
-								newRule.setOldPath(rule.getOldPath());
-								newRule.setOldType(ResourceType.fromValue(rule.getOldType().value()));
+								newRule.setNewPath(CommonUtils.extractVariable(prefix, rule.getNewPath(), propertyFile, true));
+								newRule.setNewType(ResourceType.fromValue(CommonUtils.extractVariable(prefix, rule.getNewType().value(), propertyFile, true)));
+								newRule.setOldPath(CommonUtils.extractVariable(prefix, rule.getOldPath(), propertyFile, true));
+								newRule.setOldType(ResourceType.fromValue(CommonUtils.extractVariable(prefix, rule.getOldType().value(), propertyFile, true)));
 
 								// Add the new rule to the list of rules for the rebind
 								rebindRules.add(newRule);
@@ -375,8 +375,8 @@ public class RebindManagerImpl implements RebindManager {
 							Resource resource = getResourceDAO().getResource(serverId, resourcePath, pathToServersXML);
 							for (RebindRuleType rule : rules)
 							{
-								String fromFolder = rule.getOldPath();
-								String toFolder = rule.getNewPath();
+								String fromFolder = CommonUtils.extractVariable(prefix, rule.getOldPath(), propertyFile, true);
+								String toFolder = CommonUtils.extractVariable(prefix, rule.getNewPath(), propertyFile, true);
 								// Invoke the replace path text for this rule
 								replacePathText(serverId, pathToServersXML, resource, fromFolder, toFolder);
 							}
@@ -452,9 +452,9 @@ public class RebindManagerImpl implements RebindManager {
 					 * 	  like -datasource1,datasource2 (we ignore passed in resources and process rest of the in the input xml
 					 */
 					if(DeployUtil.canProcessResource(rebindIds, identifier)){
-						String startPath = rebindFolder.getStartingFolderPath();
-						String fromFolder = rebindFolder.getRebindFromFolder();
-						String toFolder = rebindFolder.getRebindToFolder();
+						String startPath = CommonUtils.extractVariable(prefix, rebindFolder.getStartingFolderPath(), propertyFile, true);
+						String fromFolder = CommonUtils.extractVariable(prefix, rebindFolder.getRebindFromFolder(), propertyFile, true);
+						String toFolder = CommonUtils.extractVariable(prefix, rebindFolder.getRebindToFolder(), propertyFile, true);
 
 						if(logger.isDebugEnabled()){
 							logger.debug("Entering RebindManagerImpl.rebindFolder() with following params: " +
