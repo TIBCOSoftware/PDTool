@@ -632,6 +632,14 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
+		getResourceManager().createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);		
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolders(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override

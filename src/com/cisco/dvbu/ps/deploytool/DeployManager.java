@@ -709,6 +709,17 @@ public interface DeployManager
 	void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException;
 
 	/**
+	 * Create all folders in the path associated with passed in resource path and ignore any errors.
+	 * @param serverId target server config name
+	 * @param resourcePath resource path
+	 * @param pathToServersXML path to the server values xml
+	 * @param recursive false=only create the folder specified, true=create all folders recursively
+	 * @param ignoreErrors true=ignore any errors that are thrown. false/null=Default. Do not ignore errors.
+	 * @throws CompositeException if resource create folder fails (if intermediate folders do not exist and recursive=0 an exception is thrown)
+	 */
+	void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException;
+
+	/**
 	 * Create all folders in the path associated with the passed in resource ids.
 	 * @param serverId target server config name
 	 * @param resourceIds comma separated list of resource ids from the resource xml

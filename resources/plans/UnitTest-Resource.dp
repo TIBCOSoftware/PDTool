@@ -68,6 +68,8 @@
 # -------------------
 # Direct invocations
 # -------------------
+# Check for existence of resources configured in ResourceModule.xml
+PASS	TRUE	ExecuteAction   	doResourceExist 		$SERVERID /shared/test00/f1/p1 			"$MODULE_HOME/servers.xml"
 # Execute a Composite Procedure without output
 PASS	TRUE 	ExecuteAction	executeProcedure 			$SERVERID testproc 						TEST00 	"$MODULE_HOME/servers.xml" "'myname','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
 # Execute a Composite Procedure with output
@@ -87,7 +89,7 @@ PASS	FALSE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 			
 # Create folder resource at a given path
 PASS	FALSE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1			"$MODULE_HOME/servers.xml" true
 # Create folder resource at a given path
-PASS	FALSE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1/test1	"$MODULE_HOME/servers.xml" false
+PASS	TRUE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/DataSourcesCopy/ds_orders/admin	"$MODULE_HOME/servers.xml" false true
 
 # -----------------------
 # Module XML invocations

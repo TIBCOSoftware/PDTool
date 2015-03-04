@@ -103,11 +103,20 @@ public class ResourceManagerImpl implements ResourceManager{
 					 if (resource.getOutputReturnVariables() != null) 
 						 outputReturnVariables = resource.getOutputReturnVariables();
 					 
-					if(logger.isInfoEnabled()){
-						 logger.info("Executing Procedure "+resource.getResourcePath()+" with arguments "+arguments+"  outputReturnVariables="+outputReturnVariables);
-					 }
-					 executeProcedure(serverId, resource.getResourcePath(), resource.getDataServiceName(), pathToServersXML, arguments, outputReturnVariables); 
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							if(logger.isInfoEnabled()){
+								 logger.info("Executing Procedure "+resourcePath+" with arguments "+arguments+"  outputReturnVariables="+outputReturnVariables);
+							 }
+							 executeProcedure(serverId, resourcePath, resource.getDataServiceName(), pathToServersXML, arguments, outputReturnVariables); 
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}
+				}
 			}
 		}
 
@@ -215,9 +224,18 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 
-					 deleteResource(serverId, resource.getResourcePath(), pathToServersXML);
-				 }
+
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							deleteResource(serverId, resourcePath, pathToServersXML);
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}					 
+				}
 			}
 		}
 	}
@@ -279,8 +297,17 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 renameResource(serverId, resource.getResourcePath(), pathToServersXML, resource.getNewName());
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							renameResource(serverId, resourcePath, pathToServersXML, resource.getNewName());
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}					 
+				}
 			}
 		}
 	}
@@ -346,8 +373,17 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 copyResource(serverId, resource.getResourcePath(), pathToServersXML, resource.getTargetContainerPath(), resource.getNewName(), resource.getCopyMode());
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							copyResource(serverId,resourcePath, pathToServersXML, resource.getTargetContainerPath(), resource.getNewName(), resource.getCopyMode());
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}					 
+				}
 			}
 		}
 	}
@@ -409,8 +445,17 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 moveResource(serverId, resource.getResourcePath(), pathToServersXML, resource.getTargetContainerPath(), resource.getNewName());
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							moveResource(serverId, resourcePath, pathToServersXML, resource.getTargetContainerPath(), resource.getNewName());
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}					 
+				}
 			}
 		}
 	}
@@ -486,10 +531,20 @@ public class ResourceManagerImpl implements ResourceManager{
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
 					 
-					 if(!doResourceExist(serverId, resource.getResourcePath(), pathToServersXML)){
-						 throw new CompositeException("Resource Id "+resourceId +" does not exist on server "+serverId);
-					 }
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							 if(!doResourceExist(serverId, resourcePath, pathToServersXML))
+							 {
+								 throw new CompositeException("Resource Id "+resourceId +" does not exist on server "+serverId);
+							 }
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}					 
+				}
 			}
 		}
 	}
@@ -550,8 +605,17 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 lockResource(serverId, resource.getResourcePath(), pathToServersXML);
-				 }
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							lockResource(serverId, resourcePath, pathToServersXML);
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}
+				}
 			}
 		}
 	}
@@ -607,14 +671,23 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				if(DeployUtil.canProcessResource(resourceIds,resourceId)){
 					 
-					 String comment = null;
-					 if (resource.getComment() != null) {
-						 comment = resource.getComment();
-					 }
-					 unlockResource(serverId, resource.getResourcePath(), pathToServersXML, comment);
-				 }
+					String comment = null;
+					if (resource.getComment() != null) {
+						comment = resource.getComment();
+					}
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							unlockResource(serverId, resourcePath, pathToServersXML, comment);
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}
+				}
 			}
 		}
 	}
@@ -677,11 +750,18 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
-		getResourceDAO().createFolder(serverId, resourcePath, pathToServersXML, recursive);
-		if(logger.isInfoEnabled()){
-			logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
-		}
+		createFolder(serverId, resourcePath, pathToServersXML, recursive, "false");
+	}
 
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
+		if(logger.isInfoEnabled()){
+			logger.info("Creating folder "+resourcePath+" on server "+serverId);
+		}
+		getResourceDAO().createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
 	}
 
 	/* (non-Javadoc)
@@ -705,6 +785,8 @@ public class ResourceManagerImpl implements ResourceManager{
 			
 			for (ResourceType resource : resourceList) {
 				String recursive = "true";
+				String ignoreErrors = "false";
+
 				if (resource.getRecursive() != null)
 					recursive = resource.getRecursive();
 
@@ -719,7 +801,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
 				if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					createFolder(serverId, resource.getResourcePath(), pathToServersXML, recursive);
+
+					// Get ignore errors
+					if (resource.getIgnoreErrors() != null)
+						ignoreErrors = CommonUtils.extractVariable(prefix, resource.getIgnoreErrors(), propertyFile, true);
+
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}
 				}
 			}
 		}

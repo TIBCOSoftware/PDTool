@@ -60,6 +60,6 @@
 	<classpathentry kind="lib" path="lib/PDToolModules.jar"/>
 	<classpathentry kind="lib" path="lib/endorsed/mail.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.7.jar"/>
-	<classpathentry kind="lib" path="lib/CisAdminApi_6_2.jar"/>
+	<classpathentry kind="lib" path="lib/CisAdminApi.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

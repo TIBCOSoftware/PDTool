@@ -18,10 +18,7 @@
 # 
 ######################################################################
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-xmlns:ns="http://www.dvbu.cisco.com/ps/deploytool/modules" 
-elementFormDefault="unqualified" 
-targetNamespace="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsd="undefined">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://www.dvbu.cisco.com/ps/deploytool/modules" elementFormDefault="unqualified" targetNamespace="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsd="undefined">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
 (c) 2014 Cisco and/or its affiliates. All rights reserved.
@@ -1288,7 +1285,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>	
-<!--  Will have to wait to implement this when there is a dual strategy for 6.2.0 and 6.2.3+
+
 			<xs:element name="updateDependentsRecursively" minOccurs="0" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
@@ -1296,7 +1293,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>	
--->
+
 			<xs:element name="mode" minOccurs="0" type="ns:PrivilegeModeValidationList">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
@@ -2972,7 +2969,13 @@ group replace the previous value for that user or group.
 				</xs:documentation>
 			</xs:annotation>
 		   </xs:element>
-			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="resourcePath" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					The CIS resource path.  Generally only a single resource path is used.  However, methods such as doResourceExists and createFolder allow a list of resource paths to be specified.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
 			<xs:element name="recursive" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
@@ -3038,6 +3041,22 @@ group replace the previous value for that user or group.
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
+			<xs:element name="ignoreErrors" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					This variable is used when creating folders and designates whether to ignore errors or not.
+					* "true" - ignore any errors that are thrown. false/null=do not ignore errors.
+					* "false" or null - Default. Do not ignore errors.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+
 		</xs:sequence>
 	</xs:complexType>
 <!-- END: ResourceModule Property Definition-->

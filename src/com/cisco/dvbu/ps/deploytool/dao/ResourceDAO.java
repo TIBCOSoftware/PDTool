@@ -177,9 +177,10 @@ public interface ResourceDAO {
 	 * @param resourcePath resource path
 	 * @param pathToServersXML path to the server values xml
 	 * @param recursive false=only create the folder specified, true=create all folders recursively
+	 * @param ignoreErrors true=ignore any errors that are thrown. false/null=Default. Do not ignore errors.
 	 * @throws CompositeException if resource create folder fails (if intermediate folders do not exist and recursive=0 an exception is thrown)
 	 */
-	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException;
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException;
 
 
 	/**
