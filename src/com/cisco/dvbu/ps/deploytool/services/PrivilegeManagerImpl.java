@@ -181,13 +181,9 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 
 						// Set the dependents recursion
 						boolean updateDependentsRecursively = false;
-/* 
- * Need to wait on the implement of this until it is known if 
- * both 6.2.0 and 6.2.3 CisAdminApi schemas can be supported at the same time.
- * 
 						if (privilege.isUpdateDependentsRecursively() != null)
 							updateDependentsRecursively = privilege.isUpdateDependentsRecursively();
-*/
+
 						// Set mode
 						if (privilege.getMode() != null) {
 							mode = CommonUtils.extractVariable(prefix, privilege.getMode().name(), propertyFile, true);

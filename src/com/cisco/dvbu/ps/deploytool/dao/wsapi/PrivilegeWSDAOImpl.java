@@ -218,13 +218,17 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 							privList = privList + "]";
 						}
 					}
-					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.updateResourcePrivileges(\""+recurse+"\", \""+updateDependenciesRecursively+"\", \""+privList+"\", \""+mode+"\").  #privilegeEntries="+privSize);
+					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.updateResourcePrivileges(\""+recurse+"\", \""+updateDependenciesRecursively+"\", \""+updateDependentsRecursively+"\", \""+privList+"\", \""+mode+"\").  #privilegeEntries="+privSize);
 				}
 				
 				/***************************************************
 				 * CIS VERSION 6.2.x
 				 ***************************************************/
+				// NOTE: updateDependentsRecursively is not supported in 6.2.x because it was decided not to support multiple branches even though the API is available in 6.2.3 and higher.
 				port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
+				if(logger.isDebugEnabled()) {
+					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  CIS 6.2.x: Ingoring parameter updateDependentsRecursively="+updateDependentsRecursively);
+				}
 
 				/***************************************************
 				 * CIS VERSION 7.0.x
