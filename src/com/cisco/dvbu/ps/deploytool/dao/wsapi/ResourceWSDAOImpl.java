@@ -60,6 +60,7 @@ import com.compositesw.services.system.admin.resource.ResourceList;
 import com.compositesw.services.system.admin.resource.ResourceSubType;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.util.common.DetailLevel;
+import com.compositesw.services.system.util.common.MessageEntry;
 
 import cs.jdbc.driver.protocol.Logger;
 
@@ -277,7 +278,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.deleteResource().  Invoking port.destroyResource(\""+resourcePath+"\", \""+resourceType+"\", true).");
 				}
@@ -318,7 +320,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.renameResource().  Invoking port.renameResource(\""+resourcePath+"\", \""+resourceType+"\", \""+newName+"\").");
 				}
@@ -358,7 +361,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.copyResource().  Invoking port.copyResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", \""+copyMode+"\").");
 				}
@@ -398,7 +402,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.moveResource().  Invoking port.moveResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", true).");
 				}
@@ -438,7 +443,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.lockResource().  Invoking port.lockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\").");
 				}
@@ -478,7 +484,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.unlockResource().  Invoking port.unlockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\", \""+comment+"\").");
 				}
@@ -588,6 +595,34 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 			throw new ApplicationException(message, e);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see boolean#resourceExistsFromPort(ResourcePortType, java.lang.String, java.lang.String)
+	 * 
+	 * If resourceType is passed in then check to see if a resource exists with that type otherwise only use the resourcePath to determine existence.
+	 * Utilize the port with an existing connection to determine the resource existence.  This is more efficient than creating a new connection.
+	 * 
+	 * @return Return true/false if the resource exists.
+	 */
+//	@Override
+	public boolean resourceExistsFromPort(ResourcePortType port, String resourcePath, String resourceType) {
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.resourceExistsFromPort(port, resourcePath, resourceType).  resourcePath="+resourcePath+"  resourceType="+resourceType);
+		}
+
+		Resource resource = getResourceFromPort(port, resourcePath, resourceType);
+		if (resource != null) {
+			if(logger.isInfoEnabled()){
+				logger.info("Resource exists? [true] "+resourcePath+"  type="+resourceType);
+			}
+			return true;
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Resource exists? [false] "+resourcePath+"  type="+resourceType);
+			}
+			return false;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -814,10 +849,21 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource does not exist before executing the create resource
-			if (!resourcePath.equalsIgnoreCase("/") && !resourcePath.equalsIgnoreCase("/shared") && !resourcePath.equalsIgnoreCase("/services") && !resourcePath.equalsIgnoreCase("/services/databases") && !resourcePath.equalsIgnoreCase("/services/webservices")) 
+			if (!resourcePath.equalsIgnoreCase("/") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/shared") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services/databases") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services/webservices") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite/admin") &&
+					!resourcePath.toLowerCase().startsWith("/lib") &&
+					!resourcePath.toLowerCase().startsWith("/policy") &&
+					!resourcePath.toLowerCase().startsWith("/security")
+				) 
 			{
 				// Get the resource object if it exists otherwise resource is null
-				resource = getResourceExistsFromPort(port, resourcePath);
+				resource = getResourceFromPort(port, resourcePath, null);
 				// If resource does not exist then continue
 				if (resource == null) {
 					if(logger.isInfoEnabled()){
@@ -834,10 +880,18 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 				        	if (pathparts[i].trim().length() > 0) {
 								resourcePath = resourcePath + "/" + pathparts[i];
 								
-								if (!resourcePath.equalsIgnoreCase("/") && !resourcePath.equalsIgnoreCase("/shared") && !resourcePath.equalsIgnoreCase("/services") && !resourcePath.equalsIgnoreCase("/services/databases") && !resourcePath.equalsIgnoreCase("/services/webservices") )
+								if (!resourcePath.equalsIgnoreCase("/") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/shared") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services/databases") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services/webservices") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite/admin")
+									) 
 								{
 									// Get the resource object if it exists otherwise resource is null
-									resource = getResourceExistsFromPort(port, resourcePath);
+									resource = getResourceFromPort(port, resourcePath, null);
 
 									// If resource does not exist then continue
 									if (resource == null ) {
@@ -854,7 +908,7 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 										}
 										
 										// Get the resource object if it exists otherwise resource is null
-										resource = getResourceExistsFromPort(port, parentPath);
+										resource = getResourceFromPort(port, parentPath, null);
 										
 										// If parent resource exists then continue
 										if (resource != null) 
@@ -893,7 +947,7 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 						}
 						
 						// Get the resource object if it exists otherwise resource is null
-						resource = getResourceExistsFromPort(port, parentPath);
+						resource = getResourceFromPort(port, parentPath, null);
 						
 						// If parent resource exists then continue
 						if (resource != null) 
@@ -921,42 +975,41 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 				}
 			} else {
 				if(logger.isInfoEnabled()){
-					logger.info("Resource exists? [true] "+resourcePath+" on server "+serverId);
+					logger.info("Cannot create a system folder for resourcePath="+resourcePath+" on server "+serverId);
 				}
 			}
 		} catch (CreateResourceSoapFault e) {
-			if (ignoreErrors == "false") {
-				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
-					"\nErrorMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
-				CompositeLogger.logException(e, message);
-				throw new ApplicationException(message, e);
-			} else {
+			if (ignoreErrorsBool) {
 				String message = DeployUtil.constructMessage(DeployUtil.MessageType.INFO.name(), "WARNING IGNORE ERRORS: createFolder::createResource", "Resource", resourcePath, targetServer) +
 						"\nWarningMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
 					CompositeLogger.logInfoMessage(message);
-
+			} else {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nErrorMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
+					CompositeLogger.logException(e, message);
+					throw new ApplicationException(message, e);
 			}
 		} catch (CompositeException e) {
-			if (ignoreErrors == "false") {
-				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
-					"\nErrorMessage: "+ e.getMessage();
-				CompositeLogger.logException(e, message);
-				throw new ApplicationException(message, e);
-			} else {
+			if (ignoreErrorsBool) {
 				String message = DeployUtil.constructMessage(DeployUtil.MessageType.INFO.name(), "WARNING IGNORE ERRORS: createFolder::createResource", "Resource", resourcePath, targetServer) +
 						"\nWarningMessage: "+ e.getMessage();
 					CompositeLogger.logInfoMessage(message);
-
+			} else {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nErrorMessage: "+ e.getMessage();
+					CompositeLogger.logException(e, message);
+					throw new ApplicationException(message, e);
 			}
 		}	
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#getResourceExistsFromPort(ResourcePortType, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#getResourceFromPort(ResourcePortType, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	// Return the Resource object if the resoure exists otherwise return null even if there is an exception.
-	private Resource getResourceExistsFromPort(ResourcePortType port, String resourcePath) {
+	// Return the Resource object if the resource exists otherwise return null even if there is an exception.
+	//  If resourceType is passed in then check to see if a resource exists with that type otherwise only use the resourcePath to determine existence.
+	private Resource getResourceFromPort(ResourcePortType port, String resourcePath, String resourceType) {
 
 		Resource resource = null;
 		try {		
@@ -969,14 +1022,46 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 				boolean continueLoop = true;
 				for (int i=0; i < resources.size() && continueLoop; i++) {
 					Resource res = resources.get(i);
-					if (res.getPath().equalsIgnoreCase(resourcePath)) {
-						resource = res;
-						continueLoop = false;
+					if (resourceType != null && resourceType.trim().length() > 0) {
+						if (res.getPath().equalsIgnoreCase(resourcePath) && res.getType().toString().equalsIgnoreCase(resourceType)) {
+							resource = res;
+							continueLoop = false;
+						}
+					} else {
+						if (res.getPath().equalsIgnoreCase(resourcePath)) {
+							resource = res;
+							continueLoop = false;
+						}						
 					}
 				}
 			}
+		} catch (GetAllResourcesByPathSoapFault e) {
+			String message = null;
+			String name = null;
+			// Determine if this is a real error or the acceptable resource does not exist error.
+			boolean isResExistsError = false;
+			if (e.getFaultInfo() != null) { 
+				List<MessageEntry> messageEntries = e.getFaultInfo().getErrorEntry();
+				for (MessageEntry messageEntry : messageEntries) {
+					// e.g. NotFound
+					name = messageEntry.getName();
+					// e.g. The resource "/shared/test00/DataSourcesCopy/ds_orders/customers2" does not exist.
+					message = messageEntry.getMessage();
+					if  (message != null && message.toLowerCase().contains("does not exist") ||
+						(name != null && name.toLowerCase().contains("notfound"))
+						) {
+						isResExistsError = true;
+					}
+				}
+			}
+			// If this is a resource does not exist error then simply return null otherwise throw an exception
+			if (isResExistsError)
+				return null;
+			else
+				throw new ApplicationException(e);
+			
 		} catch (Exception e) {
-			return null;
+			throw new ApplicationException(e);
 		}
 		return resource;
 	}

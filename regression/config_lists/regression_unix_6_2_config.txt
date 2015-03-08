@@ -35,13 +35,13 @@ regression_unix_6_2_svn      regression_plan_vcs_base_list.txt        # Full reg
 # TEST:
 #regression_unix_6_2_svn      regression_plan_vcs_test_list.txt        # test Subversion connection
 
-# PDTool - VCS Module for CVS
-regression_unix_6_2_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
-# TEST:
-#regression_unix_6_2_cvs      regression_plan_vcs_test_list.txt        # test CVS connection
-
 # PDTool - VCS Module for Perforce
 regression_unix_6_2_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
 #regression_unix_6_2_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)
 # TEST:
 #regression_unix_6_2_p4       regression_plan_vcs_test_list.txt        # test Perforce connection
+
+# PDTool - VCS Module for CVS
+regression_unix_6_2_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+# TEST:
+#regression_unix_6_2_cvs      regression_plan_vcs_test_list.txt        # test CVS connection

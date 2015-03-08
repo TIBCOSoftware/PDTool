@@ -16,7 +16,11 @@
 # 
 ######################################################################
 # -----------------------------------------
-# ResourceCache Module:
+# Resource Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2,cache3,cache4"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-
+#
+# -----------------------
+# Module XML invocations
+# -----------------------
+# Create folder resource at a given path
+PASS	TRUE	ExecuteAction   	createFolder	 $SERVERID /shared/test00/DataSourcesCopy/ds_orders/admin		"$MODULE_HOME/servers.xml" false true

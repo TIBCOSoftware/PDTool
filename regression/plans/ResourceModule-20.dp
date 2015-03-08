@@ -16,7 +16,11 @@
 # 
 ######################################################################
 # -----------------------------------------
-# ResourceCache Module:
+# Resource Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2,cache3,cache4"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-
+#
+# -------------------
+# Direct invocations
+# -------------------
+# Check for resource exists
+PASS	TRUE	ExecuteAction   doResourceExist 		$SERVERID /shared/test00/f1/p1			"$MODULE_HOME/servers.xml"

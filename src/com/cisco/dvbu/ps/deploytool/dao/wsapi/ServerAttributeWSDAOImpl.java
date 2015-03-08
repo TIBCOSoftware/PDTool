@@ -138,7 +138,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 			/***************************************************
 			 * CIS VERSION 7.0.x
 			 ***************************************************/
-		    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+		    // Param: getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
 			//     This parameter is valid only when paths parameter is empty or null.
 			//Boolean getAllAttributes = null;
 			//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
@@ -203,7 +203,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 			/***************************************************
 			 * CIS VERSION 7.0.x
 			 ***************************************************/
-		    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+		    // Param: getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
 			//     This parameter is valid only when paths parameter is empty or null.
 			//Boolean getAllAttributes = null;
 			//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
@@ -294,7 +294,7 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 							/***************************************************
 							 * CIS VERSION 7.0.x
 							 ***************************************************/
-						    // getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
+						    // Param: getAllAttributes(optional): boolean value indicating that all the attributes should be retrieved. 
 							//     This parameter is valid only when paths parameter is empty or null.
 							//Boolean getAllAttributes = null;
 							//AttributeList attributeList = port.getServerAttributes(paths, getAllAttributes);
@@ -351,7 +351,18 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 				logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefinition().  Invoking port.getServerAttributeDefs(\""+serverAttrPath+"\").");
 			}
 			
+			/***************************************************
+			 * CIS VERSION 6.2.x
+			 ***************************************************/
 			AttributeDefList attributeDefList = port.getServerAttributeDefs(paths);
+
+			/***************************************************
+			 * CIS VERSION 7.0.x
+			 ***************************************************/
+		    // Param: getAllAttributeDefs(optional): boolean value indicating that all the attributes should be retrieved. 
+			//     This parameter is valid only when paths parameter is empty or null.
+			//Boolean getAllAttributeDefs = null;
+			//AttributeDefList attributeDefList = port.getServerAttributeDefs(paths, getAllAttributeDefs);
 			
 			if(logger.isDebugEnabled()) {
 				logger.debug("ServerAttributeWSDAOImpl.getServerAttributeDefinition().  Success: port.getServerAttributeDefs().");

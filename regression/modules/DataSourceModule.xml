@@ -118,7 +118,7 @@
             <genericAttribute>
                 <name>urlPatternStr</name>
                 <type>STRING</type>
-                <value>jdbc:mysql://&lt;HOST&gt;:&lt;PORT&gt;/&lt;DATABASE_NAME&gt;</value>
+                <value>jdbc:$CIS_JDBC_TYPE$://&lt;HOST&gt;:&lt;PORT&gt;/&lt;DATABASE_NAME&gt;</value>
             </genericAttribute>
         </relationalDataSource>
     </datasource>
@@ -219,7 +219,7 @@
 				<!--Element planEntry is optional-->
 				<planEntry>
 				<resourceId>
-					<resourcePath>shippingmethods</resourcePath>
+					<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
 					<resourceType>TABLE</resourceType>
 					<subtype>DATABASE_TABLE</subtype>
 				</resourceId>
@@ -245,7 +245,7 @@
 				<!--Element planEntry is optional-->
 				<planEntry>
 					<resourceId>
-						<resourcePath>shippingmethods</resourcePath>
+						<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
 						<resourceType>TABLE</resourceType>
 						<subtype>DATABASE_TABLE</subtype>
 					</resourceId>
@@ -270,7 +270,7 @@
 				<!--Element planEntry is optional-->
 				<planEntry>
 					<resourceId>
-						<resourcePath>shippingmethods</resourcePath>
+						<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
 						<resourceType>TABLE</resourceType>
 						<subtype>DATABASE_TABLE</subtype>
 					</resourceId>
@@ -278,7 +278,7 @@
 				</planEntry>
 				<planEntry>
 					<resourceId>
-						<resourcePath>customers</resourcePath>
+						<resourcePath>$CIS_CATALOG$customers</resourcePath>
 						<resourceType>TABLE</resourceType>
 						<subtype>DATABASE_TABLE</subtype>
 					</resourceId>
@@ -359,6 +359,113 @@
 					</resourceId>
 					<action>ADD_OR_UPDATE_RECURSIVELY</action>
 				</planEntry>				
+			</plan>
+		</introspectDataSource>
+    </datasource>
+
+	<!--The entry is for CIS 7.0 only which is used to remove the catalogs that were brought in during reintrospection. -->
+    <datasource>
+	    <introspectDataSource>
+			<id>ds10</id>
+			<resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
+			<!--Element runInBackgroundTransaction is optional-->
+			<runInBackgroundTransaction>false</runInBackgroundTransaction>
+			<reportDetail>FULL</reportDetail>
+			<plan>
+				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<failFast>false</failFast>
+				<commitOnFailure>true</commitOnFailure>
+				<autoRollback>true</autoRollback>
+				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
+				<!--Element planEntry is optional-->
+				<planEntry>
+					<resourceId>
+						<resourcePath>information_schema</resourcePath>
+						<resourceType>CONTAINER</resourceType>
+						<subtype>CATALOG_CONTAINER</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>
+				<planEntry>
+					<resourceId>
+						<resourcePath>pg_catalog</resourcePath>
+						<resourceType>CONTAINER</resourceType>
+						<subtype>CATALOG_CONTAINER</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>public</resourcePath>
+						<resourceType>CONTAINER</resourceType>
+						<subtype>CATALOG_CONTAINER</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>cache_status</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>cache_tracking</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>customers</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>customers_cache</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>ordersdetails</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>orders</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>orders_cache</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
+				<planEntry>
+					<resourceId>
+						<resourcePath>shippingmethods</resourcePath>
+						<resourceType>TABLE</resourceType>
+						<subtype>DATABASE_TABLE</subtype>
+					</resourceId>
+					<action>REMOVE</action>
+				</planEntry>			
 			</plan>
 		</introspectDataSource>
     </datasource>

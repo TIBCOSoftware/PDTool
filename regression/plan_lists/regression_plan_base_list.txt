@@ -74,6 +74,8 @@ ResourceModule-16.dp
 ResourceModule-17.dp
 ResourceModule-18.dp
 ResourceModule-19.dp
+ResourceModule-20.dp
+ResourceModule-21.dp
 
 RebindModule-01.dp
 RebindModule-02.dp
@@ -94,6 +96,7 @@ ResourceCacheModule-05.dp
 ResourceCacheModule-06.dp
 ResourceCacheModule-07.dp
 ResourceCacheModule-08.dp
+ResourceCacheModule-09.dp
 
 TriggerModule-01.dp
 TriggerModule-02.dp

@@ -16,7 +16,6 @@
 # 
 ######################################################################
 # -----------------------------------------
-# ResourceCache Module:
+# Rebind Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2,cache3,cache4"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-
+PASS	TRUE	ExecuteAction   		rebindFolder    	$SERVERID "rf4" 				"$MODULE_HOME/RebindModule.xml" 	"$MODULE_HOME/servers.xml" 

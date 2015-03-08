@@ -17,19 +17,43 @@
 # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 # 
 ######################################################################
+
+*******************************************************
+**** IMPORTANT - PLEASE READ REGARDING COMPILATION ****
+*******************************************************
+	To build the 6.2 jars, the properties java build path must be set for src62 and lib62
+	
+	1. Right click on the PDTool project, select properties, Select Java Build Path
+		SOURCE: click on "Source" tab
+			Select PDTool/src70 and click "Remove" tab to remove PDTool/src70
+			Click "Add folder" and select src62 and click OK
+
+	2. LIBRARIES: click on "Libraries" tab
+			Select lib70 and click the "Remove" button to remove lib70
+			Click "Add Library" button
+			Select "User Library" and click Next
+			Select lib62 library and click finish
+			Click OK to 
+	3. Clean the project
+	4. Execute the build62.xml
 -->
-<project name="PDTool" default="default" basedir=".">
+<project name="PDTool7" default="default" basedir=".">
 
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
-	<property name="src" location="src"/>
+	<property name="ver" value="62"/>
+	<property name="relNum" value="r1"/>
+
+	<property name="src" value="src:src${ver}"/>
 	<property name="build" location="build"/>
+	<property name="bin" location="bin"/>
 	<property name="dist" location="dist"/>
 	<property name="ext" location="ext"/>
-	<property name="lib" location="lib"/>
-	<property name="project-name" value="PDTool"/>
+	<property name="lib" location="lib${ver}"/>
+	<property name="licenses" location="licenses"/>
+	<property name="project-name" value="PDTool${ver}"/>
 
 	<path id="project.class.path">
-		<fileset dir="lib">
+		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
 		<fileset dir="ext/ant/lib">
@@ -59,7 +83,7 @@
 
 		<delete dir="${build}" />
 	</target>
-
+	
 	<target name="clean" description="clean up">
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}" />

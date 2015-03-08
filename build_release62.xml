@@ -18,35 +18,35 @@
 # 
 ######################################################################
 -->
-<project name="PDTool" default="default" basedir=".">
+<project name="PDTool7" default="default" basedir=".">
 
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
-	<property name="versionType1" value="6.2"/>
-	<property name="versionType2" value="62"/>
+	<property name="ver" value="62"/>
+	<property name="verRelease" value="6.2"/>
 	<property name="relNum" value="r1"/>
 
-	<property name="src" location="src"/>
+	<property name="src" value="src:src${ver}"/>
 	<property name="build" location="build"/>
 	<property name="bin" location="bin"/>
 	<property name="dist" location="dist"/>
 	<property name="ext" location="ext"/>
-	<property name="lib" location="lib"/>
+	<property name="lib" value="lib${ver}"/>
 	<property name="licenses" location="licenses"/>
 	<property name="docs" location="../PDToolDocs/docs"/>
-	<property name="rel" location="../PDToolRelease/${versionType1}"/>
+	<property name="rel" value="../PDToolRelease/${verRelease}"/>
 	<property name="regression" location="regression"/>
 	<property name="regression_rel" location="../PDToolRelease/regression"/>
 	<property name="resources" location="resources"/>
 	<property name="security" location="security"/>
 	<property name="project-name" value="PDTool"/>
 	<property name="project-PDToolModules" value="../PDToolModules"/>
-	<property name="pdtool-target" value="PDTool${versionType2}"/>
-	<property name="pdtoolstudio-target" value="PDToolStudio${versionType2}"/>
+	<property name="pdtool-target" value="PDTool${ver}"/>
+	<property name="pdtoolstudio-target" value="PDToolStudio${ver}"/>
 	
 	<property name="regression-target" value="PDToolRegression"/>
 
 	<path id="project.class.path">
-		<fileset dir="lib">
+		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
 		<fileset dir="ext/ant/lib">
@@ -72,7 +72,7 @@
 	<target name="dist-jar" depends="clean,compile" description="generate the distribution">
 
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/${project-name}.jar" basedir="${build}" />
+		<jar jarfile="${dist}/${project-name}${ver}.jar" basedir="${build}" />
 
 		<delete dir="${build}" />
 	</target>
@@ -102,7 +102,6 @@
 		<mkdir dir="${pdtool-target}"/>
 		<mkdir dir="${pdtool-target}/bin"/>
 		<mkdir dir="${pdtool-target}/dist"/>
-		<mkdir dir="${pdtool-target}/docs/VCS_Specific"/>
 		<mkdir dir="${pdtool-target}/ext/ant/bin"/>
 		<mkdir dir="${pdtool-target}/ext/ant/etc"/>
 		<mkdir dir="${pdtool-target}/ext/ant/lib"/>
@@ -124,7 +123,7 @@
 		<!-- Copy the generated Schema HTML file and images directory in preparation for zipping the distribution. -->
 		<copy todir="${pdtool-target}">
 		    <fileset dir="${rel}">
-		        <include name="PDTool-${versionType1}-${TODAY_US}.${relNum}.txt"/>
+		        <include name="PDTool-${verRelease}-${TODAY_US}.${relNum}.txt"/>
 		    </fileset>
 		</copy>
 
@@ -148,7 +147,7 @@
 		</copy>
 		<copy todir="${pdtool-target}/dist">
 		    <fileset dir="${dist}">
-		        <include name="*.jar"/>
+		        <include name="*${ver}.jar"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/docs">
@@ -156,7 +155,6 @@
 		        <include name="*.pdf"/>
 		        <include name="*.ppt"/>
 		        <include name="*.pptx"/>
-		        <include name="VCS_Specific/*"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/ext">
@@ -263,7 +261,7 @@
 		</copy>
 		
 		<!-- Create the PDTool zip file -->
-		<zip destfile="${rel}/PDTool-${versionType1}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtool-target}/**" />
+		<zip destfile="${rel}/PDTool-${verRelease}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtool-target}/**" />
 
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtool-target}"/>
@@ -280,7 +278,6 @@
 		<mkdir dir="${pdtoolstudio-target}/bin_host1"/>
 		<mkdir dir="${pdtoolstudio-target}/bin_host2"/>
 		<mkdir dir="${pdtoolstudio-target}/dist"/>
-		<mkdir dir="${pdtoolstudio-target}/docs/VCS_Specific"/>
 		<mkdir dir="${pdtoolstudio-target}/docs/VCS_Studio"/>
 		<mkdir dir="${pdtoolstudio-target}/lib"/>
 		<mkdir dir="${pdtoolstudio-target}/lib/endorsed"/>
@@ -292,7 +289,7 @@
 		
 		<copy todir="${pdtoolstudio-target}">
 		    <fileset dir="${rel}">
-		        <include name="PDToolStudio-${versionType1}-${TODAY_US}.${relNum}.txt"/>
+		        <include name="PDToolStudio-${verRelease}-${TODAY_US}.${relNum}.txt"/>
 		    </fileset>
 		</copy>
 		
@@ -327,12 +324,11 @@
 		
 		<copy todir="${pdtoolstudio-target}/dist">
 		    <fileset dir="${dist}">
-		        <include name="*.jar"/>
+		        <include name="*${ver}.jar"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/docs">
 		    <fileset dir="${docs}">
-		        <include name="VCS_Specific/*"/>
 		        <include name="VCS_Studio/*"/>
 		    </fileset>
 		</copy>
@@ -392,7 +388,7 @@
 		</copy>
 		
 		<!-- Create the PDToolStudio zip file -->
-		<zip destfile="${rel}/PDToolStudio-${versionType1}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtoolstudio-target}/**" />
+		<zip destfile="${rel}/PDToolStudio-${verRelease}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtoolstudio-target}/**" />
 		
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtoolstudio-target}"/>

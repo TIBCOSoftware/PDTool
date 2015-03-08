@@ -18,5 +18,8 @@
 # -----------------------------------------
 # ResourceCache Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2,cache3,cache4"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+# 6.2.5 and 6.2.6 fail: SR 633133815 : CIS 7.0, 6.2.6, 6.2.5 - updateResourceCacheConfig fails
+#	Cause: Resource "/shared/test00/DataSources/ds_orders/tutorial/orders" does not support this statistics function.
+# 7.0.0 contains the fix
+PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache1"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 
