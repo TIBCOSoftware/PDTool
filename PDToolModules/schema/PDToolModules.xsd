@@ -1,0 +1,4509 @@
+<?xml version="1.0"?>
+<!--
+######################################################################
+# (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+# optional version number) are provided as a convenience, but are covered under the licensing for the 
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+# through a valid license for that product.
+# 
+# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
+######################################################################
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://www.dvbu.cisco.com/ps/deploytool/modules" elementFormDefault="unqualified" targetNamespace="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsd="undefined">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+(c) 2014 Cisco and/or its affiliates. All rights reserved.
+ 
+This software is released under the Eclipse Public License. The details can be found in the file LICENSE. Any dependent libraries supplied by third parties are provided under their own open source licenses as described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an optional version number) are provided as a convenience, but are covered under the licensing for the Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except through a valid license for that product.
+ 
+This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+</xs:documentation>  
+		</xs:annotation>
+
+<!-- BEGIN: Generic AttributeDefType Complex Type Definition-->
+
+	<xs:simpleType name="AccessRightsValidationList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Access Rights Simple Type: This is a restriction list that is used when assigning access rights to both Users and Groups.
+				It is used by the UserModule and the GroupModule.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="ACCESS_TOOLS"/>
+			<xs:enumeration value="MODIFY_ALL_CONFIG"/>
+			<xs:enumeration value="MODIFY_ALL_RESOURCES"/>
+			<xs:enumeration value="MODIFY_ALL_STATUS"/>
+			<xs:enumeration value="MODIFY_ALL_USERS"/>
+			<xs:enumeration value="READ_ALL_CONFIG"/>
+			<xs:enumeration value="READ_ALL_RESOURCES"/>
+			<xs:enumeration value="READ_ALL_STATUS"/>
+			<xs:enumeration value="READ_ALL_USERS"/>
+			<xs:enumeration value="UNLOCK_RESOURCE"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="AttributeDefType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Attribute Definition Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType"/>
+			<xs:element name="value" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueArray" type="ns:ServerAttributeValueArray" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueList" type="ns:ServerAttributeValueList" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueMap" type="ns:ServerAttributeValueMap" maxOccurs="1" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="AttributeTypeSimpleType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Attribute Type: This simple type is used when assigning the "type" for any attribute and for any module.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="BOOLEAN_ARRAY"/>
+			<xs:enumeration value="BYTE"/>
+			<xs:enumeration value="BYTE_ARRAY"/>
+			<xs:enumeration value="DATE"/>
+			<xs:enumeration value="DATE_ARRAY"/>
+			<xs:enumeration value="DOUBLE"/>
+			<xs:enumeration value="DOUBLE_ARRAY"/>
+			<xs:enumeration value="FILE_PATH_STRING"/>
+			<xs:enumeration value="FLOAT"/>
+			<xs:enumeration value="FLOAT_ARRAY"/>
+			<xs:enumeration value="FOLDER"/>
+			<xs:enumeration value="INT_ARRAY"/>
+			<xs:enumeration value="INTEGER"/>
+			<xs:enumeration value="LIST"/>
+			<xs:enumeration value="LONG"/>
+			<xs:enumeration value="LONG_ARRAY"/>
+			<xs:enumeration value="MAP"/>
+			<xs:enumeration value="NULL"/>
+			<xs:enumeration value="OBJECT"/>
+			<xs:enumeration value="PASSWORD_STRING"/>
+			<xs:enumeration value="PATH_STRING"/>
+			<xs:enumeration value="SET"/>
+			<xs:enumeration value="SHORT"/>
+			<xs:enumeration value="SHORT_ARRAY"/>
+			<xs:enumeration value="STRING"/>
+			<xs:enumeration value="STRING_ARRAY"/>
+			<xs:enumeration value="UNKNOWN"/>
+		</xs:restriction>
+	</xs:simpleType>
+<!-- END: Generic AttributeDefType Complex Type Definition-->
+
+<!-- BEGIN: Generic ResourceTypeSimpleType Complex Type Definition (used in several modules)-->
+  <xs:simpleType name="ResourceTypeSimpleType">
+	<xs:annotation>
+	<xs:documentation>
+	TYPES / SUBTYPES:
+	=================
+	The following resource types/subtypes are supported by this operation.  Resources cannot be created under "/services" unless otherwise noted, and cannot be created	within a physical data source. 
+	
+	(Datasource table columns)
+	* COLUMN / n/a - The column type is only used when updating privileges on a table column.
+
+	(Basic CIS folder)
+	* CONTAINER / FOLDER_CONTAINER - A Composite folder.   Cannot be created anywhere under /services except in another FOLDER under /services/webservices.
+	* CONTAINER / DIRECTORY_CONTAINER - A Composite directory.
+	(Database)
+	* CONTAINER / CATALOG_CONTAINER - A Composite catalog folder under a data source.  Can only be created within a data source under /services/databases.
+	* CONTAINER / SCHEMA_CONTAINER - A Composite schema container.  Can only be created within a CATALOG that is under /services/databases.
+	(Web Services)
+	* CONTAINER / SERVICE_CONTAINER - A web service container for the service.  Can only be created within a Composite Web Services data source that is under /services/webservices.
+	* CONTAINER / OPERATIONS_CONTAINER - A web service container for the operations
+	* CONTAINER / PORT_CONTAINER - A Composite web service container for port.   Can only be created within a SERVICE under /services/webservices.
+	(Connectors)
+	* CONTAINER / CONNECTOR_CONTAINER - A Composite container for connectors.
+
+	* CONNECTOR / JMS - A Composite JMS Connector.  Created with no connection information
+	* CONNECTOR / HTTP - A Composite HTTP Connector.  Created with no connection information
+
+	* DATA_SOURCE / RELATIONAL_DATA_SOURCE - A relational database source.
+	* DATA_SOURCE / FILE_DATA_SOURCE - A comma separate file data source.
+	* DATA_SOURCE / XML_FILE_DATA_SOURCE - An XML file data source.
+	* DATA_SOURCE / WSDL_DATA_SOURCE - A Composite web service data source.
+	* DATA_SOURCE / XML_HTTP_DATA_SOURCE - An HTTP XML data source.
+	* DATA_SOURCE / NONE - A custom java procedure data source.
+
+	* DEFINITION_SET / SQL_DEFINITION_SET - A Composite SQL Definition set.
+	* DEFINITION_SET / XML_SCHEMA_DEFINITION_SET - A Composite XML Schema Defintion set.
+	* DEFINITION_SET / WSDL_DEFINITION_SET - A Composite WSDL Definition set.
+	* DEFINITION_SET / ABSTRACT_WSDL_DEFINITION_SET - A Composite Abstract WSDL Definition set such as the ones imported from Designer.
+	* DEFINITION_SET / SCDL_DEFINITION_SET - A Composite SCA composite Definition set imported from Designer.
+
+	* LINK / sub-type unknown - Used to link a Composite Data Service to a Composite resource such as a view or sql procedure.
+
+	(CIS procedures)
+	* PROCEDURE / SQL_SCRIPT_PROCEDURE - A Composite SQL Procedure.  Created with a simple default script body that is runnable.
+	(Custom procedures)
+	* PROCEDURE / JAVA_PROCEDURE - A Composite java data source procedure.  Created from a java data source (jar file).
+	(Database procedures)
+	* PROCEDURE / EXTERNAL_SQL_PROCEDURE - A Composite Packaged Query.  Created with no SQL text, so it is not runnable.  
+	* PROCEDURE / DATABASE_PROCEDURE - A database stored procedure.
+	(XML procedures)
+	* PROCEDURE / BASIC_TRANSFORM_PROCEDURE - A Composite Basic XSLT Transformation procedure.  Created with no target procedure and no output columns, so it is not runnable.
+	* PROCEDURE / XSLT_TRANSFORM_PROCEDURE - A Composite XSLT Transformation procedure.  Created with no target procedure and no output columns, so it is not runnable.
+	* PROCEDURE / STREAM_TRANSFORM_PROCEDURE - A Composite XSLT Streaming Transformation procedure.  Created with no target procedure and no output columns, so it is not runnable.
+	* PROCEDURE / XQUERY_TRANSFORM_PROCEDURE - A Composite XQUERY Transformation Procedure.  Created with no target schema and no model, so it is not runnable.
+	(Misc procedures)
+	* PROCEDURE / OPERATION_PROCEDURE - A Composite web service or HTTP procedure operation.
+
+	* TABLE / SQL_TABLE - A Composite View.  Created with no SQL text or model, so it is not runnable.  
+	* TABLE / DATABASE_TABLE - A Composite database table.
+	* TABLE / DELIMITED_FILE_TABLE - A Composite delimited file table
+	* TABLE / SYSTEM_TABLE - A Composite system table view.
+
+	* TREE / XML_FILE_TREE - The XML tree structure associated with a file-XML data source.
+
+	* TRIGGER / NONE - A Composite trigger.   Created disabled.
+	</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="COLUMN"/>
+		<xs:enumeration value="CONTAINER"/>
+		<xs:enumeration value="DATA_SOURCE"/>
+		<xs:enumeration value="DEFINITION_SET"/>
+		<xs:enumeration value="LINK"/>
+		<xs:enumeration value="PROCEDURE"/>
+		<xs:enumeration value="TABLE"/>
+		<xs:enumeration value="TREE"/>
+		<xs:enumeration value="TRIGGER"/>
+	</xs:restriction>
+  </xs:simpleType>
+<!-- END: Generic ResourceTypeSimpleType Complex Type Definition-->
+
+
+<!-- BEGIN: ArchiveModule Property Definition-->
+
+  <xs:element name="ArchiveModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Archive Module: This module contains a list of archive actions such as backup, import, export, and restore.
+			Archive Module is used with the Java implementation of an archive action.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:complexType>
+		<xs:sequence>
+  			<xs:element maxOccurs="unbounded" minOccurs="0" name="archive" type="ns:ArchiveType"/>
+		</xs:sequence>
+	</xs:complexType>
+  </xs:element>
+
+	<xs:complexType name="ArchiveType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Archive Type: Defines the inputs required to process the archive command.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:all>
+
+			<xs:element name="id" minOccurs="1" maxOccurs="1" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of archive actions (backup, import, export, etc.). 
+				</xs:documentation>
+			</xs:annotation>
+			</xs:element>
+
+            <!--  
+			<xs:element name="ArchiveType" type="ns:ArchiveTypeSimpleType" >
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					ArchiveType is used as a check to make sure that the type of archive entry matches requested operation 
+				</xs:documentation>
+			</xs:annotation>	
+			</xs:element> 
+			-->
+			
+			<xs:element name="archiveMethod" minOccurs="1" maxOccurs="1" type="ns:ArchiveMethodSimpleType" default="CAR"/>
+			<xs:element name="archiveFileName" minOccurs="1" maxOccurs="1" type="xs:string"/>
+			<xs:element name="includeDependencies" minOccurs="0" maxOccurs="1" type="xs:boolean" default="true">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					IncludeDependencies specifies whether in a pkg_import or pkg_export command dependencies 
+					of resources specified in the Resources section will be included. 
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			 
+			<!-- not required for backup and restore -->
+			<xs:element name="resources" maxOccurs="1" minOccurs="0" type="ns:ArchiveResourceType"/>         
+			
+	<!-- DA@20120610-Begin Adding support for other export/import command-line parameters -->
+			<xs:element name="encrypt" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Encrypts communication between the command line and CIS using SSL sent over the dedicated HTTPS port. 
+					See Admin guide chapter 11 for complete details.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="description" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Package description of the archive file. Notation appears when Composite Studio is used to import the CAR.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includeaccess" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON IMPORT:
+					The -includeaccess option must be used if you want to preserve ownership and privilege information. 
+					This option is ignored if you are not logged in as a member of the admin group.
+				ON EXPORT:
+					Includes the current user access controls (privilege specifications) on the resources in the export file. 
+					Default setting does NOT include access control even when exported by an administrator. 
+					An error can occur if this option is used and the exporting user is not a member of the admin group with the Read All Resources right.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includeallusers" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Exports all domains, groups, and users to the export file. 
+					Requires the Read All Users right
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includerequiredusers" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Includes the information about the required users in the export file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includecaching" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON IMPORT:
+					Caching configuration is imported by default. The -nocaching option must be used if you want to ignore cache configurations.
+				ON EXPORT:
+					Includes the details of caching on views and procedures in the export file. 
+					This option must be specified to include cached data from materialized views, or configurations that include scheduling for cache refreshes.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includejars" maxOccurs="1" minOccurs="0" type="xs:boolean" default="true">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Exports any included custom Java procedure data source's JAR.
+				ON BACKUP EXPORT:
+					Can suppress export of custom Java procedure data source JARs.
+				ON PACKAGE IMPORT:
+					Can supress import of any custom Java procedure data source's JAR within the CAR file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includesourceinfo" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Data source connection details such as user name, password, host name, and port 
+					are not included by default. Specify -includesourceinfo to include these. 
+					If passwords are included, they are encrypted.
+				ON PACKAGE IMPORT:
+					An overwrite safeguard. Suppresses import of the following pre-existing connection attributes 
+					when an otherwise identical resource is already present at the target: 
+						Driver, 
+						ConnectionURL, 
+						Port, 
+						Database Name, 
+						Login, Password, 
+						and Pass-through Login.
+					Supports re-import without need for explicit "-set" options and without altering original 
+					data source attributes.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="includestatistics" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT and BACKUP EXPORT:
+					Includes any known resource cardinality statistics about data source table boundaries, column boundaries, 
+					and configurations when statistics gathering is enabled.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="messagesonly" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT ONLY:
+					Prints the messages generated in a package import to a log4j file 
+					without actually performing the import.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="overridelocks" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT ONLY:
+					Overrides Studio locks when importing resources from a CAR file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="overwrite" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON BACKUP IMPORT:
+					This option does a destructive import clearing all resources prior to importing the backup CAR. 
+					Using the backup_import utility with the -overwrite option ensures that CIS matches the contents 
+					of the imported CAR file.
+				ON PACKAGE IMPORT:
+					Use of the -overwrite option ensures that CIS will exactly match the directories present in the CAR file.
+					The -overwrite option clears targeted folder directories before copying the CAR file contents to 
+					those cleared directories. 
+					The pkg_import utility clears only those folders that have representative resources in the CAR file from 
+					those directories. CIS directories that do not have representative resources in the CAR file remain 
+					untouched even if the -overwrite option is specified.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="pkgName" maxOccurs="1" minOccurs="0" type="xs:string" default="Composite Server Archive File via PD Tool">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Names an attribute in the contents.xml within the exported backup file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="printinfo" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					The -printinfo option causes the archive file to be examined and for information about it to be printed to 
+					the display. 
+					The archive file is NOT imported when this option is given
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="printroots" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Prints the new paths to the imported resources. 
+					The archive file is NOT imported when this option is given.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>			
+			<xs:element name="printusers" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Prints the user names of the owners of the imported resources and their associated user groups. 
+					The archive file is NOT imported when this option is given.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="printcontents" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					This option disables actual import, and prints properties of the CAR file to the command window.
+					The archive file is NOT imported when this option is  is given.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="printreferences" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Prints a list of resources referred to by the imported resources. 
+					The archive file is NOT imported when this option is given.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="setAttributes" minOccurs="0" maxOccurs="1" type="ns:ArchiveResourceModificationType">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+					Enables resource attribute changes during import.  
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+
+			<xs:element name="users" minOccurs="0" maxOccurs="1" type="ns:ArchiveExportSecurityType"/>         
+
+		<!-- DA@20120610-End -->
+			
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="ArchiveResourceType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Archive Resource Type: 
+					1. "export" element is required for export,
+					2. "relocate" and "rebind" are optional for backup and restore,
+						but must be present if "resources" node is present in Archive definition.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="export" type="xs:string"/>
+			<xs:element name="relocate" type="ns:ArchiveRelocateResourcePathType"/>
+			<xs:element name="rebind" type="ns:ArchiveRebindResourcePathType"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="ArchiveExportSecurityType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Archive Security Type for package export command: 
+				-	Used to include specified user, group and domain info in the export file. 
+					This option can be repeated to export multiple entities. 
+				Archive Security Type for package import command: 
+				-	"overwrite" option imports all users present in the exported package car. 
+					By default domain, groups, and user information are not included in export or import packages. 
+				-	"merge" imports all users present in the CAR file who are not already present in the server target. 
+					This option takes precedence over "overwrite" option. 
+				(See Composite Admin Guide for details)
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="export" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="domain" type="xs:string"/>
+						<xs:element name="group" minOccurs="0" type="xs:string"/>
+						<xs:element name="user" minOccurs="0" type="xs:string"/>
+					</xs:sequence></xs:complexType></xs:element>
+			<xs:element name="import" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="overwrite"/>
+							<xs:enumeration value="merge"/>
+						</xs:restriction>
+				</xs:simpleType>
+			</xs:element>			
+		</xs:choice>
+	</xs:complexType>	
+
+
+
+	<xs:complexType name="ArchiveResourceModificationType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+			The set option can be repeated to set different attributes. 
+			
+			Multiple class paths can be set with a single statement.
+			
+				• The Composite resource name is given by "resourcePath". 
+			
+				• The "resourceType" is equal to “DATA_SOURCE” when attribute is classpath, host, port, database, 
+				user, or password.
+			
+				• The "attribute" can be: classpath, host, port, database, user, or password: 
+					• user "login" or "username" or error depending on source type
+					• password "password" or error depending on source type
+					• user2 "appUserName" or error if not Oracle EBS
+					• password2 "appPassword" or error if not Oracle EBS
+					• host "urlIP" or "dsn" or "server" or "appServer" or "url" or "root" or error 
+					  depending on the source type
+					• port "urlPort" or "port" or error depending on source type
+					• database "urlDatabaseName" or "enterprise" or "appServer" or error depending on the source type
+					• path "root" or "url" or error depending on source type
+					• annotation
+			
+				• Set "value" to a valid entry for the selected attribute. 
+				  String values can be enclosed with double quotes to allow for spaces. 
+				
+				For Windows systems, use the semicolon delimiter:
+					C:\DevZone\ATeam\Jars\my.jar;D:\Current\Ref\classes
+				For UNIX systems, use colons as the delimiter:
+					/lib/ext/classes:/lib/src/jars			
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="resourceAttribute" minOccurs="1" maxOccurs="unbounded" type="ns:ArchiveResourceAttributeModificationType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ArchiveResourceAttributeModificationType">
+		<xs:sequence>
+			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="resourceType" type="xs:string"/>
+			<xs:element name="attribute">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="user"/>
+						<xs:enumeration value="password"/>
+						<xs:enumeration value="user2"/>
+						<xs:enumeration value="password2"/>
+						<xs:enumeration value="host"/>
+						<xs:enumeration value="port"/>
+						<xs:enumeration value="database"/>
+						<xs:enumeration value="path"/>
+						<xs:enumeration value="annotation"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ArchiveRelocateResourcePathType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				This option can be used to change the location for the import.
+				Relocating a resource modifies (rebinds) references made by other resources being imported, 
+				but does not modify references on resources that are not part of the import.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="oldPath" type="xs:string"/>
+			<xs:element name="newPath" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ArchiveRebindResourcePathType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Resources can be rebound as a group during the import process. Sets a new resource path 
+				for a dependency resource. All imported resources will have the rebind performed. 
+				In case of conflict between rebinds caused by the -relocate and -rebind flags, the -rebind ones 
+				are performed first.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="oldPath" type="xs:string"/>
+			<xs:element name="newPath" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+     
+    <!--   
+	<xs:simpleType name="ArchiveTypeSimpleType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Archive Type can be EXPORT, IMPORT, BACKUP or RESTORE
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EXPORT"/>
+			<xs:enumeration value="IMPORT"/>
+			<xs:enumeration value="BACKUP"/>
+			<xs:enumeration value="RESTORE"/>
+		</xs:restriction>
+	</xs:simpleType>
+   -->
+   
+	<xs:simpleType name="ArchiveMethodSimpleType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Archive Method must be CAR (future support for VCS planned)
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CAR"/>
+			<!-- <xs:enumeration value="VCS"/>  -->
+		</xs:restriction>
+	</xs:simpleType>
+
+  <!-- 
+  <xs:simpleType name="YesNoSimpleType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				The acceptable values are YES and NO
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+  </xs:simpleType>
+ -->
+<!-- END: ArchiveModule Property Definition-->
+
+
+
+
+<!-- BEGIN: ConnectorModule Property Definition-->
+  <xs:element name="ConnectorModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Connector Module: This module is used to manage Composite connectors.  
+
+			The Composite Web Service API expects the following format upon invocation of the WS API:
+		 &lt;ns1:createConnector 
+			xmlns_ns1= http://www.compositesw.com/services/system/admin/resource 
+			xmlns_xs= http://www.w3.org/2001/XMLSchema&gt; 
+			 &lt;ns1:connector xsi_type=":jmsConnector"&gt;
+			     &lt;ns1:name&gt; &lt;/ns1:name&gt; 
+        		 &lt;ns1:connectorType&gt;JMS &lt;/ns1:connectorType&gt; 
+	        	 &lt;ns1:useJNDI&gt;true &lt;/ns1:useJNDI&gt; 
+				 &lt;ns1:jndiContextFactory&gt; &lt;/ns1:jndiContextFactory&gt; 
+				 &lt;ns1:jndiProviderUrl&gt; &lt;/ns1:jndiProviderUrl&gt; 
+				 &lt;ns1:jndiProperties/&gt;
+				 &lt;ns1:jndiUser&gt; &lt;/ns1:jndiUser&gt; 
+				 &lt;ns1:jndiPassword&gt; &lt;/ns1:jndiPassword&gt; 
+				 &lt;ns1:queueConnectionFactory&gt; &lt;/ns1:queueConnectionFactory&gt; 
+				 &lt;ns1:minPool&gt; &lt;/ns1:minPool&gt; 
+				 &lt;ns1:maxPool&gt; &lt;/ns1:maxPool&gt; 
+				 &lt;ns1:poolTimeout&gt; &lt;/ns1:poolTimeout&gt; 
+			 &lt;/ns1:connector&gt; 
+			 &lt;ns1:detail&gt;SIMPLE &lt;/ns1:detail&gt; 
+		 &lt;/ns1:createConnector&gt;
+		</xs:documentation>
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="connector" type="ns:ConnectorType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="ConnectorType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Connector Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of connectors. 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="connectorName" type="xs:string"/>
+			<xs:element name="connectorType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						JMS Connector type
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="JMS"/>
+						<xs:enumeration value="HTTP"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>			
+			<xs:element name="groupName" type="xs:string" minOccurs="0"/>
+			<xs:element name="connectorAnnotation" type="xs:string" minOccurs="0"/>
+
+			<xs:element name="useJNDI" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="jndiContextFactory" type="xs:string" minOccurs="0"/>
+			<xs:element name="jndiProviderUrl" type="xs:string" minOccurs="0"/>
+			<xs:element name="jndiUser" type="xs:string" minOccurs="0"/>
+			<xs:element name="jndiPassword" type="xs:string" minOccurs="0"/>
+			<xs:element name="encryptedPassword" type="xs:string" minOccurs="0"/>
+			<xs:element name="jmsClientID" type="xs:string" minOccurs="0"/>
+			<xs:element name="minPool" type="xs:integer" minOccurs="0"/>
+			<xs:element name="maxPool" type="xs:integer" minOccurs="0"/>
+			<xs:element name="poolTimeout" type="xs:integer" minOccurs="0"/>	
+			<xs:element name="jndiProperties" maxOccurs="unbounded" minOccurs="0" type="ns:AttributeDefType"/>
+		</xs:sequence>
+	</xs:complexType>
+<!-- END: ConnectorModule Property Definition-->
+
+<!-- BEGIN: DataSourceModule Property Definition-->
+    <xs:element name="DatasourceModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Data Source Module: This module is used to manage Composite Data Sources. 
+			The RelationalDataSourceType is a specific type intended to provide a common set of attributes that are typically
+			updated by a user.  There is a GenericDataSourceType that can be used for the other relational attributes
+			and other data sources.
+		</xs:documentation>
+	</xs:annotation>
+	  <xs:complexType>
+	   <xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="datasource" type="ns:DataSourceChoiceType">
+			</xs:element>
+		</xs:sequence>
+	  </xs:complexType>
+  </xs:element>
+  
+	<xs:complexType name="DataSourceChoiceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Data Source Choice Type: This selection provides a choice between the a relational source and a generic source.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="relationalDataSource" maxOccurs="1" minOccurs="0" type="ns:RelationalDataSourceType"/>
+			<xs:element name="genericDataSource" minOccurs="0" type="ns:GenericDataSourceType" maxOccurs="1"/>
+			<xs:element name="introspectDataSource" minOccurs="0" type="ns:IntrospectDataSourceType" maxOccurs="1"/>
+			<xs:element name="attributeDefsDataSource" minOccurs="0" type="ns:AttributeDefsDataSourceType" maxOccurs="1"/>
+			<xs:element name="dataSourceTypesDataSource" minOccurs="0" type="ns:DataSourceTypesType" maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="RelationalDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Relational Data Source Type: Provides a way to update the common relational attributes. 
+			Use GenericDataSourceType for Relational attributes not found in the common list.
+		</xs:documentation>
+	</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						id is a unique name identifier within the list of relational data sources.
+					</xs:documentation>
+				</xs:annotation>
+		    </xs:element>
+			<xs:element name="resourcePath" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Defines the data resource path in Composite. e.g. /shared/examples/ds_orders
+					</xs:documentation>
+				</xs:annotation>
+		   	</xs:element>
+			<xs:element name="resourceType" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Defines the data resource type. e.g. DATA_SOURCE.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="subType" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Defines the sub type. e.g. RELATIONAL_DATA_SOURCE.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="dataSourceType" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Defines the data source type. e.g. Microsoft SQL Server 2012, Oracle 11g (Thin Driver) and etc.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="hostname" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						AttributeName=urlIP, AttributeType=STRING
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="port" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						AttributeName=urlPort, AttributeType=INTEGER, string allowed for use with variables.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="databaseName" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						For Oracle this is the Service Name or SID such as ORCL. For MySQl this is the database name.
+						AttributeName=urlDatabaseName, AttributeType=STRING
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="login" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						AttributeName=login, AttributeType=STRING
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="encryptedPassword" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						AttributeName=password, AttributeType=PASSWORD_STRING
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="valQuery" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						A valid query that can executed against the database
+						AttributeName=connValidateQuery, AttributeType=STRING
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="GenericDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Generic Data Source Type: Provides a way to update any attribute for any data source type.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of generic data sources.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="resourcePath" minOccurs="1" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Defines the data resource path in Composite. e.g. /shared/examples/ds_orders
+				</xs:documentation>
+			</xs:annotation>
+	   	</xs:element>
+		<xs:element name="resourceType" minOccurs="0" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Defines the data resource type. e.g. DATA_SOURCE.
+				</xs:documentation>
+			</xs:annotation>
+	   </xs:element>
+		<xs:element name="subType" minOccurs="0" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Defines the sub type. e.g. RELATIONAL_DATA_SOURCE.
+				</xs:documentation>
+			</xs:annotation>
+	   </xs:element>
+		<xs:element name="dataSourceType" minOccurs="0" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Defines the data source type. e.g. Microsoft SQL Server 2012, Oracle 11g (Thin Driver) and etc.
+				</xs:documentation>
+			</xs:annotation>
+	   </xs:element>
+		<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType"/>
+	</xs:sequence>
+  </xs:complexType>
+
+	<xs:complexType name="IntrospectDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Introspect Data Source Type: Provides a way to introspect a data source. 
+			Introspection is the process of analyzing resources in a data source and creating resources withing the CIS that represent them.
+		</xs:documentation>
+	</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of relational data sources.
+					</xs:documentation>
+				</xs:annotation>
+		   	</xs:element>
+			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="runInBackgroundTransaction" minOccurs="0" type="xs:boolean" default="false">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						PDTool only supports foreground processing.  Value must be set to false.
+					</xs:documentation>
+				</xs:annotation>
+		   	</xs:element>
+			<xs:element name="reportDetail">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						reportDetail: This is one of SUMMARY, SIMPLE, SIMPLE_COMPRESSED or FULL.  
+						The report detail determines how much of the report to print out to the log.
+						In all cases, if there is an error, print out the error.
+						SUMMARY: print out the introspection report summary.
+						SIMPLE: print out the resource identifier and status fields only .
+						SIMPLE_COMPRESSED: print out the resource identifier and status fields only as one line with no blank lines.
+						FULL: print out the full report including messages and detail.  When tables are added, there is a message for each column added.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SUMMARY"/>
+						<xs:enumeration value="SIMPLE"/>
+						<xs:enumeration value="SIMPLE_COMPRESSED"/>
+						<xs:enumeration value="FULL"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>	
+			<xs:element name="plan" minOccurs="1" type="ns:IntrospectDataSourcePlanType"/>
+			<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="IntrospectDataSourcePlanType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Introspect Data Source Plan Type: Provides the detailed plan for introspection.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="updateAllIntrospectedResources" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					If the plan's updateAllIntrospectedResources option is TRUE, then update the introspected resources
+					upon completion.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="failFast" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					If the plan's failFast option is TRUE, then the introspection will fail when the first error occurs.  
+					Otherwise the plan will run to completion as a best effort.  The default is FALSE.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="commitOnFailure" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					If the plan's commOnFail option is TRUE, then the introspection commits whatever it can.
+					If fastFail is also TRUE, then only the successfully introspected resources, up to that
+					point, will be committed.  The default is FALSE.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="autoRollback" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					If the plan's autoRollback option is TRUE, then the introspection task will rollback
+					back rather than committing.  This supersedes all commit options.  This allows you to
+					perform a dry run of resource introspection. The "introspectionResourcesResult" operation is
+					usable if autoRollback is TRUE.  If autoRollback is FALSE or unset, then the introspection
+					will not automatically be rolled back.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="scanForNewResourcesToAutoAdd" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					If the plan's scanForNewResourcesToAutoAdd option is TRUE, then the introspection task will
+					scan for native resources that have been newly added to the data source.  If newly added
+					resources are found and their parent container has the "autoAddChildren" introspection
+					attribute set, then that child will automatically be introspected.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="planEntry" type="ns:IntrospectDataSourcePlanEntryType" minOccurs="0" maxOccurs="unbounded"/>	
+<!--		<xs:element name="planEntries" minOccurs="0" maxOccurs="unbounded" type="ns:IntrospectDataSourcePlanEntriesType"/> -->
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="IntrospectDataSourcePlanEntriesType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Introspect Data Source Plan Entry Type: Provides an iteration of detailed entries for introspection.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="planEntry" type="ns:IntrospectDataSourcePlanEntryType" maxOccurs="1" minOccurs="0"/>	
+	</xs:sequence>
+  </xs:complexType>
+
+	<xs:complexType name="IntrospectDataSourcePlanEntryType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Introspect Data Source Plan Entry Type: Provides the detailed entry for introspection.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="resourceId" minOccurs="1" maxOccurs="1" type="ns:IntrospectDataSourcePlanEntryResourceIdType"/>
+		<xs:element name="action">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					action: This is one of ADD_OR_UPDATE or REMOVE.  
+					If ADD_OR_UPDATE is specified, then the resource will be added if it does not already exist.  Otherwise it will be updated.
+					If REMOVE is specified, then the resource will be removed if it exists.  Data sources may not be removed.  
+					Use the destroyResource operation to remove a data source. 
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ADD_OR_UPDATE"/>
+					<xs:enumeration value="ADD_OR_UPDATE_RECURSIVELY"/>
+					<xs:enumeration value="REMOVE"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:element>			
+		<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					attributes: A list of introspection-specific attributes will be applied during introspection.
+					See the getIntrospectionAttributeDefs operation for a list of possible attributes.  If a
+					specific attribute is not specific, then the attribute that was used during the previous
+					introspection will be used.  If the resource has not previously been introspected, then
+					the default value for that attribute will be used.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="IntrospectDataSourcePlanEntryResourceIdType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Introspect Data Source Plan Entry Resource Id Type: The path, type, and subtype of the resource to be introspected.
+			Resource paths are relative to the data source.  An empty path (i.e. "") identifies the data source itself.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="resourcePath" type="xs:string" nillable="true"/>
+		<xs:element name="resourceType" type="ns:ResourceTypeSimpleType" nillable="true"/>
+		<xs:element name="subtype" type="xs:string" nillable="true"/>
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AttributeDefsDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Attribute Definitions Data Source Type: an iteration of display attributes from getDataSourceAttributeDefs.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+			<xs:element name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						id is a unique name identifier within the list of attribute definitions. 
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+		<xs:element name="resourcePath" minOccurs="0" type="xs:string"/>
+		<xs:element name="resourceType" minOccurs="0" type="ns:ResourceTypeSimpleType"/>
+		<xs:element name="subtype" minOccurs="0" type="xs:string"/>
+		<xs:element name="childCount" minOccurs="0" type="xs:integer"/>
+		<xs:element name="dataSourceType" minOccurs="0" type="xs:string"/>
+		<xs:element name="attributeDefs" type="ns:AttributeDefDataSourceType" minOccurs="0" maxOccurs="1"/>	
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AttributeDefDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Attribute Definition Data Source Type: Display of attributes from getDataSourceAttributeDefs.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="attributeDef" type="ns:AttributeDefEntryDataSourceType" maxOccurs="unbounded" minOccurs="0"/>	
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AttributeDefEntryDataSourceType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Attribute Definition Entry Data Source Type: Display of attributes from getDataSourceAttributeDefs.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="name" type="xs:string" minOccurs="0"/>
+		<xs:element name="type" type="xs:string" minOccurs="0"/>
+		<xs:element name="updateRule" type="xs:string" minOccurs="0"/>
+		<xs:element name="required" type="xs:string" minOccurs="0"/>
+		<xs:element name="displayName" type="xs:string" minOccurs="0"/>
+		<xs:element name="visible" type="xs:string" minOccurs="0"/>
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DataSourceTypesType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Data Source Types: Display of attributes from getDataSourceTypes.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="dataSourceType" type="ns:DataSourceTypeType" maxOccurs="unbounded" minOccurs="0"/>	
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DataSourceTypeType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Data Source Type: Display the data source types for Composite Server.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+		<xs:element name="name" type="xs:string" minOccurs="1"/>
+		<xs:element name="type" type="xs:string" minOccurs="0"/>
+		<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					attributes: A list of introspection-specific attributes will be applied during introspection.
+					See the getIntrospectionAttributeDefs operation for a list of possible attributes.  If a
+					specific attribute is not specific, then the attribute that was used during the previous
+					introspection will be used.  If the resource has not previously been introspected, then
+					the default value for that attribute will be used.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+	</xs:sequence>
+  </xs:complexType>
+
+<!-- END: DataSourceModule Property Definition-->
+
+<!-- BEGIN: DomainModule Property Definition-->
+  <xs:element name="DomainModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Domain Module: This module contains is used to manage Composite Domains.  
+		</xs:documentation>
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="domain" type="ns:DomainType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="DomainType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Domain Type: Provides the structure for the Domain Module.  
+				Domains can be COMPOSITE, LDAP or DYNAMIC authentication domains.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of domains. 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="domainName" type="xs:string"/>
+			<xs:element name="domainType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						COMPOSITE - Composite authentication domain
+						LDAP - LDAP authentication domain
+						DYNAMIC - Dynamic authentication domain
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="COMPOSITE"/>
+						<xs:enumeration value="LDAP"/>
+						<xs:enumeration value="DYNAMIC"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>			
+			<xs:element name="isBlocking" type="xs:boolean"/>
+			<xs:element name="domainName" type="xs:string"/>
+			<xs:element name="domainAnnotation" type="xs:string" minOccurs="0"/>
+			<xs:element name="domainAttributes" maxOccurs="unbounded" minOccurs="0" type="ns:AttributeDefType"/>
+		</xs:sequence>
+	</xs:complexType>
+<!-- END: DomainModule Property Definition-->
+
+<!-- BEGIN: GroupModule Property Definition-->		
+  <xs:element name="GroupModule">
+  	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Group Module: This module contains a list of groups.  If the group does not exist, it will be created.  
+			The group privileges will be updated to reflect the specified access rights.
+		</xs:documentation>  
+	</xs:annotation>
+  	<xs:complexType>
+   	<xs:sequence>
+     			<xs:element maxOccurs="unbounded" minOccurs="0" name="group" type="ns:GroupType"/>
+   	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="GroupType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Group Type: Defines the group structure for the Group Module.  
+				Provides for a to manage a group and its access rights (privileges).
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of groups.  It may have the value as username but it does not have to.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="groupName" type="xs:string"/>
+			<xs:element name="groupDomain" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						domain which the group will belong to.  default is "composite"
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="privilege" maxOccurs="1" minOccurs="0" type="ns:GroupPrivilegeList"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="GroupPrivilegeList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE]
+			</xs:documentation>  
+		</xs:annotation>
+	  <xs:list itemType="ns:AccessRightsValidationList"/>
+	</xs:simpleType>
+<!-- END: GroupModule Property Definition-->
+
+<!-- BEGIN: PrivilegeModule Property Definition-->		
+  <xs:element name="PrivilegeModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Privilege Module: This module is used to manage privileges on Composite resources.
+		</xs:documentation>
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="resourcePrivilege" type="ns:PrivilegeEntryType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="PrivilegeEntryType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Resource Privilege Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of resource privileges. 
+				</xs:documentation>
+			</xs:annotation>
+		    </xs:element>
+			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="resourceType" minOccurs="0" type="ns:ResourceTypeSimpleType"/>
+			<xs:element name="recurse" minOccurs="0" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Recurse informs how to process the resource children
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+			<xs:element name="updateDependenciesRecursively" minOccurs="0" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						If "true", then all dependencies of the given resources will recursively be updated with the privileges assigned to their parent.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+
+			<xs:element name="updateDependentsRecursively" minOccurs="0" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						If "true", then all dependents of the given resources will recursively be updated with the privileges assigned to their parent.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+
+			<xs:element name="mode" minOccurs="0" type="ns:PrivilegeModeValidationList">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Mode determines whether privileges are merged with existing ones.   
+	        				"OVERWRITE_APPEND" (default) merges and does not update privileges for users or groups not mentioned.  
+		      				"SET_EXACTLY" makes privileges look exactly like those provided in the call.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+			<xs:element name="privilege" type="ns:PrivilegeType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:simpleType name="PrivilegeModeValidationList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				The Mode validation list including 1 of [OVERWRITE_APPEND SET_EXACTLY].  Can be null.
+				Only used when updating a resource privilege.
+				When "mode" is 'OVERWRITE_APPEND", or is not supplied, privileges are applied on a
+per-user or per-group basis, so that updating privileges for one user or group does not
+alter privileges from any other user or group.  The privileges applied for a user or
+group replace the previous value for that user or group. 
+				When "mode" is "SET_EXACTLY", all privileges on the resource are made to look exactly like the provided privileges.
+
+			</xs:documentation>  
+		</xs:annotation>		
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OVERWRITE_APPEND"/>
+			<xs:enumeration value="SET_EXACTLY"/>
+	  </xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="PrivilegeType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A listing of privileges by name and name type (USER or GROUP) with a domain.  Contains the privileges, combined privileges and inherited privileges.
+
+				The returned privileges per user or group are the privileges specifically given to that
+				user or group.  In each "privilegeEntry", the "combinedPrivs" element contains the
+				effective privileges for that user or group based on their membership in all other groups.
+				In each "privilegeEntry", the "inheritedPrivs" element only contains the privileges that
+				were inherited due to group membership.  Logically OR'ing the "privs" and
+				"inheritedPrivs" is the same as the "combinedPrivs".
+
+				A user with GRANT privilege or with READ_ALL_RESOURCES right will receive all privilege
+				information for all users for a that resource.  Other users will only receive their own
+				privilege information.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" minOccurs="1" type="xs:string"/>
+			<xs:element name="nameType" minOccurs="1" type="ns:PrivilegeNameTypeValidationList"/>
+			<xs:element name="domain" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						domain which the resource belongs to.  default is "composite"
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+			<xs:element name="privileges" minOccurs="1" type="ns:PrivilegeList"/>
+			<xs:element name="combinedPrivileges" minOccurs="0" type="ns:PrivilegeList"/>
+			<xs:element name="inheritedPrivileges" minOccurs="0" type="ns:PrivilegeList"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="PrivilegeNameTypeValidationList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				The Name Type validation list including 1 of [USER GROUP]
+			</xs:documentation>  
+		</xs:annotation>		
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="USER"/>
+			<xs:enumeration value="GROUP"/>
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="PrivilegeList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A space separated list of Privileges that may include 1 or more of [NONE READ WRITE EXECUTE SELECT UPDATE INSERT DELETE GRANT]
+			</xs:documentation>  
+		</xs:annotation>
+	  <xs:list itemType="ns:PrivilegeValidationList"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="PrivilegeValidationList">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="READ"/>
+			<xs:enumeration value="WRITE"/>
+			<xs:enumeration value="EXECUTE"/>
+			<xs:enumeration value="SELECT"/>
+			<xs:enumeration value="UPDATE"/>
+			<xs:enumeration value="INSERT"/>
+			<xs:enumeration value="DELETE"/>
+			<xs:enumeration value="GRANT"/>
+	  </xs:restriction>
+	</xs:simpleType>
+
+<!-- END: PrivilegeModule Property Definition-->
+
+<!-- BEGIN: RebindModule Property Definition-->
+  <xs:element name="RebindModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Rebind Module: This module is used to rebind Composite resources.  There are two methodologies when rebinding.
+			Rebind Resource is the traditional rebinding where both the source and the target resources exist.
+			Rebind Folder is used to rebind either all procedures or all views within the folder to a target resource such as a data source.  
+			This is useful when all the views or procedures point to the same target resource.
+		</xs:documentation>
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element name="rebind" maxOccurs="unbounded" minOccurs="0" type="ns:RebindType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="RebindType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Rebind Type: The Rebind Type provides a choice between the traditional rebinding or the rebind resources in a folder.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="rebindResource" minOccurs="0" maxOccurs="1" type="ns:RebindResourceType"/>
+			<xs:element name="rebindFolder" minOccurs="0" maxOccurs="1" type="ns:RebindFolderType"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="RebindResourceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Rebind Resource Type: The Rebind Resource Type provides a structure to define which resource to perform a 
+				rebind on.  This resource may contain one or more resources that it uses (invokes).  For example a SQL procedure
+				may invoke another procedure and two views.  If the underlying resource change folders, then a rebind would need
+				to be performed.  The rebind rules type is used to provide an iteration resources to rebind to.  The rules identify
+				the the old resource path/type and the new resource path/type.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of resources to rebind.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="resourceType" minOccurs="0" type="ns:ResourceTypeSimpleType"/>
+			<xs:element name="rebindRules" minOccurs="0" maxOccurs="unbounded" type="ns:RebindRuleType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RebindRuleType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Rebind Rule Type: The Rebind Rule Type provides a way of identifying the old (source) path and type and the new (target) path and type.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="oldPath" type="xs:string"/>
+			<xs:element name="oldType" type="ns:ResourceTypeSimpleType"/>
+			<xs:element name="newPath" type="xs:string"/>
+			<xs:element name="newType" type="ns:ResourceTypeSimpleType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RebindFolderType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Rebind Folder Type: The Rebind Folder Type provides an easy to configure interface where the user wants to rebind all 
+				procedures or views within the starting folder.  Only views and procedures are supported.  The rebindFromFolder is what
+				the resource is currently pointing to.  The rebindToFolder is where you want to rebind the resource to.  Only the target
+				resource need be present in the CIS for this operation to be successful.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of resources to rebind.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="startingFolderPath" type="xs:string" minOccurs="1"/>
+			<xs:element name="rebindFromFolder" type="xs:string" minOccurs="1"/>
+			<xs:element name="rebindToFolder" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+<!-- END: RebindModule Property Definition-->
+
+<!-- BEGIN: RegressionModule Property Definition-->
+  <xs:element name="RegressionModule">
+  	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Regression Module: This module contains a list of regression tests.
+		</xs:documentation>  
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="regressionTest" type="ns:RegressionTestType"/>
+       			<xs:element maxOccurs="1" minOccurs="0" name="regressionQueries" type="ns:RegressionQueriesType"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="regressionSecurity" type="ns:RegressionSecurityType"/>
+   	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="RegressionTestType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Test Type: A regression test consists of a configuration for generating a regression test and a configuration for executing (running) a regression test.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of regression tests.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="inputFilePath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Input File Path - full path to the test file including file name.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="tempDirPath" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Temporary Directory Path - the temporary directory path is for writing out temp files during query retrieval.  Typically this is the same directory where the input file is written as this will insure there are sufficient privileges to write to the file system.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="createNewFile">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Create/generate a new regression test file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="newFileParams" maxOccurs="1" minOccurs="0" type="ns:RegressionNewFileParamsType"/>
+			<xs:element name="testRunParams" maxOccurs="1" minOccurs="0" type="ns:RegressionTestRunParamsType"/>
+			<xs:element name="compareFiles" maxOccurs="1" minOccurs="0" type="ns:RegressionCompareFilesType"/>
+			<xs:element name="compareLogs" maxOccurs="1" minOccurs="0" type="ns:RegressionCompareLogsType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionQueriesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Queries Type: A list of regression queries.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="regressionQuery" type="ns:RegressionQueryType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionQueryType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Query Type: A regression query consists a list of queries that are used to populate the regression input file.  This list is a single list for all datasources.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="datasource" minOccurs="1" maxOccurs="1" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					The datasource identifies which CIS published data source the query belongs to.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="query" minOccurs="1" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The query contains the SQL SELECT statement or the web service input.  
+						For SQL queries, the FROM clause must contain the fully qualified Table or Procedure URL. 
+						SQL example: SELECT * FROM CATALOG1.SCHEMA1.TABLE1... or SELECT * FROM CATALOG1.SCHEMA1.PROC1(1)
+						WS example:
+						<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
+						   <soap:Header/>
+						   <soap:Body>
+						      <tem:LookupProduct>
+						         <tem:LookupProductDesiredproduct>10</tem:LookupProductDesiredproduct>
+						      </tem:LookupProduct>
+						   </soap:Body>
+						</soap:Envelope>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="durationDelta" maxOccurs="1" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Duration delta for this query. Format must be as follows within brackets: [000 00:00:00.0000] 
+						When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range).  
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+		   	<xs:element name="wsPath" maxOccurs="1" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The web service path is really the endpoint URL or the port path.  
+						For Composite Legacy Web Services open the port container in CIS Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
+						The wsPath=/services/testWebService00/testService/testPort.ws
+						For Composite New Web Service (6.1 or higher) open the web service in Studio and click on the SOAP tab and Service panel and look at Endpoint and WSDL URLS: /testWebService
+						For Soap11 wsPath=/soap11/testWebService
+						For Soap12 wsPath=/soap12/testWebService
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		   	<xs:element name="wsAction" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The web service action is the operation to be executed.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="wsEncrypt" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The web service encrypt determines if http (false) or https (true) should be used.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="wsContentType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The content type for a web service.
+						Legacy Web Serivce and New Web Service soap11=text/xml;charset=UTF-8
+						New Web Service soap12=application/soap+xml;charset=UTF-8
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="text/xml;charset=UTF-8"/>
+						<xs:enumeration value="application/soap+xml;charset=UTF-8"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionNewFileParamsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Parameter settings for generating a new regression test file.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence> 
+			<xs:element name="createQueries">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Create file with published queries (tables/views)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="createProcedures">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Create file with published procedures.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="createWS">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Create file with published web services.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="createSoapType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[all|soap11|soap12] The soap type specifies whether to generate web services using soap11 (default), soap12 or all.  soap12 is only applicable for CIS 6.1 and higher and only if a CIS New Composite Web Service has been created.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="all"/>
+						<xs:enumeration value="soap11"/>
+						<xs:enumeration value="soap12"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="useDefaultViewQuery">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Use the default query when generating views for the input file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="useDefaultProcQuery">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Use the default query when generating procedures for the input file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="useDefaultWSQuery">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Use the default query when generating web services for the input file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="publishedViewQry" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						SQL query to be used for all published views
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="publishedProcQry" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						SQL query to be used for all published procedures
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="useAllDatasources">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), use all datasources that are published to generate a test file and ignore the datasources list.  When (no|false), use the datasources list provided to generate a test file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="datasources" maxOccurs="1" minOccurs="0" type="ns:RegressionDatasourcesType"/>
+			<!-- This is a list of resources for which to perform test executions.  A wild card ".*" may be used at the catalog or schema level to denote that all resources under that level should be executed.  A fully qualified resource may be identified as well. This of this as a filter that can be fine-tuned for one or more resources. If left empty then all resources are executed. Overlapping resource wild cards will use the highest level specified in this list. -->
+			<xs:element name="resources" maxOccurs="1" minOccurs="0" type="ns:RegressionResourcesType"/>
+			<!-- This is a list of resources for which to perform test executions.  A wild card ".*" may be used at the catalog or schema level to denote that all resources under that level should be executed.  A fully qualified resource may be identified as well. This of this as a filter that can be fine-tuned for one or more resources. If left empty then all resources are executed. Overlapping resource wild cards will use the highest level specified in this list. -->
+			<xs:element name="securityGenerationOptions" maxOccurs="1" minOccurs="0" type="ns:RegressionSecurityGenerationOptionsType"/>
+
+			<xs:element name="defaultProcParamValues" maxOccurs="1" minOccurs="0" type="ns:RegressionDefaultProcParamsValType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionTestRunParamsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Parameter settings for testing a regression test file.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+
+			<xs:element name="testType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. Note: functionally the same as migration but provided as a way of documenting the test type.
+				performance - A full query like "select * from {table} where {where_clause}" is executed repeatedly on multiple threads for a specified duration of time to capture results.
+							  A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.
+				security - A security test tests the security privileges for published views and the lineage of those views.  
+							A security tests correlates a set of users with a series of queries and expected outcomes to measure success.
+							  </xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="functional"/>
+						<xs:enumeration value="migration"/>
+						<xs:enumeration value="regression"/>
+						<xs:enumeration value="performance"/>
+						<xs:enumeration value="security"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<!-- Comparison results are written to this log file. -->
+			<xs:element name="logFilePath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the execution test run log file
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="logDelimiter" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter for the execution test run log file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="COMMA"/>
+						<xs:enumeration value=","/>
+						<xs:enumeration value="PIPE"/>
+						<xs:enumeration value="|"/>
+						<xs:enumeration value="TAB"/>
+						<xs:enumeration value="TILDE"/>
+						<xs:enumeration value="~"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="logAppend">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), append to the existing execution log file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<!-- This is the base directory from which the files will be pulled from during comparsion.  
+			It represents one of two instances of the regression execution tests at a point in time. -->
+			<xs:element name="baseDir" maxOccurs="1" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the base directory for the output files for an instance of a regression execution test.  
+						If baseDir does not exist or is empty then the output file is not written out.  
+						This may be desirable when doing performance tests where the query should be executed but the data is not logged.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="delimiter">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter for data output files.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="COMMA"/>
+						<xs:enumeration value=","/>
+						<xs:enumeration value="PIPE"/>
+						<xs:enumeration value="|"/>
+						<xs:enumeration value="TAB"/>
+						<xs:enumeration value="TILDE"/>
+						<xs:enumeration value="~"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="printOutput">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Print output to command line: [verbose|summary|silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="verbose"/>
+						<xs:enumeration value="summary"/>
+						<xs:enumeration value="silent"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<!-- For performance testing only. -->
+			<xs:element name="perfTestThreads" maxOccurs="1" minOccurs="0" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The number of threads to create when doing performance testing.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- For performance testing only. -->
+			<xs:element name="perfTestDuration" maxOccurs="1" minOccurs="0" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The duration in seconds to execute the performance test for.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- For performance testing only. -->
+			<xs:element name="perfTestSleepPrint" maxOccurs="1" minOccurs="0" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The number of seconds to sleep in between printing stats when executing the performance test.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<!-- For performance testing only. -->
+			<xs:element name="perfTestSleepExec" maxOccurs="1" minOccurs="0" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The number of seconds to sleep in between query executions when executing the performance test.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<!-- Filters for security execution only -->
+			<xs:element name="securityExecution" maxOccurs="1" minOccurs="0" type="ns:RegressionSecurityExecutionType"/>
+
+			<!-- Filters to determine what to execute -->
+			<xs:element name="runQueries">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Run test for published queries (tables/views)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="runProcedures">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Run test for published procedures.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="runWS">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Run test for web services.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="useAllDatasources">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), use all datasources found in the file and ignore the datasources list.  When (no|false), run the test based on the datasources found in the list provided.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="datasources" maxOccurs="1" minOccurs="0" type="ns:RegressionDatasourcesType"/>
+			<!-- This is a list of resources for which to perform test executions.  A wild card ".*" may be used at the catalog or schema level to denote that all resources under that level should be executed.  A fully qualified resource may be identified as well. This of this as a filter that can be fine-tuned for one or more resources. If left empty then all resources are executed. Overlapping resource wild cards will use the highest level specified in this list. -->
+			<xs:element name="resources" maxOccurs="1" minOccurs="0" type="ns:RegressionResourcesType"/>
+	</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="RegressionCompareFilesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Parameter settings for comparing regression execution result files.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence> 
+			<!-- Comparison results are written to this log file. -->
+			<xs:element name="logFilePath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the compareFiles log file
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="logDelimiter" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter used to output to the log file for compareFiles.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="COMMA"/>
+						<xs:enumeration value=","/>
+						<xs:enumeration value="PIPE"/>
+						<xs:enumeration value="|"/>
+						<xs:enumeration value="TAB"/>
+						<xs:enumeration value="TILDE"/>
+						<xs:enumeration value="~"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="logAppend">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), append to the existing comparison log file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<!-- These are the two base directories from which the files will be pulled from.  They represent the two instances of the regression execution tests and two different points in time. -->
+			<xs:element name="baseDir1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the base directory for the output files from instance 1 of a regression execution test.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="baseDir2" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the base directory for the output files from instance 2 of a regression execution test.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="compareQueries">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Compare files for published queries (tables/views)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="compareProcedures">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Compare files for published procedures.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="compareWS">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] Compare files for web services.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="useAllDatasources">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), use all data sources that are published to generate a test file and ignore the datasources list.  When (no|false), use the datasources list provided to generate a test file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="datasources" maxOccurs="1" minOccurs="0" type="ns:RegressionDatasourcesType"/>
+
+			<!-- This is a list of resources for which to perform comparisons.  A wild card ".*" may be used at the catalog or schema level to denote that all resources under that level should be compared.  A fully qualified resource may be identified as well. This of this as a filter that can be fine-tuned for one or more resources. If left empty then all resources are compared. Overlapping resource wild cards will use the highest level specified in this list. -->
+			<xs:element name="resources" maxOccurs="1" minOccurs="0" type="ns:RegressionResourcesType"/>
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionCompareLogsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Parameter settings for comparing regression execution log files.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence> 
+			<!-- Comparison results are written to this log file. -->
+			<xs:element name="logFilePath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the compareLogs log file
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="logDelimiter" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter used to output to the log file for compareLogs.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="COMMA"/>
+						<xs:enumeration value=","/>
+						<xs:enumeration value="PIPE"/>
+						<xs:enumeration value="|"/>
+						<xs:enumeration value="TAB"/>
+						<xs:enumeration value="TILDE"/>
+						<xs:enumeration value="~"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="logAppend">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] When (yes|true), append to the existing comparison log file.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<!-- These are the two base directories from which the files will be pulled from.  They represent the two instances of the regression execution tests and two different points in time. -->
+			<xs:element name="logFilePath1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the query execution log file representing the baseline system.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="logFilePath2" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to the query execution log file representing the system to compare results with.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:choice>
+				<xs:element name="logDelimiter1" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter use by log file 1.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="COMMA"/>
+							<xs:enumeration value=","/>
+							<xs:enumeration value="PIPE"/>
+							<xs:enumeration value="|"/>
+							<xs:enumeration value="TAB"/>
+							<xs:enumeration value="TILDE"/>
+							<xs:enumeration value="~"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="delimiter1" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter used by log file 1.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="COMMA"/>
+							<xs:enumeration value=","/>
+							<xs:enumeration value="PIPE"/>
+							<xs:enumeration value="|"/>
+							<xs:enumeration value="TAB"/>
+							<xs:enumeration value="TILDE"/>
+							<xs:enumeration value="~"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:choice>
+
+			<xs:choice>
+				<xs:element name="logDelimiter2" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter used by log file 2.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="COMMA"/>
+							<xs:enumeration value=","/>
+							<xs:enumeration value="PIPE"/>
+							<xs:enumeration value="|"/>
+							<xs:enumeration value="TAB"/>
+							<xs:enumeration value="TILDE"/>
+							<xs:enumeration value="~"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="delimiter2" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">[COMMA\,\PIPE\|\TAB\TILDE\~] A column delimiter used used by log file 2.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="COMMA"/>
+							<xs:enumeration value=","/>
+							<xs:enumeration value="PIPE"/>
+							<xs:enumeration value="|"/>
+							<xs:enumeration value="TAB"/>
+							<xs:enumeration value="TILDE"/>
+							<xs:enumeration value="~"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:choice>
+
+			<xs:element name="durationDelta" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default duration delta for all queries. Format must be as follows within brackets: [000 00:00:00.0000] 
+						When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range).  
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionResourcesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				This is a list of resources for which use as a filter against the actual Composite datasource(s) to perform comparisons or test executions.  
+				A wild card ".*" may be used at the catalog or schema level to denote that all resources under that level should be compared or executed.  
+				A fully qualified resource may be identified as well. This of this as a filter that can be fine-tuned for one or more resources. 
+				If left empty then all resources are compared or executed. Overlapping resource wild cards will use the highest level specified in this list.					
+					Examples: 
+					CAT.* (include all resources under the catalog CAT), 
+					CAT.SCHEMA.* (include all resources under the schema located at CAT.SCHEMA)
+					CAT.SCHEMA.VIEW1 (include the resource specified by CAT.SCHEMA.VIEW1)
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="resource" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityGenerationOptionsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				These security options provide the user with the ability to refine how the regression security XML section of the
+				RegressionModule.xml is generated.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="pathToTargetRegressionXML" type="xs:string" maxOccurs="1" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Path to Target Regression Module XML - a required path to the target configuration file for the regression module.  Provides a way of writing to a different file than the source or original RegressionModule.xml.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="encryptedPassword" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Encrypted Password - An optional security user default password.  It will be encrypted when the ExecutePDTool.bat -encrypt ..\resources\modules\RegressionModule.xml is executed.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="userFilter" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Security user filter - This optional filter is a comma separated list of users or wild card users that can be used to filter the generation of the Regression Security User list.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="domainFilter" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Security domain filter - This optional filter provides a way of specifying what domain the userFilter should be applied to.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="userMode" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security user XML, APPEND=add to existing security user XML if the user does not exist.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="NOEXEC"/>
+						<xs:enumeration value="OVERWRITE"/>
+						<xs:enumeration value="APPEND"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="queryMode" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security query XML, APPEND=add to existing security query XML if the query does not exist.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="NOEXEC"/>
+						<xs:enumeration value="OVERWRITE"/>
+						<xs:enumeration value="APPEND"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="planMode" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[NOEXEC|OVERWRITE|APPEND] - NOEXEC (default)=do nothing, don't execute. OVERWRITE=overwrite existing security plan XML, APPEND=add to existing security plan XML if the plan does not exist.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="NOEXEC"/>
+						<xs:enumeration value="OVERWRITE"/>
+						<xs:enumeration value="APPEND"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="planModeType" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						[SINGLEPLAN|MULTIPLAN] - SINGLEPLAN=Generate the Cartesian plan as a single plan. MULTIPLAN=Generate the Cartesian plan as multiple plans for each user who has the same set of queries.  
+						e.g. when planMode=OVERWRITE and planModeType=MULTIPLAN - will produce a new list where each user is a security plan with the full set of queries.  
+						e.g. when planMode=APPEND and planModeType=SINGLEPLAN - will produce a new plan appended to the existing set of plans where this plan will contain a Cartesian product of users and queries.  
+	 				</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SINGLEPLAN"/>
+						<xs:enumeration value="MULTIPLAN"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="planIdPrefix" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Security Plan Id Prefix - The plan id prefix provides a way of overriding the default [sp].  For example a plan id=sp1,sp2, etc.  This gives the user the ability to identify certain plans with different prefixes.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="planGenerateExpectedOutcome" maxOccurs="1" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The plan generate expected outcome determines whether to (true) generate the outcome based on retrieving privileges for a given query resource and cross-referencing with the user and their groups to determine what the expected outcome should be upon execution (false) do not generate the outcome and leave blank.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:element name="flattenSecurityUsersXML" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The flatten security users XML [node="regressionSecurityUser"] output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="flattenSecurityQueryQueriesXML" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The flatten security query (SQL Queries) [node="regressionSecurityQuery" and "queryType"=QUERY] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="flattenSecurityQueryProceduresXML" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The flatten security query (SQL Procedures) [node="regressionSecurityQuery" and "queryType"=PROCEDURE] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="flattenSecurityQueryWebServicesXML" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The flatten security query (Web Services) [node="regressionSecurityQuery" and "queryType"=WEB_SERVICES] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="flattenSecurityPlansXML" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The flatten security plans [node="regressionSecurityPlanTest"] XML output determines whether to (true) flatten the results (false) print out with pretty XML output.  It is recommended to print user XML as flattened so it can be read and edited like a table and is more compact.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="RegressionSecurityExecutionType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				These security options provide the user with the ability to refine how the regression security is executed.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+
+			<!-- For security testing only. -->
+			<xs:element name="securityPlanIds" maxOccurs="1" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The identifier or list of comma separated identifiers for the security test plan to execute.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="securityOverallRatingException" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] yes|true=Throw an exception when the overall security rating=FAIL, no|false=Don't throw an exception when the overall security rating=FAIL.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="securityExecutionErrorException" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">[yes|no|true|false] yes|true=throw an exception when their were errors, result=ERROR, no|false=don't throw an exception when their were errors, result=ERROR</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionDatasourcesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				CIS Published Datasource Names
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dsName" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+    <xs:complexType name="RegressionDefaultProcParamsValType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Default parameter values for procedures based on their SQL type
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="bit" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for BIT SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="varchar" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for VARCHAR SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="char" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for CHAR SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="clob" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for CLOB SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="integer" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for INTEGER SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="int" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for INT SQL type (alias for INTEGER)
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+				<xs:element name="bigint" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for BIGINT SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+				<xs:element name="smallint" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for SMALLINT SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+				<xs:element name="tinyint" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for TINYINT SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="decimal" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for DECIMAL SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>	
+		<xs:element name="numeric" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for NUMERIC SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="real" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for REAL SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="float" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for FLOAT SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="double" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for DOUBLE SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="date" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for DATE SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="time" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for TIME SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>			
+		<xs:element name="timestamp" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for TIMESTAMP SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="binary" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for BINARY SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="varbinary" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for VARBINARY SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="blob" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for BLOB SQL type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+		<xs:element name="xml" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Default value for XML type
+					</xs:documentation>
+				</xs:annotation>
+		</xs:element>
+	  </xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Type: A collection of users, queries and plans for testing security.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="1" minOccurs="0" name="regressionSecurityUsers" type="ns:RegressionSecurityUsersType"/>
+			<xs:element maxOccurs="1" minOccurs="0" name="regressionSecurityQueries" type="ns:RegressionSecurityQueriesType"/>
+			<xs:element maxOccurs="1" minOccurs="0" name="regressionSecurityPlans" type="ns:RegressionSecurityPlansType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityUsersType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Users Type: A list of regression users used to test security privileges.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="regressionSecurityUser" type="ns:RegressionSecurityUserType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityUserType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security User Type: a user profile used to connect to CIS to test security privileges.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="userName" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="encryptedPassword" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="domain" type="xs:string" maxOccurs="1" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityQueriesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Queries Type: A list of regression queries used to test security privileges.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="regressionSecurityQuery" type="ns:RegressionSecurityQueryType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityQueryType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Query Type: A regression security query consists a list of queries that are used to execute security privileges.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="datasource" minOccurs="1" maxOccurs="1" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					The datasource identifies which CIS published data source the query belongs to.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="queryType" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The type of query.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="QUERY"/>
+						<xs:enumeration value="PROCEDURE"/>
+						<xs:enumeration value="WEB_SERVICE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="query" minOccurs="1" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The query contains the SQL SELECT statement or the web service input.  
+						For SQL queries, the FROM clause must contain the fully qualified Table or Procedure URL. 
+						SQL example: SELECT * FROM CATALOG1.SCHEMA1.TABLE1... or SELECT * FROM CATALOG1.SCHEMA1.PROC1(1)
+						WS example:
+						<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
+						   <soap:Header/>
+						   <soap:Body>
+						      <tem:LookupProduct>
+						         <tem:LookupProductDesiredproduct>10</tem:LookupProductDesiredproduct>
+						      </tem:LookupProduct>
+						   </soap:Body>
+						</soap:Envelope>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		   	<xs:element name="procOutTypes" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						procOutTypes=list of comma separated java.sql.Types JDBC type names
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		   	<xs:element name="wsPath" maxOccurs="1" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The web service path is really the endpoint URL or the port path.  
+						For Composite Legacy Web Services open the port container in CIS Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
+						The wsPath=/services/testWebService00/testService/testPort.ws
+						For Composite New Web Service (6.1 or higher) open the web service in Studio and click on the SOAP tab and Service panel and look at Endpoint and WSDL URLS: /testWebService
+						For Soap11 wsPath=/soap11/testWebService
+						For Soap12 wsPath=/soap12/testWebService
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		   	<xs:element name="wsAction" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The web service action is the operation to be executed.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="wsEncrypt" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The web service encrypt determines if http (false) or https (true) should be used.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="wsContentType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The content type for a web service.
+						Legacy Web Serivce and New Web Service soap11=text/xml;charset=UTF-8
+						New Web Service soap12=application/soap+xml;charset=UTF-8
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="text/xml;charset=UTF-8"/>
+						<xs:enumeration value="application/soap+xml;charset=UTF-8"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="resourcePath" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The CIS resource path.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="resourceType" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The CIS resource type.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityPlansType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Plans Type: A list of security plans that correlate users with queries for execution.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="regressionSecurityPlan" type="ns:RegressionSecurityPlanType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityPlanType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Plan Type: A security plan correlates users with queries for execution.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="regressionSecurityPlanTest" type="ns:RegressionSecurityPlanTestType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RegressionSecurityPlanTestType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Regression Security Plan Type: A security plan correlates users with queries for execution.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="enabled" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The enabled [true|false] flag determines whether to execute this plan item or not.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> 
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="userId" minOccurs="1" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						User Id - The user id refers to the id from the list of users.  [node=regressionSecurityUsers].
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="queryId" minOccurs="1" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Query Id - The query id refers to the id from the list of queries.  [node=regressionSecurityQueries].
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="expectedOutcome" minOccurs="1" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Expected Outcome: [PASS|FAIL] PASS=For the given user the query is expected to pass.  FAIL=For the given user the query is expected to FAIL.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The description includes the user and resource path of the query. Format[user :: query]
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+<!-- END: RegressionModule Property Definition-->
+
+<!-- BEGIN: ResourceModule Property Definition-->
+  <xs:element name="ResourceModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Resource Module: This module contains is used to manage Composite Resources.   A CIS resource is considered
+			to be anything in CIS except users, groups, and domains.   Managing a resource involves actions such as
+			checking for existence, renaming, deleting, and more.
+		</xs:documentation>
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="resource" type="ns:ResourceType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="ResourceType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Resource Type: Provides a structure for the Resource Module.  The Resource Type can be used for several actions
+				including execute configured procedures, delete (destroy) a resource, rename a resource, delete a resource and more.  
+				The elements used to "EXECUTE PROCEDURE" are as follows: resourcePath=published procedure name, dataServiceName=published database name, 
+				argument=an iteration of arguments where by each argument that is passed into the procedure goes on a separate argument line.
+				The elements used to "RENAME RESOURCE" are as follows: resourcePath=A source path of the resource to be renamed,
+				resourceType, newName=The new name of the resource.
+				The elements used to "DELETE RESOURCE" are as follows: resourcePath, resourceType and force=If "true", then attempt to destroy as many resources as possible.
+       			If "false", then do not destroy any resource if there exists at least one that is not destroyable.
+				The elements used to "UNLOCK RESOURCE" are as follows: resourcePath, resourceType, and comment=A description about why the resource is being unlocked.
+				The elements used to "MOVE RESOURCE" are as follows: resourcePath, resourceType, newName, targetContainerPath=The path of the target container to move the resource into,
+				force=If a resource exists in the target container with the same name and type of the target resource and force is "true", then the resource within the
+       			target container will be overwritten.  If force is "false", then a DuplicateName fault will be generated and resource will not be moved.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of resources.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="resourcePath" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					The CIS resource path.  Generally only a single resource path is used.  However, methods such as doResourceExists and createFolder allow a list of resource paths to be specified.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="recursive" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					This variable is used when creating folders.
+					* "true" - Recursively create the folder structure provided by resourcePath.
+					* "false" - Only create the specified folder and fail if the intermediate folders do not exist.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+			<xs:element name="targetContainerPath" minOccurs="0" type="xs:string"/>
+			<xs:element name="newName" minOccurs="0" type="xs:string"/>
+			<xs:element name="copyMode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					* "ALTER_NAME_IF_EXISTS" - If a resource of the same name and type of the source
+					     resource already exists in the target container, then avoid conflicts by
+					     automatically generating a new name.  Names are generated by appending a number
+					     to the end of the provided name.
+					* "FAIL_IF_EXISTS" - Fails if a resource of the same name and type already exists in the
+					     target container.  The resource will not be copied if this occurs.
+					* "OVERWRITE_MERGE_IF_EXISTS" - If a resource of the same name and type of the source
+					     resource already exists in the target container, then overwrite the resource in the
+					     target container.  If the source resource is a container, then merge the contents
+					     of the source container with the corresponding resource in the target.  All
+					     resources in the source container will overwrite those resources with the same name
+					     in the target, but child resources in the target with different names will not be 
+					     overwritten and remain unaltered.
+					* "OVERWRITE_REPLACE_IF_EXISTS" - If a resource of the same name and type of the source
+					     resource already exists in the target container, then overwrite the resource in the
+					     target container.  If the source resource is a container, then replace the container
+					     within the target container with the source container.  This is equivalent to
+					     deleting the container in the target before copying the source.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ALTER_NAME_IF_EXISTS"/>
+						<xs:enumeration value="FAIL_IF_EXISTS"/>
+						<xs:enumeration value="OVERWRITE_MERGE_IF_EXISTS"/>
+						<xs:enumeration value="OVERWRITE_REPLACE_IF_EXISTS"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+			<xs:element name="comment" minOccurs="0" type="xs:string"/>
+			<xs:element name="dataServiceName" minOccurs="0" type="xs:string"/>
+			<xs:element name="argument" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="outputReturnVariables" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						outputReturnVariables true=(default) output the values of the return variables from the procedure call, false=do not output the return variable values.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ignoreErrors" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					This variable is used when creating folders and designates whether to ignore errors or not.
+					* "true" - ignore any errors that are thrown. false/null=do not ignore errors.
+					* "false" or null - Default. Do not ignore errors.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="true"/>
+						<xs:enumeration value="false"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+
+		</xs:sequence>
+	</xs:complexType>
+<!-- END: ResourceModule Property Definition-->
+
+<!-- BEGIN: ResourceCacheModule Property Definition-->
+  <xs:element name="ResourceCacheModule">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Resource Cache Module: This module is used to manage Composite Resource Caches such as Views and Procedures
+				where caching is turned on.
+			</xs:documentation>
+		</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="resourceCache" type="ns:ResourceCacheType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="ResourceCacheType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Resource Cache Type: Provides the ability to configure cache on procedures and views.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						id is a unique name identifier within the list of resource cache identifiers.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="resourcePath" type="xs:string"/>
+			<xs:element name="resourceType" minOccurs="1" type="ns:ResourceTypeSimpleType"/>		
+			<xs:element name="cacheConfig" minOccurs="1" type="ns:ResourceCacheConfigType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheConfigType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Cache Config Type: Provides the ability to create a resource cache configuration (configured=true), enable the cache (enabled=true), define the storage, refresh policy, expiration and clear rule.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="configured" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						"true" if caching should be configured for the given resource; otherwise "false".  
+						If not provided, the configured setting will be left unaltered.  
+						If configured is "false" all other elements will be ignored.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="enabled" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						"true" if the cache is enabled; otherwise "false".
+	           			If not provided, the enable setting will be left unaltered.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="storage" minOccurs="0" type="ns:ResourceCacheStorageType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					storage (optional): How the cached is stored.  If not provided, the storage settings will be left unaltered.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refresh" minOccurs="0" type="ns:ResourceCacheRefreshType"/>
+			<xs:element name="expirationPeriod" type="ns:ResourceCacheCalendarPeriodType" minOccurs="0">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					expirationPeriod: The amount of time that the cache will be cleared after it is refreshed.  
+						If less than zero, the period will be set to zero.  
+						If zero then the cache will never expire.  
+						If not provided, the enable setting will be left unaltered.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="clearRule" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					clearRule: One of "NONE", "ON_LOAD", or "ON_FAILURE".  
+						NONE=Studio::when user clears it manually
+						ON_LOAD=Studio::when refresh begins
+						ON_FAILURE=Studio::when refresh fails
+					   Normally old cache data is cleared on expiration and when a cache refresh successfully completes.
+			           In the latter case the old cache data is replaced by the new cached data.
+			           If "NONE", then the normal behavior will be used.  
+					   If "ON_LOAD", in addition to the normal behavior the old cache data will be cleared when a refresh is started.  
+					   If "ON_FAILURE", in addition to the normal behavior the old cache data will be cleared when a refresh fails.  
+					   If not provided, the enable setting will be left unaltered.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="NONE"/>
+						<xs:enumeration value="ON_LOAD"/>
+						<xs:enumeration value="ON_FAILURE"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheStorageType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Cache Storage Type: Define the storage for the cache. May be either "AUTOMATIC" or "DATA_SOURCE".
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mode">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+				mode: Storage type used for the cache. May be either "AUTOMATIC" or "DATA_SOURCE".
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="AUTOMATIC"/>
+					<xs:enumeration value="DATA_SOURCE"/>
+				</xs:restriction>
+			</xs:simpleType>
+		   </xs:element>
+			<xs:element name="storageDataSourcePath" type="xs:string" minOccurs="0">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+				storageDataSourcePath (optional): If the mode is "DATA_SOURCE", this identifies the path to the data source being used to store cache data.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="storageTargets" minOccurs="0" maxOccurs="unbounded" type="ns:ResourceCacheStorageTargetsType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+				storageTargets (optional): If the mode is "DATA_SOURCE", this identifies the tables used for storing cache data entry.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheStorageTargetsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Storage Targets Type: Define the storage targets.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="targetName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					targetName: 
+					   For a TABLE resource this is always "result".
+                   	   For a PROCEDURE resource, this is the name of a cursor parameter,
+                   	   or an empty string for the scalar output parameters.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="path" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						path: The path to the table used for storing this data.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="type">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						type: Always "TABLE"
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="TABLE"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheRefreshType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+				refresh (optional): How the cache should be refreshed.  If not provided, the refresh settings will be left unaltered.
+				</xs:documentation>
+			</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mode">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					mode: How the cache should be refreshed.  May be "MANUAL" or "SCHEDULED".
+					When "MANUAL", schedule is not set
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="MANUAL"/>
+					<xs:enumeration value="SCHEDULED"/>
+				</xs:restriction>
+			</xs:simpleType>
+		   </xs:element>
+			<xs:element name="schedule" type="ns:ResourceCacheRefreshScheduleType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+				<xs:documentation xml:lang="en">
+				refresh (optional): How the cache should be refreshed.  If not provided, the refresh settings will be left unaltered.
+	            	schedule (optional): If the mode is "SCHEDULED", this element will exist with the following child elements:	mode, startTime, interval
+				</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheRefreshScheduleType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Cache Refresh Schedule Type: Defines the type of refresh schedule and related parameters.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="startTime" type="xs:dateTime" minOccurs="0">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					startTime: When the first refresh should occur.
+					e.g. 2011-03-20T09:38:35.000Z
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="refreshPeriod" type="ns:ResourceCacheCalendarPeriodType" minOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					count: The number of period increments between refreshes.
+					When Refresh is "Exactly Once", count=0, period is not set, startTime is not set
+					When Refresh is "Periodic", startTime is configured, period is configured, count is set
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResourceCacheCalendarPeriodType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Cache Calendar Period Type: Defines the type of calendar period and count.
+				When used for Refresh - it defines the period of time between cache refreshes.
+				When used for Expiration - it defines the expiration period for the cache.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="period" minOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SECOND"/>
+						<xs:enumeration value="MINUTE"/>
+						<xs:enumeration value="HOUR"/>
+						<xs:enumeration value="DAY"/>
+						<xs:enumeration value="WEEK"/>
+						<xs:enumeration value="MONTH"/>
+						<xs:enumeration value="YEAR"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="count" type="xs:long" minOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					count: The number of calendar period increments.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+<!-- END: ResourceCacheModule Property Definition-->
+
+<!-- BEGIN: ServerAttrModule Property Definition-->
+  <xs:element name="ServerAttributeModule">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attribute Module:  This selection provides a choice between server attributes and server attribute definitions.
+				This module contains a list Server Attributes to configure. Example Attributes:
+				Attribute Path									Attr Type	Value to set
+				/server/config/net/wsdlhostname,				STRING,		hostname.company.com
+				/server/sql/language/caseSensitive,				BOOLEAN,	false
+				/server/sql/language/ignoreTrailingSpaces,		BOOLEAN,	true
+				/server/memory/heap/javaHeapMaxOnServerRestart,	INTEGER,	4096
+				/server/webservices/baseURI,					STRING,		http://com.composite/project/v1
+				/server/webservices/timezoneBaseOnGMT,			BOOLEAN,	false
+			</xs:documentation>
+		</xs:annotation>
+	  <xs:complexType>
+		<xs:choice>
+			<xs:element name="serverAttribute" maxOccurs="unbounded" minOccurs="1" type="ns:ServerAttributeType"/>
+			<xs:element name="serverAttributeDef" minOccurs="1" type="ns:ServerAttributeDefType" maxOccurs="unbounded"/>
+		</xs:choice>
+	  </xs:complexType>
+  </xs:element>
+  
+	<xs:complexType name="ServerAttributeChoiceType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attribute Choice Type: This selection provides a choice between server attributes and server attribute definitions.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="serverAttribute" maxOccurs="unbounded" minOccurs="1" type="ns:ServerAttributeType"/>
+			<xs:element name="serverAttributeDef" minOccurs="1" type="ns:ServerAttributeDefType" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+
+
+	<xs:complexType name="ServerAttributeType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attribute Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of attributes. 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType"/>
+			<xs:element name="value" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueArray" type="ns:ServerAttributeValueArray" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueList" type="ns:ServerAttributeValueList" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="valueMap" type="ns:ServerAttributeValueMap" maxOccurs="1" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueArray">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value Array
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains any number of items 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value List
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="item" type="ns:ServerAttributeValueListItemType" minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains any number of items 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueListItemType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value List Item Type
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the type of value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueMap">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value Map
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="entry" type="ns:ServerAttributeValueMapEntryType" minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains any number of value map entries 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueMapEntryType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value List Item Type
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" type="ns:ServerAttributeValueMapEntryKeyType" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the type of value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="value" type="ns:ServerAttributeValueMapEntryValueType" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueMapEntryKeyType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value Map Entry Key Type
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the type of value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeValueMapEntryValueType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attributes Value Map Entry Value Type
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the type of value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					contains the value
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ServerAttributeDefType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Server Attribute Definition Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of attribute definitions. 
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="type" type="ns:AttributeTypeSimpleType"/>
+			<xs:element name="allowedValues" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="annotation" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="defaultValue" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="displayName" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="maxValue" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="minValue" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="pattern" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="suggestedValues" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="unitName" type="xs:string" maxOccurs="1" minOccurs="0"/>
+			<xs:element name="updateRule" type="xs:string" maxOccurs="1" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+<!-- END: ServerAttrModule Property Definition-->
+
+<!-- BEGIN: TriggerModule Property Definition-->
+    <xs:element name="TriggerModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Trigger Module: This module is used to manage Composite Triggers.  A trigger is a way to execute functionality
+			on a timed basis or event basis.  The trigger module provides a way to define a list of triggers that the user
+			wants to take action on such as updateTrigger and deleteTrigger.  A sibling of the trigger list is a list of
+			trigger schedules.  Trigger schedules define the schedule that a trigger can use.  The trigger schedule is separate
+			from the trigger schedule because you can define schedule independently and use them independently with different triggers.
+			It is likely that once the trigger schedule list is defined, it would not have to change much.
+		</xs:documentation>
+	</xs:annotation>
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="triggerList" type="ns:TriggerListType"/>
+	      <xs:element name="scheduleList" type="ns:TriggerScheduleListType"/>
+	    </xs:sequence>
+	  </xs:complexType>
+   </xs:element>
+
+      	<xs:complexType name="TriggerListType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Trigger List Type: Contains an unbounded list of Triggers.
+			</xs:documentation>  
+		</xs:annotation>
+      		<xs:sequence>
+      			<xs:element name="trigger" maxOccurs="unbounded" minOccurs="0" type="ns:TriggerType"/>
+      		</xs:sequence>
+      	</xs:complexType>
+
+		<xs:complexType name="TriggerType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Trigger Type: Provides all trigger attributes.
+			</xs:documentation>  
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						id is a unique name identifier within the list of triggers.
+					</xs:documentation>
+				</xs:annotation>
+			   </xs:element>
+
+				<xs:element name="resourcePath" type="xs:string"/>
+				<xs:element name="isEnabled" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="maxEventsQueued" type="xs:integer" minOccurs="0"/>
+				<xs:element name="annotation" type="xs:string" minOccurs="0"/>
+				<xs:element name="condition" type="ns:TriggerConditionChoiceType" minOccurs="0"/>
+				<xs:element name="action" type="ns:TriggerActionChoiceType" minOccurs="0">
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerConditionChoiceType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					resource:conditionType=SYSTEM_EVENT, TIMER, JMS, USER_DEFINED
+				</xs:documentation>
+			</xs:annotation>
+			<xs:choice>
+				<xs:element name="systemEvent" type="ns:TriggerConditionSystemEventType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:conditionType=SYSTEM_EVENT
+							resource:conditionAttributes 
+							AttributeName=EVENT_NAME, AttributeType=STRING, AttributeValue contains a member from ns:TriggerConditionSystemEventValidationList
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="timerEvent" type="ns:TriggerConditionTimerEventType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:conditionType=TIMER
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="jmsEvent" type="ns:TriggerConditionJmsEventType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:conditionType=JMS
+							resource:conditionAttributes::
+							AttributeName=JMS_DESTINATION, AttributeType=STRING
+							AttributeName=JMS_SELECTOR, AttributeType=STRING
+							AttributeName=JMS_CONNECTOR, AttributeType=STRING
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="userDefinedEvent" type="ns:TriggerConditionUserDefinedEventType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:conditionType=USER_DEFINED
+							resource:conditionAttributes::
+							AttributeName=NAME, AttributeType=STRING
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerActionChoiceType">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					resource:actionType=PROCEDURE, STATISTICS, REINTROSPECT, EMAIL
+				</xs:documentation>
+			</xs:annotation>
+			<xs:choice>
+				<xs:element name="executeProcedure" type="ns:TriggerActionExecuteProcedureType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:actionType=PROCEDURE 
+							resource:actionAttributes::
+							AttributeName=PATH, AttributeType=STRING
+							AttributeName=PARAMETERS, AttributeType=STRING
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="gatherStatistics" type="ns:TriggerActionGatherStatisticsType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:actionType=STATISTICS
+							resource:actionAttributes::
+							AttributeName=PATH, AttributeType=STRING
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="reintrospectDatasource" type="ns:TriggerActionReintrospectDatasourceType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:actionType=REINTROSPECT
+							resource:actionAttributes::
+							AttributeName=PATH, AttributeType=STRING
+							AttributeName=TYPE, AttributeType=STRING, value=PROCEDURE
+							AttributeName=TO, AttributeType=STRING
+							AttributeName=CC, AttributeType=STRING
+							AttributeName=BCC, AttributeType=STRING
+							AttributeName=REPLYTO, AttributeType=STRING
+							AttributeName=SUBJECT, AttributeType=STRING
+							AttributeName=CONTENT, AttributeType=STRING
+							AttributeName=SKIP_IF_NO_RESULTS, AttributeType=BOOLEAN
+							AttributeName=NO_COMMIT, AttributeType=BOOLEAN
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="sendEmail" type="ns:TriggerActionSendEmailType">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							resource:actionType=EMAIL 
+							resource:actionAttributes::
+							AttributeName=PATH, AttributeType=STRING
+							AttributeName=TYPE, AttributeType=STRING, value=PROCEDURE
+							AttributeName=PARAMETERS, AttributeType=STRING, value=1,'arg2'
+							AttributeName=TO, AttributeType=STRING
+							AttributeName=CC, AttributeType=STRING
+							AttributeName=BCC, AttributeType=STRING
+							AttributeName=REPLYTO, AttributeType=STRING
+							AttributeName=SUBJECT, AttributeType=STRING
+							AttributeName=CONTENT, AttributeType=STRING
+							AttributeName=SKIP_IF_NO_RESULTS, AttributeType=BOOLEAN
+							AttributeName=SUMMARY, AttributeType=BOOLEAN
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+
+
+		<xs:complexType name="TriggerConditionSystemEventType">
+	  		<xs:annotation>
+				<xs:documentation xml:lang="en">
+					System Event Type: Provides all system event condition attributes.
+				</xs:documentation>  
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="eventName" type="ns:TriggerConditionSystemEventValidationList"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:simpleType name="TriggerConditionSystemEventValidationList">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Validation List for Trigger Condition System Events
+				</xs:documentation>
+			</xs:annotation>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="CacheRefreshFailure"/>
+				<xs:enumeration value="CacheRefreshSuccess"/>
+				<xs:enumeration value="DataSourceDown"/>
+				<xs:enumeration value="DataSourceUp"/>
+				<xs:enumeration value="RequestFailure"/>
+				<xs:enumeration value="RequestInactive"/>
+				<xs:enumeration value="RequestRunForTooLong"/>
+				<xs:enumeration value="ResourceLock"/>
+				<xs:enumeration value="ResourceUnlock"/>
+				<xs:enumeration value="RequestsSpike"/>
+				<xs:enumeration value="ErrorsSpike"/>
+				<xs:enumeration value="FailedLoginSpike"/>
+				<xs:enumeration value="StatisticsGatheringFailure"/>
+				<xs:enumeration value="ServerStart"/>
+				<xs:enumeration value="ServerStop"/>
+				<xs:enumeration value="TransactionFailure"/>
+			</xs:restriction>
+		</xs:simpleType>
+
+		<xs:complexType name="TriggerConditionTimerEventType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Timer Event Type: Provides all timer event condition attributes.
+			</xs:documentation>  
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="scheduleId" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerConditionJmsEventType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				JMS Event Type: Provides all JMS event condition attributes.
+			</xs:documentation>  
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="connector" type="xs:string"/>
+				<xs:element name="destination" type="xs:string"/>
+				<xs:element name="selector" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerConditionUserDefinedEventType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				User Defined Event Type: Provides all user defined event condition attributes.
+			</xs:documentation>  
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="eventName" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerActionGatherStatisticsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Gather Statistics Type: Provides all gather statistics action attributes.
+			</xs:documentation>  
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="resourcePath" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerActionExecuteProcedureType">
+		  	<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Execute Procedure Type: Provides all execute procedure action attributes.
+				</xs:documentation>  
+			</xs:annotation>
+				<xs:sequence>
+					<xs:element name="resourcePath" type="xs:string"/>
+					<xs:element name="parameterValues" minOccurs="0" maxOccurs="1" type="xs:string">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">
+								parameterValues is a comma separate list of values to be passed into a procedure.  All string,Char,and varchar types must contain single quotes around them. 
+								For example, a procedure that accepts VARCHAR,INTEGER,DATE,LONGVARCHAR would have parameters such as this: 'string with a comma, in it',9999,2011-06-01,'a very long, string with commas, in it'
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerActionReintrospectDatasourceType">
+		  	<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Reintrospect Data Source Type: Provides all reintrospect data source action attributes.
+				</xs:documentation>  
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="resourcePath" type="xs:string"/>
+				<xs:element name="emailTo" type="xs:string"/>
+				<xs:element name="emailCC" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailBCC" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailReplyTo" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailSubject" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailBody" type="xs:string" minOccurs="0"/>
+				<xs:element name="skipIfNoResults" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="noCommit" type="xs:boolean"/>
+			</xs:sequence>
+		</xs:complexType>
+
+		<xs:complexType name="TriggerActionSendEmailType">
+		  	<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Send Email Type: Provides all send email action attributes.
+				</xs:documentation>  
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="resourcePath" type="xs:string"/>
+				<xs:element name="parameterValues" minOccurs="0" maxOccurs="1" type="xs:string">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							parameterValues is a comma separate list of values to be passed into a procedure.  All string,Char,and varchar types must contain single quotes around them. 
+							For example, a procedure that accepts VARCHAR,INTEGER,DATE,LONGVARCHAR would have parameters such as this: 'string with a comma, in it',9999,2011-06-01,'a very long, string with commas, in it'
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="emailTo" type="xs:string"/>
+				<xs:element name="emailCC" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailBCC" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailReplyTo" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailSubject" type="xs:string" minOccurs="0"/>
+				<xs:element name="emailBody" type="xs:string" minOccurs="0"/>
+				<xs:element name="skipIfNoResults" type="xs:boolean"/>
+				<xs:element name="includeSummary" type="xs:boolean"/>
+			</xs:sequence>
+		</xs:complexType>
+
+      	<xs:complexType name="TriggerScheduleListType">
+		  	<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Schedule List Type: Provides all scheduling information for a trigger.
+				</xs:documentation>  
+			</xs:annotation>
+      		<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="schedule" type="ns:TriggerScheduleType"/>
+      		</xs:sequence>
+      	</xs:complexType>
+
+	<xs:complexType name="TriggerScheduleType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Schedule Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="scheduleId" type="xs:string"/>
+			<xs:element name="mode" minOccurs="0" type="ns:TriggerModeValidationList"/>
+
+			<xs:element name="startTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Date-Timestamp of when to start
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="period" minOccurs="0" type="ns:TriggerPeriodValidationList"/>
+
+			<xs:element name="count" type="xs:integer" minOccurs="0"/>
+
+			<xs:element name="fromTimeInADay" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Value set to -1 when recurring restriction is false
+						This value is defined in minutes based on 0-24 hours.  1am=60,2am=120,11pm=1380,12pm=1440
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="endTimeInADay" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Value set to -1 when recurring restriction is false
+						This value is defined in minutes based on 0-24 hours.  1am=60,2am=120,11pm=1380,12pm=1440
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="recurringDay" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Value set to -1 when recurring restriction is false
+						
+						Values for each day:
+						NOTHING CHECKED=0, 
+						SUN=1, MON=2, TUES=4, WED=8, THU=16, FRI=32, SAT=64
+						COMBINITION OF DAYS example: SUN+TUES+THU=21
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isCluster" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="TriggerModeValidationList">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				NONE = Exactly Once in CIS.  PERIODIC = Periodic in CIS [encompasses INTERVAL and CALENDAR]
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+		<xs:enumeration value="NONE"/>
+		<xs:enumeration value="PERIODIC"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="TriggerPeriodValidationList">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				MINUTE equates to INTERVAL.  HOUR through YEAR equates to CALENDAR
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MINUTE"/>
+			<xs:enumeration value="HOUR"/>
+			<xs:enumeration value="DAY"/>
+			<xs:enumeration value="WEEK"/>
+			<xs:enumeration value="MONTH"/>
+			<xs:enumeration value="YEAR"/>
+  		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="TriggerConditionTypeValidationList">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Trigger Condition Type Validation List:  An action can be 1 and only 1 of [SYSTEM_EVENT,USER_DEFINED,JMS,TIMER]
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SYSTEM_EVENT"/>
+			<xs:enumeration value="USER_DEFINED"/>
+			<xs:enumeration value="JMS"/>
+			<xs:enumeration value="TIMER"/>
+  		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="TriggerActionTypeValidationList">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Trigger Action Type Validation List:  An action can be 1 and only 1 of [PROCEDURE, STATISTICS, REINTROSPECT, EMAIL]
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PROCEDURE"/>
+			<xs:enumeration value="STATISTICS"/>
+			<xs:enumeration value="REINTROSPECT"/>
+			<xs:enumeration value="EMAIL"/>
+  		</xs:restriction>
+	</xs:simpleType>
+<!-- END: TriggerModule Property Definition-->
+
+<!-- BEGIN: UserModule Property Definition-->
+  <xs:element name="UserModule">
+  	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			User Module: This module contains a list of users.  If the user does not exist, it will be created
+			with the specified password.  If the force_password flag is '1' the password will
+			be reset even if the user exists.  In all cases, the group membership of the user will
+			be updated to reflect the specified membership.
+		</xs:documentation>  
+	</xs:annotation>
+  	<xs:complexType>
+    	<xs:sequence>
+      			<xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="ns:UserType"/>
+    	</xs:sequence>
+  	</xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="UserType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				User Type: Documentation goes here.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of users.  It may have the value as username but it does not have to.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="userName" type="xs:string"/>
+			<xs:element name="encryptedPassword" type="xs:string" minOccurs="0"/>
+			<xs:element name="forcePassword" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						true=force a reset of the password even if the user exists, 
+						false=if user exists, then don't force a change to the password
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="domainName" type="xs:string" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						domain which the user will belong to.  default is "composite"
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="groupMembershipList" maxOccurs="unbounded" minOccurs="0" type="ns:GroupMembershipType"/>
+			<xs:element name="privilege" maxOccurs="1" minOccurs="0" type="ns:UserPrivilegeList"/>
+			<xs:element name="annotation" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GroupMembershipType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Group Membership Type: Provides a way to assign a user to a group and group domain.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="groupName" type="xs:string"/>
+			<xs:element name="groupDomain" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="UserPrivilegeList">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE]
+			</xs:documentation>  
+		</xs:annotation>
+	  <xs:list itemType="ns:AccessRightsValidationList"/>
+	</xs:simpleType>
+<!-- END: UserModule Property Definition-->
+
+<!-- BEGIN: VCSModule Property Definition-->
+    <xs:element name="VCSModule">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+				VCS Module: The Version Control System (VCS) Module provides a way of checking out resources 
+				(generally folders) but could be a path down to a specific resource from version control.
+				Version Control Systems such as subversion, CVS, and Perforce are supported.
+		</xs:documentation>
+	</xs:annotation>
+	  <xs:complexType>
+	    <xs:sequence>
+		      <xs:element maxOccurs="1" minOccurs="0" name="vcsConnections" type="ns:VCSConnectionsType"/>
+		      <xs:element maxOccurs="unbounded" minOccurs="0" name="vcsResource" type="ns:VCSResourceType"/>
+	    </xs:sequence>
+	  </xs:complexType>
+   </xs:element>
+
+	<xs:complexType name="VCSConnectionsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				VCS Connections Type: A container for 1 or more VCS Connections
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="vcsConnection" type="ns:VCSConnectionType"/>
+	    </xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="VCSConnectionType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				VCS Connection Type: Each row represents a VCS Connection to a VCS Repository with all of the related VCS variables.  
+				This information was moved from the PDTool Config Property file to here to allow a more configurable environment.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of VCS Connections.
+				</xs:documentation>
+			</xs:annotation>
+		   </xs:element>
+			<xs:element name="VCS_TYPE" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, etc]
+   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
+     Subversion=svn
+     Perforce=p4
+     Concurrent Versions Systems=cvs
+     Team Foundation Server=tfs2005 or tfs2010
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_BASE_TYPE" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="VCS_HOME" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_HOME - VCS Client Home directory where the VCS executable lives.  
+     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
+     Windows example: D:/dev/cvs/bin
+        UNIX example: /usr/bin
+VCS_HOME=D:/dev/vcs/csvn/bin
+
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_COMMAND" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs]
+VCS_COMMAND=svn
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_EXEC_FULL_PATH" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false)
+                    When set to false, the VCS_COMMAND must be in the system path
+VCS_EXEC_FULL_PATH=true
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_OPTIONS" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)
+     Subversion examples: -\-non-interactive -\-no-auth-cache -\-trust-server-cert -\-config-dir c:\
+VCS_OPTIONS=-\-non-interactive -\-no-auth-cache -\-trust-server-cert
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_INIT_NEW_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_INIT_NEW_OPTIONS - these options are used to augment the VCS workspace initialization that focuses on creating a new workspace and mapping to a VCS repository.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_INIT_LINK_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_INIT_LINK_OPTIONS - these options are used to augment the VCS workspace initialization that focuses on linking a workspace to a VCS repository.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_INIT_GET_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_INIT_GET_OPTIONS - these options are used to augment the VCS workspace initialization that focuses on getting or checking out resources from the VCS.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_BASE_FOLDER_INIT_ADD" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_BASE_FOLDER_INIT_ADD - these options are used to augment the VCS base folder initialization that focuses on adding resources from the VCS.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_CHECKIN_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_CHECKIN_OPTIONS - these options are used to augment the VCS checkin to the VCS repository.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_CHECKIN_OPTIONS_REQUIRED" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_CHECKIN_OPTIONS_REQUIRED - A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="VCS_CHECKOUT_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_CHECKOUT_OPTIONS - these options are used to augment the VCS checkout from the VCS repository.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_CHECKOUT_OPTIONS_REQUIRED" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_CHECKOUT_OPTIONS_REQUIRED - A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="VCS_CIS_IMPORT_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS Resource Import Options - Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
+   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
+   Consult the Archive Module documentation for more options.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_CIS_EXPORT_OPTIONS" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS Resource Export Options - Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
+   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
+   Consult the Archive Module documentation for more options.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="VCS_REPOSITORY_URL" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
+#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
+#            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
+#            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
+#            of the local workspace.
+#     subversion - The base HTTP URL in subversion 
+#                  Command Format: [http://hostname.domain/svn/basename]
+#                         Example: http://myhost.domain.com/svn/sandbox
+#
+#     perforce   - The Repository URL is the host and port in perforce - 
+#                  Command Format: [hostname:port]
+#                         Example: myhost:1666
+#
+#     cvs        - Command Format: [:method:][[user][:password]@]hostname[:[port]]/repository_path
+#                  1) Local access only with no host and port
+#                         Example: :local:/home/cvs
+#                  2) Remote access rules and examples:
+#                      (1) There is no colon ":" following the port.
+#                      (2) There is a colon ":" following the hostname if there is no port.
+#                      (3) The repository folder path on the CVS server follows the port if present or hostname.
+#                      (4) Username and Password are included in this URL therefore VCS_USERNAME and VCS_PASSWORD are ignored.
+#                      Example: :pserver:user1:password@remotehost:2401/home/cvs
+#                      Example: :pserver:user1:password@remotehost:/home/cvs
+#                      Example: :pserver:user1@remotehost:/home/cvs
+#                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
+#                      Example: :pserver:$VCS_USERNAME:$VCS_PASSWORD@myhost:2401/home/cvs
+#
+#     TFS - The base HTTP URL in Team Foundation Server 
+#                  Command Format: [http://hostname.domain:8080/tfs/basename]
+#                         Example: http://myhost:8080/tfs/TeamCollection/TeamProject
+#
+VCS_REPOSITORY_URL=http://hostname.domain.com/svn/sandbox/
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_PROJECT_ROOT" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_PROJECT_ROOT - This is root name of the project on the VCS Server
+     subversion - The project name
+     perforce   - The depot name
+     cvs        - 
+VCS_PROJECT_ROOT=cis_objects
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_HOME" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
+     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
+     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
+VCS_WORKSPACE_HOME=$PROJECT_HOME
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_NAME" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
+    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
+    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
+    e.g. $VCS_TYPE$_wworkspace - $VCS_TYPE$ gets evaluated as a variable. _wworkspace is a string that gets concatenated. Result: svn_wworkspace 
+VCS_WORKSPACE_NAME=$VCS_TYPE$_wworkspace
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_WORKSPACE_DIR" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_WORKSPACE_DIR:: VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".
+VCS_WORKSPACE_DIR=$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_TEMP_DIR" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_TEMP_DIR::      VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name.
+    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
+    e.g. $VCS_TYPE$_temp - $VCS_TYPE$ gets evaluated as a variable. _temp is a string that gets concatenated. Result: svn_workspace
+VCS_TEMP_DIR=$VCS_WORKSPACE_HOME/$VCS_TYPE$_temp
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_USERNAME" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
+    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
+    Some VCS Servers, will ask to store the user and password locally for subsequent use.
+VCS_USERNAME=pdtooluser
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_PASSWORD" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
+    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
+    If set in this file, execute the following command to encrypt the password:
+    Note:  The name of the XML file changes as per the application usage.  Check which file to encrypt first.
+         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
+      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
+VCS_PASSWORD=Encrypted:xxxxxxxxxxxxxxxxx
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_IGNORE_MESSAGES" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
+    CVS:
+    Perforce:    	No files to submit
+    Subversion: 
+    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible
+VCS_IGNORE_MESSAGES=
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VCS_MESSAGE_PREPEND" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages
+VCS_MESSAGE_PREPEND=SCR:
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="1" minOccurs="0" name="vcsSpecificEnvVars" type="ns:VCSConnectionSpecificEnvVarsType"/>
+
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="VCSConnectionSpecificEnvVarsType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="envVar" type="ns:VCSConnectionEnvNameValuePairType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="VCSConnectionEnvNameValuePairType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				VCS Connection Enviornment Variables Name/Value Pair Type: Each entry is a NAME/VALUE pair specific environment variable entry for the particular connection.
+# Example...
+# The perforce environment must be set with the default username and password.
+# However, the user and password are picked up from the environment using variables.  To designate a system
+# environment variable, Use a single dollar sign '$' in front of the variable name.  This will get resolved upon execution.
+# example: set P4USER=$VCS_USERNAME
+# example: set P4PASSWD=$VCS_PASSWORD
+# [Default-do not change] - Use substitution variables to identify user and password.  
+#                           These variables get replaced at runtime with values passed in.
+P4USER=$VCS_USERNAME
+P4PASSWD=$VCS_PASSWORD
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="envName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Environment specific name
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="envValue" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Environment specific value
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="VCSResourceType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				VCS Resource Type: Each row represents a resource to act upon within CIS. Either check-in or check-out.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					id is a unique name identifier within the list of versioned CIS resources.
+				</xs:documentation>
+			</xs:annotation>
+		   	</xs:element>
+			<xs:element name="resourcePath" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+							resourcePath – the resource path within CIS.  This is mutually exclusive with the vcslabel element.  
+							If resourcePath is present and not empty it will take precedence over the vcslabel.  
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="resourceType" minOccurs="0" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+							resourceType – the type of VCS resources pointed to by resourcePath include FOLDER, definitions, link, procedure, table, tree, and trigger.   Also valid in lieu of FOLDER is container.  For ease of use, users may use the “Display Resource Type” found on the info tab of each Studio resource.  For example, the display resource type for a Composite published web service is “Composite Web Service”.  This actually gets translated to the VCS type of “FOLDER”.  Finally, let’s say that the user of PD Tool discovers that an exception is being thrown regarding an unknown resource type when using a resource type on the Studio Info tab.   The user can “teach” PD Tool what VCS Resource Type the Studio Info tab Resource Type belongs to.   This is accomplished by using the property “VCSModule_ExternalVcsResourceTypeList” in the deploy.properties file.   The rules for usage are as follows:
+	This provides an externalized mechanism to teach PD Tool about new Resource Types and how they are associated with the basic VCS Resource Types.  The basic VCS Resource Types include: FOLDER, definitions, link, procedure, table, tree, and trigger
+	Each Studio Resource contains an info tab with a resource path and a display type.  Use the Resource path in the info tab as input into the following Studio Web Service API to discover the CIS Resource Type.  /services/webservices/system/admin/resource/operations/getResource()
+	The CIS Resource Type is mapped to one of the basic VCS Resource Types provided above.   Finally, provide the name value pair in the form of "VCS Resource Type=Studio Display Resource Type".  Create a comma separate list of these name=value pairs.  For example:
+	VCSModule_ExternalVcsResourceTypeList=folder=Data Source, folder=Composite Database, procedure=Basic Transformation
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="vcsLabel" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The VCS label provides a way for to check-out a collection of resources.  
+						The resources assigned to the label are managed by the VCS administrator outside the context of PD Tool.
+						Additionally, vcslabel is mutually exclusive with resourcePath.  If resourcePath is present and not empty it will take precedence over the vcslabel.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="revision" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						revision level to check out (HEAD, BASE, COMMITTED, PREV, [a revision number], {revision-date-in-curly-brackets})
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="message" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						a message is provided when performing a check-in
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+<!-- END: VCSModule Property Definition-->
+
+
+</xs:schema>

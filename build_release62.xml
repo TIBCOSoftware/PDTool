@@ -363,6 +363,8 @@
 		</copy>
 		<copy todir="${pdtoolstudio-target}/docs">
 		    <fileset dir="${docs}">
+		        <include name="*.ppt"/>
+		        <include name="*.pptx"/>
 		        <include name="VCS_Studio/*"/>
 		    </fileset>
 		</copy>
