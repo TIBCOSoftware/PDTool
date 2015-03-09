@@ -17,36 +17,58 @@
 # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 # 
 ######################################################################
+
+*******************************************************
+**** IMPORTANT - PLEASE READ REGARDING COMPILATION ****
+*******************************************************
+	To build the 6.2 jars, the properties java build path must be set for src62 and lib62
+	
+	1. Right click on the PDTool project, select properties, Select Java Build Path
+		SOURCE: click on "Source" tab
+			Select PDTool/src70 and click "Remove" tab to remove PDTool/src70
+			Click "Add folder" and select src62 and click OK
+
+	2. LIBRARIES: click on "Libraries" tab
+			Select lib70 and click the "Remove" button to remove lib70
+			Click "Add Library" button
+			Select "User Library" and click Next
+			Select lib62 library and click finish
+			Click OK to 
+	3. Clean the project
+	4. Execute the build62.xml
 -->
-<project name="PDTool7" default="default" basedir=".">
+<project name="PDTool" default="default" basedir=".">
 
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
 	<property name="ver" value="62"/>
 	<property name="verRelease" value="6.2"/>
 	<property name="relNum" value="r1"/>
 
+	<property name="project-name" value="PDTool"/>
 	<property name="src" value="src:src${ver}"/>
 	<property name="build" location="build"/>
 	<property name="bin" location="bin"/>
 	<property name="dist" location="dist"/>
 	<property name="ext" location="ext"/>
-	<property name="lib" value="lib${ver}"/>
+	<property name="lib" value="libcommon"/>
+	<property name="libver" value="lib${ver}"/>
 	<property name="licenses" location="licenses"/>
-	<property name="docs" location="../PDToolDocs/docs"/>
-	<property name="rel" value="../PDToolRelease/${verRelease}"/>
 	<property name="regression" location="regression"/>
-	<property name="regression_rel" location="../PDToolRelease/regression"/>
 	<property name="resources" location="resources"/>
 	<property name="security" location="security"/>
-	<property name="project-name" value="PDTool"/>
-	<property name="project-PDToolModules" value="../PDToolModules"/>
+	<property name="docs" location="PDToolDocs/docs"/>
+	<property name="project-PDToolModules" value="PDToolModules"/>
 	<property name="pdtool-target" value="PDTool${ver}"/>
 	<property name="pdtoolstudio-target" value="PDToolStudio${ver}"/>
-	
+	<property name="rel" value="../PDToolRelease/${verRelease}"/>
+	<property name="regression_rel" location="../PDToolRelease/regression"/>
 	<property name="regression-target" value="PDToolRegression"/>
 
 	<path id="project.class.path">
 		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${libver}">
 			<include name="**/*.jar"/>
 		</fileset>
 		<fileset dir="ext/ant/lib">
@@ -162,6 +184,7 @@
 		        <include name="**"/>
 		    </fileset>
 		</copy>
+		<!-- Copy from common lib: /lib -->
 		<copy todir="${pdtool-target}/lib">
 		    <fileset dir="${lib}">
 		        <include name="*.jar"/>
@@ -172,13 +195,24 @@
 		        <include name="*.txt"/>
 		    </fileset>
 		</copy>
+		<!-- Copy from version lib [lib62,lib70]: /libxx -->
+		<copy todir="${pdtool-target}/lib">
+		    <fileset dir="${libver}">
+		        <include name="*.jar"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtool-target}/lib">
+		    <fileset dir="${libver}">
+		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
 		<copy todir="${pdtool-target}/lib/endorsed">
-		    <fileset dir="${lib}/endorsed">
+		    <fileset dir="${libver}/endorsed">
 		        <include name="*.jar"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/lib/endorsed">
-		    <fileset dir="${lib}/endorsed">
+		    <fileset dir="${libver}/endorsed">
 		        <include name="*.txt"/>
 		    </fileset>
 		</copy>
@@ -332,6 +366,7 @@
 		        <include name="VCS_Studio/*"/>
 		    </fileset>
 		</copy>
+		<!-- Copy from common lib: /lib -->
 		<copy todir="${pdtoolstudio-target}/lib">
 		    <fileset dir="${lib}">
 		        <include name="*.jar"/>
@@ -342,13 +377,24 @@
 		        <include name="*.txt"/>
 		    </fileset>
 		</copy>
+		<!-- Copy from version lib [lib62,lib70]: /libxx -->
+		<copy todir="${pdtoolstudio-target}/lib">
+		    <fileset dir="${libver}">
+		        <include name="*.jar"/>
+		    </fileset>
+		</copy>
+		<copy todir="${pdtoolstudio-target}/lib">
+		    <fileset dir="${libver}">
+		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
 		<copy todir="${pdtoolstudio-target}/lib/endorsed">
-		    <fileset dir="${lib}/endorsed">
+		    <fileset dir="${libver}/endorsed">
 		        <include name="*.jar"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/lib/endorsed">
-		    <fileset dir="${lib}/endorsed">
+		    <fileset dir="${libver}/endorsed">
 		        <include name="*.txt"/>
 		    </fileset>
 		</copy>

@@ -37,7 +37,7 @@
 	3. Clean the project
 	4. Execute the build62.xml
 -->
-<project name="PDTool7" default="default" basedir=".">
+<project name="PDTool" default="default" basedir=".">
 
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
 	<property name="ver" value="62"/>
@@ -48,12 +48,16 @@
 	<property name="bin" location="bin"/>
 	<property name="dist" location="dist"/>
 	<property name="ext" location="ext"/>
-	<property name="lib" location="lib${ver}"/>
+	<property name="lib" location="libcommon"/>
+	<property name="libver" location="lib${ver}"/>
 	<property name="licenses" location="licenses"/>
 	<property name="project-name" value="PDTool${ver}"/>
 
 	<path id="project.class.path">
 		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${libver}">
 			<include name="**/*.jar"/>
 		</fileset>
 		<fileset dir="ext/ant/lib">
