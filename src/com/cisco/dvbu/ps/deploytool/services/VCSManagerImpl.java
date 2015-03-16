@@ -19,6 +19,7 @@ package com.cisco.dvbu.ps.deploytool.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -2606,6 +2607,208 @@ public class VCSManagerImpl implements VCSManager {
 
 				/**********************************************************
 				 * vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR GIT [git]
+				 **********************************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+						   
+			        // Explicitly remove the workspace directory
+			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        
+			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+			        if (!pdToolStudio) {
+			        	// Explicitly remove the workspace temp directory
+			        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
+			        }
+			        
+			        // Set the workspace directory path to the workspace + vcs project root (e.g. cis_objects)
+			        String workspaceDir = vcsStruct.getVcsWorkspace().replaceAll("//", "/");
+			        
+			        // Create the workspace directory
+			        createDirectory(prefix, workspaceDir);
+
+			        // Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+			        if (!pdToolStudio) {
+			        	// Create the workspace temp directory
+			        	createDirectory(prefix, vcsStruct.getVcsTemp());
+			        }
+			        
+			        // Set the directory to execute from the workspace directory
+					execFromDir = workspaceDir;
+					
+					// Set the VCS command
+					command = vcsStruct.getVcsExecCommand();
+					
+					// Substitute the username and password (if any). Also don't make the substitution if the repo
+					// URL already has username and password information embedded using the "@" notation.
+					//
+					String vcsRepositoryUrl = vcsStruct.getVcsRepositoryUrl();
+					if (vcsStruct.getVcsUsername() != null && vcsStruct.getVcsUsername().length() > 0 && ! vcsRepositoryUrl.contains ("@")) {
+						String encUser = null, encPass = null;
+
+                        // URL encode the username and password so they don't cause problems on the command line
+						try {
+							encUser = URLEncoder.encode(vcsStruct.getVcsUsername(), "UTF-8");
+	                        encPass = URLEncoder.encode(vcsStruct.getVcsPassword(), "UTF-8");
+                        } catch (Exception ignored) {;}
+                        
+						// Git supports a number of different URL protocols so we'll need to make some substitutions on the 
+						// ones that support username/password in the URL itself.
+						//
+						// SSH
+						//
+						if (vcsRepositoryUrl.startsWith("ssh://")) {
+							vcsRepositoryUrl = vcsRepositoryUrl.replaceFirst("ssh://", "ssh://" + encUser + "@");
+						}
+						//
+						// GIT
+						//
+						else if (vcsRepositoryUrl.startsWith("git://")) {
+							// git protocol doesn't support user/pass
+						}
+						//
+						// HTTP(S)
+						//
+						else if (vcsRepositoryUrl.matches("^http[s]?://.*")) {
+							vcsRepositoryUrl = vcsRepositoryUrl.replaceFirst("(http[s]?)://", "$1://" + encUser + ":" + encPass + "@");
+						} 
+						//
+						// FTP(S)
+						//
+						else if (vcsRepositoryUrl.matches("^ftp[s]?://.*")) {
+							vcsRepositoryUrl = vcsRepositoryUrl.replaceFirst("(ftp[s]?)://", "$1://" + encUser + ":" + encPass + "@");
+						} 
+						//
+						// RSYNC
+						//
+						else if (vcsRepositoryUrl.startsWith("rsync://")) {
+							// rsync protocol doesn't support user/pass
+						} 
+						//
+						// SCP format (SSH)
+						//
+						// this format it a bit hard to detect in that it starts with a host name and a colon. The Git rule says
+						// that it will match this format if there are no "/" chars in the text before the first ":" char (and 
+						// this text is not one of the protocols above.) 
+						//
+						// the format is also not a URL so the username is not URL encoded (taking a chance that username doesn't
+						// contain odd characters.)
+						//
+						else if (vcsRepositoryUrl.matches("^[^/]+:.*")) {
+							vcsRepositoryUrl = vcsStruct.getVcsUsername() + "@" + vcsRepositoryUrl;
+						}
+					}
+					
+					// determine the remote branch to check out. if user doesn't specify the branch with VCS_WORKSPACE_INIT_GET_OPTIONS
+					// then use "master"
+					//
+					String remoteBranch = (vcsStruct.getVcsWorkspaceInitGetOptions() != null && vcsStruct.getVcsWorkspaceInitGetOptions().length() > 0)
+			                  ? vcsStruct.getVcsWorkspaceInitGetOptions()
+			                  : "master";
+					
+					// if using https on windows, use the wincred facility to store the user's credentials (so that we're not prompted
+					// for them when performing pushes.)
+					//
+			        if (System.getProperty("os.name").startsWith("Windows")) {
+			        	
+			        	// git config --global credential.helper wincred
+						arguments=" config --global credential.helper wincred";
+
+						// Print out command
+						commandDesc = "    Enabling the storing of credentials using WinCred...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+			        }
+					
+					// Link the VCS Repository URL and Project Root to the local workspace. Creates an empty clone (nothing checked out.)					
+					// git clone ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" .
+					arguments=" clone -n " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions() + " " + vcsRepositoryUrl + " .";
+
+					// Print out command
+					commandDesc = "    Linking local worksapce to VCS Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+					// Check out the desired branch (or other "tree-ish") to the local workspace						
+					// git checkout ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS} ${VCS_PROJECT_ROOT}
+					arguments=" checkout " + vcsStruct.getVcsOptions() + " " + remoteBranch + " " + vcsStruct.getVcsProjectRoot();
+
+					// Print out command
+					commandDesc = "    Checking out VCS Repository resources ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+/*
+					// Git doesn't check out empty folders so we need to create the workspace folder if it didn't get checked out.
+				    // this is so that subsequent Git commands
+					//
+					if (! CommonUtils.fileExists (vcsStruct.getVcsProjectRoot())) {
+						CommonUtils.writeOutput("Project root folder, \"" + vcsStruct.getVcsProjectRoot() + "\", did not get checked out, creating.",prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.mkdirs (vcsStruct.getVcsProjectRoot());
+					}
+*/		
+					// Set automatic conversion of LF (Unix) to CRLF (Windows) to false. This causes issues otherwise.
+					// git config --local core.autocrlf=false 
+					arguments=" config --local core.autocrlf false";
+
+					// Print out command
+					commandDesc = "    Setting line termination handling ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				    		    
+				    // Need to set this to get rid of warnings during pushes
+				    // git config --global push.default simple
+					arguments=" config --global push.default simple";
+
+					// Print out command
+					commandDesc = "    Setting push default to \"simple\" to prevent warnings during pushes ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				    
+
+				}
+
+				/**********************************************************
+				 * vcsInitWorkspaceCommon:
 				 *      INIT VCS WORKSPACE FOR "NEW VCS TYPE" [NEW_VCS_TYPE]
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("NEW_VCS_TYPE")) {
@@ -3322,7 +3525,7 @@ public class VCSManagerImpl implements VCSManager {
 			
 			CommonUtils.writeOutput("============== VCS CHECKOUT ==============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_add__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
-	
+
 			CommonUtils.writeOutput("============== COPY BASE FOLDERS ===================",prefix,"-debug3",logger,debug1,debug2,debug3);
 			boolean forceCopy = false;
 			CommonUtils.recursiveCopy(fromFile, toTempFile, forceCopy);
@@ -3500,6 +3703,7 @@ public class VCSManagerImpl implements VCSManager {
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.p4.P4LifecycleListener
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.cvs.CVSLifecycleListener
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.tfs.TFSLifecycleListener
+		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.git.GITLifecycleListener
 		System.setProperty(LifecycleListener.SYSTEM_PROPERTY, vcsStruct.getVcsLifecycleListener());
 		
 		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, and VCS_ENV 
@@ -3507,7 +3711,7 @@ public class VCSManagerImpl implements VCSManager {
 		System.setProperty("VCS_EXEC", vcsStruct.getVcsExecCommand());
 		System.setProperty("VCS_OPTIONS", vcsStruct.getVcsOptions());
 		System.setProperty("VCS_ENV", vcsStruct.getVcsEnvironment());
-
+		
 		String diffMergerOptions = "";
 		if (diffmergerVerbose) {
 			diffMergerOptions = "-verbose";
@@ -3566,6 +3770,7 @@ public class VCSManagerImpl implements VCSManager {
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.p4.P4LifecycleListener
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.cvs.CVSLifecycleListener
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.tfs.TFSLifecycleListener
+		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.git.GITLifecycleListener
 		System.setProperty(LifecycleListener.SYSTEM_PROPERTY, vcsStruct.getVcsLifecycleListener());
 		
 		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, and VCS_ENV 
@@ -3573,6 +3778,10 @@ public class VCSManagerImpl implements VCSManager {
 		System.setProperty("VCS_EXEC", vcsStruct.getVcsExecCommand());
 		System.setProperty("VCS_OPTIONS", vcsStruct.getVcsOptions());
 		System.setProperty("VCS_ENV", vcsStruct.getVcsEnvironment());
+
+		// 2014-09-03 (cgoodric): Git operations must be executed from within the Git workspace
+		//
+		System.setProperty("VCS_EXEC_DIR", vcsStruct.getVcsWorkspace());
 
 		String diffMergerOptions = "";
 		if (diffmergerVerbose) {
@@ -3973,6 +4182,99 @@ public class VCSManagerImpl implements VCSManager {
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 				}
 				boolean result = CommonUtils.removeFile(commentFilePath);
+			}
+			
+			/********************************************
+			 * [GIT] vcs_checkin_checkout__vcs_checkin:
+			 *      GIT=Git
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+				//cd "${Workspace}"
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				// 2012-10-29 mtinius: differentiate between folder and data_source
+				if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+					//------------------------------------------
+					// Check in Folder
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKIN_OPTIONS against the VCS_CHECKIN_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckinRequired(vcsStruct.getVcsCheckinOptions(), vcsStruct.getVcsCheckinOptionsRequired());
+				    
+					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+					//Derived from script:
+				    // git commit -m "${Message}" ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
+					arguments = " commit -m \"" + message + "\" " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions() + " " + fullResourcePath;
+
+					commandDesc = "    Commit folder changes to the local Git clone ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					
+				    // git push
+					arguments = " push";
+
+					commandDesc = "    Push folder changes to the Git Repository ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+				} else {
+					//------------------------------------------
+					// Check in File
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKIN_OPTIONS against the VCS_CHECKIN_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckinRequired(vcsStruct.getVcsCheckinOptions(), vcsStruct.getVcsCheckinOptionsRequired());
+				    
+					String fullResourcePath = (execFromDir+"/"+resourcePath+"_"+resourceType+".cmf").replaceAll("//", "/");
+					//Derived from script:
+				    // git commit -m "${Message}"  ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
+					arguments = " commit -m \"" + message + "\" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions() + " " + fullResourcePath;
+
+					commandDesc = "    Commit file changes to the local Git clone ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+				    // git push
+					arguments = " push";
+
+					commandDesc = "    Push file changes to the Git Repository ...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+}
 			}
 			
 			/********************************************
@@ -4425,6 +4727,96 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
+			 * [GIT] vcs_checkin_checkout__vcs_checkout:
+			 *      GIT=Git
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for Git.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
+					// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
+					// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
+					// can use -o <name> when cloning to rename the remote name to something other than "origin".)
+					//
+				    // git reset --hard origin/HEAD
+					arguments=" reset --hard origin/HEAD";
+
+					commandDesc = "    Perform hard reset to Git Repository HEAD...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					
+					// 2012-10-29 mtinius: differentiate between folder and data_source
+					if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+						//------------------------------------------
+						// Check out Folder
+						//------------------------------------------
+
+					    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+					    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+						String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+
+					    //Derived from script:
+					    // git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${Revision} ${fullResourcePath}
+						arguments=" checkout " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckoutOptions() + " " + revision + " " + fullResourcePath;
+
+						commandDesc = "    Update folder revisions to the Git Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+						
+					} else {
+						//------------------------------------------
+						// Check out File
+						//------------------------------------------
+						
+					    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+					    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+						
+						String fullResourcePath = (execFromDir+"/"+resourcePath+"_"+resourceType+".cmf").replaceAll("//", "/");
+
+						//Derived from script:
+					    // git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${Revision} ${fullResourcePath}
+						arguments=" checkout " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckoutOptions() + " " + revision + " " + fullResourcePath;
+
+						commandDesc = "    Update file revisions to the Git Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}				
+				}
+			}
+			
+			/********************************************
 			 * vcs_checkin_checkout__vcs_checkout:
 			 *      NEW_VCS_TYPE=New VCS Type
 			 ********************************************/
@@ -4656,6 +5048,43 @@ public class VCSManagerImpl implements VCSManager {
 				    
 				    // Execute the command line
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());						
+				}
+			}
+			
+			/********************************************
+			 * [GIT] vcs_add__vcs_checkout:
+			 *      GIT=Git
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+				//	 e.g: vcsWorkspace:  D:/PDTool/GITuw
+				execFromDir=vcsStruct.getVcsWorkspace(); // execute from the workspace root ($PDTOOL_HOME/GITuw not the project sub-folder.)
+				
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for Git.  Use resourcePath and resourceType instead.");
+				} else {
+					//------------------------------------------
+					// Check out Folder
+					//------------------------------------------
+
+				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+					//Derived from script:
+				    // git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} master ${fullResourcePath}
+					arguments=" checkout " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckoutOptions() + " master " + fullResourcePath;
+
+					commandDesc = "    Update folder revisions to the Git Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 				}
 			}
 			
@@ -4933,6 +5362,54 @@ public class VCSManagerImpl implements VCSManager {
 				    // Execute the command line
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());	
 				    */					
+				}
+				
+				/********************************************
+				 * [GIT] vcs_add__vcs_checkin:
+				 *      GIT=Git
+				 ********************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+					//cd "${Workspace}"
+					//   e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
+					execFromDir=vcsStruct.getVcsWorkspaceProject();
+					
+					//------------------------------------------
+					// Add Files or Folders
+					//------------------------------------------
+					
+				    File dir = new File(baseFolderPath);
+				    String excludeFileList = "";
+				    boolean includeParentDir = false;
+				    boolean includeFiles = true;
+				    boolean includeDirs = true;
+				    boolean recursive = true;
+				    // Get the /resources/vcs_initial/baseFolders + additional processed folders by using vcsTemp as a checklist against the workspace
+				    File[] files = CommonUtils.getFilesParent(dir, excludeFileList, includeParentDir, includeFiles, includeDirs, recursive);
+				    
+				    // Iterate over the checklist of files and add them into the VCS
+				    for (int i=0; i < files.length; i++) 
+					{
+						String remainderPath = files[i].toString();			
+						remainderPath = remainderPath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+						remainderPath = remainderPath.replaceAll(baseFolderPath, "");
+
+						String fullResourcePath = (execFromDir+"/"+remainderPath).replaceAll("//", "/");
+						//Derived from script:
+					    // svn add ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD} ${fullResourcePath}
+						arguments=" add " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsBaseFolderInitAddOptions() + " " + fullResourcePath;
+
+						commandDesc = "    Add folder changes to the Subversion Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}					
 				}
 				
 				/********************************************
@@ -5358,7 +5835,7 @@ public class VCSManagerImpl implements VCSManager {
 							/* 3-7-2012: may not need 		
 							//oldProp = System.setProperty("VCS_MESSAGE_MANDATORY", vcsConnection.getVCSMESSAGEMANDATORY());
 							*/
-							// Extract the user defined name value pairs P4_ENV, CVS_ENV, SVN_ENV or TFS_ENV
+							// Extract the user defined name value pairs P4_ENV, CVS_ENV, SVN_ENV, TFS_ENV, or GIT_ENV
 							if (vcsConnection.getVcsSpecificEnvVars() != null && !vcsConnection.getVcsSpecificEnvVars().getEnvVar().isEmpty()) {
 								
 								String envList = "";
@@ -5400,6 +5877,10 @@ public class VCSManagerImpl implements VCSManager {
 						    			// set TFS_ENV
 										oldProp = System.setProperty("TFS_ENV", envList);
 						    		}
+						    		if (vcsType.equalsIgnoreCase("GIT")) {
+										oldProp = System.setProperty("GIT_ENV", envList);
+						    		}
+						    		
 								}
 							}
 						}
@@ -5970,7 +6451,7 @@ public class VCSManagerImpl implements VCSManager {
 			if (this.getVcsType() == null || this.getVcsType().length() == 0) {
 				throw new ValidationException("VCS_TYPE is null or empty.  VCS_TYPE must be set via the "+propertyFile+" file.");
 			}
-	    	//Validate the VCS_TYPE - The type of VCS being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, etc]
+	    	//Validate the VCS_TYPE - The type of VCS being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, etc]
 			if (
 				!this.getVcsType().equalsIgnoreCase("SVN") &&
 				!this.getVcsType().equalsIgnoreCase("P4") &&
@@ -6269,7 +6750,8 @@ public class VCSManagerImpl implements VCSManager {
 
 				// Set the username/password authorization
 				/* 
-				 * Git uses SSH to authenticate with the GitHub server. no username/password options are available
+				 * Git uses various methods to authenticate with the GitHub server to initialize the workspace. However, the user/pass 
+				 * is then embedded in the workspace, so no username/password options are available
 				 * 
 				if (getVcsUsername() != null && getVcsUsername().length() > 0) {
 					this.setVcsOptions(this.getVcsOptions() + " --username "+this.getVcsUsername());					
@@ -6357,11 +6839,13 @@ public class VCSManagerImpl implements VCSManager {
 			List<String> envList = new ArrayList<String>();
 			envList = CommonUtils.getArgumentsList(envList, true, this.getVcsEnvironment(), "|");
 			String env = "";
-			for (int i=0; i < envList.size(); i++ ) {
-				if (env.length() != 0) {
-					env = env + "|"; 
+			if (envList != null) {
+				for (int i=0; i < envList.size(); i++ ) {
+					if (env.length() != 0) {
+						env = env + "|"; 
+					}
+					env = env + CommonUtils.maskCommand(envList.get(i).toString());			
 				}
-				env = env + CommonUtils.maskCommand(envList.get(i).toString());			
 			}
 
 			// Print out Debug input parameters

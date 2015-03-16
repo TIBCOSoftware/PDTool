@@ -51,3 +51,7 @@ regression_win_6_2_tfs      regression_plan_vcs_base_list.txt        # Full regr
 # TEST:
 #regression_win_6_2_cvs      regression_plan_vcs_test_list.txt        # TEST CVS connection
 
+# PDTool - VCS Module for Git
+#regression_win_6_2_git      regression_plan_vcs_base_list.txt        # Full regression of VCS Git
+# TEST:
+#regression_win_6_2_git      regression_plan_vcs_test_list.txt        # TEST Subversion connection
