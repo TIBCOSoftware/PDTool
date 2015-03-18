@@ -18,10 +18,7 @@
 package com.cisco.dvbu.ps.deploytool.dao;
 
 import com.cisco.dvbu.ps.common.exception.CompositeException;
-import com.compositesw.services.system.util.common.Attribute;
-import com.compositesw.services.system.util.common.AttributeList;
-import com.compositesw.services.system.util.common.AttributeDef;
-import com.compositesw.services.system.util.common.AttributeDefList;
+import com.cisco.dvbu.ps.deploytool.modules.ServerAttributeModule;
 
 public interface ServerAttributeDAO {
 
@@ -32,11 +29,11 @@ public interface ServerAttributeDAO {
 	 * server attribute Ids list found in the the passed in ServerAttributeModule.xml file for the 
 	 * target server Id 
 	 * @param actionName action to perform (update)
-	 * @param attributeList server attribute list
+	 * @param serverAttributeModule server attribute module xml
 	 * @param serverId target server id from servers config xml
 	 * @param pathToServersXML path to the server values xml
 	 */
-	public void takeServerAttributeAction(String actionName, AttributeList attributeList, String serverId, String pathToServersXML);
+	public void takeServerAttributeAction(String actionName, ServerAttributeModule serverAttributeModule, String serverId, String pathToServersXML);
 
 	/**
 	 * Retrieves a server attribute associated with passed in server attribute path
@@ -46,7 +43,7 @@ public interface ServerAttributeDAO {
 	 * @param pathToServersXML path to the server values xml
 	 * @return Attribute if the attribute exists else null
 	 */
-	public Attribute getServerAttribute(String serverId, String serverAttrPath, String pathToServersXML);
+	public ServerAttributeModule getServerAttribute(String serverId, String serverAttrPath, String pathToServersXML);
 
 	/**
 	 * Get all server attributes of the given server attribute path.  
@@ -55,9 +52,10 @@ public interface ServerAttributeDAO {
 	 * @param serverId target server config name
 	 * @param startPath starting path of the server attribute folder e.g /server
 	 * @param pathToServersXML path to the server values xml
-	 * @return Attribute list with all attributes from the starting server attribute path
+	 * @param updateRule acts as a filter to only get the attribute paths defined by the update rule.
+	 * @return ServerAttributeModule list with all attributes from the starting server attribute path
 	 */	
-	public AttributeList getServerAttributesFromPath(String serverId, String startPath, String pathToServersXML);
+	public ServerAttributeModule getServerAttributesFromPath(String serverId, String startPath, String pathToServersXML, String updateRule);
 
 	/**
 	 * Retrieves a server attribute definition associated with passed in server attribute path
@@ -65,9 +63,9 @@ public interface ServerAttributeDAO {
 	 * @param serverId target server config name
 	 * @param serverAttrPath server attribute path
 	 * @param pathToServersXML path to the server values xml
-	 * @return AttributeDef if the attribute exists else null
+	 * @return ServerAttributeModule if the attribute exists else null
 	 */
-	public AttributeDef getServerAttributeDefinition(String serverId, String serverAttrPath, String pathToServersXML);
+	public ServerAttributeModule getServerAttributeDefinition(String serverId, String serverAttrPath, String pathToServersXML);
 
 	/**
 	 * Get all server attribute definitions of the given server attribute path.  
@@ -76,9 +74,10 @@ public interface ServerAttributeDAO {
 	 * @param serverId target server config name
 	 * @param startPath starting path of the server attribute folder e.g /server
 	 * @param pathToServersXML path to the server values xml
-	 * @return AttributeDef list with all attributes from the starting server attribute path
+	 * @param updateRule acts as a filter to only get the attribute paths defined by the update rule.
+	 * @return ServerAttributeModule list with all attributes from the starting server attribute path
 	 */	
-	public AttributeDefList getServerAttributeDefsFromPath(String serverId, String startPath, String pathToServersXML);
+	public ServerAttributeModule getServerAttributeDefsFromPath(String serverId, String startPath, String pathToServersXML, String updateRule);
 
 	/**
 	 * Get the server version

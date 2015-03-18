@@ -2181,29 +2181,9 @@ public class CommonUtils {
 
 	
 	public static String getCisVersion(String serverId, String pathToServersXML) {
-		String startPath = "/server/config/info";
-		String versionPath = startPath + "/version";
-		String version = null;
-		
 		ServerAttributeDAO serverAttributeDAO = new ServerAttributeWSDAOImpl();;
-
-		// Retrieve the list of Server Attributes by invoking the CIS Web Service API
-		AttributeList attributeList = serverAttributeDAO.getServerAttributesFromPath(serverId, startPath, pathToServersXML);
-
-		// Continue if there is a list
-		if(attributeList != null && attributeList.getAttribute() != null && !attributeList.getAttribute().isEmpty()){
-			// Assign the list of Server Attributes to a local Attribute type variable
-			List<Attribute> attributes = attributeList.getAttribute();
-			
-			// Iterate over the retrieved Server Attribute List until the version path is found
-			for (Attribute attribute : attributes) {
-				if (attribute.getName().equalsIgnoreCase(versionPath)) {
-					version = attribute.getValue();
-					return version;
-				}
-			}
-		}				
-							
+		String version = serverAttributeDAO.getServerVersion(serverId, pathToServersXML);
+								
 		return version;
 	}
 
@@ -2281,6 +2261,28 @@ public class CommonUtils {
 		}
 	}
 
+	/**
+	 * getToken - get a token name based on the path and token number passed in
+	 * 
+	 * @return the nth token for a string value
+	 * tokenNum=1
+	 * name=/server/webservices/baseURI
+	 * tokenized string= server webservices baseURI
+	 * return the value "server"
+	 */
+	public static String getToken(int tokenNum, String name) {
+		// Tokenize a path based on "/" separator
+	    StringTokenizer st = new StringTokenizer(name, "/");
+	    int i=0;
+	    while (st.hasMoreTokens()) {
+	    	i++;
+	    	if (i == tokenNum) {
+	    		return st.nextToken();
+	    	}	
+	    	st.nextToken();
+	    }
+	    return null;
+	}
 
 	/**
 	 * For testing.

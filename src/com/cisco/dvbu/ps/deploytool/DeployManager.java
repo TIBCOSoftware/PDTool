@@ -846,6 +846,13 @@ public interface DeployManager
 	 */
 	public void generateServerAttributeDefinitionsXML(String serverId, String startPath, String pathToServerAttributeXML, String pathToServersXML, String updateRule) throws CompositeException;
 
+	/**
+	 * Get the server version
+	 * @param serverId target server config name
+	 * @param pathToServersXML path to the server values xml
+	 * @return String The server version
+	 */	
+	public String getServerVersion(String serverId, String pathToServersXML) throws CompositeException;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	//--Begin::ServerManager Module---------------------------------------------------------------------------------------------------

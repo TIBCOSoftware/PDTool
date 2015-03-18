@@ -19,12 +19,14 @@ package com.cisco.dvbu.ps.common.util;
 
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -55,7 +57,6 @@ import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.deploytool.modules.ObjectFactory;
-import com.compositesw.services.system.util.common.AttributeType;
 
 public class XMLUtils {
 
@@ -79,13 +80,34 @@ public class XMLUtils {
 		return retval;
 	}
 	
+	// -- returns an XML string from an XML document object
+	public static String getStringFromDocument(Object object) throws CompositeException {
+		
+		String retval = null;
+		
+		try {
+			// Create JAXBContext
+			ObjectFactory objectFactory = new ObjectFactory();
+			JAXBContext jaxbContext = JAXBContext.newInstance(objectFactory.getClass());
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
+
+			StringWriter sw = new StringWriter();
+			marshaller.marshal(object,sw);
+			retval = sw.toString();
+		} catch (Exception e) {
+			throw new CompositeException(e);
+		}
+		
+		return retval;
+	}
 
 	// -- pretty prints an XML element
 	public static String getPrettyXml(Element el) {
 		XMLOutputter ser = new XMLOutputter(Format.getPrettyFormat());
 		return ser.outputString(el);
 	}	
-
+	
 	public static void createXMLFromModuleType(Object object, String xmlFilePath) {
 		try {
 
@@ -164,12 +186,12 @@ public class XMLUtils {
 				}
 				
 			} catch (JAXBException e) {
-				String message = parseException(xmlFilePath, e, null);
+				String message = parseException(null, xmlFilePath, e, null);
 				CompositeLogger.logException(e, message);
 				throw new CompositeException(e);
 				
 			} catch (SAXParseException e) {		
-				String message = parseException(xmlFilePath, null, e);
+				String message = parseException(null, xmlFilePath, null, e);
 				CompositeLogger.logException(e, message);
 				throw new CompositeException(e);
 				
@@ -185,11 +207,186 @@ public class XMLUtils {
 		return object;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public static Object getJavaObjectFromXML(String xmlDoc) {
+		Object object = null;
+		try {
+			// Make sure the document contains lines for proper parsing by parseException if an error occurs.
+			xmlDoc = XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(xmlDoc));
+			
+			// Create an input stream from the XML document string
+			InputStream is = new ByteArrayInputStream(xmlDoc.getBytes());
+			 			
+			try {
+	
+				// Create JAXBContext
+				ObjectFactory objectFactory = new ObjectFactory();
+				JAXBContext jaxbContext = JAXBContext.newInstance(objectFactory.getClass());
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+	
+				/* 
+				 * Open the deployToolModules.xsd Schema to read and set the schema for the validation by the unmarshaller
+				 * 
+				 * Valid XML Constants used when defining a new schema
+				 * 		javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI ("http://www.w3.org/2001/XMLSchema") W3C XML Schema 1.0 
+				 * 		javax.xml.XMLConstants.RELAXNG_NS_URI ("http://relaxng.org/ns/structure/1.0")  
+				 * 
+				 * Get the schemaLocation value from the property file.
+				 */
+				Schema schema = null;
+				String defaultPropertyFile = CommonConstants.propertyFile;
+				//  Determine the property file name for this environment
+				//    1. Start with default file CommonConstants.propertyFile
+				//    2. Get Java Environment variables
+				//    3. Get OS System Environment variables
+				//
+		        String propertyFile = CommonUtils.getFileOrSystemPropertyValue(defaultPropertyFile, "CONFIG_PROPERTY_FILE");
+		        // Set a default value if not found
+		        if (propertyFile == null || propertyFile.trim().length() == 0) {
+		        	propertyFile = defaultPropertyFile;
+		        }
+				String schemaLocation = CommonUtils.extractVariable("XMLUtils", PropertyManager.getInstance().getProperty(propertyFile,"SCHEMA_LOCATION"),propertyFile, true);
+				if (schemaLocation != null && schemaLocation.length() > 0) {
+					try {
+						FileInputStream fisSchema = new FileInputStream(schemaLocation); 
+						schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new Source[] { new StreamSource(fisSchema) } );			
+						unmarshaller.setSchema(schema);
+					} catch (FileNotFoundException e) {
+						CompositeLogger.logException(e, e.getMessage());
+						throw new CompositeException(e);
+					}
+				} else {
+					throw new ApplicationException("The schemaLocation property is not set properly for /resources/config/deploy.properties.");
+				}
+				
+				// Now unmarshall the xml	
+				Object xmlObject = unmarshaller.unmarshal(is);
+				if(xmlObject instanceof JAXBElement){
+					object = (Object) ((JAXBElement) xmlObject).getValue();
+				}else{
+					object = xmlObject;
+				}
+				
+			} catch (JAXBException e) {
+				String message = parseException(xmlDoc, null, e, null);
+				CompositeLogger.logException(e, message);
+				throw new CompositeException(e);
+				
+			} catch (SAXParseException e) {		
+				String message = parseException(xmlDoc, null, null, e);
+				CompositeLogger.logException(e, message);
+				throw new CompositeException(e);
+			} catch (Throwable e) {
+				CompositeLogger.logException(e, e.getMessage());
+				throw new CompositeException(e);
+			}
+		} catch (Exception e) {
+			CompositeLogger.logException(e, e.getMessage());
+			throw new CompositeException(e);
+		}
 
-	private static String parseException(String xmlFilePath, JAXBException je, SAXParseException se) throws CompositeException {
+		return object;
+	}
+
+	/* xmlDoc - the xml document to convert to an object
+	 * schemaPropertyName - the deploy.properties variable name such as "ADMIN_API_LOCATION"
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Object getJavaObjectFromXMLOtherSchema(String xmlDoc, String schemaPropertyName) {
+		Object object = null;
+		try {
+			// Make sure the document contains lines for proper parsing by parseException if an error occurs.
+			xmlDoc = XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(xmlDoc));
+			
+			// Create an input stream from the XML document string
+			InputStream is = new ByteArrayInputStream(xmlDoc.getBytes());
+			 			
+			try {
+	
+				// Create JAXBContext
+				ObjectFactory objectFactory = new ObjectFactory();
+				JAXBContext jaxbContext = JAXBContext.newInstance(objectFactory.getClass());
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+	
+				/* 
+				 * Open the deployToolModules.xsd Schema to read and set the schema for the validation by the unmarshaller
+				 * 
+				 * Valid XML Constants used when defining a new schema
+				 * 		javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI ("http://www.w3.org/2001/XMLSchema") W3C XML Schema 1.0 
+				 * 		javax.xml.XMLConstants.RELAXNG_NS_URI ("http://relaxng.org/ns/structure/1.0")  
+				 * 
+				 * Get the schemaLocation value from the property file.
+				 */
+				
+				Schema schema = null;
+				String defaultPropertyFile = CommonConstants.propertyFile;
+				//  Determine the property file name for this environment
+				//    1. Start with default file CommonConstants.propertyFile
+				//    2. Get Java Environment variables
+				//    3. Get OS System Environment variables
+				//
+		        String propertyFile = CommonUtils.getFileOrSystemPropertyValue(defaultPropertyFile, "CONFIG_PROPERTY_FILE");
+		        // Set a default value if not found
+		        if (propertyFile == null || propertyFile.trim().length() == 0) {
+		        	propertyFile = defaultPropertyFile;
+		        }
+				String schemaLocation = CommonUtils.extractVariable("XMLUtils", PropertyManager.getInstance().getProperty(propertyFile,schemaPropertyName),propertyFile, true);
+				if (schemaLocation != null && schemaLocation.length() > 0) {
+					try {
+						FileInputStream fisSchema = new FileInputStream(schemaLocation); 
+						schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new Source[] { new StreamSource(fisSchema) } );			
+						unmarshaller.setSchema(schema);
+					} catch (FileNotFoundException e) {
+						CompositeLogger.logException(e, e.getMessage());
+						throw new CompositeException(e);
+					}
+				} else {
+					throw new ApplicationException("The schemaLocation property is not set properly for /resources/config/deploy.properties.");
+				}
+				
+				// Now unmarshall the xml	
+				Object xmlObject = unmarshaller.unmarshal(is);
+				if(xmlObject instanceof JAXBElement){
+					object = (Object) ((JAXBElement) xmlObject).getValue();
+				}else{
+					object = xmlObject;
+				}
+				
+			} catch (JAXBException e) {
+				String message = parseException(xmlDoc, null, e, null);
+				CompositeLogger.logException(e, message);
+				throw new CompositeException(e);
+				
+			} catch (SAXParseException e) {		
+				String message = parseException(xmlDoc, null, null, e);
+				CompositeLogger.logException(e, message);
+				throw new CompositeException(e);
+			
+			} catch (Throwable e) {
+				CompositeLogger.logException(e, e.getMessage());
+				throw new CompositeException(e);
+			}
+		} catch (Exception e) {
+			CompositeLogger.logException(e, e.getMessage());
+			throw new CompositeException(e);
+		}
+
+		return object;
+	}
+
+	private static String parseException(String xmlDoc, String xmlFilePath, JAXBException je, SAXParseException se) throws CompositeException {
 		String message = "";
 		try {
-			FileInputStream fisError = new FileInputStream(new File(xmlFilePath));
+			// Determine whether the input is from an XML string or an XML file.
+			DataInputStream in = null;
+			if (xmlFilePath != null) {
+				FileInputStream fisError = new FileInputStream(new File(xmlFilePath));
+				in = new DataInputStream(fisError);
+			}
+			if (xmlDoc != null) {
+				InputStream isError = new ByteArrayInputStream(xmlDoc.getBytes());
+				in = new DataInputStream(isError);
+			}
 
 			int line = 0;
 			try {
@@ -207,7 +404,6 @@ public class XMLUtils {
 				if (line > 0) {
 					try {
 						// Get the object of DataInputStream
-						DataInputStream in = new DataInputStream(fisError);
 						BufferedReader br = new BufferedReader(new InputStreamReader(in));
 						String strLine;
 						int i=0;
@@ -464,7 +660,6 @@ public class XMLUtils {
 						
 	}
 
-	
 	private static void extractElementData(String name, String value, StringBuffer sb, String seperator1,String seperator2, String nodeName, String nodeValue, String options) {
 		if (name != null && name.trim().length() > 0) {
 

@@ -18,6 +18,7 @@
 package com.cisco.dvbu.ps.deploytool.dao;
 
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeModule;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesRequest.Entries;
 import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries;
 
@@ -34,20 +35,14 @@ public interface PrivilegeDAO {
 	/**
 	 * Take Privilege Action method takes  passed action on the resource privilege with the passed in privilege attributes for the passed in target server name 
 	 * @param actionname the type of action to take
-	 * @param recurse informs how to process the resource children
-	 * @param updateDependenciesRecursively If "true", then all dependencies of the given resources will recursively be updated with the privileges assigned to their parent.
-	 * @param updateDependentsRecursively If "true", then all dependents of the given resources will recursively be updated with the privileges assigned to their parent.
-	 * @param mode determines whether privileges are merged with existing ones 
-	 *        "OVERWRITE_APPEND" (default) merges and does not update privileges for users or groups not mentioned.  
-		      "SET_EXACTLY" makes privileges look exactly like those provided in the call.
-	 * @param PrivilegeEntries privilege entry list
+	 * @param PrivilegeModule privilegeModule entry list
 	 * @param serverId target server config name
 	 * @param pathToServersXML path to the server values xml
-	 * @param CisVersion a numeric representation of the CIS Version.  6.2.0.00.29 = 6200029
 	 * @return void
 	 * @throws CompositeException
 	 */
-	public void takePrivilegeAction(String actionName, boolean recurse, boolean updateDependenciesRecursively, boolean updateDependentsRecursively, String mode, PrivilegeEntries privilegeEntries, String serverId, String pathToServersXML, Integer CisVersion) throws CompositeException;
+	public void takePrivilegeAction(String actionName, PrivilegeModule privilegeModule, String serverId, String pathToServersXML) throws CompositeException;
+
 	/**
 	 * Get all the resource privileges for the set of entries pass in
 	 * @param privilegeEntries a list of resources to get privileges for (resourcePath, resourceType)
@@ -58,7 +53,6 @@ public interface PrivilegeDAO {
 	 * @return PrivilegeEntries list with all the privileges for the passed in Entry list
 	 * @throws CompositeException
 	 */	
-	public com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries
-		getResourcePrivileges(Entries privilegeEntries, String filter, boolean includeColumnPrivileges, String serverId, String pathToServersXML);
+	public PrivilegeModule getResourcePrivileges(Entries privilegeEntries, String filter, boolean includeColumnPrivileges, String serverId, String pathToServersXML);
 
 }

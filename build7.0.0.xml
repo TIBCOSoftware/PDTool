@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+######################################################################
+# (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+# optional version number) are provided as a convenience, but are covered under the licensing for the 
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+# through a valid license for that product.
+# 
+# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
+######################################################################
+
+*******************************************************
+**** IMPORTANT - PLEASE READ REGARDING COMPILATION ****
+*******************************************************
+	To build the 7.0 jars, the properties java build path must be set for lib7.0.0
+	
+	1. Right click on the PDTool project, select properties, Select Java Build Path
+
+	2. LIBRARIES: click on "Libraries" tab
+			Select lib6.2 and click the "Remove" button
+			Click "Add Library" button
+			Select "User Library" and click Next
+			Select lib7.0.0 library and click finish
+			Click OK to 
+	3. Clean the project
+	4. Execute the build7.0.0.xml
+-->
+<project name="PDTool" default="default" basedir=".">
+
+	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
+	<property name="ver" value="7.0.0"/>
+	<property name="relNum" value="r1"/>
+
+	<property name="src" value="src"/>
+	<property name="build" location="build"/>
+	<property name="bin" location="bin"/>
+	<property name="dist" value="dist"/>
+	<property name="ext" location="ext"/>
+	<property name="lib" location="libcommon"/>
+	<property name="libver" location="lib${ver}"/>
+	<property name="licenses" location="licenses"/>
+	<property name="project-name" value="PDTool${ver}"/>
+
+	<path id="project.class.path">
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${libver}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="ext/ant/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac source="1.7" target="1.7" srcdir="${src}" destdir="${build}" 
+			debug="true" debuglevel="lines,vars,source">
+	      <classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<target name="dist-jar" depends="clean,compile" description="generate the distribution">
+
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/${project-name}.jar" basedir="${build}" />
+
+		<delete dir="${build}" />
+	</target>
+	
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+	</target>
+
+	<target name="default" depends="clean,dist-jar" description="Distribute CIS Deploy tool libs"/>
+</project>

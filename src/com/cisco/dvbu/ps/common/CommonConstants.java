@@ -33,7 +33,10 @@ public class CommonConstants {
 
 	// Location of java security policy file offset from PDTool home location
 	public static final String javaPolicy = "/security/java.policy";
-	
+
+	// Location of adapter property file offset from PDTool home location
+	public static final String adapterPropertyFile = "adapter.properties";
+
 	// Set the default VCS Life Cycle Listeners
 	public static final String SVNLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.svn.SVNLifecycleListener";
 	public static final String CVSLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.cvs.CVSLifecycleListener";

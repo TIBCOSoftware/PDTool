@@ -33,6 +33,8 @@ REM #------------------------------------------
 REM # Set constants
 REM #------------------------------------------
 if not defined debug set debug=0
+REM # CIS version [6.2, 7.0.0]
+set CIS_VERSION=@version@
 REM # Initialize variables
 set SCRIPT=checkin_novars.bat
 set SEP=::

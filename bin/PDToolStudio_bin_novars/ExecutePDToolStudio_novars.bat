@@ -75,6 +75,8 @@ REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
 if not defined debug set debug=0
+REM # CIS version [6.2, 7.0.0]
+set CIS_VERSION=@version@
 REM # Initialize variables
 set SCRIPT=ExecutePDToolStudio
 set SEP=::

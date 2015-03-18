@@ -38,15 +38,14 @@ import java.util.regex.Matcher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.cisco.dvbu.ps.common.CommonConstants;
+import com.cisco.dvbu.ps.common.adapters.util.XslTransformUtility;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.XMLUtils;
-import com.cisco.dvbu.ps.deploytool.services.VCSManager;
-import com.cisco.dvbu.ps.deploytool.services.VCSManagerImpl;
-
 /**
  * This class has bunch of methods used by the scripting framework. Please do not delete the System.out.println 
  * statements, they are used by the scripts.
@@ -417,6 +416,17 @@ public class ScriptUtil {
 		return passwordLineList;
 	}
 
+	
+	/**
+	 * Find Lines Containing passed in match String from the passed in file
+	 * @param XMLFileSource file path to XML document
+	 * @param XSLFileSource file path to XSL style sheet
+	 */
+	public static void XslTransformUtility(String XMLFileSource, String XSLFileSource) {
+
+		XslTransformUtility.executeXslTransformUtility(XMLFileSource, XSLFileSource);
+
+	}
 	
 	public static void main(String[] args) {
 	

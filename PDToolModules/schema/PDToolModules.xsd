@@ -3349,7 +3349,7 @@ group replace the previous value for that user or group.
 			</xs:documentation>
 		</xs:annotation>
 	  <xs:complexType>
-		<xs:choice>
+		<xs:choice minOccurs="0">
 			<xs:element name="serverAttribute" maxOccurs="unbounded" minOccurs="1" type="ns:ServerAttributeType"/>
 			<xs:element name="serverAttributeDef" minOccurs="1" type="ns:ServerAttributeDefType" maxOccurs="unbounded"/>
 		</xs:choice>

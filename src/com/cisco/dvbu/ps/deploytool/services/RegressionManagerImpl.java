@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
@@ -58,6 +59,10 @@ import com.cisco.dvbu.ps.deploytool.dao.wsapi.PrivilegeWSDAOImpl;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.ResourceWSDAOImpl;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.UserWSDAOImpl;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeEntryType;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeModule;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeType;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeValidationList;
 import com.cisco.dvbu.ps.deploytool.modules.RegressionModule;
 import com.cisco.dvbu.ps.deploytool.modules.RegressionQueriesType;
 import com.cisco.dvbu.ps.deploytool.modules.RegressionSecurityGenerationOptionsType;
@@ -78,8 +83,10 @@ import com.compositesw.services.system.admin.resource.GetResourcePrivilegesReque
 import com.compositesw.services.system.admin.resource.PathTypeOrColumnPair;
 import com.compositesw.services.system.admin.resource.Privilege;
 import com.compositesw.services.system.admin.resource.PrivilegeEntry;
+import com.compositesw.services.system.admin.resource.PrivilegeEntry.Privileges;
 import com.compositesw.services.system.admin.resource.ResourceOrColumnType;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries;
+import com.compositesw.services.system.admin.resource.UserNameType;
 
 /** 
  * This class is an implementation of RegressionManager that uses standard Composite Pubtest utility's
@@ -2169,7 +2176,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	 */
 	private PrivilegeEntries getPrivileges(String resourcePath, String resourceType, String serverId, String pathToServersXML) {
 		
-		PrivilegeEntries privilegeEntries = null;
+		PrivilegeEntries privilegeEntries = new PrivilegeEntries();
 		String key = resourcePath + " " + resourceType;
 			
 		boolean foundInList = false;
@@ -2193,13 +2200,49 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 			entries.getEntry().add(pathPair);
 	
 			// Retrieve the Resource Privileges
-			privilegeEntries = getPrivilegeDAO().getResourcePrivileges(entries, filter, includeColumnPrivileges, serverId, pathToServersXML);
+			PrivilegeModule privilegeModule = getPrivilegeDAO().getResourcePrivileges(entries, filter, includeColumnPrivileges, serverId, pathToServersXML);
+			List<PrivilegeEntryType> privilegeList = privilegeModule.getResourcePrivilege();
+
+			for (PrivilegeEntryType privilegeEntry : privilegeList) 
+			{
+				PrivilegeEntry pe = new PrivilegeEntry();
+
+				pe.setPath(privilegeEntry.getResourcePath().toString());
+				pe.setType(ResourceOrColumnType.valueOf(privilegeEntry.getResourceType().toString()));
+				
+				Privileges privs = new Privileges();
+				
+				List<PrivilegeType> privileges = privilegeEntry.getPrivilege();
+				for (PrivilegeType privilege : privileges) {
+					Privilege priv = new Privilege();
+					priv.setName(privilege.getName());
+					priv.setNameType(UserNameType.valueOf(privilege.getNameType().toString()));
+					priv.setDomain(privilege.getDomain());
+					priv.setPrivs(flattenPrivilegeValidationList(privilege.getPrivileges()));
+					priv.setCombinedPrivs(flattenPrivilegeValidationList(privilege.getCombinedPrivileges()));
+					priv.setInheritedPrivs(flattenPrivilegeValidationList(privilege.getInheritedPrivileges()));
+					
+					privs.getPrivilege().add(priv);
+				}
+				pe.setPrivileges(privs);
+				
+				privilegeEntries.getPrivilegeEntry().add(pe);
+			}
 			
 			// Put the object in the privilege list
 			privilegeEntriesList.put(key, privilegeEntries);
 		}
 		return privilegeEntries;
 	}
+	
+	private String flattenPrivilegeValidationList(List<PrivilegeValidationList> list) {
+		String retval = "";
+		for (PrivilegeValidationList s : list) {
+			retval = retval + s + " ";
+		}
+		return retval.trim();
+	}
+	
 	/**
 	 * Write out the Regression Module XML File and flatten the regression XML as directed by the user input.
 	 * 

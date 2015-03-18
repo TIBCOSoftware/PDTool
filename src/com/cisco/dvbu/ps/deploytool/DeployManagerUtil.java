@@ -47,7 +47,7 @@ public class DeployManagerUtil {
 	public static final String deployManagerName = CommonConstants.deployManagerName;
 
 	public static final String springConfigFile = CommonConstants.springConfigFile;
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 	
@@ -68,6 +68,7 @@ public class DeployManagerUtil {
 
 		try {
 			boolean validMethod = false;
+			initAdapter();
 			DeployManager deployManager = getDeployManager();
 			Class deployManagerClass = deployManager.getClass();
 			Method[] methods = deployManagerClass.getMethods();
@@ -208,5 +209,41 @@ public class DeployManagerUtil {
 		return deployManager;
 	}
 	
+	private static void initAdapter() {
 
+		String prefix = "initAdapter";
+		
+		// Get the CIS version set in the environment
+		String cisVersion = CommonUtils.getFileOrSystemPropertyValue(null, "CIS_VERSION");
+
+		if (cisVersion == null)
+			throw new CompositeException(prefix+"::The environment variable \"CIS_VERSION\" may not be null.");
+
+		if(logger.isDebugEnabled()){
+			logger.debug("Environment variable CIS_VERSION="+cisVersion);
+		}
+
+		// Get the adapter path from the adapter.properties file according to the CIS version mapping
+		String adapterPath = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(CommonConstants.adapterPropertyFile, cisVersion), null, true);
+
+		if (adapterPath == null || adapterPath.trim().length() == 0) {
+			throw new CompositeException(prefix+"::PDTool adapter configuraiton properties \""+CommonConstants.adapterPropertyFile+"\" does not contain a valid version/path mapping for CIS version="+cisVersion);
+		}
+		
+		// Check file exists
+		if (CommonUtils.fileExists(adapterPath)) {
+			// Set the environment property for the PDTool adapter config path for use by PDTool modules
+			System.setProperty("PDTOOL_ADAPTER_CONFIG_PATH", adapterPath);		
+			String envAdapterPath = System.getProperty("PDTOOL_ADAPTER_CONFIG_PATH");
+			if (envAdapterPath == null)
+				throw new CompositeException(prefix+"::The enviornment variable PDTOOL_ADAPTER_CONFIG_PATH was not set properly for adapter path="+adapterPath);
+			
+			if(logger.isInfoEnabled()){
+				logger.info("Set environment variable PDTOOL_ADAPTER_CONFIG_PATH="+envAdapterPath);
+		    }	
+		} else {
+			throw new CompositeException(prefix+"::PDTool adapter configuraiton properties \""+CommonConstants.adapterPropertyFile+"\" does not contain a valid mapping for CIS version="+cisVersion+" and path="+adapterPath);
+		}
+
+	}
 }

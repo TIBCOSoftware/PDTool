@@ -19,8 +19,6 @@ package com.cisco.dvbu.ps.deploytool.services;
 
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,16 +49,11 @@ import com.compositesw.services.system.admin.resource.Column;
 import com.compositesw.services.system.admin.resource.ColumnList;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesRequest.Entries;
 import com.compositesw.services.system.admin.resource.PathTypeOrColumnPair;
-import com.compositesw.services.system.admin.resource.Privilege;
-import com.compositesw.services.system.admin.resource.PrivilegeEntry;
-import com.compositesw.services.system.admin.resource.PrivilegeEntry.Privileges;
 import com.compositesw.services.system.admin.resource.Resource;
 import com.compositesw.services.system.admin.resource.ResourceList;
 import com.compositesw.services.system.admin.resource.ResourceOrColumnType;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.admin.resource.TableResource;
-import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries;
-import com.compositesw.services.system.admin.resource.UserNameType;
 import com.compositesw.services.system.util.common.DetailLevel;
 
 public class PrivilegeManagerImpl implements PrivilegeManager{
@@ -108,14 +101,6 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
-
-		String CisVersionString = getServerAttributeDAO().getServerVersion(serverId, pathToServersXML).trim();
-		int idx = CisVersionString.indexOf(" ");
-		if (idx <= 0)
-			idx = CisVersionString.length();
-		CisVersionString = CisVersionString.substring(0, idx).trim();
-		CisVersionString = CisVersionString.replaceAll(Pattern.quote("."), Matcher.quoteReplacement(""));
-		Integer CisVersion = Integer.valueOf(CisVersionString);
 		
 		// Extract variables for the privilegeIds
 		privilegeIds = CommonUtils.extractVariable(prefix, privilegeIds, propertyFile, true);
@@ -127,8 +112,10 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 			List<PrivilegeEntryType> privilegeList = getPrvileges(serverId, privilegeIds, pathToPrivilegeXML, pathToServersXML);
 			if (privilegeList != null && privilegeList.size() > 0) {
 
-				// Loop over the list of privileges and apply their attributes to the target CIS instance.
+				// Set the default mode is if no mode is provided.
 				String mode = "OVERWRITE_APPEND";
+
+				// Loop over the list of privileges and apply their attributes to the target CIS instance.
 				for (PrivilegeEntryType privilege : privilegeList) 
 				{
 					// Get the identifier and convert any $VARIABLES
@@ -152,44 +139,42 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						validatePrivilege(privilege);
 						
 						// Construct the Privilege Entries
-						PrivilegeEntries privilegeEntries = new PrivilegeEntries();
-						PrivilegeEntry pe = new PrivilegeEntry();
+						PrivilegeModule updPrivilegeModule = new PrivilegeModule();
+						PrivilegeEntryType updPrivilegeEntry = new PrivilegeEntryType();
+
 						if (privilege.getResourcePath() != null) {
 							// Get the resource path
 							resourcePath = CommonUtils.extractVariable(prefix, privilege.getResourcePath(), propertyFile, true);
-							pe.setPath(resourcePath);							
+							updPrivilegeEntry.setResourcePath(resourcePath);							
 						
 							// Get the resource type
 							if (privilege.getResourceType() == null || privilege.getResourceType().toString().length() == 0) {
 								// Get the Resource Type for the Resource Path
 								String resourceType = getResourceManager().getResourceType(serverId, resourcePath, pathToServersXML);
-								pe.setType(ResourceOrColumnType.valueOf(resourceType));
+								updPrivilegeEntry.setResourceType(ResourceTypeSimpleType.valueOf(resourceType));
 							} else {
-								pe.setType(ResourceOrColumnType.valueOf(privilege.getResourceType().toString()));
+								updPrivilegeEntry.setResourceType(ResourceTypeSimpleType.valueOf(privilege.getResourceType().toString()));
 							}
 						}
 						
 						// Set the child recursion
-						boolean recurse = true;
 						if (privilege.isRecurse() != null)
-							recurse = privilege.isRecurse();
+							updPrivilegeEntry.setRecurse(privilege.isRecurse());
 						
 						// Set the dependencies recursion
-						boolean updateDependenciesRecursively = false;
 						if (privilege.isUpdateDependenciesRecursively() != null)
-							updateDependenciesRecursively = privilege.isUpdateDependenciesRecursively();
+							updPrivilegeEntry.setUpdateDependenciesRecursively(privilege.isUpdateDependenciesRecursively());
 
 						// Set the dependents recursion
-						boolean updateDependentsRecursively = false;
 						if (privilege.isUpdateDependentsRecursively() != null)
-							updateDependentsRecursively = privilege.isUpdateDependentsRecursively();
+							updPrivilegeEntry.setUpdateDependentsRecursively(privilege.isUpdateDependentsRecursively());
 
 						// Set mode
 						if (privilege.getMode() != null) {
 							mode = CommonUtils.extractVariable(prefix, privilege.getMode().name(), propertyFile, true);
 						}
+						updPrivilegeEntry.setMode(PrivilegeModeValidationList.valueOf(mode));
 
-						Privileges privs = new Privileges();
 						for (PrivilegeType privType : privilege.getPrivilege()) {	
 							
 							boolean updatePrivilege = false;
@@ -202,11 +187,11 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 								updatePrivilege = true;
 							}
 							if (updatePrivilege) {	
-								Privilege priv = new Privilege();
+								PrivilegeType updPrivilege = new PrivilegeType();
 								String domain = null;
 								if (privType.getDomain() != null) {
 									domain = CommonUtils.extractVariable(prefix, privType.getDomain(), propertyFile, true);
-									priv.setDomain(domain);
+									updPrivilege.setDomain(domain);
 								}
 								if (privType.getName() != null) {
 									// -- 2011-11-18 - grose - fixing bug - setting name to lower case
@@ -214,67 +199,42 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 									String name = CommonUtils.extractVariable(prefix, privType.getName(), propertyFile, true);
 									if (domain != null) {
 										if (domain.equals("composite"))
-											priv.setName(name.toLowerCase());	
+											updPrivilege.setName(name.toLowerCase());	
 										else
-											priv.setName(name);
+											updPrivilege.setName(name);
 									} else {
-										priv.setName(name);
+										updPrivilege.setName(name);
 									}
-
 								}
 								if (privType.getNameType() != null) 
 								{
 									String nameType = CommonUtils.extractVariable(prefix, privType.getNameType().name(), propertyFile, true);
-									priv.setNameType(UserNameType.valueOf(nameType.toUpperCase()));							
+									updPrivilege.setNameType(PrivilegeNameTypeValidationList.valueOf(nameType.toUpperCase()));							
 								}
 	
 								// Set privileges if not null
+								/* Note:
+								 * Neither CombinedPrivileges nore Inherited Privileges get updated as per info tab of updateResourcePrivileges()
+								 * The "combinedPrivs" and "inheritedPrivs" elements on each "privilegeEntry" will be ignored and can be left unset	
+								 */
 								if (privType.getPrivileges() != null && privType.getPrivileges().size() > 0) {
-									// Set the privileges as a space separate list
-									String pList = "";
-									for (PrivilegeValidationList pt : privType.getPrivileges()) {
-										pList = pList.concat(pt.name()+" ");
-									}
-									pList.substring(0, pList.length()-1);
-									priv.setPrivs(pList);
+									updPrivilege.getPrivileges().addAll(privType.getPrivileges());
 								}
-								
-	/* Note:
-	 * Neither CombinedPrivileges nore Inherited Privileges get updated as per info tab of updateResourcePrivileges()
-	 * The "combinedPrivs" and "inheritedPrivs" elements on each "privilegeEntry" will be ignored and can be left unset	
-	 * 
-								// Set Combined privileges if not null
-								if (privType.getCombinedPrivileges() != null && privType.getCombinedPrivileges().size() > 0) {
-									// Set the Combined privileges as a space separate list
-									String pList = "";
-									for (PrivilegeValidationList pt : privType.getCombinedPrivileges()) {
-										pList = pList.concat(pt.name()+" ");
-									}
-									pList.substring(0, pList.length()-1);
-									priv.setCombinedPrivs(pList);
-								}
-								
-								// Set Inherited privileges if not null
-								if (privType.getInheritedPrivileges() != null && privType.getInheritedPrivileges().size() > 0) {
-									// Set the Inherited privileges as a space separate list
-									String pList = "";
-									for (PrivilegeValidationList pt : privType.getInheritedPrivileges()) {
-										pList = pList.concat(pt.name()+" ");
-									}
-									pList.substring(0, pList.length()-1);
-									priv.setInheritedPrivs(pList);								
-								}
-	*/							
 								// Add privileges to the object list
-								privs.getPrivilege().add(priv);
+								updPrivilegeEntry.getPrivilege().add(updPrivilege);
 							}
 						}
-						pe.setPrivileges(privs);
-						
-						privilegeEntries.getPrivilegeEntry().add(pe);
+					
+						updPrivilegeModule.getResourcePrivilege().add(updPrivilegeEntry);
+
+						/***************************************
+						 * 
+						 * PrivilegeWSDAOImpl Invocation
+						 * 
+						 ***************************************/
 						// Invoke DAO to take action
-						getPrivilegeDAO().takePrivilegeAction(actionName, recurse, updateDependenciesRecursively, updateDependentsRecursively, mode, privilegeEntries, serverId, pathToServersXML, CisVersion);					
-					}
+						getPrivilegeDAO().takePrivilegeAction(actionName, updPrivilegeModule, serverId, pathToServersXML);					
+					}					 
 				}
 			}
 		} catch (CompositeException e) {
@@ -560,9 +520,19 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 				domainList = "composite";
 			}
 			
+			/***************************************
+			 * 
+			 * ResourceWSDAOImpl Invocation
+			 * 
+			 ***************************************/
 			// Determine what type the current resourcePath is 
-			Resource currResourcePath = getResourceDAO().getResource(serverId, startPath, pathToServersXML);
+			Resource currResourcePath = getResourceDAO().getResource(serverId, startPath, pathToServersXML);		
 			
+			/***************************************
+			 * 
+			 * ResourceWSDAOImpl Invocation
+			 * 
+			 ***************************************/
 			// Recursively walk the folder tree and get "ALL" resources by passing in null for resourceType
 			ResourceList resourceList = new ResourceList();
 			resourceList.getResource().addAll(DeployManagerUtil.getDeployManager().getResourcesFromPath(serverId, startPath, currResourcePath.getType().name(), dependentFilter, DetailLevel.FULL.name(), pathToServersXML).getResource());
@@ -612,8 +582,140 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 					}
 				}
 		
+				/***************************************
+				 * 
+				 * PrivilegeWSDAOImpl Invocation
+				 * 
+				 ***************************************/
+				// Retrieve the Resource Privileges
+				PrivilegeModule retPrivilegeModule = getPrivilegeDAO().getResourcePrivileges(entries , privFilter, includeColumnPrivileges, serverId, pathToServersXML);
+				List<PrivilegeEntryType> privilegeEntries = retPrivilegeModule.getResourcePrivilege();
+			
+				// Process OUT privilegeModule
+				PrivilegeModule privilegeModule = new ObjectFactory().createPrivilegeModule();
+				int seq=1;
+				// Loop through the list of resource privileges
+				for (PrivilegeEntryType retPrivs : privilegeEntries) {
+					
+					boolean processThisResourcePrivilege = false;
+					if (generateParent && retPrivs.getResourcePath().equalsIgnoreCase(startPath)) {
+						processThisResourcePrivilege = true;
+					}
+					if (generateChild && !retPrivs.getResourcePath().equalsIgnoreCase(startPath)) {
+						processThisResourcePrivilege = true;
+					}
+				
+					if (processThisResourcePrivilege) {
+						
+						PrivilegeEntryType resourcePrivilege = new PrivilegeEntryType();
+						resourcePrivilege.setId("priv"+seq++);
+	
+						resourcePrivilege.setResourcePath(retPrivs.getResourcePath());
+						// Generate resourceType.  Required to do this since COLUMN cannot be looked up by getAllResourcePaths
+						//   This is an optional element to maintain compatibility.
+						if (retPrivs.getResourceType() != null) {
+							resourcePrivilege.setResourceType(ResourceTypeSimpleType.valueOf(retPrivs.getResourceType().toString()));
+						}
+						resourcePrivilege.setRecurse(true);
+						
+						//Loop through privileges
+						List<PrivilegeType> retPrivList = retPrivs.getPrivilege(); 
+						for (PrivilegeType retPriv : retPrivList) 
+						{
+							PrivilegeType privilege = new PrivilegeType();
+	
+							// Get the privilege if domain, name, type and privilege are not null
+							if (retPriv.getDomain() != null && retPriv.getName() != null && retPriv.getNameType() != null && retPriv.getPrivileges() != null) {
+								
+								boolean generatePrivilege = false;
+								if (retPriv.getNameType().name().toString().equalsIgnoreCase("USER") 
+										&& !doNotGenerateUsersList.contains(retPriv.getName().toLowerCase())
+										&& generateUser) {
+									
+									generatePrivilege = true;
+								}
+								if (retPriv.getNameType().name().toString().equalsIgnoreCase("GROUP") 
+										&& !doNotGenerateGroupsList.contains(retPriv.getName().toLowerCase())
+										&& generateGroup) {
+									
+									generatePrivilege = true;
+								}
+								
+								// Generate privilege is qualified by generateUser, generateGroup, doNotGenerateUsersList and  doNotGenerateGroupsList
+								if (generatePrivilege) {
+									
+									boolean generatePrivilegeQualified = false;
+									if (generateSystem && generateNonSystem) {
+										
+										generatePrivilegeQualified = true;
+										
+									} else if (generateNonSystem) {
+										
+										if (retPriv.getNameType().name().toString().equalsIgnoreCase("USER") 
+												&& !systemUserList.contains(retPriv.getName().toLowerCase())) {
+									
+											generatePrivilegeQualified = true;
+										}
+										if (retPriv.getNameType().name().toString().equalsIgnoreCase("GROUP") 
+												&& !systemGroupList.contains(retPriv.getName().toLowerCase())) {
+									
+											generatePrivilegeQualified = true;
+										}
 
-				com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries privilegeEntries = null;
+									} else if (generateSystem) {
+										
+										if (retPriv.getNameType().name().toString().equalsIgnoreCase("USER") 
+												&& systemUserList.contains(retPriv.getName().toLowerCase())) {
+									
+											generatePrivilegeQualified = true;
+										}
+										if (retPriv.getNameType().name().toString().equalsIgnoreCase("GROUP") 
+												&& systemGroupList.contains(retPriv.getName().toLowerCase())) {
+									
+											generatePrivilegeQualified = true;
+										}
+									}
+	
+									// Generate  privilege is qualified by generateSystem and generateNonSystem
+									if (generatePrivilegeQualified) {
+										
+										// Finally, check that the domain is in the valid domainList before generating the privilege
+										if (domainList.contains(retPriv.getDomain())) {
+											
+											// Set the Domain
+											privilege.setDomain(retPriv.getDomain());	
+				
+											// Set the Name
+											privilege.setName(retPriv.getName());							
+				
+											// Set the Name Type
+											privilege.setNameType(PrivilegeNameTypeValidationList.valueOf(retPriv.getNameType().name()));							
+											
+											// Set the Privileges
+											privilege.getPrivileges().addAll(retPriv.getPrivileges());
+													
+											// Set the Combined Privileges if it exists
+											if (retPriv.getCombinedPrivileges() != null) {
+												privilege.getCombinedPrivileges().addAll(retPriv.getCombinedPrivileges());
+											}
+											
+											// Set the Inherited Privileges if it exists
+											if (retPriv.getInheritedPrivileges() != null) {
+												privilege.getInheritedPrivileges().addAll(retPriv.getInheritedPrivileges());
+											}
+				
+											// Add the privilege node to the XML output
+											resourcePrivilege.getPrivilege().add(privilege);
+										}
+									}
+								}
+							}
+						}
+						privilegeModule.getResourcePrivilege().add(resourcePrivilege);
+					}
+				}
+				XMLUtils.createXMLFromModuleType(privilegeModule, pathToPrivilegeXML);
+/*
 				// Retrieve the Resource Privileges
 				privilegeEntries = getPrivilegeDAO().getResourcePrivileges(entries , privFilter, includeColumnPrivileges, serverId, pathToServersXML);
 				
@@ -756,7 +858,8 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						privilegeModule.getResourcePrivilege().add(resourcePrivilege);
 					}
 				}
-				XMLUtils.createXMLFromModuleType(privilegeModule, pathToPrivilegeXML);
+				XMLUtils.createXMLFromModuleType(privilegeModule, pathToPrivilegeXML);				
+ */
 			}
 		} catch (CompositeException e) {
 			logger.error("Error generating PrivilegeModule XML: " , e);

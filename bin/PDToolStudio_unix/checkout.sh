@@ -31,6 +31,9 @@
 #  #------------------------------------------
 #  # Set constants
 #  #------------------------------------------
+# CIS version [6.2, 7.0.0]
+export CIS_VERSION=7.0.0
+# Initialize variables
 SCRIPT1=checkout.sh
 PREFIX1=$SCRIPT1::execute::
 PREFIX1_ERR=ERROR::$SCRIPT1::
