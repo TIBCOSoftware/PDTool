@@ -2606,7 +2606,7 @@ public class VCSManagerImpl implements VCSManager {
 				}
 
 				/**********************************************************
-				 * vcsInitWorkspaceCommon:
+				 * [GIT] vcsInitWorkspaceCommon:
 				 *      INIT VCS WORKSPACE FOR GIT [git]
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
@@ -2805,6 +2805,89 @@ public class VCSManagerImpl implements VCSManager {
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 				    
 
+				}
+
+				/**********************************************************
+				 * [CLC] vcsInitWorkspaceCommon:
+				 *      INIT VCS WORKSPACE FOR CLEARCASE
+				 **********************************************************/
+				if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
+						   
+			        // Explicitly remove the workspace directory
+			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        
+			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+			        if (!pdToolStudio) {
+			        	// Explicitly remove the workspace temp directory
+			        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
+			        }
+			        
+			        // Set the workspace directory path to the workspace + vcs project root (e.g. cis_objects)
+			        String workspaceDir = (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/");
+			        
+			        // Create the workspace directory
+			        createDirectory(prefix, workspaceDir);
+
+			        // Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+			        if (!pdToolStudio) {
+			        	// Create the workspace temp directory
+			        	createDirectory(prefix, vcsStruct.getVcsTemp());
+			        }
+			        
+			        // Set the directory to execute from the workspace directory
+					execFromDir = workspaceDir;
+					
+					// Set the VCS command
+					command = vcsStruct.getVcsExecCommand();
+				
+					// If the special option "-IGNORE_INIT_LINK" is set then do not execute the initialization linking of the workspace.
+					//   Otherwise maintain backward compatibility.
+					if (vcsStruct.getVcsWorkspaceInitLinkOptions() != null && vcsStruct.getVcsWorkspaceInitLinkOptions().contains("-IGNORE_INIT_LINK"))
+						initializeWorkspaceLink = false;
+					
+					// To maintain backward compatibility, execute the VCS workspace initialization to link the workspace with the repository.
+					//   However, this requires Read/Write access to the repository folders.
+					if (initializeWorkspaceLink) {
+						// Link the VCS Repository URL and Project Root to the local workspace						
+/**************************
+ *  CLEARCASE LINK TO REPO					
+ **************************/
+						// cleatool mkview . -m "linking workspace to the VCS repository" "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${CLC_OPTIONS} ${CLC_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+						arguments=" mkview "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" --message Linking_workspace_to_VCS_repository "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
+	
+						// Print out command
+						commandDesc = "    Linking local worksapce to VCS Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}
+/**************************
+ *  CLEARCASE CHECKOUT					
+ **************************/
+					// Check out the repository to the local workspace						
+					// svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${CLC_OPTIONS} ${CLC_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+					arguments=" co "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" "+execFromDir+" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+					// (prevous code): arguments=" co "+vcsStruct.getVcsRepositoryUrl()+"/"+vcsStruct.getVcsProjectRoot()+" "+vcsStruct.getVcsOptions();
+
+					// Print out command
+					commandDesc = "    Checking out the repository to the local workspace...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 				}
 
 				/**********************************************************
@@ -4273,8 +4356,77 @@ public class VCSManagerImpl implements VCSManager {
 				    
 				    // Execute the command line
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				}
+			}
 
-}
+			/********************************************
+			 * [CLC] vcs_checkin_checkout__vcs_checkin:
+			 *      CLC=Clearcase
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
+				//cd "${Workspace}"
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				// 2012-10-29 mtinius: differentiate between folder and data_source
+				if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+					//------------------------------------------
+					// Check in Folder
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKIN_OPTIONS against the VCS_CHECKIN_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckinRequired(vcsStruct.getVcsCheckinOptions(), vcsStruct.getVcsCheckinOptionsRequired());
+				    
+					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+/**************************
+ *  CLEARCASE CHECKIN					
+ **************************/
+					//Derived from script:
+				    // cleatool ci ./${resourcePath} -c "${Message}" ${CLC_OPTIONS} ${CLC_AUTH}
+				    // cleatool ci ${fullResourcePath} -c "${Message}" ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+					arguments=" ci "+fullResourcePath+" -c \""+message+"\" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+
+					commandDesc = "    Commit folder changes to the Clearcase Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					
+				} else {
+					//------------------------------------------
+					// Check in File
+					//------------------------------------------
+					
+				    // Validate the VCS_CHECKIN_OPTIONS against the VCS_CHECKIN_OPTIONS_REQUIRED and throw an exception if a required option is not found
+				    validateCheckinRequired(vcsStruct.getVcsCheckinOptions(), vcsStruct.getVcsCheckinOptionsRequired());
+				    
+					String fullResourcePath = (execFromDir+"/"+resourcePath+"_"+resourceType+".cmf").replaceAll("//", "/");
+/**************************
+ *  CLEARCASE CHECKIN					
+ **************************/
+					//Derived from script:
+				    // cleartool ci ./${resourcePath}_${resourceType}.cmf -m "${Message}" ${CLC_OPTIONS} ${CLC_AUTH}
+				    // cleatool ci ${fullResourcePath} -c "${Message}"  ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+					arguments=" ci "+fullResourcePath+" -c \""+message+"\" "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+
+					commandDesc = "    Commit file changes to the Clearcase Repository...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+					
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				}
 			}
 			
 			/********************************************
@@ -4802,6 +4954,82 @@ public class VCSManagerImpl implements VCSManager {
 						arguments=" checkout " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckoutOptions() + " " + revision + " " + fullResourcePath;
 
 						commandDesc = "    Update file revisions to the Git Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					}				
+				}
+			}
+
+			/********************************************
+			 * [CLC] vcs_checkin_checkout__vcs_checkout:
+			 *      CLC=Clearcase
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+				
+				if (vcsLabel != null) {
+					throw new ApplicationException("The option for using vcs labels has not been implemented for Clearcase.  Use resourcePath and resourceType instead.");
+				} 
+				else 
+				{
+					// 2012-10-29 mtinius: differentiate between folder and data_source
+					if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+						//------------------------------------------
+						// Check out Folder
+						//------------------------------------------
+
+					    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+					    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+
+						String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+/**************************
+ *  CLEARCASE CHECKOUT					
+ **************************/
+						//Derived from script:
+					    // cleartool co ./${resourcePath} -ver ${Revision} ${CLC_OPTIONS} ${CLC_AUTH}
+					    // cleartool co ${fullResourcePath} -ver ${Revision} ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+						arguments=" co "+fullResourcePath+" -ver "+revision+" "+vcsStruct.getVcsOptions()+" "+vcsStruct.getVcsCheckoutOptions();
+
+						commandDesc = "    Check out folder revisions from the Clearcase Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+						
+					} else {
+						//------------------------------------------
+						// Check out File
+						//------------------------------------------
+						
+					    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
+					    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
+						
+						String fullResourcePath = (execFromDir+"/"+resourcePath+"_"+resourceType+".cmf").replaceAll("//", "/");
+/**************************
+ *  CLEARCASE CHECKOUT					
+ **************************/
+						//Derived from script:
+					    // cleartool co ./${resourcePath}_${resourceType}.cmf -ver ${Revision} ${CLC_OPTIONS} ${CLC_AUTH}
+					    // cleartool co ${fullResourcePath} -ver ${Revision} ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
+						arguments=" co "+fullResourcePath+" -ver "+revision+" "+vcsStruct.getVcsOptions()+" "+vcsStruct.getVcsCheckoutOptions();
+
+						commandDesc = "    Check out file revisions from the Clearcase Repository...";
 						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
 						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
 						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -5880,7 +6108,15 @@ public class VCSManagerImpl implements VCSManager {
 						    		if (vcsType.equalsIgnoreCase("GIT")) {
 										oldProp = System.setProperty("GIT_ENV", envList);
 						    		}
-						    		
+						    		if (vcsType.equalsIgnoreCase("CLC")) {
+										oldProp = System.setProperty("CLC_ENV", envList);
+						    		}
+						    		//--------------------------------------------------------------
+						    		// setVCSConnectionProperties: New VCS Type (new) specific settings
+						    		//--------------------------------------------------------------
+						    		if (vcsType.equalsIgnoreCase("ABC")) {
+										oldProp = System.setProperty("ABC_ENV", envList);
+						    		}
 								}
 							}
 						}
@@ -6451,18 +6687,19 @@ public class VCSManagerImpl implements VCSManager {
 			if (this.getVcsType() == null || this.getVcsType().length() == 0) {
 				throw new ValidationException("VCS_TYPE is null or empty.  VCS_TYPE must be set via the "+propertyFile+" file.");
 			}
-	    	//Validate the VCS_TYPE - The type of VCS being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, etc]
+	    	//Validate the VCS_TYPE - The type of VCS being used [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, CLC, etc]
 			if (
-				!this.getVcsType().equalsIgnoreCase("SVN") &&
-				!this.getVcsType().equalsIgnoreCase("P4") &&
-				!this.getVcsType().equalsIgnoreCase("CVS") &&
-				!this.getVcsType().equalsIgnoreCase("TFS2005") && 
-				!this.getVcsType().equalsIgnoreCase("TFS2010") &&
-				!this.getVcsType().equalsIgnoreCase("TFS2012") &&
-				!this.getVcsType().equalsIgnoreCase("TFS2013") &&
-				!this.getVcsType().equalsIgnoreCase("GIT")
+				!this.getVcsType().equalsIgnoreCase("SVN")
+				&& !this.getVcsType().equalsIgnoreCase("P4")
+				&& !this.getVcsType().equalsIgnoreCase("CVS")
+				&& !this.getVcsType().equalsIgnoreCase("TFS2005")
+				&& !this.getVcsType().equalsIgnoreCase("TFS2010")
+				&& !this.getVcsType().equalsIgnoreCase("TFS2012")
+				&& !this.getVcsType().equalsIgnoreCase("TFS2013")
+				&& !this.getVcsType().equalsIgnoreCase("GIT")
+				&& !this.getVcsType().equalsIgnoreCase("CLC")
 				) {
-				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT].  The VCS_TYPE="+this.getVcsType());							
+				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, CLC].  The VCS_TYPE="+this.getVcsType());							
 			}
 			// Validate that the VCS_PROJECT_ROOT is not null
 			this.setVcsProjectRoot(CommonUtils.setCanonicalPath(this.getVcsProjectRoot()));
@@ -6762,6 +6999,50 @@ public class VCSManagerImpl implements VCSManager {
 				*/
 			}
 			
+			//-------------------------------------------------------------------
+			// [CLC] loadVcs: Clearcase (clc) specific settings
+			//-------------------------------------------------------------------
+			if (this.getVcsType().equalsIgnoreCase("CLC")) {
+				// Get the VCS LifecycleListener class used by DiffMerger
+				this.setVcsLifecycleListener(CommonConstants.CLCLifecycleListener);
+				
+				String propertyValue = null;
+				// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+				// This is to insure backward compatability with the original VCS methods
+				if (!vcsV2Method) {
+					propertyValue = System.clearProperty("CLC_ENV");
+				}
+				// Get the Subversion specific environment variables
+				String envVars = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"CLC_ENV");
+				// Remove any inadvertant $ or % signs from the variables.  This is a list of variable.  Not actual variables for substitution
+				envVars = envVars.replaceAll(Matcher.quoteReplacement("$"), "");
+				envVars = envVars.replaceAll(Matcher.quoteReplacement("%"), "");
+				// Get the list of variables
+				StringTokenizer st = new StringTokenizer(envVars,","); 
+				while(st.hasMoreTokens()){
+					String property = st.nextToken().trim();
+					// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+					// This is to insure backward compatability with the original VCS methods
+					if (!vcsV2Method) {
+						propertyValue = System.clearProperty(property);
+					}
+					// Resolve the variables in the list
+					propertyValue = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,property), propertyFile, true);
+					this.setVcsEnvironment(this.getVcsEnvironment() + substituteVariables(property + "=" + propertyValue, this.getVcsSubstitutionVars()) + envPropSep);
+				}
+				// If no options are set then set the default
+				if (this.getVcsOptions() == null || this.getVcsOptions().length() == 0) {
+					this.setVcsOptions("");
+				}
+
+				if (getVcsUsername() != null && getVcsUsername().length() > 0) {
+					this.setVcsOptions(this.getVcsOptions() + " --username "+this.getVcsUsername());					
+				}
+				if (getVcsPassword() != null && getVcsPassword().length() > 0) {
+					this.setVcsOptions(this.getVcsOptions() + " --password "+this.getVcsPassword());			
+				}
+			}
+
 			/*
 			 * This section is a template.  Copy this template for the new VCS and modify it as needed.
 			 * 

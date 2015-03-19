@@ -43,6 +43,7 @@ public class CommonConstants {
 	public static final String P4LifecycleListener  = "com.cisco.dvbu.cmdline.vcs.spi.p4.P4LifecycleListener";
 	public static final String TFSLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.tfs.TFSLifecycleListener";
 	public static final String GITLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.git.GITLifecycleListener";
+	public static final String CLCLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.clc.CLCLifecycleListener";
 	// Add a new Life Cycle Listener following this template
 	public static final String NEWLifecycleListener = "com.cisco.dvbu.cmdline.vcs.spi.new.NEWLifecycleListener";
 	
