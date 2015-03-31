@@ -6697,7 +6697,7 @@ public class VCSManagerImpl implements VCSManager {
 				&& !this.getVcsType().equalsIgnoreCase("TFS2012")
 				&& !this.getVcsType().equalsIgnoreCase("TFS2013")
 				&& !this.getVcsType().equalsIgnoreCase("GIT")
-//				&& !this.getVcsType().equalsIgnoreCase("CLC")
+				&& !this.getVcsType().equalsIgnoreCase("CLC")
 				) {
 				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, CLC].  The VCS_TYPE="+this.getVcsType());							
 			}
