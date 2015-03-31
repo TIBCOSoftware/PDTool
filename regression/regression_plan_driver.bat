@@ -100,8 +100,8 @@ echo %ret%: %_PLAN_FILE_PATH% >> %_LOG_PATH%
 call :debug "" 0
 call :debug "%0 %ret%: %_PLAN_FILE_PATH%" 0
 ( endlocal
-  if "%ret%" == "FAIL" echo %ret% > %STATUS_DIR%\status_plan_overall.txt
-  if "%ret%" == "FAIL" echo %ret% > %STATUS_DIR%\status_config_overall.txt
+  if "%ret%" == "FAIL" echo %ret% > %STATUS_DIR%\status_plan_overall_%INP_VERSION%.txt
+  if "%ret%" == "FAIL" echo %ret% > %STATUS_DIR%\status_config_overall_%INP_VERSION%.txt
   call :debug "ExecPDTool: return=%ret%" 0
   set %~1=%ret%
 )
@@ -143,6 +143,15 @@ set P=DEBUG
 set DEBUG=%~8
 if "%DEBUG%" == "" set DEBUG=N
 
+if "%INP_VERSION%" == "" (
+  echo.
+  echo USAGE: %0 [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y or N] [INP_VERSION]
+  echo    Provide the input version INP_VERSION.
+  echo.
+  echo    e.g. regression_config_driver.bat regression_win_6_2_config.txt "D:\dev\PDTool6.2" Y 6.2
+  exit /B 3
+)
+
 REM # Set environment variables
 set CONFIG_FILE_PROP=%CONFIG_FILE%.properties
 set REGRESSION_CONFIG=%REGRESSION_HOME%\config
@@ -154,44 +163,44 @@ REM # Check existence of files and directories
 IF NOT EXIST status mkdir status
 if NOT EXIST %REGRESSION_HOME% (
   echo The regression home directory that was provided does not exist: %REGRESSION_HOME%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %INP_PDTOOL_HOME% (
   echo The PDtool home directory that was provided does not exist: %INP_PDTOOL_HOME%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %REGRESSION_CONFIG%\%CONFIG_FILE_PROP% (
   echo The PDTool configuration file that was provided does not exist: %CONFIG_FILE_PROP%
   echo PDTool regression config directory: %REGRESSION_CONFIG%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST% (
   echo The regression list file that was provided does not exist: %PLAN_FILE_LIST%
   echo PDTool regression plan list directory: %REGRESSION_PLAN_LISTS%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %LOG_PATH% (
   echo The regression log file that was provided does not exist: %LOG_PATH%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %REGRESSION_PLANS% (
   echo The regression deployment plans directory does not exist: %REGRESSION_PLANS%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %STATUS_DIR% (
   echo The status directory provided does not exist: %STATUS_DIR%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 if NOT EXIST %LOG_HOME% (
   echo The regression log file that was provided does not exist: %LOG_HOME%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   exit /B 3
 )
 
@@ -209,8 +218,8 @@ echo Regression Test for %CONFIG_FILE_PROP% >> %LOG_PATH%
 echo %DATE% %TIME% >> %LOG_PATH%
 echo ----------------------------------------------------- >> %LOG_PATH%
 
-set /P STATUS_PLAN_OVERALL=< %STATUS_DIR%\status_plan_overall.txt
-set /P STATUS_EXIT=< %STATUS_DIR%\status_exit.txt
+set /P STATUS_PLAN_OVERALL=< %STATUS_DIR%\status_plan_overall_%INP_VERSION%.txt
+set /P STATUS_EXIT=< %STATUS_DIR%\status_exit_%INP_VERSION%.txt
 call :debug "STATUS_OVERALL=%STATUS_PLAN_OVERALL%" 0
 call :debug "STATUS_EXIT=%STATUS_EXIT%" 0
 set /A NUM_PLANS=0
@@ -230,10 +239,10 @@ FOR /F "eol=# tokens=1,2*" %%i IN (%REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST%) DO 
     echo Plan file does not exist at location: %REGRESSION_PLANS%\%%i >> %INP_PDTOOL_HOME%\logs\app.log 
 	echo Plan file does not exist at location: %REGRESSION_PLANS%\%%i 
 	set STATUS_EXIT=TRUE
-	echo TRUE > %STATUS_DIR%\status_exit.txt
+	echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
 	set STATUS_PLAN_OVERALL=FAIL
-    echo FAIL > %STATUS_DIR%\status_plan_overall.txt
-    echo FAIL > %STATUS_DIR%\status_config_overall.txt
+    echo FAIL > %STATUS_DIR%\status_plan_overall_%INP_VERSION%.txt
+    echo FAIL > %STATUS_DIR%\status_config_overall_%INP_VERSION%.txt
 	goto BYPASS
   )
   
@@ -249,20 +258,20 @@ FOR /F "eol=# tokens=1,2*" %%i IN (%REGRESSION_PLAN_LISTS%\%PLAN_FILE_LIST%) DO 
   copy %INP_PDTOOL_HOME%\logs\app.log  %LOG_HOME%\%CONFIG_FILE%-%%i.log
   
   REM # Check for exit status
-  set /P STATUS_EXIT=< %STATUS_DIR%\status_exit.txt
+  set /P STATUS_EXIT=< %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   if "%STATUS_EXIT%" == "TRUE" goto FINISH
 )
 
 :: ------
 :FINISH
 :: ------
-echo.%NUM_PLANS% >> %STATUS_DIR%\num_plans.txt
+echo.%NUM_PLANS% >> %STATUS_DIR%\num_plans_%INP_VERSION%.txt
 REM # Output the end date/time
 echo ----------------------------------------------------- >> %LOG_PATH%
 echo %DATE% %TIME%  Number Plans Executed: %NUM_PLANS% >> %LOG_PATH%
 
 REM # Overall status for this configuration and plan file list
-set /P STATUS_PLAN_OVERALL=< %STATUS_DIR%\status_plan_overall.txt
+set /P STATUS_PLAN_OVERALL=< %STATUS_DIR%\status_plan_overall_%INP_VERSION%.txt
 call :debug "OVERALL PLAN STATUS=%STATUS_PLAN_OVERALL%" 0
 echo %STATUS_PLAN_OVERALL%: Overall status for %CONFIG_FILE_PROP% and %PLAN_FILE_LIST% >> %LOG_PATH%
 echo ----------------------------------------------------- >> %LOG_PATH%
@@ -287,6 +296,6 @@ if "%STATUS_PLAN_OVERALL%" == "FAIL" goto FAIL2
 :: -------------------------------------------------------------
   echo USAGE: %0 [CONFIG_FILE]  [PLAN_FILE_LIST]  [PDTOOL_HOME]  [REGRESSION_HOME]  [LOG_PATH] [LOG_HOME] [DEBUG}
   echo    Missing parameter: %P%
-  echo TRUE > %STATUS_DIR%\status_exit.txt
+  echo TRUE > %STATUS_DIR%\status_exit_%INP_VERSION%.txt
   endlocal
   exit /B 2

@@ -1,0 +1,51 @@
+The process for updating documentation is applicable across all modules and is as follows:
+
+1) First make the necessary changes in the word documents in this directory.
+
+	a) Rule of thumb:
+		Examples are useful.
+		Update any new methods in the methods section
+		Update any new XML attributes in the attributes section
+		New insights - document what you have learned.  examples help.
+		Document what to do when errors occur - give examples.
+		Don't put customer specific hostnames, IP address etc in your docs.  Generalize it.
+		For VCS, there is a new section at the end where specific details can be added for a particular VCS.
+
+	b) Update the Month and Date on the cover page
+
+	c) Update the version history with your name, date and brief description of the change
+
+	d) Update the Table of Contents
+		i) Right click in the table of contents and select "Update Field"
+
+		ii) Select "Update entire table"
+
+		iii) Click OK
+
+
+2) If updating VCS, make sure to consider if the doc changes affect both PDTool and PDToolStudio
+	
+	a) if changes affect both, then you will need to update
+
+		PDTool doc: Composite PS Promotion and Deployment Tool Module - Version Control System v2.3.doc
+
+		PDToolStudio doc: /VCS_Studio/Composite PS Promotion and Deployment Tool Studio VCS Integration v2.2.doc
+
+3) Save the word document changes
+
+4) Save as PDF
+	a) Select "Save As"
+
+	b) Browse to ../docs
+
+	c) Select the PDF document that corresponds to the word document that you are modifying
+
+	d) Note: if PDToolStudio, then go to VCS_Studio and select "Composite PS Promotion and Deployment Tool Studio VCS Integration v2.2.pdf"
+
+	e) Save
+
+	f) A PDF document will pop up.  Simply Exit this document as it is already saved.
+
+	g) Close the word document.   Select Save.
+
+5) Check-in code and docs

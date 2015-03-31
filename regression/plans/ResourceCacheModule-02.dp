@@ -18,4 +18,5 @@
 # -----------------------------------------
 # ResourceCache Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2,cache3,cache4"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+

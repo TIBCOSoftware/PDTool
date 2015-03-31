@@ -65,6 +65,9 @@
 #---------------------------------------------
 # Set environment variables
 #---------------------------------------------
+# CIS version [6.2, 7.0.0]
+export CIS_VERSION=@version@
+# Initialize variables
 export RELEASE_FOLDER=""
 if [ ! -f setVars.sh ]; then
    echo "Cannot find setVars.sh environment variable file."

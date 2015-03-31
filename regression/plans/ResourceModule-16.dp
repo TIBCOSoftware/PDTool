@@ -23,4 +23,4 @@
 # Module XML invocations
 # -----------------------
 # Create folder resource at a given path
-PASS	FALSE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1			"$MODULE_HOME/servers.xml" true
+PASS	TRUE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1			"$MODULE_HOME/servers.xml" true false

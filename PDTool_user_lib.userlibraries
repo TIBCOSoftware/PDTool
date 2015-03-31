@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<eclipse-userlibraries version="2">
+    <library name="lib6.2" systemlibrary="false">
+        <archive path="/PDTool/lib6.2/endorsed/mail.jar"/>
+        <archive path="/PDTool/lib6.2/endorsed/serializer.jar"/>
+        <archive path="/PDTool/lib6.2/endorsed/webservices-api.jar"/>
+        <archive path="/PDTool/lib6.2/endorsed/xalan.jar"/>
+        <archive path="/PDTool/lib6.2/endorsed/xercesImpl.jar"/>
+        <archive path="/PDTool/lib6.2/endorsed/xml-apis.jar"/>
+        <archive path="/PDTool/lib6.2/antlr-3.1.1.jar"/>
+        <archive path="/PDTool/lib6.2/axiom-api-1.2.7.jar"/>
+        <archive path="/PDTool/lib6.2/axiom-dom-1.2.7.jar"/>
+        <archive path="/PDTool/lib6.2/axiom-impl-1.2.7.jar"/>
+        <archive path="/PDTool/lib6.2/axis2-kernel-1.3.jar"/>
+        <archive path="/PDTool/lib6.2/CisAdminApi.jar"/>
+        <archive path="/PDTool/lib6.2/commons-codec-1_3.jar"/>
+        <archive path="/PDTool/lib6.2/commons-httpclient-3.0.1.jar"/>
+        <archive path="/PDTool/lib6.2/commons-logging.jar"/>
+        <archive path="/PDTool/lib6.2/csadmin.jar"/>
+        <archive path="/PDTool/lib6.2/csarchive.jar"/>
+        <archive path="/PDTool/lib6.2/csbase.jar"/>
+        <archive path="/PDTool/lib6.2/csclient.jar"/>
+        <archive path="/PDTool/lib6.2/cscommon.jar"/>
+        <archive path="/PDTool/lib6.2/csext.jar"/>
+        <archive path="/PDTool/lib6.2/csjdbc.jar"/>
+        <archive path="/PDTool/lib6.2/csserverutil.jar"/>
+        <archive path="/PDTool/lib6.2/cswebapi.jar"/>
+        <archive path="/PDTool/lib6.2/httpclient-4.2.jar"/>
+        <archive path="/PDTool/lib6.2/httpcore-4.2.jar"/>
+        <archive path="/PDTool/lib6.2/log4j-1_2_13.jar"/>
+        <archive path="/PDTool/lib6.2/saaj-api-1.3.4.jar"/>
+        <archive path="/PDTool/lib6.2/saaj-impl-1.3.18.jar"/>
+        <archive path="/PDTool/lib6.2/webservices-rt.jar"/>
+        <archive path="/PDTool/lib6.2/wsdl4j-1.6.2.jar"/>
+        <archive path="/PDTool/lib6.2/XmlSchema-1.4.7.jar"/>
+    </library>
+    <library name="lib7.0.0" systemlibrary="false">
+        <archive path="/PDTool/lib7.0.0/endorsed/mail.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/resolver.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/serializer.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/xalan-2.7.0.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/xercesImpl.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/xml-apis.jar"/>
+        <archive path="/PDTool/lib7.0.0/antlr-3.1.1.jar"/>
+        <archive path="/PDTool/lib7.0.0/axiom-api-1.2.7.jar"/>
+        <archive path="/PDTool/lib7.0.0/axiom-dom-1.2.7.jar"/>
+        <archive path="/PDTool/lib7.0.0/axiom-impl-1.2.7.jar"/>
+        <archive path="/PDTool/lib7.0.0/axis2-kernel-1.3.jar"/>
+        <archive path="/PDTool/lib7.0.0/CisAdminApi.jar"/>
+        <archive path="/PDTool/lib7.0.0/commons-codec-1.3.jar"/>
+        <archive path="/PDTool/lib7.0.0/commons-httpclient-3.0.1.jar"/>
+        <archive path="/PDTool/lib7.0.0/commons-logging-1.0.3.jar"/>
+        <archive path="/PDTool/lib7.0.0/csadmin.jar"/>
+        <archive path="/PDTool/lib7.0.0/csarchive.jar"/>
+        <archive path="/PDTool/lib7.0.0/csbase.jar"/>
+        <archive path="/PDTool/lib7.0.0/csclient.jar"/>
+        <archive path="/PDTool/lib7.0.0/cscommon.jar"/>
+        <archive path="/PDTool/lib7.0.0/csext.jar"/>
+        <archive path="/PDTool/lib7.0.0/csjdbc.jar"/>
+        <archive path="/PDTool/lib7.0.0/csserverutil.jar"/>
+        <archive path="/PDTool/lib7.0.0/cswebapi.jar"/>
+        <archive path="/PDTool/lib7.0.0/httpclient-4.3.2.jar"/>
+        <archive path="/PDTool/lib7.0.0/httpcore-4.3.1.jar"/>
+        <archive path="/PDTool/lib7.0.0/log4j-1.2.17.jar"/>
+        <archive path="/PDTool/lib7.0.0/saaj-api-1.3.4.jar"/>
+        <archive path="/PDTool/lib7.0.0/saaj-impl-1.3.18.jar"/>
+        <archive path="/PDTool/lib7.0.0/webservices-rt-2.1.jar"/>
+        <archive path="/PDTool/lib7.0.0/wsdl4j-1.6.2.jar"/>
+        <archive path="/PDTool/lib7.0.0/XmlSchema-1.4.7.jar"/>
+        <archive path="/PDTool/lib7.0.0/endorsed/webservices-api.jar"/>
+    </library>
+    <library name="libcommon" systemlibrary="false">
+        <archive path="/PDTool/libcommon/jaxen.jar"/>
+        <archive path="/PDTool/libcommon/jdom.jar"/>
+        <archive path="/PDTool/libcommon/PDToolModules.jar"/>
+        <archive path="/PDTool/libcommon/RepoUtils.jar"/>
+        <archive path="/PDTool/libcommon/saxpath.jar"/>
+        <archive path="/PDTool/libcommon/spring.jar"/>
+        <archive path="/PDTool/libcommon/commons-pool-1.5.7.jar"/>
+    </library>
+    <library name="libExtAnt" systemlibrary="false">
+        <archive path="/PDTool/ext/ant/lib/ant-antlr.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-bcel.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-bsf.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-log4j.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-oro.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-regexp.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-resolver.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-apache-xalan2.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-commons-logging.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-commons-net.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-jai.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-javamail.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-jdepend.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-jmf.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-jsch.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-junit.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-junit4.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-launcher.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-netrexx.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-swing.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant-testutil.jar"/>
+        <archive path="/PDTool/ext/ant/lib/ant.jar"/>
+    </library>
+</eclipse-userlibraries>

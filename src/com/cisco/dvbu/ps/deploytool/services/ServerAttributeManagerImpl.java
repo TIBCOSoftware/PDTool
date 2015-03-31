@@ -22,6 +22,7 @@ package com.cisco.dvbu.ps.deploytool.services;
  * Modifications:	initials :: Date
  * Check attribute update rule : Mkazia   :: 8/3/2011
  * Extract variables from value objects : mtinius :: 7/3/2012
+ * Changed strategy to use pure soap call instead of CisAdminApi.port JAXB call : mtinius :: 3/13/15
  */
 
 import java.util.ArrayList;
@@ -114,19 +115,15 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 				// Loop over the list of server attributes and apply their attributes to
 				// the target CIS instance.
 				String serverAttributePath = null;
-				AttributeList attributeList = new AttributeList();
-				
+				ServerAttributeModule updateServerAttributeObj = new ServerAttributeModule();
+							
 				// Get all server attribute def
-				AttributeDefList attributeDefList = getServerAttributeDAO().getServerAttributeDefsFromPath(serverId, "/", pathToServersXML);
-				List<AttributeDef> attributeDefs = null;
-				
-				// Continue if there is a list
-				if(attributeDefList != null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
-					// Assign the list of Server Attribute Definitions to a local AttributeDef type variable
-					attributeDefs = attributeDefList.getAttributeDef();
-				}
+				/***************************************
+				 * 
+				 * ServerAttributeWSDAOImpl Invocation
+				 * 
+				 ***************************************/
 
-				
 				for (ServerAttributeType serverAttribute : serverAttributeList) {
 	
 					// Get the identifier and convert any $VARIABLES
@@ -141,20 +138,38 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 					 * 	  like -sa1,sa2 (we ignore passed in resources and process rest of the in the input xml
 					 */
 					if(DeployUtil.canProcessResource(serverAttributeIds, identifier)) {
-						Attribute attribute = new Attribute();
 
-						AttributeDef attributeDef = getAttributeDef(attributeDefs, serverAttribute.getName());
+						ServerAttributeType updAttribute = new ServerAttributeType();
+						
+						/***************************************
+						 * 
+						 * ServerAttributeWSDAOImpl Invocation
+						 * 
+						 ***************************************/
+						// Get the server attribute definition for the current server attribute name being processed
+						String name = serverAttribute.getName();
+					
+						ServerAttributeModule attributeDefModule = getServerAttributeDAO().getServerAttributeDefinition(serverId, name, pathToServersXML);
+						ServerAttributeDefType attributeDef = attributeDefModule.getServerAttributeDef().get(0);
+						
+						// Validate that the server attribute updateRule allows for READ_WRITE
 						if ((attributeDef != null
-								&& (attributeDef.getUpdateRule() == AttributeUpdateRule.READ_WRITE))
+								&& (attributeDef.getUpdateRule().toString().equalsIgnoreCase("READ_WRITE")))
 								&&	!PropertyManager.getInstance().containsPropertyValue(propertyFile, "ServerAttributeModule_NonUpdateableAttributes", serverAttribute.getName())) {
-							
+
 							if(logger.isInfoEnabled()){
 								logger.info("processing action "+actionName+" on server attribute "+serverAttributePath);
 							}
 
-							attribute.setName(serverAttribute.getName());
+							// Get the id
+							updAttribute.setId(serverAttribute.getId());
+
+							// Get the name
+							updAttribute.setName(serverAttribute.getName());
+							
+							// Get the type
 							if (serverAttribute.getType() != null) {
-								attribute.setType(AttributeType.valueOf(serverAttribute.getType().toString()));
+								updAttribute.setType(AttributeTypeSimpleType.valueOf(serverAttribute.getType().toString()));
 							}
 							
 							// Use this flag to add the attribute structure to the request only if there is a value
@@ -164,74 +179,74 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 							if (serverAttribute.getValue() != null) {
 								// mtinius: 2012-07-03 - Parse the value for variables and resolve
 								String value = CommonUtils.extractVariable(prefix, serverAttribute.getValue(), propertyFile, false);
-								attribute.setValue(value);
+								updAttribute.setValue(value);
 								valueFound = true;
 							}
 							
 							// Set the Value Array if it exists
 							if (serverAttribute.getValueArray() != null) {
 								// Instantiate a new CIS WS Schema Element (AttributeSimpleValueList)
-								AttributeSimpleValueList attributeSimpleValueList = new AttributeSimpleValueList();
+								ServerAttributeValueArray updArray = new ServerAttributeValueArray();
 								ServerAttributeValueArray serverAttrValueArray = serverAttribute.getValueArray();
 								for (String item : serverAttrValueArray.getItem()) {
 									// mtinius: 2012-07-03 - Parse the item value for variables and resolve
 									String value = CommonUtils.extractVariable(prefix, item, propertyFile, false);
-									attributeSimpleValueList.getItem().add(value);
+									updArray.getItem().add(value);
 								}
-								attribute.setValueArray(attributeSimpleValueList);
+								updAttribute.setValueArray(updArray);
 								valueFound = true;
-						}
+							}
 
 							// Set the Value List if it exists
 							if (serverAttribute.getValueList() != null) {
 								// Instantiate a new CIS WS Schema Element (AttributeTypeValueList)
-								AttributeTypeValueList valueList = new AttributeTypeValueList();
+								ServerAttributeValueList updValueList = new ServerAttributeValueList();
 								ServerAttributeValueList serverAttrValueList = serverAttribute.getValueList();
 								for (ServerAttributeValueListItemType item : serverAttrValueList.getItem()) {
-									AttributeTypeValue attributeValueType = new AttributeTypeValue();
+									ServerAttributeValueListItemType updAttributeValueType = new ServerAttributeValueListItemType();
 									
-									attributeValueType.setType(AttributeType.valueOf(item.getType().toString()));
+									updAttributeValueType.setType(AttributeTypeSimpleType.valueOf(item.getType().toString()));
 
 									// mtinius: 2012-07-03 - Parse the value for variables and resolve
 									String value = CommonUtils.extractVariable(prefix, item.getValue(), propertyFile, false);
-									attributeValueType.setValue(value);
-									valueList.getItem().add(attributeValueType);
+									updAttributeValueType.setValue(value);
+									updValueList.getItem().add(updAttributeValueType);
 								}
-								attribute.setValueList(valueList);
+								updAttribute.setValueList(updValueList);
 								valueFound = true;
 							}
 
 							// Set the Value Map if it exists
 							if (serverAttribute.getValueMap() != null) {
 								// Instantiate a new CIS WS Schema Element (AttributeTypeValueMap)
-								AttributeTypeValueMap valueMap = new AttributeTypeValueMap();
+								ServerAttributeValueMap updValueMap = new ServerAttributeValueMap();
 
 								ServerAttributeValueMap serverAttrValueMap = serverAttribute.getValueMap();		
 								for (ServerAttributeValueMapEntryType item : serverAttrValueMap.getEntry()) {
-									Entry entry = new Entry();
+									ServerAttributeValueMapEntryType updEntry = new ServerAttributeValueMapEntryType();
 
 									// Set the value map entry key node
-									AttributeTypeValue key = new AttributeTypeValue();
-									key.setType(AttributeType.valueOf(item.getKey().getType().toString()));
-									key.setValue(item.getKey().getValue());
-									entry.setKey(key);
+									ServerAttributeValueMapEntryKeyType updKey = new ServerAttributeValueMapEntryKeyType();
+									updKey.setType(AttributeTypeSimpleType.valueOf(item.getKey().getType().toString()));
+									updKey.setValue(item.getKey().getValue());
+									updEntry.setKey(updKey);
 
 									// Set the value map entry value node
-									AttributeTypeValue value = new AttributeTypeValue();
-									value.setType(AttributeType.valueOf(item.getValue().getType().toString()));
+									ServerAttributeValueMapEntryValueType updValue = new ServerAttributeValueMapEntryValueType();
+									updValue.setType(AttributeTypeSimpleType.valueOf(item.getValue().getType().toString()));
 									// mtinius: 2012-07-03 - Parse the value for variables and resolve
 									String value2 = CommonUtils.extractVariable(prefix, item.getValue().getValue(), propertyFile, false);
-									value.setValue(value2);
-									entry.setValue(value);
+									updValue.setValue(value2);
+									updEntry.setValue(updValue);
 
-									valueMap.getEntry().add(entry);
+									updValueMap.getEntry().add(updEntry);
 								}
-								attribute.setValueMap(valueMap);
+								updAttribute.setValueMap(updValueMap);
 								valueFound = true;
 							}	
 							
 							if (valueFound){
-								attributeList.getAttribute().add(attribute);								
+								updateServerAttributeObj.getServerAttribute().add(updAttribute);								
 							} else {
 								if(logger.isInfoEnabled()){
 									logger.info("skipping action "+actionName+" on server attribute "+serverAttributePath + " Reason: value not found.");
@@ -245,7 +260,12 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 						}
 					}
 				}
-				getServerAttributeDAO().takeServerAttributeAction(actionName, attributeList, serverId, pathToServersXML);
+				/***************************************
+				 * 
+				 * ServerAttributeWSDAOImpl Invocation
+				 * 
+				 ***************************************/
+				getServerAttributeDAO().takeServerAttributeAction(actionName, updateServerAttributeObj, serverId, pathToServersXML);
 			}
 		} catch (CompositeException e) {
 			logger.error("Error on server attribute action ("+actionName+"): " , e);
@@ -291,216 +311,43 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 		else {
 			updateRule = pUpdateRule;
 		}
+		// Trim the update rule
+		if (updateRule != null)
+			updateRule = updateRule.trim();
 
-		// Retrieve the list of Server Attributes by invoking the CIS Web Service API
-		AttributeList attributeList = getServerAttributeDAO().getServerAttributesFromPath(serverId, startPath, pathToServersXML);
-
-		// Continue if there is a list
-		if(attributeList != null && attributeList.getAttribute() != null && !attributeList.getAttribute().isEmpty()){
-			// Assign the list of Server Attributes to a local Attribute type variable
-			List<Attribute> attributes = attributeList.getAttribute();
-			
-			// Prepare a local ServerAttributeModule XML variable for creating a list of "ServerAttribute" nodes
-			// This XML variable will be written out to the specified file. 
-			ServerAttributeModule serverAttrModule = new ObjectFactory().createServerAttributeModule();
-
-			// For efficiency, read the entire Server Attribute Definition List once (web service API call to CIS) which will be used to 
-			// determine whether the attribute updateRule is READ_WRITE or READ_ONLY.
-			// The selection of server attributes to write out to the XML will depend on the passed in update rule compared to the definition
-			// If the passed in updateRule is null, then only READ_WRITE attributes are written to the ServerAttributeModule XML file.
-			AttributeDefList attributeDefList = getServerAttributeDAO().getServerAttributeDefsFromPath(serverId, startPath, pathToServersXML);
-			
-			// Continue if there is a list
-			if(attributeDefList != null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
-				// Assign the list of Server Attribute Definitions to a local AttributeDef type variable
-				List<AttributeDef> attributeDefs = attributeDefList.getAttributeDef();			
-
-				// Iterate over the retrieved Server Attribute List
-				for (Attribute attribute : attributes) {
-
-					// Compare the passed in update rule with the Server Attribute Definition
-					String updateRuleFromServerList = null;
-					for (AttributeDef attributeDef : attributeDefs) {
-						if (attribute.getName().equalsIgnoreCase(attributeDef.getName())) {
-							
-							String updRule = "";
-							// DEBUG
-							if (attributeDef.getUpdateRule() == null) {
-								logger.debug("Update Rule is null for attributeDef.getUpdateRule()");
-								updRule = "UNKNOWN";
-							} else {
-								updRule = attributeDef.getUpdateRule().toString();
-								updateRuleFromServerList = attributeDef.getUpdateRule().toString();
-							}
-							logger.debug(CommonUtils.rpad(updRule, 20, " ") + attributeDef.getName() );
-						}
-					}
-					boolean getAttribute = false;
-					// If the passed in updateRule is null, empty, blank or contains an asterisk then assume then get all attribute in the Server Attribute List for writing to the XML file
-					if (updateRule == null) {
-						getAttribute = true;
-					} else {
-						updateRule = updateRule.trim();
-						if (updateRule.trim().contains("*") || updateRule.length() == 0) {
-							getAttribute = true;
-						}
-						// If a Server Attribute Definition updateRule was found and it matches what was passed in then get this attributeDef for writing to the XML file
-						if (updateRuleFromServerList != null && updateRule.contains(updateRuleFromServerList)) {
-							getAttribute = true;
-						}
-					}
-
-					// Get the Server Attribute and compose a ServerAttribute type node to write to the XML file.
-					if (getAttribute) {
-						// Instantiate a new CisDeployToolModules Schema Element (ServerAttributeType) and populate it
-						ServerAttributeType serverAttrType = new ServerAttributeType();
-						// Generate and ID using the first token in the server attribute definition path name
-						String id = getToken(1, attribute.getName());
-						if (id == null) {
-							// Just use the original name for the id
-							serverAttrType.setId(attribute.getName());
-						} else {
-							// Increment a number and concatenate to the token
-							serverAttrType.setId(getTokenId(id));
-						}
-						serverAttrType.setName(attribute.getName());
-						// Set the Attribute Type by converting from the attribute type being returned
-						serverAttrType.setType(AttributeTypeSimpleType.valueOf(attribute.getType().toString()));
-						if (attribute.getValue() != null) {
-							serverAttrType.setValue(attribute.getValue());
-						}
-						
-						/* Process Value Array
-							<server:attributes>
-								<common:attribute xmlns:common="http://www.compositesw.com/services/system/util/common">
-									<common:name>/server/api/protocol/supportedProtocolVersions</common:name>
-									<common:type>STRING_ARRAY</common:type>
-									<common:valueArray>
-										<common:item>5.0</common:item>
-										<common:item>4.0</common:item>
-										<common:item>3.1</common:item>
-										<common:item>3.0</common:item>
-										<common:item>2.0</common:item>
-										<common:item>1.2</common:item>
-										<common:item>1.1</common:item>
-										<common:item>1.0</common:item>
-									</common:valueArray>
-								</common:attribute>
-							</server:attributes>
-						 */
-						if (attribute.getValueArray() != null) {
-							// Instantiate a new CisDeployToolModules Schema Element (ServerAttributeValueArray)
-							ServerAttributeValueArray serverAttrValueArray = new ServerAttributeValueArray();
-						
-							// Add another item to the ValueArray node
-							AttributeSimpleValueList valueArray = attribute.getValueArray();
-							for (String item : valueArray.getItem()) {
-								serverAttrValueArray.getItem().add(item);
-							}
-							// Set the ValueArray XML Node
-							serverAttrType.setValueArray(serverAttrValueArray);
-						}
+		// Make sure the startPath has a valid format
+		if (startPath == null || startPath.trim().length() == 0)
+			throw new CompositeException("The parameter \"startPath\" may not be null or blank.");
+		startPath = startPath.trim();
+		if (!startPath.equals("/")) {
+			int lastCharPos = startPath.lastIndexOf("/");
+			int lastPos = startPath.length()-1;
+			if (lastCharPos == lastPos)
+				startPath = startPath.substring(0, startPath.length() - 1);
+			if (!startPath.substring(0, 1).equalsIgnoreCase("/"))
+				startPath = "/" + startPath;
+		}
 		
-						/* Process Value List
-						  	<server:attributes>
-								<common:attribute xmlns:common="http://www.compositesw.com/services/system/util/common">
-									<common:name>/studio/data/examplelist</common:name>
-									<common:type>LIST</common:type>
-									<common:valueList>
-										<common:item>
-											<common:type>STRING</common:type>
-											<common:value>a</common:value>
-										</common:item>
-										<common:item>
-											<common:type>STRING</common:type>
-											<common:value>b</common:value>
-										</common:item>
-									</common:valueList>
-								</common:attribute>
-							</server:attributes>					
-						 */
-						if (attribute.getValueList() != null) {
-							// Instantiate a new CisDeployToolModules Schema Element (ServerAttributeValueList)
-							ServerAttributeValueList serverAttrValueList = new ServerAttributeValueList();
-							
-							// Add another item to the ValueList
-							AttributeTypeValueList valueList = attribute.getValueList();
-							for (AttributeTypeValue item : valueList.getItem()) {
-								ServerAttributeValueListItemType serverAttrValueListItem = new ServerAttributeValueListItemType();
-								serverAttrValueListItem.setType(AttributeTypeSimpleType.valueOf(item.getType().toString()));
-								serverAttrValueListItem.setValue(item.getValue());
-								serverAttrValueList.getItem().add(serverAttrValueListItem);
-							}
-							// Set the ValueList XML Node
-							serverAttrType.setValueList(serverAttrValueList);
-						}
-		
-						/* Process Value Map
-							<server:attributes>
-								<common:attribute xmlns:common="http://www.compositesw.com/services/system/util/common">
-									<common:name>/studio/data/examplemap</common:name>
-									<common:type>MAP</common:type>
-									<common:valueMap>
-										<common:entry>
-											<common:key>
-												<common:type>STRING</common:type>
-												<common:value>k1</common:value>
-											</common:key>
-											<common:value>
-												<common:type>STRING</common:type>
-												<common:value>v1</common:value>
-											</common:value>
-										</common:entry>
-										<common:entry>
-											<common:key>
-												<common:type>STRING</common:type>
-												<common:value>k2</common:value>
-											</common:key>
-											<common:value>
-												<common:type>STRING</common:type>
-												<common:value>v2</common:value>
-											</common:value>
-										</common:entry>
-									</common:valueMap>
-								</common:attribute>
-							</server:attributes>
-						*/
-						if (attribute.getValueMap() != null) {
-							// Instantiate a new CisDeployToolModules Schema Element (ServerAttributeValueMap)
-							ServerAttributeValueMap serverAttrValueMap = new ServerAttributeValueMap();
-							
-							// Add another item to the ValueMap
-							AttributeTypeValueMap valueMap = attribute.getValueMap();
-							for (Entry item : valueMap.getEntry()) {
-								ServerAttributeValueMapEntryType serverAttrValueMapEntry = new ServerAttributeValueMapEntryType();
-								
-								// Set the value map entry key node
-								ServerAttributeValueMapEntryKeyType serverAttrValueMapEntryKey = new ServerAttributeValueMapEntryKeyType();
-								serverAttrValueMapEntryKey.setType(AttributeTypeSimpleType.valueOf(item.getKey().getType().toString()));
-								serverAttrValueMapEntryKey.setValue(item.getKey().getValue());				
-								serverAttrValueMapEntry.setKey(serverAttrValueMapEntryKey);
-								
-								// Set the value map entry value node
-								ServerAttributeValueMapEntryValueType serverAttrValueMapEntryValue = new ServerAttributeValueMapEntryValueType();
-								serverAttrValueMapEntryValue.setType(AttributeTypeSimpleType.valueOf(item.getValue().getType().toString()));
-								serverAttrValueMapEntryValue.setValue(item.getValue().getValue());				
-								serverAttrValueMapEntry.setValue(serverAttrValueMapEntryValue);
-								
-								// Add the value map entry (key and value) to the XML
-								serverAttrValueMap.getEntry().add(serverAttrValueMapEntry);
-							}
-							// Set the ValueMap XML Node
-							serverAttrType.setValueMap(serverAttrValueMap);
-						}
-		
-						// Add the ServerAttributeibuteChoiceType node to the XML
-						serverAttrModule.getServerAttribute().add(serverAttrType);
-					}
-				}
+		/***************************************
+		 * 
+		 * ServerAttributeWSDAOImpl Invocation
+		 * 
+		 ***************************************/
+		ServerAttributeModule serverAttrModule = getServerAttributeDAO().getServerAttributesFromPath(serverId, startPath, pathToServersXML, updateRule);
+
+		if (serverAttrModule.getServerAttribute() != null) {
+			List<ServerAttributeType> serverAttributeList = serverAttrModule.getServerAttribute();
+			for (int i=0; i < serverAttributeList.size(); i++) 
+			{
+				// Generate and ID using the first token in the server attribute definition path name
+				String id = CommonUtils.getToken(1, serverAttributeList.get(i).getName());
+				// Increment a number and concatenate to the token
+				serverAttributeList.get(i).setId(getTokenId(id));
 			}
+			
 			// Generate the XML file
-			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);
-		}	
+			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+		}
 	}
 
 	/* (non-Javadoc)
@@ -522,138 +369,49 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 		else {
 			updateRule = pUpdateRule;
 		}
-		
+		// Trim the update rule
+		if (updateRule != null)
+			updateRule = updateRule.trim();
+
+		// Make sure the startPath has a valid format
+		if (startPath == null || startPath.trim().length() == 0)
+			throw new CompositeException("The parameter \"startPath\" may not be null or blank.");
+		startPath = startPath.trim();
+		if (!startPath.equals("/")) {
+			int lastCharPos = startPath.lastIndexOf("/");
+			int lastPos = startPath.length()-1;
+			if (lastCharPos == lastPos)
+				startPath = startPath.substring(0, startPath.length() - 1);
+			if (!startPath.substring(0, 1).equalsIgnoreCase("/"))
+				startPath = "/" + startPath;
+		}
+
 		// Retrieve the list of Server Attributes by invoking the CIS Web Service API
-		AttributeDefList attributeDefList = getServerAttributeDAO().getServerAttributeDefsFromPath(serverId, startPath, pathToServersXML);
-		
-		// Continue if there is a list
-		if(attributeDefList != null && attributeDefList.getAttributeDef() != null && !attributeDefList.getAttributeDef().isEmpty()){
+		/***************************************
+		 * 
+		 * ServerAttributeWSDAOImpl Invocation
+		 * 
+		 ***************************************/
+		ServerAttributeModule serverAttrModule = getServerAttributeDAO().getServerAttributeDefsFromPath(serverId, startPath, pathToServersXML, updateRule);
 
-			// Assign the list of Server Attribute Definitions to a local AttributeDef type variable
-			List<AttributeDef> attributeDefs = attributeDefList.getAttributeDef();			
-
-			// Prepare a local ServerAttributeModule XML variable for creating a list of "ServerAttributeDef" nodes
-			// This XML variable will be written out to the specified file. 
-			ServerAttributeModule serverAttrModule = new ObjectFactory().createServerAttributeModule();
-
-			// Iterate over the retrieved Server Attribute Definitions List
-			for (AttributeDef attributeDef : attributeDefs) {
-				
-				// Compare the passed in update rule with the Server Attribute Definition
-				String updateRuleFromServerList = null;
-				if (attributeDef.getUpdateRule() != null) {
-					updateRuleFromServerList = attributeDef.getUpdateRule().toString();
-				} else {
-					logger.debug("Update Rule is null for "+attributeDef.getName());
-				}
-				boolean getAttribute = false;
-				// If the passed in updateRule is null, empty, blank or contains an asterisk then assume then get all attribute definitions in the Server Attribute Def List for writing to the XML file
-				if (updateRule == null) {
-					getAttribute = true;
-				} else {
-					updateRule = updateRule.trim();
-					if (updateRule.trim().contains("*") || updateRule.length() == 0) {
-						getAttribute = true;
-					}
-					// If a Server Attribute Definition updateRule was found and it matches what was passed in then get this attributeDef for writing to the XML file
-					if (updateRuleFromServerList != null && updateRule.contains(updateRuleFromServerList)) {
-						getAttribute = true;
-					}
-				}
-				
-				// Get the Server Attribute Definition and compose a ServerAttributeDef type node to write to the XML file.
-				if (getAttribute) {
-					// Instantiate and populate a new ServerAttributeDef type variable
-					ServerAttributeDefType serverAttrDefType = new ServerAttributeDefType();
-					// Generate and ID using the first token in the server attribute definition path name
-					String id = getToken(1, attributeDef.getName());
-					if (id == null) {
-						// Just use the original name for the id
-						serverAttrDefType.setId(attributeDef.getName());
-					} else {
-						// Increment a number and concatenate to the token
-						serverAttrDefType.setId(getTokenId(id));
-					}
-					serverAttrDefType.setName(attributeDef.getName());
-					// Set the Attribute Type by converting from the attribute type being returned
-					serverAttrDefType.setType(AttributeTypeSimpleType.valueOf(attributeDef.getType().toString()));
-
-					if (attributeDef.getAllowedValues() != null) {
-						String list = "";
-						AttributeSimpleValueList allowedValues = attributeDef.getAllowedValues();
-						for (String item : allowedValues.getItem()) {
-							list = list+item+",";
-						}
-						if (list.length() > 0) {
-							list = list.substring(0, list.length()-1);
-						}
-						serverAttrDefType.setAllowedValues(list);
-					}
-					if (attributeDef.getAnnotation() != null) {
-						serverAttrDefType.setAnnotation(attributeDef.getAnnotation());
-					}
-					if (attributeDef.getDefaultValue() != null) {
-						serverAttrDefType.setDefaultValue(attributeDef.getDefaultValue());
-					}
-					if (attributeDef.getDisplayName() != null) {
-						serverAttrDefType.setDisplayName(attributeDef.getDisplayName());
-					}	
-					if (attributeDef.getMaxValue() != null) {
-						serverAttrDefType.setMaxValue(attributeDef.getMaxValue());
-					}	
-					if (attributeDef.getMinValue() != null) {
-						serverAttrDefType.setMinValue(attributeDef.getMinValue());
-					}	
-					if (attributeDef.getPattern() != null) {
-						serverAttrDefType.setPattern(attributeDef.getPattern());
-					}
-					
-					if (attributeDef.getSuggestedValues() != null) {
-						String list = "";
-						AttributeSimpleValueList suggestedValues = attributeDef.getSuggestedValues();
-						for (String item : suggestedValues.getItem()) {
-							list = list+item+",";
-						}
-						if (list.length() > 0) {
-							list = list.substring(0, list.length()-1);
-						}
-						serverAttrDefType.setSuggestedValues(list);
-					}
-					if (attributeDef.getUnitName() != null) {
-						serverAttrDefType.setUnitName(attributeDef.getUnitName());
-					}
-					if (attributeDef.getUpdateRule() != null) {
-						serverAttrDefType.setUpdateRule(attributeDef.getUpdateRule().toString());
-					}
-					
-					// Add the node to the XML
-					serverAttrModule.getServerAttributeDef().add(serverAttrDefType);
-					}
+		if (serverAttrModule.getServerAttributeDef() != null) 
+		{
+			List<ServerAttributeDefType> serverAttributeDefList = serverAttrModule.getServerAttributeDef();
+			for (int i=0; i < serverAttributeDefList.size(); i++) 
+			{
+				// Generate and ID using the first token in the server attribute definition path name
+				String id = CommonUtils.getToken(1, serverAttributeDefList.get(i).getName());
+				// Increment a number and concatenate to the token
+				serverAttributeDefList.get(i).setId(getTokenId(id));
 			}
 			// Generate the XML file
-			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);
-		}	
+			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+		}
 	}
 
-	/**
-	 * @return the nth token for a string value
-	 * tokenNum=1
-	 * name=/server/webservices/baseURI
-	 * tokenized string= server webservices baseURI
-	 * return the value "server"
-	 */
-	private String getToken(int tokenNum, String name) {
-		// Tokenize a path based on "/" separator
-	    StringTokenizer st = new StringTokenizer(name, "/");
-	    int i=0;
-	    while (st.hasMoreTokens()) {
-	    	i++;
-	    	if (i == tokenNum) {
-	    		return st.nextToken();
-	    	}	
-	    	st.nextToken();
-	    }
-	    return null;
+	public String getServerVersion(String serverId, String pathToServersXML)
+			throws CompositeException {
+		return getServerAttributeDAO().getServerVersion(serverId, pathToServersXML);
 	}
 
 	/**
@@ -696,25 +454,4 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 	public void setServerAttributeDAO(ServerAttributeDAO serverAttributeDAO) {
 		this.serverAttributeDAO = serverAttributeDAO;
 	}
-	
-	/**
-	 * Find the attributeDef from the list of attributeDefs that matches the given attribute name
-	 * @param attributeDefList Attribute Def List
-	 * @param attributeName Attribute Name
-	 * @return AttributeDef that matches the attribute Name, null if not found
-	 */
-	private AttributeDef getAttributeDef(List<AttributeDef> attributeDefList, String attributeName) {
-
-		if (attributeDefList == null || attributeName == null) {
-			return null;
-		}
-		for (AttributeDef attributeDef : attributeDefList) {
-			
-			if (attributeDef.getName().equalsIgnoreCase(attributeName)) {
-				return attributeDef;
-			}
-		}
-		return null;
-	}
-	
 }

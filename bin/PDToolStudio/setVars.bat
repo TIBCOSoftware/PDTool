@@ -52,7 +52,7 @@ REM # HOST Variables -
 REM # These are minimum set of variables needed to abstract the CONFIG_PROPERTY_FILE.
 REM # Use these variables in the designated CONFIG_PROPERTY_FILE to achieve reusability of that file for different hosts.
 set CONFIG_VCS_WORKSPACE_NAME=SVNsw
-set CONFIG_VCS_REPOSITORY_URL=http:////%SVN_VCS_HOST%/svn/sandbox/PDTOOL/6_2
+set CONFIG_VCS_REPOSITORY_URL=http:////%SVN_VCS_HOST%/svn/sandbox/PDTOOL/%CIS_VERSION%
 set CONFIG_VCS_PROJECT_ROOT=cis_objects
 REM #
 REM #----------------------------------------------------------
@@ -85,7 +85,7 @@ REM #   3. Change this variable if you already have an S: or P: mapped.  It can 
 REM #   4. The actual subst command is performed in the ExecutePDToolStudio batch file.
 REM # CAUTION: Each instance of PDTool or PDToolStudio on a single host must use its own unique substitution letter and have its own workspace.
 REM #          PDTool and PDToolStudio must NOT share the same workspace when installed on the same machine.       
-set SUBSTITUTE_DRIVE=S:
+set SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%
 REM # Set the PROJECT_HOME so that it points to the substituted path variable
 set PROJECT_HOME=%SUBSTITUTE_DRIVE%
 if not defined SUBSTITUTE_DRIVE ( 

@@ -17,11 +17,14 @@
  */
 package com.cisco.dvbu.cmdline.vcs.spi;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Map;
 
+import com.cisco.dvbu.cmdline.vcs.spi.git.GITLifecycleListener;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.compositesw.common.vcs.primitives.IOPrimitives;
 import com.compositesw.common.vcs.primitives.ProcessPrimitives;
@@ -88,7 +91,6 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
     protected void execute(File contextFolder, String[] command, boolean verbose) throws VCSException {
         if (contextFolder == null) throw new IllegalArgumentException("Context folder must be specified.");
 
-       
 		if (logger.isDebugEnabled()) {
 	            logger.info(prefix+"-------------------------------------------------");
 		 }
@@ -118,8 +120,15 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
          *                        Fails with CreateProcess error=267, The directory name is invalid
 		 *                        This is basically doing a cd <long path> and svn add file in two steps.
          *                        It will fail on cd <long path>
+         *                        
+         * cgoodric: 2014-09-08: The Git executable requires that its working directory is in the within the workspace that is
+         *                       being worked in regardless of the path to the file(s) being worked on. NOTE: the directory()
+         *                       method call MUST occur when the ProcessBuilder object is created. If it occurs later, the call
+         *                       is ignored for some reason. :/
 	     */
-        ProcessBuilder processBuilder = new ProcessBuilder(newCommand);
+        ProcessBuilder processBuilder = (! GITLifecycleListener.isGitExecutable (VCS_EXEC))
+        	? new ProcessBuilder (newCommand)
+        	: new ProcessBuilder (newCommand).directory (contextFolder);
         
         // Set any environment variables that were specified by the user
         setEnvironment(processBuilder);
@@ -218,30 +227,33 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
 	private void setEnvironment(ProcessBuilder processBuilder) {
        
 		// Setup the environment variables
-		 Map<String, String> env = processBuilder.environment();
+        Map<String, String> env = processBuilder.environment();
 		 
-		 java.util.List<String> envList = new java.util.ArrayList<String>();
-		 // Retrieve the environment variables separated by a pipe
-		 envList = CommonUtils.getArgumentsList(envList, true, VCS_ENV, "|");
-		 // Loop through the list of VCS_ENV variables
-		 for (int i=0; i < envList.size(); i++) {
-			String envVar = envList.get(i).toString();
-			// Retrieve the name=value pair
-			java.util.StringTokenizer st = new java.util.StringTokenizer(envVar,"=");
-			if (st.hasMoreTokens()) {
-				// Retrieve the variable name token
-				String property = st.nextToken();
-				String propertyVal = "";
-				try {
-					// Retrieve the variable value token
-					propertyVal = st.nextToken();
-				} catch (Exception e) {}
-				
-				// Put the environment variable (name=value) pair back to the environment
-				env.put(property, propertyVal);
-				
-		        if (logger.isDebugEnabled()) {
-		        	logger.info(prefix+"Env Var: "+CommonUtils.maskCommand(envVar));
+        java.util.List<String> envList = new java.util.ArrayList<String>();
+        // Retrieve the environment variables separated by a pipe
+        envList = CommonUtils.getArgumentsList(envList, true, VCS_ENV, "|");
+        // 2014-09-03 (cgoodric): make sure envList isn't empty
+		if (envList != null) {
+			// Loop through the list of VCS_ENV variables
+			for (int i=0; i < envList.size(); i++) {
+				String envVar = envList.get(i).toString();
+				// Retrieve the name=value pair
+				java.util.StringTokenizer st = new java.util.StringTokenizer(envVar,"=");
+				if (st.hasMoreTokens()) {
+					// Retrieve the variable name token
+					String property = st.nextToken();
+					String propertyVal = "";
+					try {
+						// Retrieve the variable value token
+						propertyVal = st.nextToken();
+					} catch (Exception e) {}
+					
+					// Put the environment variable (name=value) pair back to the environment
+					env.put(property, propertyVal);
+					
+			        if (logger.isDebugEnabled()) {
+			        	logger.info(prefix+"Env Var: "+CommonUtils.maskCommand(envVar));
+					}
 				}
 			}
 		}

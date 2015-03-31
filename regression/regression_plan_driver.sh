@@ -71,7 +71,7 @@ debug(){
 usage() {
   echo "usage: ${SCRIPT_NAME} [CONFIG_FILE]  [PLAN_FILE_LIST]  [PDTOOL_HOME]  [REGRESSION_HOME]  [LOG_PATH] [DEBUG]"
   echo "   Missing parameter: $1"
-  echo "TRUE" > status/status_exit.txt
+  echo "TRUE" > status/status_exit_${INP_VERSION}.txt
   exit 2
 }
 
@@ -113,6 +113,14 @@ if [ "${STATUS_DIR}" = "" ]; then usage "STATUS_DIR"; fi
 DEBUG=$8
 if [ "${LOG_HOME}" = "" ]; then DEBUG="N"; fi
 
+if [ "${INP_VERSION}" = "" ]; then 
+  echo "USAGE: regression_config_driver.sh [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y or N] [INP_VERSION]"
+  echo "Provide the input version INP_VERSION." 
+  echo ""
+  echo "e.g. regression_config_driver.bat regression_win_6.2_config.txt \"/u01/qa/home/PDTool6.2\" Y 6.2" 
+  exit 2
+fi
+
 # Set environment variables
 CONFIG_FILE_PROP="${CONFIG_FILE}.properties"
 REGRESSION_CONFIG="${REGRESSION_HOME}/config"
@@ -123,39 +131,39 @@ PDTOOL_CONFIG="${PDTOOL_HOME}/resources/config"
 # Check existence of files and directories
 if [ ! -d "${REGRESSION_HOME}" ]; then
   echo "The regression home directory that was provided does not exist: ${REGRESSION_HOME}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -d "${PDTOOL_HOME}" ]; then
   echo "The PDtool home directory that was provided does not exist: ${PDTOOL_HOME}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -f "${REGRESSION_CONFIG}/${CONFIG_FILE_PROP}" ]; then
   echo "The PDTool configuration file that was provided does not exist: ${CONFIG_FILE_PROP}"
   echo "PDTool regression config directory: ${REGRESSION_CONFIG}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -f "${REGRESSION_PLAN_LISTS}/${PLAN_FILE_LIST}" ]; then
   echo "The regression list file that was provided does not exist: ${PLAN_FILE_LIST}"
   echo "PDTool regression plan list directory: ${REGRESSION_PLAN_LISTS}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -f "${LOG_PATH}" ]; then
   echo "The regression log file that was provided does not exist: ${LOG_PATH}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -d "${REGRESSION_PLANS}" ]; then
   echo "The regression deployment plans directory does not exist: ${REGRESSION_PLANS}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 if [ ! -d "${LOG_HOME}" ]; then
   echo "The regression log file that was provided does not exist: ${LOG_HOME}"
-  echo "TRUE" > ${STATUS_DIR}/status_exit.txt
+  echo "TRUE" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
   exit 3
 fi
 
@@ -178,13 +186,13 @@ echo "Regression Test for ${CONFIG_FILE_PROP}" >> "${LOG_PATH}"
 logDate "${LOG_PATH}" ""
 echo "-----------------------------------------------------" >> "${LOG_PATH}"
 
-STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall.txt`"
-STATUS_EXIT="`cat ${STATUS_DIR}/status_exit.txt`"
+STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt`"
+STATUS_EXIT="`cat ${STATUS_DIR}/status_exit_${INP_VERSION}.txt`"
 debug "${SCRIPT_NAME}: STATUS_PLAN_OVERALL=${STATUS_PLAN_OVERALL}" 0
 debug "${SCRIPT_NAME}: STATUS_EXIT=${STATUS_EXIT}" 0
 
 NUM_PLANS=0
-echo "${NUM_PLANS}">${STATUS_DIR}/num_plans.txt
+echo "${NUM_PLANS}">${STATUS_DIR}/num_plans_${INP_VERSION}.txt
 
 # Read the file
 IFS="\n"
@@ -244,8 +252,8 @@ do
 	  debug "" 0
 	  debug "${SCRIPT_NAME}: $MSG" 0
 	  if [ "${ret}" = "FAIL"  ]; then 
-	    echo "${ret}" > ${STATUS_DIR}/status_plan_overall.txt
-	    echo "${ret}" > ${STATUS_DIR}/status_config_overall.txt
+	    echo "${ret}" > ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt
+	    echo "${ret}" > ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt
 	  fi
     else
 	  MSG="FAIL: Plan file does not exist at location: ${PLAN_FILE_PATH}"
@@ -253,10 +261,10 @@ do
       echo "$MSG" >> "${PDTOOL_HOME}/logs/app.log"
 	  echo "$MSG"
       STATUS_EXIT="TRUE"
-	  echo "${STATUS_EXIT}" > ${STATUS_DIR}/status_exit.txt
+	  echo "${STATUS_EXIT}" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
 	  STATUS_PLAN_OVERALL="FAIL"
-      echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_plan_overall.txt
-      echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_config_overall.txt
+      echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt
+      echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt
     fi
 
     # Copy the PDTool log (app.log) to the specified plan file log
@@ -270,14 +278,14 @@ do
   IFS="\n"
 done < "${REGRESSION_PLAN_LISTS}/${PLAN_FILE_LIST}"
   
-echo "${NUM_PLANS}">${STATUS_DIR}/num_plans.txt
+echo "${NUM_PLANS}">${STATUS_DIR}/num_plans_${INP_VERSION}.txt
 
 # Output the end date/time
 echo "-----------------------------------------------------" >> "${LOG_PATH}"
 logDate "${LOG_PATH}" "  Number Plans Executed: ${NUM_PLANS}"
 
 # Overall status for this configuration and plan file list
-STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall.txt`"
+STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt`"
 debug "${SCRIPT_NAME}: STATUS_PLAN_OVERALL=${STATUS_PLAN_OVERALL}" 0
 echo "${STATUS_PLAN_OVERALL}: Overall status for ${CONFIG_FILE_PROP} and ${PLAN_FILE_LIST}" >> "${LOG_PATH}"
 echo "-----------------------------------------------------" >> "${LOG_PATH}"

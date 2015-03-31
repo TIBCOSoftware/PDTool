@@ -21,7 +21,7 @@
 <ns2:ResourceCacheModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
     <resourceCache>
         <id>cache1</id>
-        <resourcePath>/shared/test00/DataSources/ds_orders/orders</resourcePath>
+        <resourcePath>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$orders</resourcePath>
         <resourceType>TABLE</resourceType>
         <cacheConfig>
             <configured>true</configured>
@@ -34,8 +34,8 @@
                 <schedule>
                     <startTime>2011-06-10T17:43:53.000Z</startTime>
                     <refreshPeriod>
-                        <period>SECOND</period>
-                        <count>0</count>
+                        <period>DAY</period>
+                        <count>2</count>
                     </refreshPeriod>
                 </schedule>
             </refresh>

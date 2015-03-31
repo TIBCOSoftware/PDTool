@@ -23,4 +23,4 @@
 # Module XML invocations
 # -----------------------
 # Create folder resource configured in ResourceModule.xml
-PASS	FALSE	ExecuteAction   	createFolders	 		$SERVERID "createFolder1" 			"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	createFolders	 		$SERVERID "createFolder1" 			"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml" 

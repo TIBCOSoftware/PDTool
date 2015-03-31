@@ -68,7 +68,7 @@ REM # Change this variable if you already have an S: or P: mapped.  It can be an
 REM # The actual subst command is performed in the ExecutePDTool batch file.
 REM # CAUTION: Each instance of PDTool or PDToolStudio on a single host must use its own unique substitution letter and have its own workspace.
 REM #          PDTool and PDToolStudio must NOT share the same workspace.     
-set SUBSTITUTE_DRIVE=P:
+set SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%
 REM #
 REM # Set the PROJECT_HOME so that it points to the substituted path variable
 set PROJECT_HOME=%SUBSTITUTE_DRIVE%

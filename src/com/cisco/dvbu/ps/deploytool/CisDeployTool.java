@@ -222,7 +222,7 @@ public class CisDeployTool {
 				    	String val = st.nextToken();
 				    	// PASS or FAIL
 				    	if (arg == 1) {
-				            expectedStatus=val.toUpperCase();   		
+				            expectedStatus=CommonUtils.extractVariable(prefix, val, propertyFile, false).toUpperCase();   		
 				            if ( expectedStatus.equalsIgnoreCase("PASS") || expectedStatus.equalsIgnoreCase("FAIL") ) {
 						        CommonUtils.writeOutput("  expectedStatus="+expectedStatus,									prefix,"-info",logger,debug1,debug2,debug3);
 				            } else {
@@ -231,7 +231,7 @@ public class CisDeployTool {
 				        }
 				    	// TRUE or FALSE
 				    	if (arg == 2) {
-				            exitOnError=val.toUpperCase();
+				            exitOnError=CommonUtils.extractVariable(prefix, val, propertyFile, false).toUpperCase(); 
 				            if (exitOnError.equalsIgnoreCase("TRUE") || exitOnError.equalsIgnoreCase("FALSE")) {
 						        CommonUtils.writeOutput("  exitOnError=   "+exitOnError,									prefix,"-info",logger,debug1,debug2,debug3);
 				            } else {
@@ -303,30 +303,46 @@ public class CisDeployTool {
 					  		    // ###########################################
 					            // # End::Write out the summary status
 							    // ###########################################
+								
 					            if (exitOnError.equalsIgnoreCase("TRUE") ) {
-					            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
-					            	CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
-					            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
-					            	
-					            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
-					            	writeSummaryLog("Overall Regression Execution Status="+overallExecutionStatus,null,null, summaryLogLocation);
-					            	writeSummaryLog("                                                                                                        ",null,null, summaryLogLocation);
-					            	writeSummaryLog("Script was set to exit on error.                                                                        ",null,null, summaryLogLocation);
-					            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
-			
-					            	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);
-					            	CommonUtils.writeOutput("Abnormal Script Termination. Script will exit.  ERROR="+error,						prefix,"-info",logger,debug1,debug2,debug3);
-					            	CommonUtils.writeOutput("End of CisDeployTool orchestration script.",										prefix,"-info",logger,debug1,debug2,debug3);
-					            	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);
 					            	
 					            	// Script was set to exit orchestration on error
-					            	exitOrchestrationOnError = true;
+						            if (expectedStatus.equalsIgnoreCase("FAIL")) {
+						            	exitOrchestrationOnError = false;				
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+						            	//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script will continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+						            	
+						            } else { // expectedStatus=PASS
+						            	
+						            	exitOrchestrationOnError = true;
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+						            	//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);			
+						            }
 					            	
-								} else {
-									CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
-									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
-									CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
-									CommonUtils.writeOutput("Abnormal Script Termination. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+								} else { // exitOnError=FALSE
+									
+						            if (expectedStatus.equalsIgnoreCase("FAIL")) {
+						            	exitOrchestrationOnError = false;				
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+						            	//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+						            	
+						            } else { // expectedStatus=PASS
+						            	
+						            	exitOrchestrationOnError = false;
+										CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
+										//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+									  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+						            }
 								}						            
 				        	 
 				         } else {
@@ -343,16 +359,52 @@ public class CisDeployTool {
 				               overallExecutionStatus="FAIL";
 				            }
 				            actualStatus="PASS";
-						  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
-				            CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,										prefix,"-info",logger,debug1,debug2,debug3); 
-						  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
-				            
+
 							exitOnErrorPad = CommonUtils.rpad(exitOnError,13," ");
 							actionTypePad = CommonUtils.rpad(actionType,23," ");
 							writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation); 
-				  		    // ###########################################
-				            // # End::Write out the summary status
-						    // ###########################################
+					  		// ###########################################
+					        // # End::Write out the summary status
+							// ###########################################
+							
+				            if (exitOnError.equalsIgnoreCase("TRUE")) {
+				            	// Script is expected to FAIL and Script was set to exit orchestration on error
+					            if (expectedStatus.equalsIgnoreCase("FAIL")) {
+									exitOrchestrationOnError = true;
+									error = "Expected error but execution was successful.";
+
+								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3);
+								  	
+					            } else { // expectedStatus=PASS
+					            	
+									exitOrchestrationOnError = false;
+						            CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+						            //CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,										prefix,"-info",logger,debug1,debug2,debug3); 
+									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+					            }
+				            } else { // exitOnError=FALSE
+				            	
+				            	// Script is expected to FAIL and Script was NOT set to exit orchestration on error
+					            if (expectedStatus.equalsIgnoreCase("FAIL")) {
+									exitOrchestrationOnError = false;
+									error = "Expected error but execution was successful.";
+								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+									
+					            } else { // expectedStatus=PASS
+					            	
+									exitOrchestrationOnError = false;
+						            CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+						            //CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,										prefix,"-info",logger,debug1,debug2,debug3); 
+									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
+								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
+					            }				            	
+				            }
 				         }
 				         
 			        } else { // else if (actionType.contains("ExecuteAction") ) {
@@ -382,12 +434,6 @@ public class CisDeployTool {
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,											prefix,"-info",logger,debug1,debug2,debug3);
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
-						  	
-						  	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation); 
-						  	writeSummaryLog("Overall Regression Execution Status="+overallExecutionStatus,null,null, summaryLogLocation); 
-						  	writeSummaryLog("                                                                                                        ",null,null, summaryLogLocation); 
-						  	writeSummaryLog("Script was set to exit on error.                                                                        ",null,null, summaryLogLocation); 
-						  	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation); 
 	
 				            CommonUtils.writeOutput("---------------------------------------------------------------------------",					prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+" EXIT_ON_ERROR::"+exitOnError,												prefix,"-info",logger,debug1,debug2,debug3);
@@ -415,7 +461,7 @@ public class CisDeployTool {
 			
 			} // end while loop
 			
-			if (!exitOrchestrationOnError) {
+			if (!exitOrchestrationOnError) { // Do Not Exit On Error
 				/*****************************************
 				 * CLOSE OUT THE SUMMRY LOG
 				 *****************************************/
@@ -432,8 +478,25 @@ public class CisDeployTool {
 				CommonUtils.writeOutput("***** COMPLETED DEPLOYMENT ORCHESTRATION SUCCESSFULLY *****",											prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("End of CisDeployTool orchestration script.",															prefix,"-info",logger,debug1,debug2,debug3);
 				CommonUtils.writeOutput("---------------------------------------------------------------------------",							prefix,"-info",logger,debug1,debug2,debug3);
-			} else {
-				throw new ApplicationException("Exiting Script with error.");
+			} else { // Exit On Error
+				/*****************************************
+				 * CLOSE OUT THE SUMMRY LOG
+				 *****************************************/
+            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+            	writeSummaryLog("Overall Regression Execution Status="+overallExecutionStatus,null,null, summaryLogLocation);
+            	writeSummaryLog("                                                                                                        ",null,null, summaryLogLocation);
+            	writeSummaryLog("Script was set to exit on error.                                                                        ",null,null, summaryLogLocation);
+            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+
+				/*****************************************
+				 * CLOSE OUT DEBUG LOG
+				 *****************************************/
+            	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);
+            	CommonUtils.writeOutput("Abnormal Script Termination. Script will exit.  ERROR="+error,						prefix,"-info",logger,debug1,debug2,debug3);
+            	CommonUtils.writeOutput("End of CisDeployTool orchestration script.",										prefix,"-info",logger,debug1,debug2,debug3);
+            	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);				            							            	
+
+            	throw new ApplicationException("Exiting Script with error.  ERROR="+error);
 			}
 			
 		} catch (ValidationException e) {

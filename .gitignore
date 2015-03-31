@@ -23,6 +23,6 @@ user.properties
 /CVSt
 /SVNww
 /SVNt
-
-
-*.class
+/GITww
+/GITt
+/CLCsw

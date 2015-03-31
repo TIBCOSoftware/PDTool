@@ -27,7 +27,7 @@
 # The My Vars path provides with the user the ability to set specific environment variables for their login
 # e.g. export MY_VARS_PATH=/usr/compositesw/setMyPDToolVars.sh
 export MY_VARS_PATH=""
-if [ "${MY_VARS_PATH}" == "" ]; echo "Unknown path=${MY_VARS_PATH}"; fi
+if [ "${MY_VARS_PATH}" == "" ]; then echo "Unknown path=${MY_VARS_PATH}"; fi
 if [ "${MY_VARS_PATH}" != "" ]
 then  
 	if [ ! -f ${MY_VARS_PATH} ]; then

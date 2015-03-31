@@ -29,7 +29,7 @@ import com.cisco.dvbu.cmdline.vcs.spi.AbstractLifecycleListener;
 /**
  * A sample GIT lifecycle listener.
  * 
- * @author mtinius
+ * @author mtinius,cgoodric
  */
 public class GITLifecycleListener extends AbstractLifecycleListener {
 
@@ -46,13 +46,14 @@ public class GITLifecycleListener extends AbstractLifecycleListener {
     
 //    @Override
     public void handle(File file, Event event, Mode mode, boolean verbose) throws VCSException {
+    	if (file.getName().equals(".git")) return;
+
         switch(event) {
             case CREATE:
+            case UPDATE: // updates in Git have to be "added" the same way that new files do.
                 switch (mode) {
                     case POST:
                         handle(file, GIT_ADD, 2, verbose);
-                        
-System.out.println("CALLBACK: " + file.getPath());                        
                         
                         break;
                     default: // do nothing                        
@@ -90,10 +91,16 @@ System.out.println("CALLBACK: " + file.getPath());
     protected String getErrorMessages(Process process) throws VCSException {
         StringBuilder result = new StringBuilder();
         
-        BufferedReader sr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        // not all errors from Git show up in stderr, need to check stdout as well
+        //
+        BufferedReader bir = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader ber = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         try {
             String line = null;
-            while((line = sr.readLine()) != null) {                
+            while((line = bir.readLine()) != null) {                
+                if (!line.contains("git: warning")) result.append(line).append(LS);
+            }
+            while((line = ber.readLine()) != null) {                
                 if (!line.contains("git: warning")) result.append(line).append(LS);
             }
         }
@@ -101,9 +108,22 @@ System.out.println("CALLBACK: " + file.getPath());
             throw new VCSException(e);
         }        
         finally {
-            try { sr.close(); } catch(IOException e) {throw new VCSException(e);} 
+            try { bir.close(); } catch(IOException e) {throw new VCSException(e);} 
+            try { ber.close(); } catch(IOException e) {throw new VCSException(e);} 
         }
         
         return result.toString();
+    }
+    
+    // expose a static method so that the AbstractLifecycleListner can detect whether a GIT executable is being run.
+    // git must be run from within a git repository folder in order to function correctly (for some reason it can't
+    // figure out what the repository is based on the file being worked on. stupid.)
+    //
+    public static boolean isGitExecutable (String path) {
+    	return (! path.endsWith ("git") ||
+                ! path.endsWith ("git.sh") ||
+                ! path.endsWith ("git.exe") ||
+                ! path.endsWith ("git.bat")
+               );
     }
 }

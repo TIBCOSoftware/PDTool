@@ -78,6 +78,8 @@ REM #----------------------------------------------------------
 REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
+REM # CIS version [6.2, 7.0.0]
+set DEFAULT_CIS_VERSION=7.0.0
 REM # Script name
 set SCRIPT=ExecutePDTool
 REM # set the print function
@@ -130,6 +132,7 @@ if "%PDTOOL_CMD%" == "-exec" goto VALID_PARAMS
 if "%PDTOOL_CMD%" == "-vcsinit" goto VALID_PARAMS
 if "%PDTOOL_CMD%" == "-encrypt" goto VALID_PARAMS
 if "%PDTOOL_CMD%" == "-ant" goto VALID_PARAMS
+if "%PDTOOL_CMD%" == "-xform" goto VALID_PARAMS
 set arg=1
 set ERRORMSG=Execution Failed::No parameters provided.
 GOTO USAGE
@@ -144,6 +147,7 @@ call %writeOutput% "   VCS_USERNAME=[%PDTOOL_VCS_USERNAME%]" 																"%S
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CONFIG_PROPERTY_FILE=[%PDTOOL_CONFIG_PROPERTY_FILE%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   RELEASE_FOLDER=[%PDTOOL_RELEASE_FOLDER%]" 															"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% " "
 
 REM # Assign parameters
@@ -152,6 +156,7 @@ if defined PDTOOL_VCS_USERNAME          set VCS_USERNAME=%PDTOOL_VCS_USERNAME%
 if defined PDTOOL_VCS_PASSWORD          set VCS_PASSWORD=%PDTOOL_VCS_PASSWORD%
 if defined PDTOOL_CONFIG_PROPERTY_FILE  set CONFIG_PROPERTY_FILE=%PDTOOL_CONFIG_PROPERTY_FILE%
 if defined PDTOOL_RELEASE_FOLDER        set RELEASE_FOLDER=%PDTOOL_RELEASE_FOLDER%
+if defined DEFAULT_CIS_VERSION       	set CIS_VERSION=%DEFAULT_CIS_VERSION%
 
 REM #=======================================
 REM # Invoke setVars.bat
@@ -185,12 +190,14 @@ REM #   PDTOOL_VCS_USERNAME          --> VCS_USERNAME
 REM #   PDTOOL_VCS_PASSWORD          --> VCS_PASSWORD
 REM #   PDTOOL_CONFIG_PROPERTY_FILE  --> CONFIG_PROPERTY_FILE
 REM #   PDTOOL_RELEASE_FOLDER        --> RELEASE_FOLDER
+REM #   DEFAULT_CIS_VERSION          --> CIS_VERSION
 REM #=====================================================================================
 call:resolveVariables "%PDTOOL_PROPERTY_FILE%" 		  "%PROPERTY_FILE%" 		PROPERTY_FILE
 call:resolveVariables "%PDTOOL_VCS_USERNAME%" 		  "%VCS_USERNAME%" 			VCS_USERNAME
 call:resolveVariables "%PDTOOL_VCS_PASSWORD%" 		  "%VCS_PASSWORD%" 			VCS_PASSWORD
 call:resolveVariables "%PDTOOL_CONFIG_PROPERTY_FILE%" "%CONFIG_PROPERTY_FILE%" 	CONFIG_PROPERTY_FILE
 call:resolveVariables "%PDTOOL_RELEASE_FOLDER%" 	  "%RELEASE_FOLDER%" 		RELEASE_FOLDER
+call:resolveVariables "%DEFAULT_CIS_VERSION%" 	  	  "%CIS_VERSION%" 			CIS_VERSION
 
 REM # Print the parameters
 CALL:printablePassword "%VCS_PASSWORD%" PR_VCS_PASSWORD
@@ -204,6 +211,7 @@ call %writeOutput% "   VCS_USERNAME=[%VCS_USERNAME%]" 																		"%SCRIPT
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CONFIG_PROPERTY_FILE=[%CONFIG_PROPERTY_FILE%]" 														"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   RELEASE_FOLDER=[%RELEASE_FOLDER%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% " "
 
 
@@ -271,8 +279,8 @@ REM #call %writeOutput% " "
 REM #=======================================
 REM # Set DeployManager Environment Variables
 REM #=======================================
-set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\*"
-set ENDORSED_DIR=%PROJECT_HOME%\lib\endorsed
+set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\PDTool%CIS_VERSION%.jar;%PROJECT_HOME%\lib%CIS_VERSION%\*;%PROJECT_HOME%\libcommon\*"
+set ENDORSED_DIR=%PROJECT_HOME%\lib%CIS_VERSION%\endorsed
 set DEPLOY_MANAGER=com.cisco.dvbu.ps.deploytool.DeployManagerUtil
 set DEPLOY_COMMON_UTIL=com.cisco.dvbu.ps.common.scriptutil.ScriptUtil
 set CONFIG_LOG4J=-Dlog4j.configuration="file:%PROJECT_HOME%\resources\config\log4j.properties" 
@@ -289,6 +297,7 @@ if "%PDTOOL_CMD%" == "-exec" goto SETUP_EXEC
 if "%PDTOOL_CMD%" == "-vcsinit" goto SETUP_VCSINIT
 if "%PDTOOL_CMD%" == "-encrypt" goto SETUP_ENCRYPT
 if "%PDTOOL_CMD%" == "-ant" goto SETUP_ANT
+if "%PDTOOL_CMD%" == "-xform" goto SETUP_XFORM
 set arg=1
 set ERRORMSG=Execution Failed::Failed parameter validation.
 GOTO USAGE
@@ -356,7 +365,7 @@ if NOT EXIST "%PROPERTY_FILE%" (
    goto USAGE 
 )
 REM #***********************************************
-REM # Invoke: DeployManagerUtil encryptPasswordsInFile "%PROPERTY_FILE%"
+REM # Invoke: ScriptUtil encryptPasswordsInFile "%PROPERTY_FILE%"
 REM #***********************************************
 set JAVA_ACTION=encryptPasswordsInFile
 set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
@@ -406,6 +415,48 @@ set   COMMAND="%ANT_HOME%/bin/ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT
 set PRCOMMAND="%ANT_HOME%/bin/ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DVCS_USERNAME="%VCS_USERNAME%" -DVCS_PASSWORD="%PR_VCS_PASSWORD%" -buildfile "%PROPERTY_FILE%"
 GOTO START_SCRIPT
 
+:--------------
+:SETUP_XFORM
+:--------------
+call %writeOutput% " " 
+call %writeOutput% "------------------------------------------------------------------" 
+call %writeOutput% "--------------------- COMMAND-LINE XSL TRANSFORMATION -----------------------" 
+call %writeOutput% "------------------------------------------------------------------" 
+call %writeOutput% " " 
+
+REM # Goto usage if XML_FILE_SOURCE is blank or does not exist
+if not defined XML_FILE_SOURCE (
+   call %writeOutput% "Failed::Input argument was not defined: XML_FILE_SOURCE" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   goto XFORM_USAGE
+)
+if NOT EXIST "%XML_FILE_SOURCE%" (
+   call %writeOutput% "Execution Failed::XML source file does not exist: %XML_FILE_SOURCE%" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   goto XFORM_USAGE
+)
+REM # Goto usage if XSL_FILE_SOURCE is blank or does not exist
+if not defined XSL_FILE_SOURCE (
+   call %writeOutput% "Failed::Input argument was not defined: XSL_FILE_SOURCE" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   goto XFORM_USAGE 
+)
+if NOT EXIST "%XSL_FILE_SOURCE%" (
+   call %writeOutput% "Execution Failed::XSL style sheet file does not exist: %XSL_FILE_SOURCE%" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   goto XFORM_USAGE
+)
+
+REM #***********************************************
+REM # Invoke: ScriptUtil XslTransformUtility "%XML_FILE_SOURCE%" "%XSL_FILE_SOURCE%"
+REM #***********************************************
+set JAVA_ACTION=XslTransformUtility
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%XML_FILE_SOURCE%" "%XSL_FILE_SOURCE%"
+set PRCOMMAND=%COMMAND%
+GOTO START_SCRIPT
+
+:XFORM_USAGE
+	call %writeOutput% "            %SCRIPT%%ext% -xform xml-document-path xsl-style-sheet-path"
+	call %writeOutput% " "
+	call %writeOutput% "            Example: %SCRIPT%%ext% -xform test-doc.xml test-xform.xsl
+   ENDLOCAL
+   exit /B 1
 
 :--------------
 :START_SCRIPT   
@@ -490,15 +541,18 @@ set SCRIPT_DEBUG=%0
 :LOOP
 	SET ARG1=%1
 	SET ARG2=%2
+	SET ARG3=%3
 	set TARG1=
 	set TARG2=
+	set TARG3=
 	REM # Remove double quotes
 	setlocal EnableDelayedExpansion
 	if defined ARG1 set TARG1=!ARG1:"=!
 	if defined ARG2 set TARG2=!ARG2:"=!
-	endlocal & SET ARG1=%TARG1%& SET ARG2=%TARG2%
+	if defined ARG3 set TARG3=!ARG3:"=!
+	endlocal & SET ARG1=%TARG1%& SET ARG2=%TARG2%& SET ARG3=%TARG3%
 	REM # Display debug if on
-	if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: ARG1=[%ARG1%] ARG2=[%ARG2%]
+	if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: ARG1=[%ARG1%] ARG2=[%ARG2%] ARG3=[%ARG3%]
 	
 	REM # Check for no more values and return from :parse.
 	if "%ARG1%" == "" GOTO:EOF
@@ -588,6 +642,41 @@ set SCRIPT_DEBUG=%0
                 shift
                 GOTO:LOOPEND
             )
+		
+    if "%ARG1%" == "-ver" (
+                SET DEFAULT_CIS_VERSION=%ARG2%
+				set PARSE_ERROR=1
+				set ARG=CIS_VERSION
+				set ERRORMSG=Execution Failed::Missing parameter
+				if "%ARG2%" NEQ "" set PARSE_ERROR=0
+				if "%ARG2%" NEQ "" set ARG=
+				if "%ARG2%" NEQ "" set ERRORMSG=
+                shift
+                GOTO:LOOPEND
+            )
+
+    if "%ARG1%" == "-xform" (
+				SET PDTOOL_CMD=%ARG1%
+                SET XML_FILE_SOURCE=%ARG2%
+                SET XSL_FILE_SOURCE=%ARG3%
+				set PARSE_ERROR=1
+				set ARG=xform
+				set ERRORMSG=Execution Failed::Missing parameter
+				if "%ARG2%" NEQ "" set PARSE_ERROR=0
+				if "%ARG2%" NEQ "" set ARG=
+				if "%ARG2%" NEQ "" set ERRORMSG=
+ 				if "%ARG2%" EQU "" set ARG=XML_FILE_SOURCE
+ 				set PARSE_ERROR=1			
+				if "%ARG3%" NEQ "" set PARSE_ERROR=0
+				if "%ARG3%" NEQ "" set ARG=
+				if "%ARG3%" NEQ "" set ERRORMSG=
+ 				if "%ARG3%" EQU "" set ARG=XSL_FILE_SOURCE
+                shift
+				shift
+                GOTO:LOOPEND
+
+            )
+			
 	set ERRORMSG=Execution Failed::Unknown parameter: %ARG1%
     call:USAGE
     exit /B 2
@@ -611,7 +700,7 @@ GOTO:LOOP
 	call %writeOutput% " "
  	if defined ERRORMSG call %writeOutput% " [%ERRORMSG%]"
 	call %writeOutput% " "
-	call %writeOutput% " USAGE: %SCRIPT%%ext% [-exec|-vcsinit|-encrypt|-ant] [property file name] [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER]"
+	call %writeOutput% " USAGE: %SCRIPT%%ext% [-exec|-vcsinit|-encrypt|-ant] [property file name] [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-ver CIS_VERSION]"
 	call %writeOutput% " "
  	if defined ARG call %writeOutput% " Argument [%ARG%] is missing or invalid."
 	call %writeOutput% " CMD: %PARAMS%"
@@ -619,16 +708,17 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 1 - Execute a command line deploy plan file:"
 	call %writeOutput% " "
-	call %writeOutput% "            %SCRIPT%%ext% -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] "
+	call %writeOutput% "            %SCRIPT%%ext% -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-ver CIS_VERSION]"
 	call %writeOutput% " "
-	call %writeOutput% "            Example: %SCRIPT%%ext% -exec ../resources/properties/myplan.dp -vcsuser user -vcspassword password -config deploy.properties -release 20141201"
+	call %writeOutput% "            Example: %SCRIPT%%ext% -exec ../resources/properties/myplan.dp -vcsuser user -vcspassword password -config deploy.properties -release 20141201 -ver 7.0.0"
 	call %writeOutput% " "
-	call %writeOutput% "               arg1::   -exec is used to execute a deploy plan file"
-	call %writeOutput% "               arg2::   orchestration property file path [full or relative path]"
-	call %writeOutput% "               arg3-4:: [-vcsuser username] optional parameters"
-	call %writeOutput% "               arg5-6:: [-vcspassword password] optional parameters"
-	call %writeOutput% "               arg7-8:: [-config deploy.properties] optional parameters"
-	call %writeOutput% "               arg9-10::[-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
+	call %writeOutput% "               arg1::    -exec is used to execute a deploy plan file"
+	call %writeOutput% "               arg2::    orchestration property file path [full or relative path]"
+	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters"
+	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters"
+	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
+	call %writeOutput% "               arg10-11::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 2 - Execute VCS Workspace initialization:"
 	call %writeOutput% " "
@@ -654,16 +744,17 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 4 - Execute an Ant build file:"
 	call %writeOutput% " "
-	call %writeOutput% "            %SCRIPT%%ext% -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER]"
+	call %writeOutput% "            %SCRIPT%%ext% -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-ver CIS_VERSION]"
 	call %writeOutput% " "
-	call %writeOutput% "            Example: %SCRIPT%%ext% -ant ../resources/ant/build.xml -vcsuser user -vcspassword password -config deploy.properties -release 20141201"
+	call %writeOutput% "            Example: %SCRIPT%%ext% -ant ../resources/ant/build.xml -vcsuser user -vcspassword password -config deploy.properties -release 20141201 -ver 7.0.0"
 	call %writeOutput% " "
-	call %writeOutput% "               arg1::   -ant is used to execute an Ant build file"
-	call %writeOutput% "               arg2::   orchestration build file path (full or relative path)"
-	call %writeOutput% "               arg3-4:: [-vcsuser username] optional parameters"
-	call %writeOutput% "               arg5-6:: [-vcspassword password] optional parameters"
-	call %writeOutput% "               arg7-8:: [-config deploy.properties] optional parameters"
-	call %writeOutput% "               arg9-10::[-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
+	call %writeOutput% "               arg1::    -ant is used to execute an Ant build file"
+	call %writeOutput% "               arg2::    orchestration build file path (full or relative path)"
+	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters"
+	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters"
+	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
+	call %writeOutput% "               arg10-11::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " "
 	ENDLOCAL

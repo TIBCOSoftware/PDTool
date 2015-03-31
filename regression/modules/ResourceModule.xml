@@ -128,14 +128,17 @@
 
 	<resource>
         <id>createFolder1</id>
-        <resourcePath>/shared/test00/_test2</resourcePath>
+        <resourcePath>/shared/test00/_test2/test2</resourcePath>
+        <resourcePath>/shared/test00/_test3</resourcePath>
 		<recursive>true</recursive>
+		<ignoreErrors>true</ignoreErrors>
     </resource>
 
 	<resource>
         <id>createFolder2</id>
-        <resourcePath>/shared/test00/_test2/test2</resourcePath>
-		<recursive>false</recursive>
+		<resourcePath>/shared/test00/DataSourcesCopy/ds_orders/admin</resourcePath>
+ 		<recursive>false</recursive>
+		<ignoreErrors>true</ignoreErrors>
     </resource>
 	
 </p1:ResourceModule>

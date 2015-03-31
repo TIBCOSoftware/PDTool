@@ -17,16 +17,25 @@
  */
 package com.cisco.dvbu.ps.deploytool.dao.wsapi;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.cisco.dvbu.ps.common.adapters.common.AdapterException;
+import com.cisco.dvbu.ps.common.adapters.core.CisWsClient;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
+import com.cisco.dvbu.ps.common.util.XMLUtils;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
 import com.cisco.dvbu.ps.common.util.wsapi.WsApiHelperObjects;
 import com.cisco.dvbu.ps.deploytool.dao.PrivilegeDAO;
+import com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO;
+import com.cisco.dvbu.ps.deploytool.modules.PrivilegeModule;
+import com.cisco.dvbu.ps.deploytool.modules.ServerAttributeModule;
 import com.cisco.dvbu.ps.deploytool.util.DeployUtil;
 import com.compositesw.services.system.admin.GetResourcePrivilegesSoapFault;
 import com.compositesw.services.system.admin.ResourcePortType;
@@ -42,6 +51,7 @@ import com.compositesw.services.system.util.common.AttributeTypeValueMap.Entry;
 
 public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 
+	private static String prefix = "PrivilegeWSDAOImpl";
 	private static Log logger = LogFactory.getLog(PrivilegeWSDAOImpl.class);
 
 	/* (non-Javadoc)
@@ -94,151 +104,74 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 		       in a path other than the last item, or does not have GRANT access on the last item.
 		    Security: If the user does not have the ACCESS_TOOLS right.
 	 */
-	public void takePrivilegeAction(String actionName, boolean recurse, boolean updateDependenciesRecursively, boolean updateDependentsRecursively, String mode, PrivilegeEntries privilegeEntries, String serverId, String pathToServersXML, Integer CisVersion) throws CompositeException {
+	public void takePrivilegeAction(String actionName, PrivilegeModule privilegeModule, String serverId, String pathToServersXML) throws CompositeException {
 		
-		// For debugging
+		String methodName = "takePrivilegeAction";
+		// Set the web service endpoint and method
+		String endpointName = "resource";
+		String endpointMethod = "updateResourcePrivileges";
+
 		int privSize = 0;
-		if(logger.isDebugEnabled()) {
-			if (privilegeEntries != null & privilegeEntries.getPrivilegeEntry() != null) 
-				privSize = privilegeEntries.getPrivilegeEntry().size();
-			logger.debug("PrivilegeWSDAOImpl.takePrivilegeAction(actionName , recurse, updateDependenciesRecursively, updateDependentsRecursively, mode, privilegeEntries, serverId, pathToServersXML, CisVersion).  actionName="+actionName+"  recurse="+recurse+"  updateDependenciesRecursively="+updateDependenciesRecursively+"  updateDependentsRecursively="+updateDependentsRecursively+"  mode="+mode+"  #privilegeEntries="+privSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML+"  CisVersion="+CisVersion);
+		String resourcePath = null;
+		if (privilegeModule != null && privilegeModule.getResourcePrivilege() != null && privilegeModule.getResourcePrivilege().get(0).getPrivilege() != null) {
+			privSize = privilegeModule.getResourcePrivilege().get(0).getPrivilege().size();
+			resourcePath = privilegeModule.getResourcePrivilege().get(0).getResourcePath();
 		}
-
-		// read target server properties from xml and build target server object based on target server name 
-		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "PrivilegeWSDAOImpl.takePrivilegeAction("+actionName+")", logger);
-		// Ping the Server to make sure it is alive and the values are correct.
-		WsApiHelperObjects.pingServer(targetServer, true);
+		if(logger.isDebugEnabled()) {
+			logger.debug(prefix+"."+methodName+"(actionName , recurse, privilegeModule, serverId, pathToServersXML).  actionName="+actionName+"  #privilegeModule="+privSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+		}
 		
-		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
-/*
-		ResourcePortType port = null;
-		if (CisVersion>= 6200000 && CisVersion < 6230000)
-			port = CisApiFactory.getResourcePort(targetServer);
+		// read target server properties from server xml and build target server object based on target server name 
+		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, prefix+"."+methodName, logger);
 
-			
-		com.compositesw._623.services.system.admin.ResourcePortType port623 = null;
-		if (CisVersion >= 6230000)
-			port623 = CisApiFactory.getResourcePort623(targetServer);
-*/		
+		// Ping the Server to make sure it is alive and the values are correct.
+		//WsApiHelperObjects.pingServer(targetServer, true);
+
+		// Get server properties from the target server
+		Properties props = WsApiHelperObjects.getServerProperties(targetServer);
+
+		// Get the adapter config path environment variable
+		String adapterConfigPath = System.getProperty("PDTOOL_ADAPTER_CONFIG_PATH");
+		if (adapterConfigPath == null) 
+			throw new CompositeException(prefix+"::The enviornment variable PDTOOL_ADAPTER_CONFIG_PATH was not set properly during DeployManagerUtil.initAdapter.");
+	
 		try {
 	
 			if(actionName.equalsIgnoreCase(PrivilegeDAO.action.UPDATE.name())){
 				
-				/*
-		    	 * mtinius: 2012-08-07, added parameter (PrivilegeDAO.RECURSE_DEPENDENCIES) for new api
-		    	 * 						call to updateResourcePrivileges
-		    	 * 
-		    	 * Invocation for CIS 6.2 and higher
-		    	 */
-/*
-				if (CisVersion >= 6230000)
-				{
-					// Create a privilege entries for 6.2.0
-					com.compositesw._623.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries privEntries623 = new com.compositesw._623.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries();
-					
-					for (PrivilegeEntry privEntry : privilegeEntries.getPrivilegeEntry()) 
-					{
-						// Create a new privilege entry
-						com.compositesw._623.services.system.admin.resource.PrivilegeEntry privEntry623 = new com.compositesw._623.services.system.admin.resource.PrivilegeEntry();
-						
-						if (privEntry.getPath() != null)
-							privEntry623.setPath(privEntry.getPath());
-						if (privEntry.getType() != null)
-							privEntry623.setType(com.compositesw._623.services.system.admin.resource.ResourceOrColumnType.valueOf(privEntry.getType().toString()));
-						
-						if (privEntry.getPrivileges() != null) {
-							// Create a new privileges object for 6.2.0
-							com.compositesw._623.services.system.admin.resource.PrivilegeEntry.Privileges privileges623 = new com.compositesw._623.services.system.admin.resource.PrivilegeEntry.Privileges();
-							
-							for (Privilege privilege : privEntry.getPrivileges().getPrivilege()) {
-								com.compositesw._623.services.system.admin.resource.Privilege privilege623 = new com.compositesw._623.services.system.admin.resource.Privilege();
-								
-								if (privilege.getName() != null)
-									privilege623.setName(privilege.getName());
-								if (privilege.getNameType() != null)
-									privilege623.setNameType(com.compositesw._623.services.system.admin.resource.UserNameType.valueOf(privilege.getNameType().toString()));
-								if (privilege.getDomain() != null)
-									privilege623.setDomain(privilege.getDomain());
-								if (privilege.getPrivs() != null)
-									privilege623.setPrivs(privilege.getPrivs());
-								if (privilege.getCombinedPrivs() != null)
-									privilege623.setCombinedPrivs(privilege.getCombinedPrivs());
-								if (privilege.getInheritedPrivs() != null)
-									privilege623.setInheritedPrivs(privilege.getInheritedPrivs());
-								
-								// Add the privilege entry
-								privileges623.getPrivilege().add(privilege623);
-							}
-							// Add the privileges for 6.2.0
-							privEntry623.setPrivileges(privileges623);
-						}
-						// Add the privilege entry for 6.2.0
-						privEntries623.getPrivilegeEntry().add(privEntry623);
-					}
-							
-//					privEntries623 = (com.compositesw._623.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries) privilegeEntries; 
-				
-					// 6.2.3 and higher
-					port623.updateResourcePrivileges(recurse, 
-							updateDependenciesRecursively, 
-							updateDependentsRecursively, 
-							privEntries623, 
-							com.compositesw._623.services.system.admin.resource.UpdatePrivilegesMode.valueOf(mode));
-				}
-				
-				if (CisVersion>= 6200000 && CisVersion < 6230000) {
-					port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
-				}
-*/
+				/*****************************************************
+				 * Web Service Client Connection
+				 *****************************************************/
 				if(logger.isDebugEnabled()) {
-					String privList = "";
-					if (privilegeEntries != null && privilegeEntries.getPrivilegeEntry() != null) {
-						for (PrivilegeEntry privEntry:privilegeEntries.getPrivilegeEntry()) {
-							if (privList.length() != 0)
-								privList = privList + ", ";
-							privList = privList + "PRIVILEGE_ENTRY:[";
-							privList = privList + "path="+privEntry.getPath() + ", ";
-							privList = privList + "type="+privEntry.getType();
-							String privStr = "";
-							if (privEntry.getPrivileges() != null && privEntry.getPrivileges().getPrivilege() != null) {
-								for (Privilege privs:privEntry.getPrivileges().getPrivilege()) {
-									if (privStr.length() != 0)
-										privStr = privStr + ", ";
-									privStr = privStr + ", PRIVILEGES:[";
-									privStr = privStr + "name=" + privs.getName() + ", ";
-									privStr = privStr + "type=" + privs.getNameType() + ", ";
-									privStr = privStr + "domain=" + privs.getDomain() + ", ";
-									privStr = privStr + "privs=" + privs.getPrivs() + ", ";
-									privStr = privStr + "combined=" + privs.getCombinedPrivs() + ", ";
-									privStr = privStr + "inherited=" + privs.getInheritedPrivs();
-									privStr = privStr + "]";
-								}
-								privList = privList + privStr;
-							}
-							privList = privList + "]";
-						}
-					}
-					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.updateResourcePrivileges(\""+recurse+"\", \""+updateDependenciesRecursively+"\", \""+privList+"\", \""+mode+"\").  #privilegeEntries="+privSize);
+					logger.debug(prefix+"."+methodName+"().  Creating CIS client web service connection.");
 				}
-				
-				port.updateResourcePrivileges(recurse, updateDependenciesRecursively, privilegeEntries, UpdatePrivilegesMode.valueOf(mode));
-				
+				// Execute the CIS Web Service Client for an adapter configuration connection
+				CisWsClient cisclient = new CisWsClient(props, adapterConfigPath);
+	
+				// Setup the request
+				String requestXML = XMLUtils.getStringFromDocument(privilegeModule);
+	
 				if(logger.isDebugEnabled()) {
-					logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Success: port.updateResourcePrivileges().");
+					logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
 				}
-			}
-		} catch (UpdateResourcePrivilegesSoapFault e) {
-			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", "recurse:"+recurse+" mode:"+mode, targetServer),e.getFaultInfo());
-			throw new ApplicationException(e.getMessage(), e);
-//		} catch (com.compositesw._623.services.system.admin.UpdateResourcePrivilegesSoapFault e) {
-//			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", "recurse:"+recurse+" mode:"+mode, targetServer)/*,e.getFaultInfo()*/);
-//			throw new ApplicationException(e.getMessage(), e);
-		} catch (Exception e) {
-			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", "recurse:"+recurse+" mode:"+mode, targetServer));
-			throw new ApplicationException(e.getMessage(), e);
-	}
-
+				/*****************************************************
+				 * Invoke Method=updateResourcePrivileges
+				 *****************************************************/
+				// Invoke the web service method
+				String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
 		
+				if(logger.isDebugEnabled()) {
+					// Format for XML pretty print
+					logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+				}
+			}		
+		} catch (AdapterException e) {
+			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", resourcePath, targetServer));
+			throw new ApplicationException(e.getMessage(), e);
+		} catch (Exception e) {
+			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), PrivilegeDAO.action.UPDATE.name(), "Privilege", resourcePath, targetServer));
+			throw new ApplicationException(e.getMessage(), e);
+		}
 	}
 
 	/*
@@ -271,53 +204,94 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 		       than the last one.
 		    Security: If the user does not have the ACCESS_TOOLS right.
 	 */
-	public com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries
-			getResourcePrivileges(Entries privilegeEntries, String filter, boolean includeColumnPrivileges, String serverId, String pathToServersXML){
+	public PrivilegeModule getResourcePrivileges(Entries privilegeEntries, String filter, boolean includeColumnPrivileges, String serverId, String pathToServersXML){
+
+		String methodName = "getResourcePrivileges";
+		// Set the web service endpoint and method
+		String endpointName = "resource";
+		String endpointMethod = "getResourcePrivileges";
 
 		// For debugging
 		int privSize = 0;
 		if(logger.isDebugEnabled()) {
 			if (privilegeEntries != null & privilegeEntries.getEntry() != null) 
 				privSize = privilegeEntries.getEntry().size();
-			logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges(privilegeEntries , filter, includeColumnPrivileges, serverId, pathToServersXML).  #privilegeEntries="+privSize+"  filter="+filter+"  includeColumnPrivileges="+includeColumnPrivileges+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
+			logger.debug(prefix+"."+methodName+"(privilegeEntries , filter, includeColumnPrivileges, serverId, pathToServersXML).  #privilegeEntries="+privSize+"  filter="+filter+"  includeColumnPrivileges="+includeColumnPrivileges+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
 		}
-		com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries privlegeEntries = null;
 
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServer(serverId, pathToServersXML);
+
 		// Ping the Server to make sure it is alive and the values are correct.
-		WsApiHelperObjects.pingServer(targetServer, true);
+		//WsApiHelperObjects.pingServer(targetServer, true);
 
-		// Construct the resource port based on target server name
-		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
+		// Get server properties from the target server
+		Properties props = WsApiHelperObjects.getServerProperties(targetServer);
+
+		// Get the adapter config path environment variable
+		String adapterConfigPath = System.getProperty("PDTOOL_ADAPTER_CONFIG_PATH");
+		if (adapterConfigPath == null) 
+			throw new CompositeException(prefix+"::The enviornment variable PDTOOL_ADAPTER_CONFIG_PATH was not set properly during DeployManagerUtil.initAdapter.");
+
+		try {	
+			/*****************************************************
+			 * Web Service Client Connection
+			 *****************************************************/
+			if(logger.isDebugEnabled()) {
+				logger.debug(prefix+"."+methodName+"().  Creating CIS client web service connection.");
+			}
+			// Execute the CIS Web Service Client for an adapter configuration connection
+			CisWsClient cisclient = new CisWsClient(props, adapterConfigPath);
 		
-		try {
-			if(logger.isDebugEnabled()) {
-				String pathTypeList = "";
-				if (privilegeEntries != null && privilegeEntries.getEntry() != null) {
-					for (PathTypeOrColumnPair pathType:privilegeEntries.getEntry()) {
-						if (pathTypeList.length() != 0)
-							pathTypeList = pathTypeList + ", ";
-						pathTypeList = pathTypeList + "PATH_TYPE_ENTRY:[";
-						pathTypeList = pathTypeList + "path="+pathType.getPath() + ", ";
-						pathTypeList = pathTypeList + "type="+pathType.getType();
-						pathTypeList = pathTypeList + "]";
-					}
+			// Setup the request
+			String requestXML =
+						"<?xml version=\"1.0\"?>"+
+							"<getResourcePrivileges xmlns:resource=\"http://www.compositesw.com/services/system/admin/resource\">"+
+						"    <entries>";
+			if (privilegeEntries != null && privilegeEntries.getEntry() != null) {
+				for (PathTypeOrColumnPair pathType:privilegeEntries.getEntry()) {
+					requestXML = requestXML + 
+						"      <entry>"+
+						"        <path>"+pathType.getPath()+"</path>"+
+						"        <type>"+pathType.getType().toString()+"</type>"+
+						"      </entry>";
 				}
-				logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Invoking port.getResourcePrivileges(\""+pathTypeList+"\", \""+filter+"\", \""+includeColumnPrivileges+"\").");
-			}
-			
-			privlegeEntries = port.getResourcePrivileges(privilegeEntries, filter, includeColumnPrivileges);
-			
-			if(logger.isDebugEnabled()) {
-				logger.debug("PrivilegeWSDAOImpl.getResourcePrivileges().  Success: port.getResourcePrivileges().");
-			}
+				requestXML = requestXML + 
+						"    </entries>";
+				if (filter != null && filter.trim().length() > 0) {
+					requestXML = requestXML + 
+						"    <filter>"+filter+"</filter>";
+				}
+				requestXML = requestXML + 
+						"    <includeColumnPrivileges>"+includeColumnPrivileges+"</includeColumnPrivileges>";
+			}	
+			requestXML = requestXML + 
+						"</getResourcePrivileges>";
 
-		} catch (GetResourcePrivilegesSoapFault e) {
-			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getResourcePrivileges", "Privilege", "privilegeEntries", targetServer),e.getFaultInfo());
+			if(logger.isDebugEnabled()) {
+				logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
+			}
+			/*****************************************************
+			 * Invoke Method=getServerAttributes
+			 *****************************************************/
+			// Invoke the web service method
+			// String requestXml = "<?xml version=\"1.0\"?> <p1:ServerAttributeModule xmlns:p1=\"http://www.dvbu.cisco.com/ps/deploytool/modules\">  <serverAttribute>         <id>sa1</id>         <name>/server/event/generation/sessions/sessionLoginFail</name>         <type>UNKNOWN</type>         <!--Element value is optional-->         <value>string</value>         <!--Element valueArray is optional-->         <valueArray>             <!--Element item is optional, maxOccurs=unbounded-->             <item>string</item>             <item>string</item>             <item>string</item>         </valueArray>         <!--Element valueList is optional-->         <valueList>             <!--Element item is optional, maxOccurs=unbounded-->             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>         </valueList>         <!--Element valueMap is optional-->         <valueMap>             <!--Element entry is optional, maxOccurs=unbounded-->             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>         </valueMap>     </serverAttribute> </p1:ServerAttributeModule>";
+			String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
+	
+			if(logger.isDebugEnabled()) {
+				// Format for XML pretty print
+				logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+			}
+			
+			// Convert XML String to ServerAttributeModule Object for easier processing
+			Object obj = XMLUtils.getJavaObjectFromXML(response);
+			PrivilegeModule retPrivilegeEntries = (PrivilegeModule) obj;
+						
+			return retPrivilegeEntries;
+			
+		} catch (Exception e) {
+			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), methodName, "Privilege", "privilegeEntries", targetServer));
 			throw new ApplicationException(e.getMessage(), e);
 		}	
-		return privlegeEntries;
 	}
-
 }

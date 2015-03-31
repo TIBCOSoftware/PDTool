@@ -1,0 +1,52 @@
+######################################################################
+# (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+# optional version number) are provided as a convenience, but are covered under the licensing for the 
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+# through a valid license for that product.
+# 
+# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
+######################################################################
+# Provides the order of execution for the different PDTool configurations on UNIX
+# PDTool Config File        PDTool Plan File List
+#   Note: Do not put the .properties on the end of the config file name.
+#   Note: Do use tabs as separators.  Use spaces only.
+#
+# Execute PDTool regression for UNIX and CIS 6.2 environment
+#
+# Regression Module Only
+#regression_unix_6.2          regression_plan_regession_list.txt
+
+# PDTool - All modules except VCS
+regression_unix_6.2          regression_plan_base_list.txt            # Full regression of base modules
+# TEST:
+#regression_unix_6.2          regression_plan_test_list.txt            # test the base module connection
+
+# PDTool - VCS Module for Subversion
+regression_unix_6.2_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+# TEST:
+#regression_unix_6.2_svn      regression_plan_vcs_test_list.txt        # test Subversion connection
+
+# PDTool - VCS Module for Perforce
+regression_unix_6.2_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
+#regression_unix_6.2_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)
+# TEST:
+#regression_unix_6.2_p4       regression_plan_vcs_test_list.txt        # test Perforce connection
+
+# PDTool - VCS Module for CVS
+regression_unix_6.2_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+# TEST:
+#regression_unix_6.2_cvs      regression_plan_vcs_test_list.txt        # test CVS connection
+
+# PDTool - VCS Module for Git
+regression_unix_6.2_git      regression_plan_vcs_base_list.txt        # Full regression of VCS Git
+# TEST:
+#regression_unix_6.2_git      regression_plan_vcs_test_list.txt        # test Subversion connection

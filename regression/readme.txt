@@ -15,22 +15,27 @@
 # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 # 
 ######################################################################
-------------------------------------------------------------
-PDTool Regression Testing Scripts for PDTool61 and PDTool62
-------------------------------------------------------------
+---------------------------------------------------------------
+PDTool Regression Testing Scripts for PDTool6.2 and PDTool7.0.0
+---------------------------------------------------------------
 @copyright    (c) 2014 Cisco and/or its affiliates. All rights reserved.
 @author:      Mike Tinius
-@date:        March 15, 2014
+@date:        March 31, 2015
 
-@description: The scripts in the directory are for executing regression tests against PDTool61 and PDTool62
+@description: The scripts in the directory are for executing regression tests against PDTool6.2 and PDTool7.0.0
               and all of the various environment combinations including windows and unix and the various 
               VCS software.  The regression script folder (/regression) may be placed anywhere on your
               computer as long as the regressioin_confi_driver.bat|.sh is executed from within the 
               regression directory.  This allows you to have one copy of the regression scripts and perform
               a regression against any PDTool directory since the PDTool home dir is passed into the script.
+			  
+			  Note: If 2 separate windows are opened on the command line within the regression folder, a test
+			  may be run in parallel against multiple versions since the status files are now appended with 
+			  the version number thus causing no conflict.  This is true as long as the target PDTool directory
+			  is also a separate version/folder that is being tested.
         	  
 @installation:
-              1. Unzip regression-YYYY-MM-DD.zip to any directory on the machine where PDTool61 or PDTool62
+              1. Unzip regression-YYYY-MM-DD.zip to any directory on the machine where PDTool6.2 or PDTool7.0.0
                  has been installed.
               2. Insure that the regression/config/*.property files have the proper configuration parameters
                  set for each environment to be tested.
@@ -38,10 +43,10 @@ PDTool Regression Testing Scripts for PDTool61 and PDTool62
 			  4. Verify the /modules/servers.xml to insure you have the correct list of servers
 				 Pattern: [hostname][port][http|https] e.g. localhost9400http or localhost9400https
 				 Provide an entry for both http and https.  When using https, the useHttps=true is set.
-			  5. Verify the /config_lists/regression_[win|unix]_6_2_config.txt to make sure the correct set of lists are uncommented.
-			  6. Verify the target PDTool62/security folder and CIS target instance to determine whether it requires weak or strong trust store.
-				 Copy the cis_studio_truststore_strong.jks into the PDTool62/security folder for https testing if the target CIS is using strong encryption pack.
-				 Configure the PDTool62/bin/setVars.bat or setVars.sh with the correct trust store.
+			  5. Verify the /config_lists/regression_[win|unix]_6.2_config.txt to make sure the correct set of lists are uncommented.
+			  6. Verify the target PDTool6.2/security folder and CIS target instance to determine whether it requires weak or strong trust store.
+				 Copy the cis_studio_truststore_strong.jks into the PDTool6.2/security folder for https testing if the target CIS is using strong encryption pack.
+				 Configure the PDTool6.2/bin/setVars.bat or setVars.sh with the correct trust store.
               7. Proceed to "instructions" for execution.
         	  
 @instructions:
@@ -53,21 +58,21 @@ PDTool Regression Testing Scripts for PDTool61 and PDTool62
 ---------------------------------
 How to execute on Windows:
 ---------------------------------
-CIS:  Regression Config Driver Script   Configuration List             PDTool Home Dir   Debug
-====  ===============================   =============================  ================= =====
-6.1:  regression_config_driver.bat      regression_win_6_1_config.txt  "D:\dev\PDTool61" Y|N
-6.2:  regression_config_driver.bat      regression_win_6_2_config.txt  "D:\dev\PDTool62" Y|N  <-- Represents a complete regression of PDTool for CIS 6.2 on windows
+CIS:    Regression Config Driver Script   Configuration List              PDTool Home Dir      Debug Version
+====    ===============================   =============================== ==================== ===== =======
+  6.2:  regression_config_driver.bat      regression_win_6.2_config.txt   "D:\dev\PDTool6.2"   Y|N   6.2 <-- Represents a complete regression of PDTool for CIS 6.2 on windows
+7.0.0:  regression_config_driver.bat      regression_win_7.0.0_config.txt "D:\dev\PDTool7.0.0" Y|N   7.0.0
 
 ---------------------------------
 How to execute on Unix (Linux):
 ---------------------------------
-CIS:  Regression Config Driver Script   Configuration List             PDTool Home Dir         Debug
-====  ===============================   =============================  ======================= =====
-6.1:  ./regression_config_driver.sh     regression_unix_6_1_config.txt "/u01/home/qa/PDTool61" Y|N
-6.2:  ./regression_config_driver.sh     regression_unix_6_2_config.txt "/u01/home/qa/PDTool62" Y|N  <-- Represents a complete regression of PDTool for CIS 6.2 on Unix
+CIS:    Regression Config Driver Script   Configuration List               PDTool Home Dir            Debug Version
+====    ===============================   ================================ ========================== ===== =======
+  6.2:  ./regression_config_driver.sh     regression_unix_6.2_config.txt   "/u01/home/qa/PDTool6.2."  Y|N   6.2 <-- Represents a complete regression of PDTool for CIS 6.2 on Unix
+7.0.0:  ./regression_config_driver.sh     regression_unix_7.0.0_config.txt "/u01/home/qa/PDTool7.0.0" Y|N   7.0.0
 
 ------------------------------------------------------------
-Configuration List File:  regression_unix_6_2_config.txt
+Configuration List File:  regression_unix_6.2_config.txt
 ------------------------------------------------------------
 The configuration list file contains the PDTool configuration property name and
 the regression plan file list. The configuration property file instructs PDTool
@@ -84,18 +89,18 @@ plan files.
 
 # PDTool Config File        PDTool Plan File List
 =====================       ===============================
-#regression_unix_6_2          regression_plan_test_list.txt         <-- execute a configuration test for baseline plans
-regression_unix_6_2          regression_plan_base_list.txt         <-- execute baseline plans 
+#regression_unix_6.2          regression_plan_test_list.txt         <-- execute a configuration test for baseline plans
+regression_unix_6.2          regression_plan_base_list.txt         <-- execute baseline plans 
 
-#regression_unix_6_2_svn      regression_plan_vcs_test_list.txt     <-- execute a VCS test for subversion
-regression_unix_6_2_svn      regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for subversion
+#regression_unix_6.2_svn      regression_plan_vcs_test_list.txt     <-- execute a VCS test for subversion
+regression_unix_6.2_svn      regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for subversion
 
-#regression_unix_6_2_cvs      regression_plan_vcs_test_list.txt     <-- execute a VCS test for CVS
-regression_unix_6_2_cvs      regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for CVS
+#regression_unix_6.2_cvs      regression_plan_vcs_test_list.txt     <-- execute a VCS test for CVS
+regression_unix_6.2_cvs      regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for CVS
 
-#regression_unix_6_2_p4       regression_plan_vcs_test_list.txt     <-- execute a VCS test for perforce
-regression_unix_6_2_p4       regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for perforce
-#regression_unix_6_2_p4       regression_plan_vcs_perforce_list.txt <-- execute the perforce labels test
+#regression_unix_6.2_p4       regression_plan_vcs_test_list.txt     <-- execute a VCS test for perforce
+regression_unix_6.2_p4       regression_plan_vcs_base_list.txt     <-- execute the VCS baseline plans for perforce
+#regression_unix_6.2_p4       regression_plan_vcs_perforce_list.txt <-- execute the perforce labels test
 
 -----------------------------------------------------------
 Regression Plan File List: regression_plan_base_list.txt
@@ -120,12 +125,12 @@ ServerManagerModule-03.dp
 Logs
 -----------------------------------------------------------
 Logs are generated by each execution configuration.  A directory is created using the base file name of the configuration list file.
-For example if the command line is: ./regression_config_driver.sh regression_unix_6_2_config.txt
-then the regression log directory containing all the log file is: regression_unix_6_2_config
+For example if the command line is: ./regression_config_driver.sh regression_unix_6.2_config.txt
+then the regression log directory containing all the log file is: regression_unix_6.2_config
 
 /regression/logs
-    /regression_unix_6_2_config/
-        20130212_165124_regression_unix_6_2_config.log
+    /regression_unix_6.2_config/
+        20130212_165124_regression_unix_6.2_config.log
 
 That directory contains a dated log file for each execution.  The format is YYYYMMDD_HH24MMSS_base-config-name.log.
 The contents of the log provide a PASS/FAIL fo reach execution line.  Additionally after each "regression plan file" is executed
@@ -139,26 +144,26 @@ plan with a specific configuration.  The contents of the log come from the PDToo
 the deployment plan log files are only the logs for the most recent execution.  The historical logs files are not saved.
 
 /regression/logs
-    /regression_unix_6_2_config/
-        regression_unix_6_2-_initialize.dp.log
-        regression_unix_6_2-ArchiveModule-01.dp.log
+    /regression_unix_6.2_config/
+        regression_unix_6.2-_initialize.dp.log
+        regression_unix_6.2-ArchiveModule-01.dp.log
         ...
-        regression_unix_6_2_cvs-_initialize_vcs.dp.log
-        regression_unix_6_2_cvs-VCSModule-01.dp.log
+        regression_unix_6.2_cvs-_initialize_vcs.dp.log
+        regression_unix_6.2_cvs-VCSModule-01.dp.log
 
-If there is a failure, it will be easy to spot the word FAIL in the main log file (e.g. 20130212_165124_regression_unix_6_2_config.log)
+If there is a failure, it will be easy to spot the word FAIL in the main log file (e.g. 20130212_165124_regression_unix_6.2_config.log)
 which will then refer you to the specific log file so that you can see the actual error which comes from PDTool.
 
 Sample log output:
 ------------------
-        Log File: D:\dev\PDTool_Test\regression\logs\regression_win_6_2_config\20130215_090000_regression_win_6_2_config.log
+        Log File: D:\dev\PDTool_Test\regression\logs\regression_win_6.2_config\20130215_090000_regression_win_6.2_config.log
         
         Regression Log File Results 
         Thu 02/15/2013 09:00:00.61 
         --------------------------- 
 
         ----------------------------------------------------- 
-        Regression Test for regression_win_6_2.properties 
+        Regression Test for regression_win_6.2.properties 
         Thu 02/15/2013 09:00:00.64 
         ----------------------------------------------------- 
         PASS: D:\dev\PDTool_Test\regression\plans\_initialize.dp 

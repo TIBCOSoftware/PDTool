@@ -18,11 +18,13 @@
 package com.cisco.dvbu.ps.common.util.wsapi;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.jdom.Element;
 
 import com.cisco.dvbu.ps.common.CommonConstants;
+import com.cisco.dvbu.ps.common.adapters.common.AdapterConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
@@ -87,6 +89,19 @@ public class WsApiHelperObjects {
         CommonUtils.writeOutput("",																	prefix,"-debug2",logger,debug1,debug2,debug3);
 
 		return serverInfo;
+	}
+	
+	// -- New method with logging capabilities
+	public static Properties getServerProperties(CompositeServer targetServer) throws CompositeException {
+		Properties props = new Properties();
+		props.setProperty(AdapterConstants.ADAPTER_HOST, targetServer.getHostname());
+		props.setProperty(AdapterConstants.ADAPTER_PORT, String.valueOf(targetServer.getPort()));
+		props.setProperty(AdapterConstants.ADAPTER_USER, targetServer.getUser());
+		props.setProperty(AdapterConstants.ADAPTER_PSWD, targetServer.getPassword());
+		props.setProperty(AdapterConstants.ADAPTER_DOMAIN, targetServer.getDomain());
+		props.setProperty(AdapterConstants.ADAPTER_USE_HTTPS, String.valueOf(targetServer.isUseHttps()));
+
+		return props;
 	}
 	
 	// -- could also put in CommonUtils

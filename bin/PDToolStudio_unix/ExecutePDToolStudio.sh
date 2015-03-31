@@ -33,6 +33,8 @@
 ## Editor: Set tab=4 in your text editor for this file to format properly
 #=======================================================================================
 #
+# CIS version [6.2, 7.0.0]
+export CIS_VERSION=7.0.0
 #----------------------------------------------------------
 #*********** DO NOT MODIFY BELOW THIS LINE ****************
 #----------------------------------------------------------
@@ -40,6 +42,7 @@
 #---------------------------------------------
 # Set environment variables
 #---------------------------------------------
+# Initialize variables
 if [ ! -f setVars.sh ]; then
    echo "Cannot find setVars.sh environment variable file."
    exit 1

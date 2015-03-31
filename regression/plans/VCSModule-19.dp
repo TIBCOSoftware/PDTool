@@ -20,5 +20,5 @@
 # -----------------------------------------
 # Test checking in a resource with a long path
 #
-PASS	TRUE	ExecuteAction  	vcsCheckin  $SERVERID "/shared/test00_longpath/$VCS_BASE_TYPE"   "CONTAINER"    "long path check in"   "$MODULE_HOME/servers.xml"
+$EXPECTED_VCS_RESULT19	TRUE	ExecuteAction  	vcsCheckin  $SERVERID "/shared/test00_longpath/$VCS_BASE_TYPE"   "CONTAINER"    "long path check in"   "$MODULE_HOME/servers.xml"
  

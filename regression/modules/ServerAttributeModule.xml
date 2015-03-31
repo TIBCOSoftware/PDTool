@@ -90,68 +90,71 @@
         <value>25</value>
     </serverAttribute>
 
-	
     <serverAttribute>
-        <id>studio1</id>
-        <name>/studio/data/cursorFetchLimit</name>
-        <type>INTEGER</type>
-        <value>2000</value>
-    </serverAttribute>
-    <serverAttribute>
-        <id>studio2</id>
-        <name>/studio/data/examplelist</name>
+        <id>server146</id>
+        <name>/server/config/security/authentication/IPFiltering/Forbidden</name>
         <type>LIST</type>
         <valueList>
             <item>
                 <type>STRING</type>
-                <value>aaaa</value>
+                <value>192.1.1.1</value>
             </item>
             <item>
                 <type>STRING</type>
-                <value>bbbb</value>
-            </item>
-            <item>
-                <type>STRING</type>
-                <value>cccc</value>
+                <value>192.1.1.2</value>
             </item>
         </valueList>
     </serverAttribute>
+	
     <serverAttribute>
-        <id>studio3</id>
-        <name>/studio/data/examplemap</name>
+        <id>server166</id>
+        <name>/server/config/security/filesystem/RootAthzMapping</name>
         <type>MAP</type>
         <valueMap>
             <entry>
                 <key>
                     <type>STRING</type>
-                    <value>kkkk1</value>
+                    <value>TEMP_GROUP3</value>
                 </key>
                 <value>
                     <type>STRING</type>
-                    <value>vvvv1</value>
+                    <value>group3</value>
                 </value>
             </entry>
-            <entry>
-                <key>
-                    <type>STRING</type>
-                    <value>kkkk2</value>
-                </key>
-                <value>
-                    <type>STRING</type>
-                    <value>vvvv2</value>
-                </value>
-            </entry>
-            <entry>
-                <key>
-                    <type>STRING</type>
-                    <value>kkkk3</value>
-                </key>
-                <value>
-                    <type>STRING</type>
-                    <value>vvvv3</value>
-                </value>
-            </entry>        </valueMap>
+        </valueMap>
     </serverAttribute>
+    <serverAttribute>
+        <id>server167</id>
+        <name>/server/config/security/filesystem/RootNameMapping</name>
+        <type>MAP</type>
+        <valueMap>
+            <entry>
+                <key>
+                    <type>STRING</type>
+                    <value>TEMP_GROUP3</value>
+                </key>
+                <value>
+                    <type>STRING</type>
+                    <value>/TEMP</value>
+                </value>
+            </entry>
+        </valueMap>
+    </serverAttribute>
+
+    <serverAttribute>
+        <id>server166-clear</id>
+        <name>/server/config/security/filesystem/RootAthzMapping</name>
+        <type>MAP</type>
+        <valueMap/>
+    </serverAttribute>
+    <serverAttribute>
+        <id>server167-clear</id>
+        <name>/server/config/security/filesystem/RootNameMapping</name>
+        <type>MAP</type>
+        <valueMap/>
+    </serverAttribute>
+	
+
     <serverAttribute>
         <id>studio4</id>
         <name>/studio/data/rowFetchSize</name>

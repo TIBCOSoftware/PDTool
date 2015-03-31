@@ -632,6 +632,14 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
+		getResourceManager().createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);		
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolders(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
@@ -701,7 +709,7 @@ public class DeployManagerImpl implements DeployManager{
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#generateServerAttributesXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#generateResourceCacheXML(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
 	public void generateResourceCacheXML(String serverId, String startPath, String pathToResourceCacheXML, String pathToServersXML, String options) throws CompositeException 
@@ -761,6 +769,15 @@ public class DeployManagerImpl implements DeployManager{
 		getServerAttributeManager().generateServerAttributeDefinitionsXML(serverId, startPath, pathToServerAttributeXML, pathToServersXML, updateRule);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.DeployManager#getServerVersion(java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public String getServerVersion(String serverId, String pathToServersXML) throws CompositeException 
+	{
+		return(getServerAttributeManager().getServerVersion(serverId, pathToServersXML));
+	}
+
 	/**
 	 * @return the serverAttributeManager
 	 */

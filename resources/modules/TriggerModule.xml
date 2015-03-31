@@ -121,7 +121,7 @@
             </condition>
             <action>
                 <gatherStatistics>
-                    <resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
+                    <resourcePath>/shared/test00/DataSourcesCopy/ds_orders</resourcePath>
                 </gatherStatistics>
             </action>
         </trigger>

@@ -17,7 +17,6 @@
 ######################################################################
 # Provides the order of execution for the plan files
 _initialize_vcs.dp
-
 VCSModule-01.dp
 VCSModule-02.dp
 VCSModule-03.dp
@@ -40,6 +39,7 @@ VCSModule-19.dp
 VCSModule-20.dp
 VCSModule-21.dp
 
+_initialize_vcs.dp
 VCSModuleConn-01.dp
 VCSModuleConn-02.dp
 VCSModuleConn-03.dp

@@ -39,8 +39,8 @@ public class ServerWSDAOImpl implements ServerDAO {
 
 	private static Log logger = LogFactory.getLog(ServerWSDAOImpl.class);
 	
-	private static String STATUS_OPERATIONAL = "operational";
-	private static String STATUS_STOPPED = "stopped";	
+	private static String STATUS_OPERATIONAL = "OPERATIONAL";
+	private static String STATUS_STOPPED = "STOPPED";	
 	
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO#takeServerAttributeAction(com.cisco.dvbu.ps.common.util.wsapi.CompositeServer)
@@ -116,7 +116,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 			
 			// -- I've not seen a situation where multiple status messages from the
 			//    same server were different
-			String status = statuses[statuses.length - 1];
+			String status = statuses[statuses.length - 1].toUpperCase();
 			
 			/*******************************
 			 *  START the Server
@@ -143,7 +143,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
 				}
 				
-				status = statuses[statuses.length - 1];	
+				status = statuses[statuses.length - 1].toUpperCase();	
 				
 				logger.info("Status of server " + server + " is now: " + status + ".");
 				
@@ -178,7 +178,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
 				}
 
-				status = statuses[statuses.length - 1];	
+				status = statuses[statuses.length - 1].toUpperCase();	
 				
 				logger.info("Status of server " + server + " is now: " + status + ".");
 				
@@ -214,7 +214,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
 				}
 
-				status = statuses[statuses.length - 1];	
+				status = statuses[statuses.length - 1].toUpperCase();	
 				
 				logger.info("Status of server " + server + " is now: " + status + ".");
 				

@@ -69,7 +69,7 @@ PASS	FALSE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$MOD
 #
 PASS	FALSE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"
 #
-PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "studio3" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
+PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "server146" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
 #
 PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "server9" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
 #

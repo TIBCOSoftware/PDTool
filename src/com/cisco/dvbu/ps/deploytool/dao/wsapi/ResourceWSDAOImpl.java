@@ -60,6 +60,7 @@ import com.compositesw.services.system.admin.resource.ResourceList;
 import com.compositesw.services.system.admin.resource.ResourceSubType;
 import com.compositesw.services.system.admin.resource.ResourceType;
 import com.compositesw.services.system.util.common.DetailLevel;
+import com.compositesw.services.system.util.common.MessageEntry;
 
 import cs.jdbc.driver.protocol.Logger;
 
@@ -277,7 +278,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.deleteResource().  Invoking port.destroyResource(\""+resourcePath+"\", \""+resourceType+"\", true).");
 				}
@@ -318,7 +320,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.renameResource().  Invoking port.renameResource(\""+resourcePath+"\", \""+resourceType+"\", \""+newName+"\").");
 				}
@@ -358,7 +361,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.copyResource().  Invoking port.copyResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", \""+copyMode+"\").");
 				}
@@ -398,7 +402,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.moveResource().  Invoking port.moveResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", true).");
 				}
@@ -438,7 +443,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.lockResource().  Invoking port.lockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\").");
 				}
@@ -478,7 +484,8 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+//			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, resourceType, pathToServersXML)) {
+			if (resourceExistsFromPort(port, resourcePath, resourceType)) {
 				if(logger.isDebugEnabled()) {
 					logger.debug("ResourceWSDAOImpl.unlockResource().  Invoking port.unlockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\", \""+comment+"\").");
 				}
@@ -588,6 +595,34 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 			throw new ApplicationException(message, e);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see boolean#resourceExistsFromPort(ResourcePortType, java.lang.String, java.lang.String)
+	 * 
+	 * If resourceType is passed in then check to see if a resource exists with that type otherwise only use the resourcePath to determine existence.
+	 * Utilize the port with an existing connection to determine the resource existence.  This is more efficient than creating a new connection.
+	 * 
+	 * @return Return true/false if the resource exists.
+	 */
+//	@Override
+	public boolean resourceExistsFromPort(ResourcePortType port, String resourcePath, String resourceType) {
+		if(logger.isDebugEnabled()) {
+			logger.debug("ResourceWSDAOImpl.resourceExistsFromPort(port, resourcePath, resourceType).  resourcePath="+resourcePath+"  resourceType="+resourceType);
+		}
+
+		Resource resource = getResourceFromPort(port, resourcePath, resourceType);
+		if (resource != null) {
+			if(logger.isInfoEnabled()){
+				logger.info("Resource exists? [true] "+resourcePath+"  type="+resourceType);
+			}
+			return true;
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Resource exists? [false] "+resourcePath+"  type="+resourceType);
+			}
+			return false;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -786,20 +821,24 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 //	@Override
-	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
 //		 * @param recursive false=only create the folder specified, true=create all folders recursively
 
 		if(logger.isDebugEnabled()) {
-			logger.debug("ResourceWSDAOImpl.createFolder(serverId, resourcePath, pathToServersXML, recursive).  serverId="+serverId+"  resourcePath="+resourcePath+"  pathToServersXML="+pathToServersXML+"  recursive="+recursive);
+			logger.debug("ResourceWSDAOImpl.createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors).  serverId="+serverId+"  resourcePath="+resourcePath+"  pathToServersXML="+pathToServersXML+"  recursive="+recursive+"  ignoreErrors="+ignoreErrors);
 		}
 		// Init variables
+		Resource resource = null;
 		int lastIndex = 0;
-		String path = null;
+		String parentPath = null;
 		String name = null;
-
+		boolean ignoreErrorsBool = false;
+		if (ignoreErrors.equalsIgnoreCase("true"))
+			ignoreErrorsBool = true;
+		
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceWSDAOImpl.createFolder", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -810,66 +849,221 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 
 		try {
 			// Make sure the resource does not exist before executing the create resource
-			if (!DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, "CONTAINER", pathToServersXML)) {
-				
-				if (recursive.equalsIgnoreCase("true") || recursive.equalsIgnoreCase("1")) {
-					String[] pathparts = resourcePath.split("/");
-					resourcePath = "";
-					boolean checkedPathExists = false;
-					
-					// Loop through the parts
-			        for (int i=0; i<pathparts.length; i++)
-			        {
-			        	if (pathparts[i].trim().length() > 0) {
-							resourcePath = resourcePath + "/" + pathparts[i];
-							if (!resourcePath.equalsIgnoreCase("/") && !resourcePath.equalsIgnoreCase("/shared")) {
-								if (checkedPathExists || !DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, "CONTAINER", pathToServersXML)) {
-									// Extract the path and the name from the full resource path
-									lastIndex = resourcePath.lastIndexOf("/");
-									path = resourcePath.substring(0, lastIndex);
-									name = resourcePath.substring(lastIndex+1);
-									if(logger.isDebugEnabled()) {
-										logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+path+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
-									}
-									
-									port.createResource(path, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
-									
-									if(logger.isDebugEnabled()) {
-										logger.debug("ResourceWSDAOImpl.createFolder().  Success: port.createResource().");
-									}
-								// Initialize checked path exists the first time through here so that it does not check the path the next time through 
-									checkedPathExists = true;
-								}
-							}
-			        	}
-			        }
+			if (!resourcePath.equalsIgnoreCase("/") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/shared") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services/databases") && 
+					!resourcePath.toLowerCase().equalsIgnoreCase("/services/webservices") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite") &&
+					!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite/admin") &&
+					!resourcePath.toLowerCase().startsWith("/lib") &&
+					!resourcePath.toLowerCase().startsWith("/policy") &&
+					!resourcePath.toLowerCase().startsWith("/security")
+				) 
+			{
+				// Get the resource object if it exists otherwise resource is null
+				resource = getResourceFromPort(port, resourcePath, null);
+				// If resource does not exist then continue
+				if (resource == null) {
+					if(logger.isInfoEnabled()){
+						logger.info("Resource exists? [false] "+resourcePath+" on server "+serverId);
+					}
 
-				} else {
-					if (!resourcePath.equalsIgnoreCase("/") && !resourcePath.equalsIgnoreCase("/shared")) {
-						if (!DeployManagerUtil.getDeployManager().resourceExists(serverId, resourcePath, "CONTAINER", pathToServersXML)) {
-							// Extract the path and the name from the full resource path
-							lastIndex = resourcePath.lastIndexOf("/");
-							path = resourcePath.substring(0, lastIndex);
-							name = resourcePath.substring(lastIndex+1);
-							if(logger.isDebugEnabled()) {
-								logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+path+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
+					if (recursive.equalsIgnoreCase("true") || recursive.equalsIgnoreCase("1")) {
+						String[] pathparts = resourcePath.split("/");
+						resourcePath = "";
+						
+						// Loop through the parts
+				        for (int i=0; i<pathparts.length; i++)
+				        {
+				        	if (pathparts[i].trim().length() > 0) {
+								resourcePath = resourcePath + "/" + pathparts[i];
+								
+								if (!resourcePath.equalsIgnoreCase("/") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/shared") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services/databases") && 
+										!resourcePath.toLowerCase().equalsIgnoreCase("/services/webservices") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite") &&
+										!resourcePath.toLowerCase().equalsIgnoreCase("/users/composite/admin")
+									) 
+								{
+									// Get the resource object if it exists otherwise resource is null
+									resource = getResourceFromPort(port, resourcePath, null);
+
+									// If resource does not exist then continue
+									if (resource == null ) {
+										if(logger.isInfoEnabled()){
+											logger.info("Resource exists? [false] "+resourcePath+" on server "+serverId);
+										}
+	
+										// Extract the path and the name from the full resource path
+										lastIndex = resourcePath.lastIndexOf("/");
+										parentPath = resourcePath.substring(0, lastIndex);
+										name = resourcePath.substring(lastIndex+1);
+										if(logger.isDebugEnabled()) {
+											logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+parentPath+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
+										}
+										
+										// Get the resource object if it exists otherwise resource is null
+										resource = getResourceFromPort(port, parentPath, null);
+										
+										// If parent resource exists then continue
+										if (resource != null) 
+										{
+											String type = resource.getType().toString();
+											String subtype = resource.getSubtype().toString();
+											if (type.equalsIgnoreCase("CONTAINER") && (subtype.equalsIgnoreCase("FOLDER") || subtype.equalsIgnoreCase("FOLDER_CONTAINER")) ) {
+												// Create the resource path
+												port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
+												
+												if(logger.isInfoEnabled()){
+													logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+												}
+											} else {
+												throw new CompositeException("Cannot create a folder when the parent is not a folder for parentPath="+parentPath+" type="+type+" subtype="+subtype);
+											}
+										} else {
+											throw new CompositeException("Cannot create a folder when the parent folder does not exist for resourcePath="+parentPath);
+										}
+									} else {
+										if(logger.isInfoEnabled()){
+											logger.info("Resource exists? [true] "+resourcePath+" on server "+serverId);
+										}										
+									}
+								}
+				        	}
+				        }
+	
+					} else {
+						// Extract the path and the name from the full resource path
+						lastIndex = resourcePath.lastIndexOf("/");
+						parentPath = resourcePath.substring(0, lastIndex);
+						name = resourcePath.substring(lastIndex+1);
+						if(logger.isDebugEnabled()) {
+							logger.debug("ResourceWSDAOImpl.createFolder().  Invoking port.createResource(\""+parentPath+"\", \""+name+"\", \"FULL\", \"CONTAINER\", \"FOLDER_CONTAINER\", null, null, null, false).");
+						}
+						
+						// Get the resource object if it exists otherwise resource is null
+						resource = getResourceFromPort(port, parentPath, null);
+						
+						// If parent resource exists then continue
+						if (resource != null) 
+						{
+							String type = resource.getType().toString();
+							String subtype = resource.getSubtype().toString();
+							if (type.equalsIgnoreCase("CONTAINER") && (subtype.equalsIgnoreCase("FOLDER") || subtype.equalsIgnoreCase("FOLDER_CONTAINER")) ) {
+								// Create the resource path
+								port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
+								
+								if(logger.isInfoEnabled()){
+									logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+								}
+							} else {
+								throw new CompositeException("Cannot create a folder when the parent is not a folder for parentPath="+parentPath+" type="+type+" subtype="+subtype);
 							}
-							
-							port.createResource(path, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
-							
-							if(logger.isDebugEnabled()) {
-								logger.debug("ResourceWSDAOImpl.createFolder().  Success: port.createResource().");
-							}
+						} else {
+							throw new CompositeException("Cannot create a folder when the parent folder does not exist for resourcePath="+parentPath);
 						}
 					}
+				} else {
+					if(logger.isInfoEnabled()){
+						logger.info("Resource exists? [true] "+resourcePath+" on server "+serverId);
+					}
 				}
-			}				
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Cannot create a system folder for resourcePath="+resourcePath+" on server "+serverId);
+				}
+			}
 		} catch (CreateResourceSoapFault e) {
-			String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
-				"\nErrorMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
-			CompositeLogger.logException(e, message);
-			throw new ApplicationException(message, e);
+			if (ignoreErrorsBool) {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.INFO.name(), "WARNING IGNORE ERRORS: createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nWarningMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
+					CompositeLogger.logInfoMessage(message);
+			} else {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nErrorMessage: "+ CompositeLogger.getFaultMessage(e, e.getFaultInfo());
+					CompositeLogger.logException(e, message);
+					throw new ApplicationException(message, e);
+			}
+		} catch (CompositeException e) {
+			if (ignoreErrorsBool) {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.INFO.name(), "WARNING IGNORE ERRORS: createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nWarningMessage: "+ e.getMessage();
+					CompositeLogger.logInfoMessage(message);
+			} else {
+				String message = DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "createFolder::createResource", "Resource", resourcePath, targetServer) +
+						"\nErrorMessage: "+ e.getMessage();
+					CompositeLogger.logException(e, message);
+					throw new ApplicationException(message, e);
+			}
 		}	
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.dao.ResourceDAO#getResourceFromPort(ResourcePortType, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	// Return the Resource object if the resource exists otherwise return null even if there is an exception.
+	//  If resourceType is passed in then check to see if a resource exists with that type otherwise only use the resourcePath to determine existence.
+	private Resource getResourceFromPort(ResourcePortType port, String resourcePath, String resourceType) {
+
+		Resource resource = null;
+		try {		
+			ResourceList resourceList = port.getAllResourcesByPath(resourcePath, DetailLevel.FULL);
+			
+			if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()){
+				
+				List<Resource> resources = resourceList.getResource();
+
+				boolean continueLoop = true;
+				for (int i=0; i < resources.size() && continueLoop; i++) {
+					Resource res = resources.get(i);
+					if (resourceType != null && resourceType.trim().length() > 0) {
+						if (res.getPath().equalsIgnoreCase(resourcePath) && res.getType().toString().equalsIgnoreCase(resourceType)) {
+							resource = res;
+							continueLoop = false;
+						}
+					} else {
+						if (res.getPath().equalsIgnoreCase(resourcePath)) {
+							resource = res;
+							continueLoop = false;
+						}						
+					}
+				}
+			}
+		} catch (GetAllResourcesByPathSoapFault e) {
+			String message = null;
+			String name = null;
+			// Determine if this is a real error or the acceptable resource does not exist error.
+			boolean isResExistsError = false;
+			if (e.getFaultInfo() != null) { 
+				List<MessageEntry> messageEntries = e.getFaultInfo().getErrorEntry();
+				for (MessageEntry messageEntry : messageEntries) {
+					// e.g. NotFound
+					name = messageEntry.getName();
+					// e.g. The resource "/shared/test00/DataSourcesCopy/ds_orders/customers2" does not exist.
+					message = messageEntry.getMessage();
+					if  (message != null && message.toLowerCase().contains("does not exist") ||
+						(name != null && name.toLowerCase().contains("notfound"))
+						) {
+						isResExistsError = true;
+					}
+				}
+			}
+			// If this is a resource does not exist error then simply return null otherwise throw an exception
+			if (isResExistsError)
+				return null;
+			else
+				throw new ApplicationException(e);
+			
+		} catch (Exception e) {
+			throw new ApplicationException(e);
+		}
+		return resource;
 	}
 	
 }

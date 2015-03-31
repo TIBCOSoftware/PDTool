@@ -26,9 +26,9 @@
             <resourcePath>/shared/test00/Rebind/RebindResource/Procedures/getCustomerById</resourcePath>
             <resourceType>PROCEDURE</resourceType>
             <rebindRules>
-                <oldPath>/shared/test00/DataSources/ds_orders/customers</oldPath>
+                <oldPath>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$customers</oldPath>
                 <oldType>TABLE</oldType>
-                <newPath>/shared/test00/DataSourcesCopy/ds_orders/customers</newPath>
+                <newPath>/shared/test00/DataSourcesCopy/ds_orders/$CIS_CATALOG$customers</newPath>
                 <newType>TABLE</newType>
             </rebindRules>
         </rebindResource>
@@ -39,9 +39,9 @@
             <resourcePath>/shared/test00/Rebind/RebindResource/Views/Customers</resourcePath>
             <resourceType>TABLE</resourceType>
             <rebindRules>
-                <oldPath>/shared/test00/DataSources/ds_orders/customers</oldPath>
+                <oldPath>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$customers</oldPath>
                 <oldType>TABLE</oldType>
-                <newPath>/shared/test00/DataSourcesCopy/ds_orders/customers</newPath>
+                <newPath>/shared/test00/DataSourcesCopy/ds_orders/$CIS_CATALOG$customers</newPath>
                 <newType>TABLE</newType>
             </rebindRules>
         </rebindResource>
@@ -77,8 +77,8 @@
         <rebindFolder>
             <id>rf1</id>
             <startingFolderPath>/shared/test00/Rebind/RebindFolder/Procedures</startingFolderPath>
-            <rebindFromFolder>/shared/test00/DataSources/ds_orders</rebindFromFolder>
-            <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders</rebindToFolder>
+            <rebindFromFolder>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$</rebindFromFolder>
+            <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders/$CIS_CATALOG$</rebindToFolder>
         </rebindFolder>
     </rebind>
     <rebind>
@@ -86,8 +86,8 @@
        <rebindFolder>
             <id>rf2</id>
             <startingFolderPath>/shared/test00/Rebind/RebindFolder/Views</startingFolderPath>
-            <rebindFromFolder>/shared/test00/DataSources/ds_orders</rebindFromFolder>
-            <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders</rebindToFolder>
+            <rebindFromFolder>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$</rebindFromFolder>
+            <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders/$CIS_CATALOG$</rebindToFolder>
         </rebindFolder>
     </rebind>
     <rebind>
@@ -103,15 +103,6 @@
 		<!-- Rebind all views in a starting folder that match the rebindFromFolder and rebind to the rebindToFolder -->
         <rebindFolder>
             <id>rf4</id>
-            <startingFolderPath>/shared/test00/Rebind/RebindFolder/Views</startingFolderPath>
-            <rebindFromFolder>/shared/test00/DataSources2/ds_orders</rebindFromFolder>
-            <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders</rebindToFolder>
-        </rebindFolder>
-    </rebind>
-   <rebind>
-		<!-- Rebind all views in a starting folder that match the rebindFromFolder and rebind to the rebindToFolder -->
-        <rebindFolder>
-            <id>rf5</id>
             <startingFolderPath>/shared/test00/Rebind/RebindFolder/Procedures</startingFolderPath>
             <rebindFromFolder>/shared/test00/DataSources/ds_orders</rebindFromFolder>
             <rebindToFolder>/shared/test00/DataSourcesCopy/ds_orders</rebindToFolder>
