@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/libExtAnt"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/libcommon"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/poc_lib6.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lib7.0.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

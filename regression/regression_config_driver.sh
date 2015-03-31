@@ -43,6 +43,7 @@ SCRIPT_NAME=$0
 CONFIG_FILE_LIST=$1
 PDTOOL_HOME=$2
 DEBUG=$3
+export INP_VERSION=$4
 
 ./setVars.sh
 
@@ -75,12 +76,12 @@ usage() {
   param=$1
   msg=$2
   echo ""
-  echo "usage: ${SCRIPT_NAME} [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y|N]"
+  echo "usage: ${SCRIPT_NAME} [regression_config_list.txt] [PDTOOL_HOME] [DEBUG=Y|N] [INP_VERSION]"
   echo "   Missing parameter: $param"
   echo "$msg"
   echo ""
-  echo "   e.g. ./regression_config_driver.sh regression_win_6_2_config.txt \"/u01/qa/home/PDTool62\" Y"
-  echo "TRUE" > status_exit.txt
+  echo "   e.g. ./regression_config_driver.sh regression_win_6.2_config.txt \"/u01/qa/home/PDTool6.2\" Y 6.2"
+  echo "TRUE" > status_exit_${INP_VERSION}.txt
   exit 2
 }
 
@@ -165,6 +166,11 @@ fi
 
 if [ "${DEBUG}" = "" ]; then DEBUG="N"; fi
 
+if [ "${INP_VERSION}" = "" ]; then 
+  usage "INP_VERSION" "   Provide the input version INP_VERSION." 
+  exit 2
+fi
+
 # Set PDTOOL_HOME environment variables
 PDTOOL_CONFIG="${PDTOOL_HOME}/resources/config"
 
@@ -213,8 +219,8 @@ STATUS_DIR="status"
 if [ ! -d ${STATUS_DIR} ]; then
   mkdir -p ${STATUS_DIR}
 fi
-echo "${STATUS_CONFIG_OVERALL}" > ${STATUS_DIR}/status_config_overall.txt
-echo "${STATUS_EXIT}" > ${STATUS_DIR}/status_exit.txt
+echo "${STATUS_CONFIG_OVERALL}" > ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt
+echo "${STATUS_EXIT}" > ${STATUS_DIR}/status_exit_${INP_VERSION}.txt
 TOTAL_PLANS=0
 
 # Read the file
@@ -253,22 +259,22 @@ do
     echo "" 
 
     STATUS_PLAN_OVERALL="PASS"
-    echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_plan_overall.txt
+    echo "${STATUS_PLAN_OVERALL}" > ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt
 
     # Execute the plan driver script: regression_plan_driver.sh [CONFIG_FILE]  [PLAN_FILE_LIST]  [PDTOOL_HOME]  [REGRESSION_HOME]  [LOG_PATH] [STATUS_DIR] [LOG_HOME] 
 	debug "${SCRIPT_NAME}: ./regression_plan_driver.sh \"${CONFIG_FILE}\" \"${PLAN_FILE_LIST}\" \"${PDTOOL_HOME}\" \"${REGRESSION_HOME}\" \"${LOG_PATH}\" \"${LOG_HOME}\" \"${STATUS_DIR}\" \"${DEBUG}\"" 1
     ./regression_plan_driver.sh "${CONFIG_FILE}" "${PLAN_FILE_LIST}" "${PDTOOL_HOME}" "${REGRESSION_HOME}" "${LOG_PATH}" "${LOG_HOME}" "${STATUS_DIR}" "${DEBUG}"
 
 	# Add up the total number of plans executed
-	NUM_PLANS="`cat ${STATUS_DIR}/num_plans.txt`"
+	NUM_PLANS="`cat ${STATUS_DIR}/num_plans_${INP_VERSION}.txt`"
 	TOTAL_PLANS="`expr ${TOTAL_PLANS} + ${NUM_PLANS}`"
 
     debug "" 0
-    STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall.txt`"
+    STATUS_PLAN_OVERALL="`cat ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt`"
     debug "${SCRIPT_NAME}: STATUS_PLAN_OVERALL=${STATUS_PLAN_OVERALL}" 0
 
     # Check for exit status
-    STATUS_EXIT="`cat ${STATUS_DIR}/status_exit.txt`"
+    STATUS_EXIT="`cat ${STATUS_DIR}/status_exit_${INP_VERSION}.txt`"
     debug "${SCRIPT_NAME}: STATUS_EXIT=${STATUS_EXIT}" 0
     if [ "${STATUS_EXIT}" = "TRUE" ]; then
 	  break
@@ -282,15 +288,15 @@ echo "-----------------------------------------------------" >> "${LOG_PATH}"
 logDate "${LOG_PATH}" "  Total Plans Executed: ${TOTAL_PLANS}"
 
 # Overall status for this regression
-STATUS_CONFIG_OVERALL="`cat ${STATUS_DIR}/status_config_overall.txt`"
+STATUS_CONFIG_OVERALL="`cat ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt`"
 debug "${SCRIPT_NAME}: OVERALL CONFIG STATUS=${STATUS_CONFIG_OVERALL}" 0
 echo "${STATUS_CONFIG_OVERALL}: Overall status for this regression" >> "${LOG_PATH}"
 
 # Clean up status files...delete them
-if [ -f ${STATUS_DIR}/status_exit.txt ]; then rm -rf ${STATUS_DIR}/status_exit.txt; fi
-if [ -f ${STATUS_DIR}/status_config_overall.txt ]; then rm -rf ${STATUS_DIR}/status_config_overall.txt; fi
-if [ -f ${STATUS_DIR}/status_plan_overall.txt ]; then rm -rf ${STATUS_DIR}/status_plan_overall.txt; fi
-if [ -f ${STATUS_DIR}/num_plans.txt ]; then rm -rf ${STATUS_DIR}/num_plans.txt; fi
+if [ -f ${STATUS_DIR}/status_exit_${INP_VERSION}.txt ]; then rm -rf ${STATUS_DIR}/status_exit_${INP_VERSION}.txt; fi
+if [ -f ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt ]; then rm -rf ${STATUS_DIR}/status_config_overall_${INP_VERSION}.txt; fi
+if [ -f ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt ]; then rm -rf ${STATUS_DIR}/status_plan_overall_${INP_VERSION}.txt; fi
+if [ -f ${STATUS_DIR}/num_plans_${INP_VERSION}.txt ]; then rm -rf ${STATUS_DIR}/num_plans_${INP_VERSION}.txt; fi
 
 # Provide instruction on how to access the current log
 echo ""

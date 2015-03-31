@@ -396,7 +396,7 @@
 		-->
       <VCS_REPOSITORY_URL>$P4_VCS_HOST:1666</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -641,7 +641,7 @@
 		-->
 		<VCS_REPOSITORY_URL>:pserver:$CVS_VCS_USERNAME:$CVS_VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -860,7 +860,7 @@
 		-->
       <VCS_REPOSITORY_URL>http:////$TFS_VCS_HOST:8080/tfs/CompositeCollection</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -913,7 +913,7 @@
         </envVar>
         <envVar>
           <envName>TFS_SERVER_URL</envName>
-          <envValue>$$/Composite_62/cis_objects</envValue>
+          <envValue>$$/Composite_$CIS_VERSION/cis_objects</envValue>
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
@@ -1676,7 +1676,7 @@
 		-->
       <VCS_REPOSITORY_URL>$P4_VCS_HOST:1666</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -1921,7 +1921,7 @@
 		-->
 		<VCS_REPOSITORY_URL>:pserver:$CVS_VCS_USERNAME:$CVS_VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_62/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
