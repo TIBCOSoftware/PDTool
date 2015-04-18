@@ -524,8 +524,9 @@ public class RegressionManagerImpl implements RegressionManager
 		                		resourceURL = resourceURL.substring(1);
 			        	}
 			        	String message = "";
-			        	String filePath1 = (baseDir1 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/");
-			        	String filePath2 = (baseDir2 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/");
+			        	// Construct the path and remove any double quotes from the path
+			        	String filePath1 = (baseDir1 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/").replaceAll("\"", "");
+			        	String filePath2 = (baseDir2 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/").replaceAll("\"", "");
 				        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
 				        Date beginDate = new Date();
 			        	String executionStartTime = formatter.format(beginDate);
