@@ -819,6 +819,9 @@ ERROR  | ....
 		ArrayList<QueryExecLog> queryLogList2 = new ArrayList<QueryExecLog>();
 		int totalNoMatch = 0;
 		int totalSuccessComparisons = 0;
+		int totalDurationMatch = 0;
+		int totalPerformanceImproved = 0;
+		int totalAcceptableRange = 0;
 		int totalFailureComparisons = 0;
         Date startDate = new Date();
 	
@@ -964,6 +967,7 @@ ERROR  | ....
     				if (duration1 == duration2) {
     					result = "SUCCESS";
     					totalSuccessComparisons++;
+    					totalDurationMatch++;
     					message = "duration match";
     					System.out.println(result+"-"+message+": "+queryLog1.key);
     				}
@@ -981,6 +985,7 @@ ERROR  | ....
     						// Success - tolerance within acceptable range
         					result = "SUCCESS";
         					totalSuccessComparisons++;
+        					totalAcceptableRange++;
         					message = "within accepted range";
         					System.out.println(result+"-"+message+": "+queryLog1.key);
     					}
@@ -991,6 +996,7 @@ ERROR  | ....
     				if (duration2 < duration1) {
        					result = "SUCCESS";
        					totalSuccessComparisons++;
+       					totalPerformanceImproved++;
     					message = "performance improved";
     					System.out.println(result+"-"+message+": "+queryLog1.key);
     				}
@@ -1038,13 +1044,18 @@ ERROR  | ....
 				 logger.info("                                                        ");
 				 logger.info("  Failure = query duration met the following criteria:  ");
 				 logger.info("    performance worsened: duration2 > duration1         ");
-				 logger.info("    performance out of acceptable range:                ");
+				 logger.info("    performance exceeded acceptable range:              ");
 				 logger.info("                    duration2 > duration1 and           ");
 				 logger.info("                    duration2-duration1 > deltaDuration ");
 				 logger.info("                                                        ");
 				 logger.info("  No Match = query could not be matched in either file. ");
 				 logger.info("                                                        ");
+logger.info(CommonUtils.rpad("                 Duration Matched: " + totalDurationMatch, len, " "));
+logger.info(CommonUtils.rpad("                Duration Improved: " + totalPerformanceImproved, len, " "));
+logger.info(CommonUtils.rpad("              Duration Acceptable: " + totalAcceptableRange, len, " "));
+				logger.info("                                   ---------            ");
 logger.info(CommonUtils.rpad("     Total Successful Comparisons: " + totalSuccessComparisons, len, " "));
+				logger.info("                                                        ");
 logger.info(CommonUtils.rpad("        Total Failure Comparisons: " + totalFailureComparisons, len, " "));
 				 logger.info("                                   ---------            ");
 logger.info(CommonUtils.rpad("                Total Comparisons: " + (totalSuccessComparisons+totalFailureComparisons), len, " "));
