@@ -453,7 +453,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), DataSourceDAO.action.UPDATE.name(), "DataSource", dataSourcePath, targetServer),e.getFaultInfo());
 			throw new ApplicationException(e.getMessage(), e);
 
-		}catch (UpdateResourceEnabledSoapFault e){
+		} catch (UpdateResourceEnabledSoapFault e){
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), DataSourceDAO.action.ENABLE.name(), "DataSource", dataSourcePath, targetServer),e.getFaultInfo());
 			throw new ApplicationException(e.getMessage(), e);
 		
@@ -462,8 +462,10 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			throw new ApplicationException(e.getMessage(), e);
 		} catch (IntrospectResourcesTaskSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), DataSourceDAO.action.INTROSPECT.name(), "DataSource", pathToServersXML, targetServer),e.getFaultInfo());
+			throw new ApplicationException(e.getMessage(), e);
 		} catch (IntrospectResourcesResultSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), DataSourceDAO.action.INTROSPECT.name(), "DataSource", pathToServersXML, targetServer),e.getFaultInfo());
+			throw new ApplicationException(e.getMessage(), e);
 		} catch (Exception e) {
 			throw new ApplicationException(e.getMessage(), e);
 
@@ -524,6 +526,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			}
 		} catch (GetChildResourcesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getDataSourceChildResourcesFromPath", "DataSource", resourcePath, targetServer),e.getFaultInfo());
+			throw new ApplicationException(e.getMessage(), e);
 		}		
 	}
 
@@ -572,6 +575,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			}
 		} catch (GetDataSourceAttributeDefsSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getDataSourceAttributeDefs", "DataSource", pathToServersXML, targetServer),e.getFaultInfo());
+			throw new ApplicationException(e.getMessage(), e);
 		}
 		
 		return null;
@@ -605,6 +609,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 			}
 		} catch (GetDataSourceTypesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "getDataSourceTypes", "DataSource", pathToServersXML, targetServer),e.getFaultInfo());
+			throw new ApplicationException(e.getMessage(), e);
 		}
 		return null;
 	}
