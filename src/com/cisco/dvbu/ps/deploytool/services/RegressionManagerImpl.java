@@ -508,6 +508,7 @@ public class RegressionManagerImpl implements RegressionManager
 			        	String database = items[i].database;
 			        	String query = items[i].input.replaceAll("\n", "");
 			        	String resourceURL = "";
+			        	String outputFilename = items[i].outputFilename;
 			        	String resourceType = "";
 			        	if (items[i].type == RegressionManagerUtils.TYPE_QUERY) {
 		                	resourceType = "QUERY";
@@ -523,10 +524,15 @@ public class RegressionManagerImpl implements RegressionManager
 		                	if (resourceURL.indexOf(".") == 0)
 		                		resourceURL = resourceURL.substring(1);
 			        	}
+			    		/* 2015-07-06 mtinius - Fixed issue where outputFilename was not being used even though it was specified. */
+			        	// If the output file name is null or empty then set it to the resource name
+			        	if (outputFilename == null || outputFilename.trim().length() == 0)
+			        		outputFilename = resourceURL + ".txt";
+			        	
 			        	String message = "";
 			        	// Construct the path and remove any double quotes from the path
-			        	String filePath1 = (baseDir1 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/").replaceAll("\"", "");
-			        	String filePath2 = (baseDir2 + "/" + database + "/" + resourceURL + ".txt").replaceAll("//", "/").replaceAll("\"", "");
+			        	String filePath1 = (baseDir1 + "/" + database + "/" + outputFilename).replaceAll("//", "/").replaceAll("\"", "");
+			        	String filePath2 = (baseDir2 + "/" + database + "/" + outputFilename).replaceAll("//", "/").replaceAll("\"", "");
 				        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
 				        Date beginDate = new Date();
 			        	String executionStartTime = formatter.format(beginDate);

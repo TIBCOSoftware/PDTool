@@ -1970,11 +1970,19 @@ public class CommonUtils {
 			// make it positive
 			duration = duration * -1;
 		}
-		long days=0, hours=0, minutes=0, seconds=0, milliseconds=0;
+		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
+		/* original
 		long DAY=24*60*60*1000;
 		long HOUR=60*60*1000;
 		long MINUTE=60*1000;
 		long SECOND=1000;
+		*/
+		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
+		long DAY=24*60*60*10000;
+		long HOUR=60*60*10000;
+		long MINUTE=60*10000;
+		long SECOND=10000;
+
 		// days
 		if (duration > DAY) {
 			days = duration / DAY;
@@ -1993,20 +2001,20 @@ public class CommonUtils {
 		if (duration > SECOND) {
 			seconds = duration / SECOND;
 		}
-		milliseconds = duration % SECOND;
+		tenThousandthsSecond = duration % SECOND;
 
 		// Return a standard format: "000 00:00:00.0000"
 		//	  000=days
 		//	  00:=hours
 		//	  00:=minutes
 		//    00:=seconds
-		//	.0000=milliseconds
+		//	.0000=The ten thousandths of a second in a date and time value
 		elapsedString = plus_minus+
 			lpad(Long.toString(days), 3, "0")+" "+
 			lpad(Long.toString(hours), 2, "0")+":"+
 			lpad(Long.toString(minutes), 2, "0")+":"+
 			lpad(Long.toString(seconds), 2, "0")+"."+
-			lpad(Long.toString(milliseconds), 4, "0");
+			lpad(Long.toString(tenThousandthsSecond), 4, "0");
 		
 		/* mtinius: this is commented out but left for documentation purposes
 		 *  I wanted to have a record of the actual word label format.
@@ -2060,11 +2068,19 @@ public class CommonUtils {
 		if (duration.lastIndexOf(".") != 12) {
 			throw new ApplicationException("The format of the duration parameter ("+duration+") is incorrect: period in wrong position.  It must be in the format of ["+validFormat+"].");
 		}
-		long days=0, hours=0, minutes=0, seconds=0, milliseconds=0;
+		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
+		/* original
 		long DAY=24*60*60*1000;
 		long HOUR=60*60*1000;
 		long MINUTE=60*1000;
 		long SECOND=1000;
+		*/ 
+		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
+		long DAY=24*60*60*10000;
+		long HOUR=60*60*10000;
+		long MINUTE=60*10000;
+		long SECOND=10000;
+
 		// days
 		String d= duration.substring(0,3);
 		days = Long.valueOf(d) * DAY;	
@@ -2077,12 +2093,12 @@ public class CommonUtils {
 		// seconds
 		String s = duration.substring(10,12);
 		seconds = Long.valueOf(s) * SECOND;
-		// milliseconds
+		// The ten thousandths of a second in a date and time value
 		String ms = duration.substring(13,17);
-		milliseconds = Long.valueOf(ms);
+		tenThousandthsSecond = Long.valueOf(ms);
 		
 		// Sum it up
-		longDuration = days + hours + minutes + seconds + milliseconds;
+		longDuration = days + hours + minutes + seconds + tenThousandthsSecond;
 		
 		return longDuration;
 	}
