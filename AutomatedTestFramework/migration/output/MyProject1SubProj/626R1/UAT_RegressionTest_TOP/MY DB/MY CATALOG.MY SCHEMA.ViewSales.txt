@@ -1,0 +1,2 @@
+ProductID|ProductName|CategoryID|CategoryName|ProductDescription|SerialNumber|UnitPrice|ReorderLevel|LeadTime|Status|Discount
+1|Maxtific 40GB ATA133 7200|1|Data Storage|Maxtific Storage  40 GB|221-887-3458|89.990000|20|14 Days|open|0.10

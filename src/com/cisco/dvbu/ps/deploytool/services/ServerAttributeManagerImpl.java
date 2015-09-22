@@ -104,9 +104,14 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
 
 		String prefix = "ServerAttributeManagerImpl.serverAttributeAction";
-		
+		String processedIds = null;
+
 		// Extract variables for the serverAttributeIds
 		serverAttributeIds = CommonUtils.extractVariable(prefix, serverAttributeIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (serverAttributeIds == null) ? "no_serverAttributeIds" : "Ids="+serverAttributeIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 		try {
 			List<ServerAttributeType> serverAttributeList = getServerAttributes(serverId, serverAttributeIds, pathToServerAttributeXML, pathToServersXML);
@@ -149,6 +154,17 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 						// Get the server attribute definition for the current server attribute name being processed
 						String name = serverAttribute.getName();
 					
+						// Set the Module Action Objective
+						s1 = (name == null) ? "no_serverAttributeName" : identifier+"="+name;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
+						// Add to the list of processed ids
+						if (processedIds == null)
+							processedIds = "";
+						else
+							processedIds = processedIds + ",";
+						processedIds = processedIds + identifier;
+
 						ServerAttributeModule attributeDefModule = getServerAttributeDAO().getServerAttributeDefinition(serverId, name, pathToServersXML);
 						ServerAttributeDefType attributeDef = attributeDefModule.getServerAttributeDef().get(0);
 						
@@ -249,13 +265,17 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 								updateServerAttributeObj.getServerAttribute().add(updAttribute);								
 							} else {
 								if(logger.isInfoEnabled()){
-									logger.info("skipping action "+actionName+" on server attribute "+serverAttributePath + " Reason: value not found.");
+									String msg = "Warning: Skipping action "+actionName+" on server attribute "+serverAttributePath + " Reason: value not found.";
+									logger.info(msg);
+									System.setProperty("MODULE_ACTION_MESSAGE", msg);
 								}
 							}
 							
 						} else {
 							if(logger.isInfoEnabled()){
-								logger.info("skipping action "+actionName+" on server attribute "+serverAttributePath + " Reason: attribute is READ_ONLY or was found in Server Attribute Non-Updateable list.");
+								String msg = "Warning: Skipping action "+actionName+" on server attribute "+serverAttributePath + " Reason: attribute is READ_ONLY or was found in Server Attribute Non-Updateable list.";
+								logger.info(msg);
+								System.setProperty("MODULE_ACTION_MESSAGE", msg);
 							}
 						}
 					}
@@ -266,6 +286,20 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 				 * 
 				 ***************************************/
 				getServerAttributeDAO().takeServerAttributeAction(actionName, updateServerAttributeObj, serverId, pathToServersXML);
+				
+				// Determine if any resourceIds were not processed and report on this
+				if (processedIds != null) {
+					if(logger.isInfoEnabled()){
+						logger.info("Server Attribute entries processed="+processedIds);
+					}
+				} else {
+					if(logger.isInfoEnabled()){
+						String msg = "Warning: No Server Attribute entries were processed for the input list.  serverAttributeIds="+serverAttributeIds;
+						logger.info(msg);
+						System.setProperty("MODULE_ACTION_MESSAGE", msg);
+					}		
+				}
+
 			}
 		} catch (CompositeException e) {
 			logger.error("Error on server attribute action ("+actionName+"): " , e);
@@ -302,7 +336,11 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
-		
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		String updateRule = null;
 		// Default to READ_WRITE if the passed Update rule is empty
 		if (pUpdateRule == null || pUpdateRule.trim().isEmpty() || pUpdateRule.trim().equalsIgnoreCase("")) {
@@ -361,6 +399,10 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 		
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		String updateRule = null;
 		// Default to READ_WRITE if the passed Update rule is empty
 		if (pUpdateRule == null || pUpdateRule.isEmpty() || pUpdateRule.equalsIgnoreCase("")) {

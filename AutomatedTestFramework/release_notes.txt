@@ -1,0 +1,39 @@
+(c) 2015 Cisco and/or its affiliates. All rights reserved.
+===================================================
+PDTool Automated Test Framework Release Notes:
+===================================================
+Section 1: Minimum Recommend PDTool Versions
+Section 2: Release notes (newest first)
+
+===================================================
+Section 1:
+Minimum Recommended PDTool Versions:
+===================================================
+PDTool-6.2-2015-09-22.r1
+PDTool-7.0.0-2015-09-22.r1
+
+===================================================
+Section 2:
+Release Notes (newest first):
+===================================================
+============================
+Release 2015-09-22:
+============================
+1) Public release of Automated Test Framework for regression and migration testing.
+
+============================
+Release 2015-06-18 (BETA1):
+============================
+1) Initial version Migration Automated Test Framework
+	a) Used for CIS Migration testing.
+	b) Used to test the CIS resources using PDTool Regression Module between CIS 6.2 and CIS 7.0.
+	c) Scripts are provided for both versions.
+2) Initial version Regression Automated Test Framework
+	a) Used for CIS Regression testing between releases on the same CIS version.
+	b) Test resources on the same CIS version (either CIS 6.2 or CIS 7.0).
+	c) Scripts are provided for both versions.
+============================
+Release 2015-06-18 (BETA2):
+============================
+1) Added environment type "ENV_TYPE" to the output log files and data directory names to separate them across CIS environments.
+	This allows for tracking of query executions across environments but within the same release.

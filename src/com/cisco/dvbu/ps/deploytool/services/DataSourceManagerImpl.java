@@ -19,6 +19,7 @@ package com.cisco.dvbu.ps.deploytool.services;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 
 import org.apache.commons.logging.Log;
@@ -115,6 +116,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 	private void dataSourceAction(String actionName,String serverId, String dataSourceIds, String pathToDataSourceXML, String pathToServersXML) throws CompositeException {
 		ResourceList returnResList = null;
 
+		// Set the Module Action Objective
+		String s1 = (dataSourceIds == null) ? "no_Ids" : "Ids="+dataSourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName + " : " + s1);
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToDataSourceXML)) {
 			throw new CompositeException("File ["+pathToDataSourceXML+"] does not exist.");
@@ -123,11 +128,12 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 
-		List<DataSourceChoiceType> dataSourceList = getDataSources(serverId, dataSourceIds,pathToDataSourceXML, pathToServersXML);
+		List<DataSourceChoiceType> dataSourceList = getDataSources(serverId, dataSourceIds, pathToDataSourceXML, pathToServersXML);
 		if (dataSourceList != null && dataSourceList.size() > 0) {
 			returnResList = new ResourceList();
 		
 			// Initialize variables.
+			String processedIds = null;
 			String identifier = null;
 			String dsResPath = null;
 			IntrospectionPlan plan = null;
@@ -180,6 +186,17 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 						logger.info("processing action "+actionName+" on datasource "+identifier);
 					}
 
+					// Set the Module Action Objective
+					s1 = (dsResPath == null) ? "no_dsResPath" : identifier+"="+dsResPath;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", actionName + " : " + s1);
+					
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+					
 					if (actionName.equals(DataSourceDAO.action.INTROSPECT.name())) {
 						dsAttributeList = populateAttributeList(datasource, serverId, pathToServersXML);					
 						plan = populateIntrospectionPlan(datasource, serverId, pathToServersXML);					
@@ -192,10 +209,29 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 					if(resourceList != null){
 						returnResList.getResource().addAll(resourceList.getResource());
 					}
+				} 					
+			}
+			
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Datasource entries processed="+processedIds);
 				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No datasource entries were processed for the input list.  dataSourceIds="+dataSourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No datasource entries were processed for the input list.  dataSourceIds="+dataSourceIds;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
-
 	}
 
 	private List<DataSourceChoiceType> getDataSources(String serverId, String dataSourceIds,	String pathToDataSourceXML, String pathToServersXML) {
@@ -1036,6 +1072,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
 
 		ResourceList resourceList = DeployManagerUtil.getDeployManager().getResourcesFromPath(serverId, startPath, ResourceType.CONTAINER.name(), ResourceType.DATA_SOURCE.name(), DetailLevel.FULL.name(), pathToServersXML);
 

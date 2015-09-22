@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:RegressionModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
+    <regressionTest>
+        <id>Test1.1_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>no</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT count(*) cnt FROM</publishedViewQry>
+            <publishedProcQry>SELECT count(*) cnt FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'A'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test1.1_TOP_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>no</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT TOP 1 * FROM</publishedViewQry>
+            <publishedProcQry>SELECT TOP 1 * FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'A'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test1.1_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>no</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT count(*) cnt FROM</publishedViewQry>
+            <publishedProcQry>SELECT count(*) cnt FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'A'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test1.1_TOP_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>no</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT TOP 1 * FROM</publishedViewQry>
+            <publishedProcQry>SELECT TOP 1 * FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'A'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test1.2_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <testRunParams>
+            <testType>functional</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SmokeTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SmokeTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test1.2_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <testRunParams>
+            <testType>functional</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SmokeTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SmokeTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test2.1_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <testRunParams>
+            <testType>regression</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test2.1_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <testRunParams>
+            <testType>regression</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test2.2_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <compareFiles>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest_CompareFiles$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$</baseDir1>
+            <baseDir2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/RegressionTest$CUSTOM$</baseDir2>
+            <compareQueries>yes</compareQueries>
+            <compareProcedures>yes</compareProcedures>
+            <compareWS>yes</compareWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </compareFiles>
+        <compareLogs>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest_CompareLogs$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <logFilePath1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$.log</logFilePath1>
+            <logFilePath2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/RegressionTest$CUSTOM$.log</logFilePath2>
+            <logDelimiter1>PIPE</logDelimiter1>
+            <logDelimiter2>PIPE</logDelimiter2>
+            <durationDelta>000 00:00:01.0000</durationDelta>
+        </compareLogs>
+    </regressionTest>
+    <regressionTest>
+        <id>Test2.2_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>no</createNewFile>
+        <compareFiles>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest_CompareFiles$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$</baseDir1>
+            <baseDir2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/RegressionTest$CUSTOM$</baseDir2>
+            <compareQueries>yes</compareQueries>
+            <compareProcedures>yes</compareProcedures>
+            <compareWS>yes</compareWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </compareFiles>
+        <compareLogs>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest_CompareLogs$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <logFilePath1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/RegressionTest$CUSTOM$.log</logFilePath1>
+            <logFilePath2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/RegressionTest$CUSTOM$.log</logFilePath2>
+            <logDelimiter1>PIPE</logDelimiter1>
+            <logDelimiter2>PIPE</logDelimiter2>
+            <durationDelta>000 00:00:01.0000</durationDelta>
+        </compareLogs>
+    </regressionTest>
+    <regressionTest>
+        <id>Test3.1_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <testRunParams>
+            <testType>performance</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <perfTestThreads>5</perfTestThreads>
+            <perfTestDuration>60</perfTestDuration>
+            <perfTestSleepPrint>1</perfTestSleepPrint>
+            <perfTestSleepExec>0</perfTestSleepExec>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test3.1_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <testRunParams>
+            <testType>performance</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <perfTestThreads>5</perfTestThreads>
+            <perfTestDuration>60</perfTestDuration>
+            <perfTestSleepPrint>1</perfTestSleepPrint>
+            <perfTestSleepExec>0</perfTestSleepExec>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test3.2_6.2</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <compareLogs>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest_CompareLogs$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <logFilePath1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$.log</logFilePath1>
+            <logFilePath2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/PerfTest$CUSTOM$.log</logFilePath2>
+            <logDelimiter1>PIPE</logDelimiter1>
+            <logDelimiter2>PIPE</logDelimiter2>
+            <durationDelta>000 00:00:01.0000</durationDelta>
+        </compareLogs>
+    </regressionTest>
+    <regressionTest>
+        <id>Test3.2_7.0</id>
+        <inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+        <createNewFile>yes</createNewFile>
+        <compareLogs>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest_CompareLogs$CUSTOM$.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <logFilePath1>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/PerfTest$CUSTOM$.log</logFilePath1>
+            <logFilePath2>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER2/PerfTest$CUSTOM$.log</logFilePath2>
+            <logDelimiter1>PIPE</logDelimiter1>
+            <logDelimiter2>PIPE</logDelimiter2>
+            <durationDelta>000 00:00:01.0000</durationDelta>
+        </compareLogs>
+    </regressionTest>
+    <regressionTest>
+        <id>Test4.1_6.2</id>
+        <inputFilePath></inputFilePath>
+        <tempDirPath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj</tempDirPath>
+        <createNewFile>no</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>yes</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT TOP 1 * FROM</publishedViewQry>
+            <publishedProcQry>SELECT TOP 1 * FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <securityGenerationOptions>
+                <pathToTargetRegressionXML>%REGRESSION_TEST_HOME%/modules/generated/MyProject1SubProj_RegressionModule_gen.xml</pathToTargetRegressionXML>
+                <encryptedPassword>password</encryptedPassword>
+                <userFilter>user1,user2</userFilter>
+                <domainFilter>composite</domainFilter>
+                <userMode>OVERWRITE</userMode>
+                <queryMode>OVERWRITE</queryMode>
+                <planMode>OVERWRITE</planMode>
+                <planModeType>MULTIPLAN</planModeType>
+                <planIdPrefix>sp</planIdPrefix>
+                <planGenerateExpectedOutcome>true</planGenerateExpectedOutcome>
+                <flattenSecurityUsersXML>true</flattenSecurityUsersXML>
+                <flattenSecurityQueryQueriesXML>true</flattenSecurityQueryQueriesXML>
+                <flattenSecurityQueryProceduresXML>true</flattenSecurityQueryProceduresXML>
+                <flattenSecurityQueryWebServicesXML>true</flattenSecurityQueryWebServicesXML>
+                <flattenSecurityPlansXML>true</flattenSecurityPlansXML>
+            </securityGenerationOptions>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'dummyStr'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+        <testRunParams>
+            <testType>security</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SecurityTest.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SecurityTest</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <securityExecution>
+                <securityPlanIds>sp*</securityPlanIds>
+                <securityOverallRatingException>false</securityOverallRatingException>
+                <securityExecutionErrorException>true</securityExecutionErrorException>
+            </securityExecution>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionTest>
+        <id>Test4.1_7.0</id>
+        <inputFilePath></inputFilePath>
+        <tempDirPath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj</tempDirPath>
+        <createNewFile>no</createNewFile>
+        <newFileParams>
+            <createQueries>yes</createQueries>
+            <createProcedures>yes</createProcedures>
+            <createWS>yes</createWS>
+            <createSoapType>soap11</createSoapType>
+            <useDefaultViewQuery>yes</useDefaultViewQuery>
+            <useDefaultProcQuery>yes</useDefaultProcQuery>
+            <useDefaultWSQuery>yes</useDefaultWSQuery>
+            <publishedViewQry>SELECT TOP 1 * FROM</publishedViewQry>
+            <publishedProcQry>SELECT TOP 1 * FROM</publishedProcQry>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+            <resources>
+                <resource>MY CATALOG.MY SCHEMA.*</resource>
+            </resources>
+            <securityGenerationOptions>
+                <pathToTargetRegressionXML>%REGRESSION_TEST_HOME%/modules/generated/MyProject1SubProj_RegressionModule_gen.xml</pathToTargetRegressionXML>
+                <encryptedPassword>password</encryptedPassword>
+                <userFilter>user1,user2</userFilter>
+                <domainFilter>composite</domainFilter>
+                <userMode>OVERWRITE</userMode>
+                <queryMode>OVERWRITE</queryMode>
+                <planMode>OVERWRITE</planMode>
+                <planModeType>MULTIPLAN</planModeType>
+                <planIdPrefix>sp</planIdPrefix>
+                <planGenerateExpectedOutcome>true</planGenerateExpectedOutcome>
+                <flattenSecurityUsersXML>true</flattenSecurityUsersXML>
+                <flattenSecurityQueryQueriesXML>true</flattenSecurityQueryQueriesXML>
+                <flattenSecurityQueryProceduresXML>true</flattenSecurityQueryProceduresXML>
+                <flattenSecurityQueryWebServicesXML>true</flattenSecurityQueryWebServicesXML>
+                <flattenSecurityPlansXML>true</flattenSecurityPlansXML>
+            </securityGenerationOptions>
+            <defaultProcParamValues>
+                <bit>1</bit>
+                <varchar>'dummyStr'</varchar>
+                <char>'a'</char>
+                <clob>A</clob>
+                <integer>1</integer>
+                <int>1</int>
+                <bigint>1</bigint>
+                <smallint>1</smallint>
+                <tinyint>1</tinyint>
+                <decimal>1.0</decimal>
+                <numeric>1.0</numeric>
+                <real>1.0</real>
+                <float>1.0</float>
+                <double>1.0</double>
+                <date>'2011-01-01'</date>
+                <time>'00:00:00'</time>
+                <timestamp>'2011-01-01 00:00:00'</timestamp>
+                <binary>''</binary>
+                <varbinary>''</varbinary>
+                <blob>''</blob>
+                <xml>''</xml>
+            </defaultProcParamValues>
+        </newFileParams>
+        <testRunParams>
+            <testType>security</testType>
+            <logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SecurityTest.log</logFilePath>
+            <logDelimiter>PIPE</logDelimiter>
+            <logAppend>no</logAppend>
+            <baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/SecurityTest</baseDir>
+            <delimiter>PIPE</delimiter>
+            <printOutput>summary</printOutput>
+            <securityExecution>
+                <securityPlanIds>sp*</securityPlanIds>
+                <securityOverallRatingException>false</securityOverallRatingException>
+                <securityExecutionErrorException>true</securityExecutionErrorException>
+            </securityExecution>
+            <runQueries>yes</runQueries>
+            <runProcedures>yes</runProcedures>
+            <runWS>yes</runWS>
+            <useAllDatasources>no</useAllDatasources>
+            <datasources>
+                <dsName>MY DB</dsName>
+            </datasources>
+        </testRunParams>
+    </regressionTest>
+    <regressionQueries>
+        <regressionQuery>
+            <datasource></datasource>
+            <query></query>
+        </regressionQuery>
+    </regressionQueries>
+    <regressionSecurity>
+        <regressionSecurityUsers>
+            <regressionSecurityUser><id>rsu1</id><userName>user1</userName><encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword><domain>composite</domain></regressionSecurityUser>
+            <regressionSecurityUser><id>rsu2</id><userName>user2</userName><encryptedPassword>Encrypted:B0873483C56F7498</encryptedPassword><domain>composite</domain></regressionSecurityUser>
+        </regressionSecurityUsers>
+        <regressionSecurityQueries>
+            <regressionSecurityQuery><id>rsq1</id><datasource>"MY DB"</datasource><queryType>QUERY</queryType><query>SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".ViewSales</query><resourcePath>/services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSales</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+            <regressionSecurityQuery><id>rsq2</id><datasource>"MY DB"</datasource><queryType>QUERY</queryType><query>SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".ViewOrder</query><resourcePath>/services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewOrder</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+            <regressionSecurityQuery><id>rsq3</id><datasource>"MY DB"</datasource><queryType>QUERY</queryType><query>SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".ViewSupplier</query><resourcePath>/services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSupplier</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+            <regressionSecurityQuery><id>rsq4</id><datasource>"MY DB"</datasource><queryType>QUERY</queryType><query>SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView</query><resourcePath>/services/databases/MY DB/MY CATALOG/MY SCHEMA/CompositeView</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+            <regressionSecurityQuery><id>rsq5</id><datasource>"MY DB"</datasource><queryType>PROCEDURE</queryType><query>SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".LookupProduct( 1 )</query><resourcePath>/services/databases/MY DB/MY CATALOG/MY SCHEMA/LookupProduct</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
+        </regressionSecurityQueries>
+        <regressionSecurityPlans>
+            <regressionSecurityPlan>
+                <id>sp1</id>
+                <regressionSecurityPlanTest><id>rst1</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq1</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSales</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst2</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq2</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewOrder</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst3</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq3</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSupplier</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst4</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq4</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/CompositeView</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst5</id><enabled>true</enabled><userId>rsu1</userId><queryId>rsq5</queryId><expectedOutcome>PASS</expectedOutcome><description>user1 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/LookupProduct</description></regressionSecurityPlanTest>
+            </regressionSecurityPlan>
+            <regressionSecurityPlan>
+                <id>sp2</id>
+                <regressionSecurityPlanTest><id>rst1</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq1</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSales</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst2</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq2</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewOrder</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst3</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq3</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/ViewSupplier</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst4</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq4</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/CompositeView</description></regressionSecurityPlanTest>
+                <regressionSecurityPlanTest><id>rst5</id><enabled>true</enabled><userId>rsu2</userId><queryId>rsq5</queryId><expectedOutcome>PASS</expectedOutcome><description>user2 :: /services/databases/MY DB/MY CATALOG/MY SCHEMA/LookupProduct</description></regressionSecurityPlanTest>
+            </regressionSecurityPlan>
+        </regressionSecurityPlans>
+    </regressionSecurity>
+</ns2:RegressionModule>

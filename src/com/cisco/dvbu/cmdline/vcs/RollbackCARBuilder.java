@@ -15,6 +15,10 @@
  * Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
  * 
 */
+/************************************************************************
+ * Modifications
+ * 		mtinius - 2015-09-18 - added retry around zip file creation
+ ************************************************************************/
 package com.cisco.dvbu.cmdline.vcs;
 
 import java.io.ByteArrayOutputStream;
@@ -29,6 +33,8 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.cisco.dvbu.ps.common.exception.ValidationException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.compositesw.common.archive.ArchiveConstants;
 import com.compositesw.common.repository.Path;
 import com.compositesw.common.vcs.primitives.FilePrimitives;
@@ -171,9 +177,35 @@ class RollbackCARBuilder {
             return result.toString();
         }
      
-        // check if car file already exists
+        /************************************************
+         * mtinius - 2015-09-18
+         * Added a retry loop to remove the car file
+         ************************************************/
+
+        // check if car file already exists and attempt to remove it
         File rollbackCar = new File(root, ZipPrimitives.CHECKOUT_CAR);
-        if (rollbackCar.exists()) throw new IllegalArgumentException(rollbackCar + " already exists.");
+        int maxTries = 3;
+        int attempts = 1;
+        int milliSeconds = 5000;
+        boolean exitLoop = false;
+        while (maxTries > 0 && !exitLoop) {
+            result.append("Remove car file \""+ZipPrimitives.CHECKOUT_CAR+"\" attempt="+attempts);
+ 			try {
+ 				 if (rollbackCar.exists()) 
+ 					 exitLoop = rollbackCar.delete();
+ 				 else
+ 					 exitLoop = true;
+				if (!exitLoop)
+					Thread.sleep(milliSeconds);
+			} 
+			catch (Exception e){
+			}
+			maxTries--;
+			attempts++;
+        }
+        // check if car file already exists
+        if (rollbackCar.exists()) 
+        	throw new IllegalArgumentException(rollbackCar + " already exists.");
         
         // write car file contents
         ZipOutputStream zos = null;
@@ -195,8 +227,8 @@ class RollbackCARBuilder {
         }
         
         // report
-        result.append("Processed " + todoResourceFiles.size() + " resource entries.");
-        if (deletedPaths != null) result.append("Marked " + deletedPaths.size() + " resources for deletion.");
+        result.append(FilePrimitives.LS).append("Processed " + todoResourceFiles.size() + " resource entries.");
+        if (deletedPaths != null) result.append(FilePrimitives.LS).append("Marked " + deletedPaths.size() + " resources for deletion.");
         
         // remove all other contents under root
         for (File child: root.listFiles()) {

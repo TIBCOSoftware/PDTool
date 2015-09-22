@@ -93,7 +93,8 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 	private void privilegeAction(String actionName, String serverId, String privilegeIds, String pathToPrivilegeXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "privilegeAction";
-		
+		String processedIds = null;
+			
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToPrivilegeXML)) {
 			throw new CompositeException("File ["+pathToPrivilegeXML+"] does not exist.");
@@ -104,6 +105,10 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 		
 		// Extract variables for the privilegeIds
 		privilegeIds = CommonUtils.extractVariable(prefix, privilegeIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (privilegeIds == null) ? "no_privilegeIds" : "Ids="+privilegeIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 		String resourcePath = null;
 		try {
@@ -129,7 +134,14 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 					 * 	  like -priv1,priv2 (we ignore passed in resources and process rest of the in the input xml
 					 * 4. wild card - prefix/postfix any label with a "*"
 					 */
-					 if(DeployUtil.canProcessResource(privilegeIds, identifier)){
+					 if(DeployUtil.canProcessResource(privilegeIds, identifier))
+					 {
+						// Add to the list of processed ids
+						if (processedIds == null)
+							processedIds = "";
+						else
+							processedIds = processedIds + ",";
+						processedIds = processedIds + identifier;
 						 
 						if(logger.isInfoEnabled()){
 							logger.info("processing action "+actionName+" on privilege "+identifier);
@@ -156,6 +168,10 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 								updPrivilegeEntry.setResourceType(ResourceTypeSimpleType.valueOf(privilege.getResourceType().toString()));
 							}
 						}
+						
+						// Set the Module Action Objective
+						s1 = identifier+"=" + ((resourcePath == null) ? "no_resourcePath" : resourcePath);
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 						
 						// Set the child recursion
 						if (privilege.isRecurse() != null)
@@ -236,6 +252,24 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						getPrivilegeDAO().takePrivilegeAction(actionName, updPrivilegeModule, serverId, pathToServersXML);					
 					}					 
 				}
+				// Determine if any resourceIds were not processed and report on this
+				if (processedIds != null) {
+					if(logger.isInfoEnabled()){
+						logger.info("Privilege entries processed="+processedIds);
+					}
+				} else {
+					if(logger.isInfoEnabled()){
+						String msg = "Warning: No privilege entries were processed for the input list.  privilegeIds="+privilegeIds;
+						logger.info(msg);
+						System.setProperty("MODULE_ACTION_MESSAGE", msg);
+					}		
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No privilege entries found for Privilege Module XML at path="+pathToPrivilegeXML;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}					
 			}
 		} catch (CompositeException e) {
 			logger.error("Error performing action="+actionName+" for privileges on resource: "+resourcePath , e);
@@ -431,7 +465,11 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
-		
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		String dependentFilter = null;
 		try {
 			boolean dependentResource = false;

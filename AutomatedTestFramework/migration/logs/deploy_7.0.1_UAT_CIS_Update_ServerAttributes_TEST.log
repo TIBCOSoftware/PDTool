@@ -1,0 +1,228 @@
+------------------------------------------------------------------
+-----------                                            -----------
+----------- Cisco Advanced Services                    -----------
+----------- PDTool: Promotion and Deployment Tool      -----------
+-----------                                            -----------
+------------------------------------------------------------------
+ 
+ExecutePDTool::Tue 07/21/2015-16:57:31.30::***** BEGIN COMMAND: ExecutePDTool *****
+ 
+########################################################################################################################################
+ExecutePDTool: Parse command line and set input variables:
+########################################################################################################################################
+ExecutePDTool::Tue 07/21/2015-16:57:31.51::Command Line Arguments:
+ExecutePDTool::Tue 07/21/2015-16:57:31.54::   CMD=[-exec]
+ExecutePDTool::Tue 07/21/2015-16:57:31.56::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\plans\CIS_Update_ServerAttributes_TEST.dp]
+ExecutePDTool::Tue 07/21/2015-16:57:31.58::   VCS_USERNAME=[]
+ExecutePDTool::Tue 07/21/2015-16:57:31.61::   VCS_PASSWORD=[]
+ExecutePDTool::Tue 07/21/2015-16:57:31.63::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_UAT.properties]
+ExecutePDTool::Tue 07/21/2015-16:57:31.65::   RELEASE_FOLDER=[]
+ExecutePDTool::Tue 07/21/2015-16:57:31.68::   CIS_VERSION=[]
+ 
+ExecutePDTool::Tue 07/21/2015-16:57:31.73::----------------------------------------------------------
+ExecutePDTool::Tue 07/21/2015-16:57:31.75::Section: Invoking setVars.bat...C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat
+ExecutePDTool::Tue 07/21/2015-16:57:31.78::----------------------------------------------------------
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat": Setting pre-processing custom variables
+########################################################################################################################################
+------------------
+GENERAL VARIABLES
+------------------
+MY_JAVA_HOME               =
+PDTOOL_SUBSTITUTE_DRIVE    =O:
+PDTOOL_INSTALL_HOME        =
+PDTOOL_HOME                =
+MY_CONFIG_PROPERTY_FILE    =
+------------------
+CIS VARIABLES
+------------------
+CIS_PORT                   =9420
+CIS_REPO_PORT              =9428
+CIS_HTTP_TYPE              =http
+CIS_WSPORT                 =9420
+CIS_USERNAME               =admin
+CIS_PASSWORD               =Encrypted:7F6324FFD300BE8F
+CIS_DOMAIN                 =composite
+------------------
+TFS VARIABLES
+------------------
+TFS_HOME                   =
+TFS_VCS_HOST               =mtinius-ws
+TFS_VCS_REPOSITORY_URL     =
+TFS_VCS_PROJECT_ROOT       =
+TFS_VCS_USERNAME           =mtinius
+TFS_VCS_PASSWORD           =Encrypted:03A98497EEF59CF0
+TFS_VCS_WORKSPACE_NAME     =TFSww
+TFS_VCS_WORKSPACE_NAME_TEMP=TFSwwt
+------------------
+SVN VARIABLES
+------------------
+SVN_HOME                   =
+SVN_VCS_HOST               =dvbu-kauai.cisco.com
+SVN_VCS_REPOSITORY_URL     =
+SVN_VCS_PROJECT_ROOT       =
+SVN_VCS_USERNAME           =mtinius
+SVN_VCS_PASSWORD           =Encrypted:5240F442049ACB93D9D2DC3BC9421A68
+SVN_VCS_WORKSPACE_NAME     =SVNww
+SVN_VCS_WORKSPACE_NAME_TEMP=SVNwwt
+
+########################################################################################################################################
+C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat: Setting PDTool variables
+########################################################################################################################################
+MY_VARS_HOME               =C:\CompositeSoftware\PDTool_Test
+MY_PRE_VARS_PATH           =C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat
+MY_POST_VARS_PATH          =C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat
+JAVA_HOME                  =C:\Program Files\Java\jre7
+MIN_MEMORY                 =-Xms256m
+MAX_MEMORY                 =-Xmx1024m
+CONFIG_PROPERTY_FILE       =deploy.properties
+CURRDIR                    =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin
+SUBSTITUTE_DRIVE           =O:
+PROJECT_HOME               =O:
+PROJECT_HOME_PHYSICAL      =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+CERT_ARGS                  =-Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit
+HTTP_PROXY                 =
+JAVA_OPT                   =-Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit 
+
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat": Setting post-processing custom variables
+########################################################################################################################################
+propertyOrderPrecedence  =
+MODULE_HOME              =
+
+########################################################################################################################################
+ExecutePDTool: Command line resolved variables:
+########################################################################################################################################
+ExecutePDTool::Tue 07/21/2015-16:57:32.14::Resolved Arguments:
+ExecutePDTool::Tue 07/21/2015-16:57:32.16::   CMD=[-exec]
+ExecutePDTool::Tue 07/21/2015-16:57:32.19::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\plans\CIS_Update_ServerAttributes_TEST.dp]
+ExecutePDTool::Tue 07/21/2015-16:57:32.21::   VCS_USERNAME=[]
+ExecutePDTool::Tue 07/21/2015-16:57:32.24::   VCS_PASSWORD=[]
+ExecutePDTool::Tue 07/21/2015-16:57:32.26::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_UAT.properties]
+ExecutePDTool::Tue 07/21/2015-16:57:32.28::   RELEASE_FOLDER=[701R1]
+ExecutePDTool::Tue 07/21/2015-16:57:32.31::   CIS_VERSION=[7.0.0]
+ 
+ExecutePDTool::Tue 07/21/2015-16:57:32.36::Section: Substitute Drives
+ExecutePDTool::Tue 07/21/2015-16:57:32.38::         Evaluate the substitute drive=O: path=C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+ExecutePDTool::Tue 07/21/2015-16:57:32.58::         Substitute drive O: is already mapped to path:C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+
+ 
+------------------------------------------------------------------
+-------------------- COMMAND-LINE DEPLOYMENT ---------------------
+------------------------------------------------------------------
+ 
+ 
+-- COMMAND: execCisDeployTool ----------------------
+ 
+"C:\Program Files\Java\jre7\bin\java" -Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit  -cp  "O:\dist\*;O:\lib\*" -Dcom.cisco.dvbu.ps.configroot="O:\resources\config" -Dlog4j.configuration="file:O:\resources\config\log4j.properties"   -Djava.endorsed.dirs="O:\lib\endorsed" -DPROJECT_HOME="O:" -DPROJECT_HOME_PHYSICAL="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31" -DCONFIG_PROPERTY_FILE=deploy_7.0.1_UAT.properties com.cisco.dvbu.ps.deploytool.DeployManagerUtil execCisDeployTool "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\plans\CIS_Update_ServerAttributes_TEST.dp" "" ""
+ 
+-- BEGIN OUTPUT ------------------------------------
+ 
+2015-07-21 16:57:33,387 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <>
+2015-07-21 16:57:33,398 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-21 16:57:33,398 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_UAT.properties>
+2015-07-21 16:57:33,398 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-21 16:57:33,449 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-21 16:57:33,449 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-21 16:57:33,449 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-21 16:57:33,452 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-21 16:57:33,452 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action execCisDeployTool>
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <--------------- COMMAND-LINE DEPLOYMENT ---------------->
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <>
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_UAT.properties>
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <propertyOrderPrecedence=DEFAULT: JVM PROPERTY_FILE SYSTEM>
+2015-07-21 16:57:33,455 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-21 16:57:33,459 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-21 16:57:33,459 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN DEPLOYMENT ORCHESTRATION *****>
+2015-07-21 16:57:33,459 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Resolved Property Variables:>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::PROJECT_HOME=     O:>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::MODULE_HOME=      O:/resources/modules>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SCHEMA_LOCATION=  O:/resources/schema/PDToolModules.xsd>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SUPPRESS_COMMENTS=true>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::suppress option=   -suppress>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG1=           true>
+2015-07-21 16:57:33,460 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG2=           true>
+2015-07-21 16:57:33,461 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG3=           true>
+2015-07-21 16:57:33,466 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-21 16:57:33,466 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line  34 PASS	TRUE	ExecuteAction   updateServerAttributes   $SERVERID "server1,server2" 	"%MIGRATION_TEST_SERVER_ATTRIBUTE_OUTPUT_UPDATE_FILE%"  "$MODULE_HOME/servers.xml">
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  expectedStatus=PASS>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  exitOnError=   TRUE>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  actionType=    ExecuteAction>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  moduleAction=  updateServerAttributes>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  arguments=     $SERVERID "server1,server2" "%MIGRATION_TEST_SERVER_ATTRIBUTE_OUTPUT_UPDATE_FILE%" "$MODULE_HOME/servers.xml">
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN COMMAND: updateServerAttributes *****>
+2015-07-21 16:57:33,467 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::Call Action args[0]=updateServerAttributes with arguments:>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[1]=localhost9420http>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[2]=server1,server2>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[3]=C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/migration/modules/ServerAttributes_TEST_UAT_xform.xml>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[4]=O:/resources/modules/servers.xml>
+2015-07-21 16:57:33,468 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::>
+2015-07-21 16:57:33,504 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-21 16:57:33,504 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-21 16:57:33,504 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-21 16:57:33,505 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-21 16:57:33,505 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action updateServerAttributes>
+2015-07-21 16:57:34,226 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::Server Info:>
+2015-07-21 16:57:34,226 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-id=               localhost9420http>
+2015-07-21 16:57:34,226 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-hostname=         localhost>
+2015-07-21 16:57:34,226 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-port=             9420>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-usage=            DEV6.2.3>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-user=             admin>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-encryptedpassword=********>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-domain=           composite>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-cishome=          C:\CompositeSoftware\CIS6.2.3>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-clustername=      cluster2>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-site=             US East>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-useHttps=         false>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-allowVariables=   false>
+2015-07-21 16:57:34,227 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::>
+2015-07-21 16:57:34,783 main INFO [com.cisco.dvbu.ps.deploytool.services.ServerAttributeManagerImpl] - <processing action UPDATE on server attribute /server/config/net/disableHttpsHostnameVerification>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::Server Info:>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-id=               localhost9420http>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-hostname=         localhost>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-port=             9420>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-usage=            DEV6.2.3>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-user=             admin>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-encryptedpassword=********>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-domain=           composite>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-cishome=          C:\CompositeSoftware\CIS6.2.3>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-clustername=      cluster2>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-site=             US East>
+2015-07-21 16:57:34,791 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-useHttps=         false>
+2015-07-21 16:57:34,792 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::  Server-allowVariables=   false>
+2015-07-21 16:57:34,792 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.getServerAttributeDefinition::>
+2015-07-21 16:57:35,155 main INFO [com.cisco.dvbu.ps.deploytool.services.ServerAttributeManagerImpl] - <processing action UPDATE on server attribute /server/config/net/nioConnectorMaxIdleTimeOnServerRestart>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::Server Info:>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-id=               localhost9420http>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-hostname=         localhost>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-port=             9420>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-usage=            DEV6.2.3>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-user=             admin>
+2015-07-21 16:57:35,162 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-encryptedpassword=********>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-domain=           composite>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-cishome=          C:\CompositeSoftware\CIS6.2.3>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-clustername=      cluster2>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-site=             US East>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-useHttps=         false>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::  Server-allowVariables=   false>
+2015-07-21 16:57:35,163 main INFO [com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl] - <DEBUG2::ServerAttributeWSDAOImpl.takeServerAttributeAction::>
+2015-07-21 16:57:35,451 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Successfully completed updateServerAttributes.>
+2015-07-21 16:57:35,451 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-21 16:57:35,452 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-21 16:57:35,452 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line   34   SCRIPT_RESULTS=PASS  EXPECTED=PASS  ACTUAL=PASS  EXIT_ON_ERROR=TRUE  ACTION=updateServerAttributes>
+2015-07-21 16:57:35,452 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-21 16:57:35,454 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-21 16:57:35,454 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** COMPLETED DEPLOYMENT ORCHESTRATION SUCCESSFULLY *****>
+2015-07-21 16:57:35,454 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::End of CisDeployTool orchestration script.>
+2015-07-21 16:57:35,454 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+ 
+ExecutePDTool::Tue 07/21/2015-16:57:35.53::-------------- SUCCESSFUL SCRIPT COMPLETION [ExecutePDTool -exec] --------------
+ExecutePDTool::Tue 07/21/2015-16:57:35.55::End of script.

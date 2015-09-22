@@ -1,0 +1,2 @@
+OrderID|ProductID|Discount|OrderDate|CompanyName|CustomerContactFirstName|CustomerContactLastName|CustomerContactPhone|ProductName|TransactionID|DateRequired|DatePromised|ShipDate|SupplierID|SupplierName|SupplierContactName|SupplierPhoneNumber
+15|14|0.10|2003-02-01|Galileo Systems|Alexander|Dimetriou|(519) 723-0333|Rad Expert 9000 PRO 128 MB|19|2003-02-09|2003-02-09|2003-02-07|8|Top Notch Supplier|Joe Owner|(215) 226-1000

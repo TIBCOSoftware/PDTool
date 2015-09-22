@@ -39,8 +39,8 @@
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
 	<property name="ver" value="6.2"/>
 	<property name="relNum" value="r1"/>
-
 	<property name="project-name" value="PDTool"/>
+	<property name="atf" value="AutomatedTestFramework"/>
 	<property name="src" value="src"/>
 	<property name="build" location="build"/>
 	<property name="bin" location="bin"/>
@@ -54,8 +54,12 @@
 	<property name="security" location="security"/>
 	<property name="docs" location="PDToolDocs/docs"/>
 	<property name="project-PDToolModules" value="PDToolModules"/>
-	<property name="pdtool-target" value="PDTool${ver}"/>
-	<property name="pdtoolstudio-target" value="PDToolStudio${ver}"/>
+	<property name="pdtool-zip-target" value="PDTool${ver}"/>
+	<property name="pdtoolstudio-zip-target" value="PDToolStudio${ver}"/>
+	<property name="pdtool-installer-target" value="PDTool${ver}_installer"/>
+	<property name="pdtoolstudio-installer-target" value="PDToolStudio${ver}_installer"/>
+	<property name="pdtool-target" value="${pdtool-installer-target}/installer_source/PDTool"/>
+	<property name="pdtoolstudio-target" value="${pdtoolstudio-installer-target}/installer_source/PDToolStudio"/>
 	<property name="rel" value="../PDToolRelease/${ver}"/>
 	<property name="regression_rel" location="../PDToolRelease/regression"/>
 	<property name="regression-target" value="PDToolRegression"/>
@@ -124,7 +128,6 @@
             file="${bin}/ExecutePDTool.bat"
             token="@ENDORSED_DIR@"
             value="${BUILD_ENV_ENDORSED_DIR}" />
-
 		<tstamp>
 		  <format property="TODAY_US"
 		          pattern="yyyy-MM-dd"
@@ -137,7 +140,12 @@
 		***************************************************************
 		-->
 		<!-- Create the PD Tool (command-line / Ant) distribution zip file. -->
+		<mkdir dir="${pdtool-installer-target}"/>
+		<mkdir dir="${pdtool-installer-target}/installer"/>
+		<mkdir dir="${pdtool-installer-target}/installer_source"/>
+		<mkdir dir="${pdtool-installer-target}/installer_source/VCSClients"/>
 		<mkdir dir="${pdtool-target}"/>
+		<mkdir dir="${pdtool-target}/AutomatedTestFramework"/>
 		<mkdir dir="${pdtool-target}/bin"/>
 		<mkdir dir="${pdtool-target}/dist"/>
 		<mkdir dir="${pdtool-target}/ext/ant/bin"/>
@@ -158,6 +166,33 @@
 		<mkdir dir="${pdtool-target}/resources/schema"/>
 		<mkdir dir="${pdtool-target}/resources/vcs_initial"/>
 		<mkdir dir="${pdtool-target}/security"/>
+
+		<!-- Copy the installer files -->
+		<copy todir="${pdtool-installer-target}/installer">
+		    <fileset dir="installer">
+		        <include name="Cisco PDTool Installer Admin Guide.pdf"/>
+		        <include name="Cisco PDTool Installer User Guide.doc"/>
+		        <include name="Cisco PDTool Installer User Guide.pdf"/>
+		        <include name="LICENSE.txt"/>
+		        <include name="PDTool-*.bat"/>
+		        <include name="replaceText.bat"/>
+		        <include name="SetupPDTool.bat"/>
+		    </fileset>
+		</copy>
+
+		<!-- Copy the Automated Test Framework directory -->
+		<copy todir="${pdtool-target}/${atf}">
+		    <fileset dir="${atf}">
+		        <include name="**"/>
+		    </fileset>
+		</copy>
+
+		<!-- Copy the VCSClients directory -->
+		<copy todir="${pdtool-installer-target}/installer_source/VCSClients">
+		    <fileset dir="installer_source/VCSClients">
+		        <include name="**"/>
+		    </fileset>
+		</copy>
 
 		<!-- Copy the generated Schema HTML file and images directory in preparation for zipping the distribution. -->
 		<copy todir="${pdtool-target}">
@@ -203,7 +238,7 @@
             token="@ENDORSED_DIR@"
             value="${RELEASE_ENV_ENDORSED_DIR}" />
 
-		<copy todir="${pdtool-target}/dist">
+			<copy todir="${pdtool-target}/dist">
 		    <fileset dir="${dist}">
 		        <include name="*${ver}.jar"/>
 		    </fileset>
@@ -279,10 +314,7 @@
 		        <include name="application*.xml"/>
 		        <include name="log*.properties"/>
 			    <include name="deploy.properties"/>
-			    <include name="deploy_svn*.properties"/>
-			    <include name="deploy_cvs*.properties"/>
-				<include name="deploy_tfs*.properties"/>
-			    <include name="deploy_p4*.properties"/>
+			    <include name="deploy_*.properties"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/resources/config/${ver}">
@@ -337,10 +369,10 @@
 		</copy>
 		
 		<!-- Create the PDTool zip file -->
-		<zip destfile="${rel}/PDTool-${ver}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtool-target}/**" />
+		<zip destfile="${rel}/${pdtool-zip-target}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtool-installer-target}/**" />
 
 		<!-- Delete the staging directory used to create the zip file. -->
-		<delete dir="${pdtool-target}"/>
+		<delete dir="${pdtool-installer-target}"/>
 		
 		<!-- 
 		***************************************************************
@@ -348,6 +380,10 @@
 		***************************************************************
 		-->
 		<!-- Create the PD Tool Studio distribution zip file. -->
+		<mkdir dir="${pdtoolstudio-installer-target}"/>
+		<mkdir dir="${pdtoolstudio-installer-target}/installer"/>
+		<mkdir dir="${pdtoolstudio-installer-target}/installer_source"/>
+		<mkdir dir="${pdtoolstudio-installer-target}/installer_source/VCSClients"/>
 		<mkdir dir="${pdtoolstudio-target}"/>
 		<mkdir dir="${pdtoolstudio-target}/bin"/>
 		<mkdir dir="${pdtoolstudio-target}/bin_novars"/>
@@ -364,6 +400,26 @@
 		<mkdir dir="${pdtoolstudio-target}/resources/vcs_initial"/>
 		<mkdir dir="${pdtoolstudio-target}/security"/>
 		
+		<!-- Copy the installer files -->
+		<copy todir="${pdtoolstudio-installer-target}/installer">
+		    <fileset dir="installer">
+		        <include name="Cisco PDTool Studio Installer Admin Guide.pdf"/>
+		        <include name="Cisco PDTool Studio Installer User Guide.doc"/>
+		        <include name="Cisco PDTool Studio Installer User Guide.pdf"/>
+		        <include name="LICENSE.txt"/>
+		        <include name="PDToolStudio-*.bat"/>
+		        <include name="replaceText.bat"/>
+		        <include name="SetupPDTool.bat"/>
+		    </fileset>
+		</copy>
+
+		<!-- Copy the VCSClients directory -->
+		<copy todir="${pdtoolstudio-installer-target}/installer_source/VCSClients">
+		    <fileset dir="installer_source/VCSClients">
+		        <include name="**"/>
+		    </fileset>
+		</copy>
+
 		<copy todir="${pdtoolstudio-target}">
 		    <fileset dir="${rel}">
 		        <include name="PDToolStudio-${ver}-${TODAY_US}.${relNum}.txt"/>
@@ -400,8 +456,7 @@
             file="${pdtoolstudio-target}/bin_novars/forced_checkin_novars.bat"
             token="@version@"
             value="${ver}" />
-
-         <copy todir="${pdtoolstudio-target}/bin_host1">
+			<copy todir="${pdtoolstudio-target}/bin_host1">
 		    <fileset dir="${bin}/PDToolStudio_bin_host1">
 		        <include name="*.bat"/>
 		        <include name="*.sh"/>
@@ -476,8 +531,7 @@
 		        <include name="application*.xml"/>
 		        <include name="log*.properties"/>
 			    <include name="studio.properties"/>
-			    <include name="studio*example.properties"/>
-			    <include name="studio*multi_host.properties"/>
+			    <include name="studio_*.properties"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/resources/config/${ver}">
@@ -502,10 +556,10 @@
 		</copy>
 		
 		<!-- Create the PDToolStudio zip file -->
-		<zip destfile="${rel}/PDToolStudio-${ver}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtoolstudio-target}/**" />
+		<zip destfile="${rel}/${pdtoolstudio-zip-target}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtoolstudio-installer-target}/**" />
 		
 		<!-- Delete the staging directory used to create the zip file. -->
-		<delete dir="${pdtoolstudio-target}"/>
+		<delete dir="${pdtoolstudio-installer-target}"/>
 
 		<!-- 
 		***************************************************************

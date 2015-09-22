@@ -796,6 +796,9 @@ public class RegressionSecurityTestDAOImpl implements RegressionSecurityTestDAO
 								 logger.info("-                                                      -");
 								 logger.info("--------------------------------------------------------");
 				
+						String moduleActionMessage = "MODULE_INFO: Security Summary: Successful="+totalSuccessTests+" Skipped="+totalSkippedTests+" Failed="+totalFailedTests;
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
+
 						// 3. Close all connections: 
 				        JdbcConnector connector = new JdbcConnector();
 				        if (this.cisConnections != null)

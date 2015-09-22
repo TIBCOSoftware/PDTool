@@ -111,11 +111,17 @@ public class UserManagerImpl implements UserManager {
 			ArrayList<UserDomain> userArray = new ArrayList<UserDomain>();
 
 			String prefix = "userAction";
+			String processedIds = null;
+
 			// Get the configuration property file set in the environment with a default of deploy.properties
 			String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
 
 			// Extract variables for the userIds
 			userIds = CommonUtils.extractVariable(prefix, userIds, propertyFile, true);
+
+			// Set the Module Action Objective
+			String s1 = (userIds == null) ? "no_userIds" : "Ids="+userIds;
+			System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 			// Pre-process the UserModule XML list to determine the number of users to be processed so as to compare with the efficiency threshold
 			int processNumUsers = 0;
@@ -191,7 +197,14 @@ public class UserManagerImpl implements UserManager {
 					 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 					 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 					 */
-					if(DeployUtil.canProcessResource(userIds, identifier)) {
+					if(DeployUtil.canProcessResource(userIds, identifier)) 
+					{
+						// Add to the list of processed ids
+						if (processedIds == null)
+							processedIds = "";
+						else
+							processedIds = processedIds + ",";
+						processedIds = processedIds + identifier;
 
 						// Set the user name
 						userName = currUser.getUserName().toLowerCase();
@@ -200,6 +213,10 @@ public class UserManagerImpl implements UserManager {
 						if (currUser.getDomainName() != null) {
 							domainName = currUser.getDomainName();
 						}
+
+						// Set the Module Action Objective
+						s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName);
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 						// Populate the User Array List based on the option
 						// Option 1: Get the entire list of users from CIS and store in a memory ArrayList.  This will only get populated once per invocation
@@ -253,8 +270,7 @@ public class UserManagerImpl implements UserManager {
 								break;
 							}
 						}
-
-						
+					
 						if(actionName.equalsIgnoreCase(UserDAO.action.CREATEORUPDATE.name())) {
 							String actionName2 = null;
 
@@ -275,6 +291,10 @@ public class UserManagerImpl implements UserManager {
 									password = CommonUtils.decrypt(currUser.getEncryptedPassword());
 								}
 								
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName);
+								System.setProperty("MODULE_ACTION_OBJECTIVE", actionName2+" : "+s1);
+
 								// Update the user information
 								getUserDAO().takeUserAction(actionName2, userName, oldPassword, password, domainName, groupNames, accessRights, annotation, serverId, pathToServersXML);
 								logger.info("Success: action="+actionName2+"  user: "+userName+"  update groups:"+groupList);
@@ -283,6 +303,11 @@ public class UserManagerImpl implements UserManager {
 								// Create a new user
 								actionName2 = UserDAO.action.CREATE.name();
 								password = CommonUtils.decrypt(currUser.getEncryptedPassword());
+
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName);
+								System.setProperty("MODULE_ACTION_OBJECTIVE", actionName2+" : "+s1);
+
 								// Check to make sure the password is not null or empty
 								if (password == null || password.length() == 0) {
 									throw new ValidationException("Password cannot be null or empty when creating a new user.");
@@ -293,6 +318,10 @@ public class UserManagerImpl implements UserManager {
 								// Once the user is created, an update must be performed to modify their group affiliation
 								actionName2 = UserDAO.action.UPDATE.name();
 								
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName);
+								System.setProperty("MODULE_ACTION_OBJECTIVE", actionName2+" : "+s1);
+
 								// Perform the update action on the User to update the group affiliation for the user.
 								getUserDAO().takeUserAction(actionName2, userName, null, null, domainName, groupNames, null, null, serverId, pathToServersXML);
 								logger.info("Success: action="+actionName2+"  user: "+userName+"  update groups:"+groupList);
@@ -301,15 +330,41 @@ public class UserManagerImpl implements UserManager {
 	
 						if(actionName.equalsIgnoreCase(UserDAO.action.DELETE.name())) {
 							if (userFound) {
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName);
+								System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 								getUserDAO().takeUserAction(actionName, userName, oldPassword, password, domainName, groupNames, accessRights, annotation, serverId, pathToServersXML);
 								logger.info("Success: action="+actionName+"  user: "+userName);
 
 							} else {
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((userName == null) ? "no_userName" : userName+"@"+domainName+" not found.");
+								System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 								logger.info("No "+actionName+" action taken due to user ("+userName+") not found");	
 							}
 						}
 					}
 				}
+				// Determine if any resourceIds were not processed and report on this
+				if (processedIds != null) {
+					if(logger.isInfoEnabled()){
+						logger.info("User entries processed="+processedIds);
+					}
+				} else {
+					if(logger.isInfoEnabled()){
+						String msg = "Warning: No user entries were processed for the input list.  userIds="+userIds;
+						logger.info(msg);
+						System.setProperty("MODULE_ACTION_MESSAGE", msg);
+					}		
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No user entries found for User Module XML at path="+pathToUsersXML;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}									
 			}
 		} catch (CompositeException e) {
 			logger.error("Error while executing action="+actionName , e);
@@ -323,6 +378,10 @@ public class UserManagerImpl implements UserManager {
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
+
+		// Set the Module Action Objective
+		String s1 = (domainName == null) ? "no_domainName" : "Domain="+domainName;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
 
 		try {
 			// Prepare a local UserModule XML variable for creating a list of "User" nodes

@@ -153,15 +153,20 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 		}
 
 		String prefix = "dataSourceAction";
+		String processedIds = null;
+
+		// Get the configuration property file set in the environment with a default of deploy.properties
+		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
+
+		// Extract variables for the resourceIds
+		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 		try {
 			List<ResourceCacheType> resourceCacheModuleList = getResourceCache(serverId, resourceIds, pathToResourceCacheXML, pathToServersXML);
-
-			// Get the configuration property file set in the environment with a default of deploy.properties
-			String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
-
-			// Extract variables for the resourceIds
-			resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
 
 			if (resourceCacheModuleList != null && resourceCacheModuleList.size() > 0) {
 	
@@ -180,10 +185,21 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 					 */
 					 if(DeployUtil.canProcessResource(resourceIds, identifier)) 
 					 {
+						// Add to the list of processed ids
+						if (processedIds == null)
+							processedIds = "";
+						else
+							processedIds = processedIds + ",";
+						processedIds = processedIds + identifier;
+						 
 						CacheConfig cacheConfig = new CacheConfig();			 
 						String resourceCachePath = CommonUtils.extractVariable(prefix, resourceCacheModule.getResourcePath(), propertyFile, true);
 						String resourceCacheType = CommonUtils.extractVariable(prefix, resourceCacheModule.getResourceType().toString(), propertyFile, false);
 						
+						// Set the Module Action Objective
+						s1 = identifier+"=" + ((resourceCachePath == null) ? "no_resourceCachePath" : resourceCachePath);
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 						if(logger.isInfoEnabled()){
 							logger.info("processing action "+actionName+" on resource cache "+resourceCachePath);
 						}
@@ -195,6 +211,12 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 								if (resourceCacheModule.getCacheConfig().isEnabled() != null) {
 									enabled = resourceCacheModule.getCacheConfig().isEnabled();
 								}
+								
+								// Set the Module Action Objective
+								s1 = identifier+"=" + ((resourceCachePath == null) ? "no_resourceCachePath" : resourceCachePath);
+								String enable_disabled_action = (enabled == true) ? "ENABLE" : "DISABLE";
+								System.setProperty("MODULE_ACTION_OBJECTIVE", enable_disabled_action+" : "+s1);
+
 								updateResourceCacheEnabledAll(serverId, resourceCachePath, resourceCacheType, pathToServersXML, enabled);
 							}
 						} else {
@@ -292,6 +314,25 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 						} // end:: if (actionName.equals(ResourceCacheDAO.action.ENABLE_DISABLE.name().toString())) {
 					}  // end:: if(DeployUtil.canProcessResource(resourceIds, identifier)) {
 				} // end:: for (ResourceCacheType resourceCache : resourceCacheList) {
+				
+				// Determine if any resourceIds were not processed and report on this
+				if (processedIds != null) {
+					if(logger.isInfoEnabled()){
+						logger.info("ResourceCache entries processed="+processedIds);
+					}
+				} else {
+					if(logger.isInfoEnabled()){
+						String msg = "Warning: No resource cache entries were processed for the input list.  resourceIds="+resourceIds;
+						logger.info(msg);
+						System.setProperty("MODULE_ACTION_MESSAGE", msg);
+					}		
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource cache entries found for ResourceCache Module XML at path="+pathToResourceCacheXML;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}				
 			}
 		} catch (CompositeException e) {
 			logger.error("Error on resource cache action ("+actionName+"): " , e);
@@ -432,6 +473,10 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
 
 		String prefix = "generateResourceCacheXML";
 		// Get the configuration property file set in the environment with a default of deploy.properties

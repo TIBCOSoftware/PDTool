@@ -370,8 +370,23 @@ public class ScriptUtil {
 			
 					String passwordLine = (String) iterator.next();
 				    int passwordPos= passwordLine.lastIndexOf("=");
-					String unEncryptedPassword=passwordLine.substring(passwordPos+1,passwordLine.length());  
-					if(unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0 && !unEncryptedPassword.startsWith("Encrypted:")){
+					String unEncryptedPassword=passwordLine.substring(passwordPos+1,passwordLine.length());
+					
+					// Determine if the value is a variable with the format: $VAR or $VAR$ or %VAR%
+					boolean isVariable = false;
+					if (unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0) {
+						int len = unEncryptedPassword.length();
+						String chBeg = unEncryptedPassword.substring(0, 1);
+						String chEnd = unEncryptedPassword.substring(len-1, len);
+						if (chBeg.equals("%") && chEnd.equals("%")) {
+							isVariable = true;
+						} 
+						if (!isVariable && ((chBeg.equals("$") && chEnd.equals("$")) || chBeg.equals("$"))) {
+							isVariable = true;
+						} 
+					}
+
+					if(!isVariable && unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0 && !unEncryptedPassword.startsWith("Encrypted:")){
 						String newLine = passwordLine.replace(unEncryptedPassword, CommonUtils.encrypt(unEncryptedPassword));
 						fileContent = fileContent.replace(passwordLine, newLine);
 					 }

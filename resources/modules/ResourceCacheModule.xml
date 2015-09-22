@@ -145,7 +145,7 @@
     </resourceCache>
     <resourceCache>
         <id>cache_enable_all</id>
-        <resourcePath>/shared/test00</resourcePath>
+        <resourcePath>/shared/test00/ResourceCache</resourcePath>
         <resourceType>CONTAINER</resourceType>
         <cacheConfig>
             <enabled>true</enabled>
@@ -153,7 +153,7 @@
     </resourceCache>
     <resourceCache>
         <id>cache_disable_all</id>
-        <resourcePath>/shared/test00</resourcePath>
+        <resourcePath>/shared/test00/ResourceCache</resourcePath>
         <resourceType>CONTAINER</resourceType>
         <cacheConfig>
             <enabled>false</enabled>

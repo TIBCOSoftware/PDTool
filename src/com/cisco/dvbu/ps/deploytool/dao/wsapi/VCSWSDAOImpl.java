@@ -310,9 +310,10 @@ public class VCSWSDAOImpl implements VCSDAO {
 	}
 
 	// Execute the Command Line for VCS
-	public void execCommandLineVCS(String prefix, String execFromDir, String command, List<String> args, List<String> envList, String vcsIgnoreMessages) throws CompositeException {
+	public StringBuilder execCommandLineVCS(String prefix, String execFromDir, String command, List<String> args, List<String> envList, String vcsIgnoreMessages) throws CompositeException {
 		
 		String identifier = "VCSWSDAOImpl.execCommandLineVCS"; // some unique identifier that characterizes this invocation.
+		StringBuilder stdout = new StringBuilder();
 		// For debugging
 		if ( logger.isDebugEnabled() ) {
 			String[] argsString = args.toArray(new String[0]);
@@ -347,7 +348,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 				    throw applicationException;					
 				}
 			}else{
-			    StringBuilder stdout = se.getStandardOutputFromCommand();
+			    stdout = se.getStandardOutputFromCommand();
 			    if (logger.isDebugEnabled()) {
 			    	logger.debug(identifier+": "+prefix+CommonUtils.maskCommand(command)+" executed successfully");
 			    }
@@ -355,6 +356,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 		} catch (CompositeException e) {
 			throw new ApplicationException(e);
 		}
+		return stdout;
 	}	
 	
 	/*
@@ -364,6 +366,9 @@ public class VCSWSDAOImpl implements VCSDAO {
 //	@Override
 	public void generateVCSXML(String serverId, String startPath, String pathToVCSXML, String pathToServersXML) throws CompositeException {
 		
+		// Set the Module Action Objective for the VCS Module
+		System.setProperty("MODULE_ACTION_OBJECTIVE", startPath);
+
 		// For debugging
 		if(logger.isDebugEnabled()) {
 			logger.debug("VCSWSDAOImpl.generateVCSXML(serverId , startPath, pathToVCSXML, pathToServersXML).  serverId="+serverId+"  startPath="+startPath+"  pathToVCSXML="+pathToVCSXML+"  pathToServersXML="+pathToServersXML);

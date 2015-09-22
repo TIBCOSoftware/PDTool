@@ -101,11 +101,17 @@ public class ArchiveManagerImpl implements ArchiveManager{
 		}
 
 		String prefix = "archiveAction";
+		String processedIds = null;
+
 		// Get the configuration property file set in the environment with a default of deploy.properties
 		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
 
 		// Extract variables for the archiveIds
 		archiveIds = CommonUtils.extractVariable(prefix, archiveIds, propertyFile, true);
+		
+		// Set the Module Action Objective
+		String s1 = (archiveIds == null) ? "no_archiveIds" : "Ids="+archiveIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 		List<ArchiveType> archiveList = getArchiveEntries(serverId, archiveIds, pathToArchiveXML, pathToServersXML);
 		if (archiveList != null && archiveList.size() > 0) {
@@ -116,7 +122,8 @@ public class ArchiveManagerImpl implements ArchiveManager{
 			String message = "Archive Ids="+archiveIds+" not found.";
 
 			// Loop over the list of archive entries and apply their attributes to the target CIS instance.		
-			for (ArchiveType archive : archiveList) {
+			for (ArchiveType archive : archiveList) 
+			{
 
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, archive.getId(), propertyFile, true);
@@ -128,11 +135,19 @@ public class ArchiveManagerImpl implements ArchiveManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(archiveIds, identifier)){
-					 message = null;
+				 if(DeployUtil.canProcessResource(archiveIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+
+					message = null;
 					 
 					if(logger.isInfoEnabled()){
-						logger.info("processing action "+actionName+" on archive "+identifier);
+						logger.info("Processing action "+actionName+" on archive "+identifier);
 					}
 
 					// -- for now, we use a common xml input file. Result is we need to validate that the
@@ -178,14 +193,37 @@ public class ArchiveManagerImpl implements ArchiveManager{
 					}
 					// thats all for now
 					
+					// Set the Module Action Objective
+					s1 = identifier+"=" + ((archive.getArchiveFileName() == null) ? "no_archiveFileName" : archive.getArchiveFileName());
+					System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 					getArchiveDAO().takeArchiveAction(actionName, archive, serverId, pathToServersXML, commandPrefix, propertyFile);
-					
 				}
 			}
 			if(logger.isInfoEnabled()){
 				if (message != null)
 					logger.info(message);
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Archive entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()) {
+					String msg = "Warning: No archive entries were processed for the input list.  archiveIds="+archiveIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				if(logger.isInfoEnabled()) {
+					String msg = "Warning: No archive entries found for Archive Module XML at path="+pathToArchiveXML;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}
+			}					
 		}
 	}
 

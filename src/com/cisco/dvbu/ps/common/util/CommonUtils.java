@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.zip.Checksum;
 import java.util.zip.CheckedInputStream;
@@ -310,7 +311,7 @@ public class CommonUtils {
 		}
 		return exists;
 	}
-	
+
 	// Test for file exists
 	public static boolean fileExists(String filePath) {
 		File file=new File(filePath);
@@ -357,6 +358,26 @@ public class CommonUtils {
 		return dir;
 	}
 
+	 /**
+	  Get path name from full file path.  Returns the name at the end of the path.
+	*/
+	public static String getPathName(String filePath) {
+		String name = null;
+		if (filePath != null) {
+			if (filePath.contains("\\")) {
+				int idx = filePath.lastIndexOf("\\") + 1;
+				name = filePath.substring(idx, filePath.length());
+			} else if (filePath.contains("/")) {
+				int idx = filePath.lastIndexOf("/") + 1;
+				name = filePath.substring(idx, filePath.length());
+			} else {
+				name = filePath;
+			}
+		}
+		return name;
+	}
+
+	
 	 /**
 	  Remove a directory and all of its contents.
 
@@ -601,6 +622,12 @@ public class CommonUtils {
 		return formatter.format(date).toString();
 	}
 
+	// Generate a unique random string
+	public static String getUniqueRandomString() {
+		UUID uniqueID = UUID.randomUUID();
+		return uniqueID.toString();
+	}
+	
 	// Generate unique file name based on a date
 	public static String getUniqueFilename(String filename, String extension) {
 		return filename+"_"+getCurrentDateAsString("yyyy_MM_dd_HH_mm_ss_SSS")+"."+extension;
@@ -1668,10 +1695,14 @@ public class CommonUtils {
 			// Command Format: 			[/login:user,[password]]	
 			// Example (Mask): 			/login:user1,password
 			// Example (Do not mask): 	/login:user1
-			if (arguments.contains("/login:")) {
+			if (arguments.contains("/login:") || arguments.contains("-login:")) {
 				int pswdBeg = -1;
 				int pswdEnd = -1;
-				int login_beg = arguments.indexOf("/login:");
+				int login_beg = -1;
+				if (arguments.contains("/login:"))
+					login_beg = arguments.indexOf("/login:");
+				if (arguments.contains("-login:"))
+					login_beg = arguments.indexOf("-login:");
 				// Count the number of : prior to 
 				boolean exitLoop = false;
 				for (int i=login_beg; i < arguments.length() && !exitLoop; i++) {
@@ -1692,6 +1723,7 @@ public class CommonUtils {
 					} else {
 						arguments = arguments.substring(0, pswdBeg) + maskValue + arguments.substring(pswdEnd, arguments.length());
 					}
+					//System.out.println("************* masked argument="+arguments);
 					exitLoop = true;
 				}
 			}

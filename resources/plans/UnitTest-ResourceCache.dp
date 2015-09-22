@@ -65,19 +65,19 @@
 # Begin task definition list:
 # -----------------------------------------
 # Quick Test
-PASS	FALSE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED TABLE PROCEDURE"
+PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00/ResourceCache" 	"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
 #
-PASS	FALSE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  						"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #
-PASS	FALSE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 							"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #
-PASS	FALSE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 							"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  			"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  			"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #	
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 #

@@ -536,6 +536,9 @@ logger.info(CommonUtils.rpad("      Performance Test duration: " + duration, len
 				 logger.info("Review \"perftest\" Summary: " + logFilePath);
 				 logger.info("--------------------------------------------------------");
 
+		String moduleActionMessage = "MODULE_INFO: Performance Summary: Successful="+totalSuccessTests+" Skipped="+totalSkippedTests+" Failed="+totalFailedTests;
+		System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
+
 		// 3. Close all connections: 
         JdbcConnector connector = new JdbcConnector();
         if (cisConnections != null)

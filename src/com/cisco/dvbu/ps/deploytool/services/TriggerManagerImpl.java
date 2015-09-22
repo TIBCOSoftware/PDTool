@@ -23,6 +23,11 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 //import javax.xml.bind.annotation.XmlEnumValue;
 
+
+
+
+
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
@@ -114,6 +119,10 @@ public class TriggerManagerImpl implements TriggerManager {
 		if(logger.isDebugEnabled()){
 			logger.debug("Entering TriggerManagerImpl.generateTriggersXML() with following params " + " serverId: " + serverId + ", pathToTriggersXML: " + pathToTriggersXML + ", pathToServersXML: " + pathToServersXML);
 		}
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
 
         // Validate whether the files exist or not
         if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -507,6 +516,8 @@ public class TriggerManagerImpl implements TriggerManager {
 	// Perform a trigger actions such as update or enable
 	private void doTriggerAction(String actionName, String serverId, String triggerIds, String userName, String pathToTriggersXML, String pathToServersXML) throws CompositeException {
 
+		// Initialize variables
+		String processedIds = null;
 		ResourceList returnResList = null;
 		AttributeList conditionAttributes = null;
 		Schedule conditionSchedule = null;
@@ -541,6 +552,10 @@ public class TriggerManagerImpl implements TriggerManager {
 		// Extract variables for the triggerIds
 		triggerIds = CommonUtils.extractVariable(prefix, triggerIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (triggerIds == null) ? "no_triggerIds" : "Ids="+triggerIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 		int loopCount = 0;
 		for (TriggerType trigger : triggerList) {
 			loopCount++;
@@ -555,7 +570,14 @@ public class TriggerManagerImpl implements TriggerManager {
 			 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 			 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 			 */
-			if(DeployUtil.canProcessResource(triggerIds, identifier)){
+			if(DeployUtil.canProcessResource(triggerIds, identifier))
+			{
+				// Add to the list of processed ids
+				if (processedIds == null)
+					processedIds = "";
+				else
+					processedIds = processedIds + ",";
+				processedIds = processedIds + identifier;
 
 				if(logger.isInfoEnabled()){
 					logger.info("processing action " + actionName + " on trigger " + identifier);
@@ -571,6 +593,10 @@ public class TriggerManagerImpl implements TriggerManager {
 					logger.debug("Condition: " + trigger.getCondition().toString());
 					logger.debug("Action: " + trigger.getAction().toString());
 				}
+
+				// Set the Module Action Objective
+				s1 = identifier+"=" + ((trigger.getResourcePath() == null) ? "no_triggerPath" : trigger.getResourcePath());
+				System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 				/*
 				 * Process Trigger Baseline
@@ -701,11 +727,24 @@ public class TriggerManagerImpl implements TriggerManager {
 
 			} else {
 				if(logger.isDebugEnabled()){
-					logger.debug("skipping action " + actionName + " on trigger " + identifier);
+					String msg = "Warning: Skipping action " + actionName + " on trigger " + identifier;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
 				}
 			}
 		}
-
+		// Determine if any resourceIds were not processed and report on this
+		if (processedIds != null) {
+			if(logger.isInfoEnabled()){
+				logger.info("Trigger entries processed="+processedIds);
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No trigger entries were processed for the input list.  triggerIds="+triggerIds;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}		
+		}
 	}
 
 	// Get the list of trigger list from the TriggerModule.xml property file

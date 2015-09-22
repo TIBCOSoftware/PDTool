@@ -39,7 +39,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>E:/dev/vcs/csvn/bin</VCS_HOME>
+      <VCS_HOME>$SVN_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>svn</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -159,7 +159,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -179,9 +179,9 @@
 		#                  Command Format: [http:////hostname.domain/svn/basename]
 		#                         Example: http:////http://myhost.domain.com/svn/sandbox
 		-->
-      <VCS_REPOSITORY_URL>http:////$SVN_VCS_HOST/svn/sandbox/PDTOOL/$CIS_VERSION</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$SVN_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-     <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+     <VCS_PROJECT_ROOT>$SVN_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -198,9 +198,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$SVN_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$SVN_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -253,7 +253,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>E:/dev/vcs/perforce</VCS_HOME>
+      <VCS_HOME>$P4_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>p4</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -394,9 +394,9 @@
 		#                  Command Format: [hostname:port]
 		#                         Example: myhost:1666
 		-->
-      <VCS_REPOSITORY_URL>$P4_VCS_HOST:1666</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$P4_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$P4_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -413,9 +413,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$P4_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$P4_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
  	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -488,7 +488,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>E:/dev/vcs/csvnt</VCS_HOME>
+      <VCS_HOME>$CVS_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>cvs</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -639,9 +639,9 @@
 		#                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
 		#                      Example: :pserver:<VCS_USERNAME>:<VCS_PASSWORD>@myhost:2401/home/cvs
 		-->
-		<VCS_REPOSITORY_URL>:pserver:$CVS_VCS_USERNAME:$CVS_VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
+		<VCS_REPOSITORY_URL>$CVS_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$CVS_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -658,9 +658,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$CVS_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$CVS_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -717,7 +717,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>E:/dev/vcs/TEE-CLC-11.0.0</VCS_HOME>
+      <VCS_HOME>$TFS_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
      <VCS_COMMAND>tf.cmd</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -792,13 +792,13 @@
 		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
 		-->
-      <VCS_CHECKIN_OPTIONS>-associate:1</VCS_CHECKIN_OPTIONS>
+      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
       <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
 		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
 		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
 		-->
-      <VCS_CHECKIN_OPTIONS_REQUIRED>-associate</VCS_CHECKIN_OPTIONS_REQUIRED>
+      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
 	  
       <!--Element VCS_CHECKOUT_OPTIONS is optional
 		# Resource Checkout. Checkout resources to VCS equates to:
@@ -858,9 +858,9 @@
 		#                  Command Format: [http://hostname.domain:8080/tfs/basename]
 		#                         Example: http://myhost:8080/tfs/TeamCollection/TeamProject
 		-->
-      <VCS_REPOSITORY_URL>http:////$TFS_VCS_HOST:8080/tfs/CompositeCollection</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$TFS_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$TFS_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -877,9 +877,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$TFS_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$TFS_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -907,13 +907,21 @@
       <!--Element vcsSpecificEnvVars is optional-->
       <vcsSpecificEnvVars>
         <!--Element envVar is optional, maxOccurs=unbounded-->
+		<!-- [Default-change if desired but must be in path (UNIX:vi, Windows: notepad) ] -->
         <envVar>
           <envName>TFS_EDITOR</envName>
           <envValue>notepad</envValue>
         </envVar>
+		<!-- Use an existing TFS workspace.  This will not create a separate workspace for 
+			 VCS integration. If this is true, CIS will only copy to/from the workspace and
+			 not check into TFS. It will record add, edits and deletes in the workspace. -->
+        <envVar>
+          <envName>TFS_USE_EXISTING_WORKSPACE</envName>
+          <envValue>false</envValue>
+        </envVar>
         <envVar>
           <envName>TFS_SERVER_URL</envName>
-          <envValue>$$/Composite_$CIS_VERSION/cis_objects</envValue>
+          <envValue>$$/$VCS_PROJECT_ROOT</envValue>
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
@@ -937,7 +945,7 @@
             #     Windows example: D:/dev/cvs/bin
             #        UNIX example: /usr/bin
         -->
-      <VCS_HOME>C:/Program Files (x86)/Git/cmd</VCS_HOME>
+      <VCS_HOME>$GIT_HOME</VCS_HOME>
       <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd,git] -->
       <VCS_COMMAND>git</VCS_COMMAND>
       <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -1105,9 +1113,9 @@
         #                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
         #                         Example: http://<VCS_USERNAME>:<VCS_PASSWORD>@remotehost:80/path/to/repo.git/
         -->
-      <VCS_REPOSITORY_URL>https://github.com/$VCS_GIT_USERNAME/$VCS_GIT_PROJECT.git</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$GIT_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
       <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  git: The project folder.-->
-     <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+     <VCS_PROJECT_ROOT>$GIT_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
       <!--
         # VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
         #     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -1124,9 +1132,9 @@
         # VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
         # VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
         -->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$GIT_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$GIT_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
       <!--
         # VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
         #    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -1182,7 +1190,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>E:/dev/vcs/csvn/bin</VCS_HOME>
+      <VCS_HOME>$CLC_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd,git,cleartool] -->
       <VCS_COMMAND>cleartool</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -1332,7 +1340,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -1352,9 +1360,9 @@
 		#                  Command Format: [http:////hostname.domain/svn/basename]
 		#                         Example: http:////http://myhost.domain.com/svn/sandbox
 		-->
-      <VCS_REPOSITORY_URL>http://</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$CLC_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-     <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
+     <VCS_PROJECT_ROOT>$CLC_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
@@ -1371,9 +1379,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$CLC_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$CLC_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  

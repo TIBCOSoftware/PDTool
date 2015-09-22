@@ -52,9 +52,14 @@ public class ResourceManagerImpl implements ResourceManager{
 
 		String prefix = "executeConfiguredProcedures";
 		String outputReturnVariables = "false";
-		
+		String processedIds = null;
+
 		// Extract variables for the procedureIds
 		procedureIds = CommonUtils.extractVariable(prefix, procedureIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (procedureIds == null) ? "no_procedureIds" : "Ids="+procedureIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToResourceXML)) {
@@ -80,7 +85,15 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(procedureIds, resourceId)){
+				 if(DeployUtil.canProcessResource(procedureIds, resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
 					 String arguments ="";
 					 if(resource.getArgument() != null){
 						 
@@ -108,8 +121,10 @@ public class ResourceManagerImpl implements ResourceManager{
 							String resourcePath = resource.getResourcePath().get(i);
 							if(logger.isInfoEnabled()){
 								 logger.info("Executing Procedure "+resourcePath+" with arguments "+arguments+"  outputReturnVariables="+outputReturnVariables);
-							 }
-							 executeProcedure(serverId, resourcePath, resource.getDataServiceName(), pathToServersXML, arguments, outputReturnVariables); 
+							}
+							System.setProperty("RESOURCE_ID", resourceId);
+							executeProcedure(serverId, resourcePath, resource.getDataServiceName(), pathToServersXML, arguments, outputReturnVariables); 
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -118,8 +133,26 @@ public class ResourceManagerImpl implements ResourceManager{
 					}
 				}
 			}
+			
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Procedure entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No procedure entries were processed for the input list.  procedureIds="+procedureIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No procedure entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}
 		}
-
 	}
 
 	/* (non-Javadoc)
@@ -130,6 +163,12 @@ public class ResourceManagerImpl implements ResourceManager{
 
 		boolean outputReturnVariables = false;
 		
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "" : resourceId+"=";
+		String s1 = (procedureName == null) ? "no_procedureName" : resourceId+procedureName;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE : "+s1);
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -151,7 +190,13 @@ public class ResourceManagerImpl implements ResourceManager{
 		Boolean outputReturnVariablesBool = true;
 		if (outputReturnVariables != null && (outputReturnVariables.equalsIgnoreCase("true") || outputReturnVariables.equalsIgnoreCase("false"))) 
 			outputReturnVariablesBool = Boolean.valueOf(outputReturnVariables);
-		
+	
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "" : resourceId+"=";
+		String s1 = (procedureName == null) ? "no_procedureName" : resourceId+procedureName;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE : "+s1);
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -169,6 +214,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void deleteResource(String serverId, String resourcePath, String pathToServersXML) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "DELETE : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -204,9 +255,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void deleteResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "deleteResources";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "DELETE : "+s1);
 
 		List<ResourceType> resourceList = getResources(serverId, resourceIds, pathToResourceXML, pathToServersXML);
 		if (resourceList != null && resourceList.size() > 0) {
@@ -223,12 +279,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
 
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							deleteResource(serverId, resourcePath, pathToServersXML);
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -236,6 +301,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}					 
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No procedure entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -245,6 +328,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void renameResource(String serverId, String resourcePath, String pathToServersXML, String newName) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "RENAME : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -269,9 +358,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void renameResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "renameResources";
+		String processedIds = null;
 		
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "RENAME : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToResourceXML)) {
@@ -296,11 +390,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							renameResource(serverId, resourcePath, pathToServersXML, resource.getNewName());
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -308,6 +412,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}					 
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -318,6 +440,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void copyResource(String serverId, String resourcePath, String pathToServersXML, String targetContainerPath, String newName, String copyMode) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "COPY : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -345,9 +473,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void copyResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "copyResources";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "COPY : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToResourceXML)) {
@@ -372,11 +505,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							copyResource(serverId,resourcePath, pathToServersXML, resource.getTargetContainerPath(), resource.getNewName(), resource.getCopyMode());
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -384,6 +527,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}					 
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -393,6 +554,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void moveResource(String serverId, String resourcePath, String pathToServersXML, String targetContainerPath, String newName) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "MOVE : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -417,9 +584,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void moveResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "moveResources";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "MOVE : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToResourceXML)) {
@@ -444,11 +616,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							moveResource(serverId, resourcePath, pathToServersXML, resource.getTargetContainerPath(), resource.getNewName());
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -456,6 +638,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}					 
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -465,6 +665,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public boolean doResourceExist(String serverId, String resourcePath, String pathToServersXML) {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXIST : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -510,9 +716,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void doResourcesExist(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "doResourcesExist";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXIST : "+s1);
 
 		List<ResourceType> resourceList = getResources(serverId, resourceIds, pathToResourceXML, pathToServersXML);
 		if (resourceList != null && resourceList.size() > 0) {
@@ -529,15 +740,25 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+ 
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							 if(!doResourceExist(serverId, resourcePath, pathToServersXML))
 							 {
-								 throw new CompositeException("Resource Id "+resourceId +" does not exist on server "+serverId);
+								System.clearProperty("RESOURCE_ID");
+								throw new CompositeException("Resource Id "+resourceId +" does not exist on server "+serverId);
 							 }
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -545,6 +766,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}					 
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -554,6 +793,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void lockResource(String serverId, String resourcePath, String pathToServersXML) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "LOCK : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -577,9 +822,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void lockResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "lockResources";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "LOCK : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToResourceXML)) {
@@ -604,11 +854,21 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(resourceIds,resourceId)){
+				 if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							lockResource(serverId, resourcePath, pathToServersXML);
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -616,6 +876,24 @@ public class ResourceManagerImpl implements ResourceManager{
 						}						
 					}
 				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 		}
 	}
@@ -625,6 +903,12 @@ public class ResourceManagerImpl implements ResourceManager{
 	 */
 //	@Override
 	public void unlockResource(String serverId, String resourcePath, String pathToServersXML, String comment) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "UNLOCK : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -648,9 +932,14 @@ public class ResourceManagerImpl implements ResourceManager{
 	public void unlockResources(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "unlockResources";
-		
+		String processedIds = null;
+
 		// Extract variables for the resourceIds
 		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "UNLOCK : "+s1);
 
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -671,8 +960,15 @@ public class ResourceManagerImpl implements ResourceManager{
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-					 
+				if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				{
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+				 
 					String comment = null;
 					if (resource.getComment() != null) {
 						comment = resource.getComment();
@@ -680,7 +976,9 @@ public class ResourceManagerImpl implements ResourceManager{
 					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
 						for (int i=0; i < resource.getResourcePath().size(); i++) {
 							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
 							unlockResource(serverId, resourcePath, pathToServersXML, comment);
+							System.clearProperty("RESOURCE_ID");
 						}
 					} else {
 						if(logger.isInfoEnabled()){
@@ -689,9 +987,143 @@ public class ResourceManagerImpl implements ResourceManager{
 					}
 				}
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
+		createFolder(serverId, resourcePath, pathToServersXML, recursive, "false");
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
+
+		// Set the Module Action Objective
+		String resourceId = System.getProperty("RESOURCE_ID");
+		resourceId = (resourceId == null) ? "Path=" : resourceId+"=";
+		String s1 = (resourcePath == null) ? "no_resourcePath" : resourceId+resourcePath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "CREATE : "+s1);
+
+		if(logger.isInfoEnabled()){
+			logger.info("Creating folder "+resourcePath+" on server "+serverId);
+		}
+		getResourceDAO().createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolders(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+//	@Override
+	public void createFolders(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
+
+		String prefix = "createFolders";
+		String processedIds = null;
+
+		// Extract variables for the resourceIds
+		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (resourceIds == null) ? "no_resourceIds" : "Ids="+resourceIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "CREATE : "+s1);
+
+		// Validate whether the files exist or not
+		if (!CommonUtils.fileExists(pathToServersXML)) {
+			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
+		}
+
+		List<ResourceType> resourceList = getResources(serverId, resourceIds, pathToResourceXML, pathToServersXML);
+		if (resourceList != null && resourceList.size() > 0) {
+			
+			for (ResourceType resource : resourceList) {
+				String recursive = "true";
+				String ignoreErrors = "false";
+
+				if (resource.getRecursive() != null)
+					recursive = resource.getRecursive();
+
+				// Get the identifier and convert any $VARIABLES
+				String resourceId = CommonUtils.extractVariable(prefix, resource.getId(), propertyFile, true);
+				
+				/**
+				 * Possible values for archives 
+				 * 1. csv string like import1,import2 (we process only resource names which are passed in)
+				 * 2. '*' or what ever is configured to indicate all resources (we process all resources in this case)
+				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
+				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
+				 */
+				if(DeployUtil.canProcessResource(resourceIds,resourceId))
+				{
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + resourceId;
+
+					// Get ignore errors
+					if (resource.getIgnoreErrors() != null)
+						ignoreErrors = CommonUtils.extractVariable(prefix, resource.getIgnoreErrors(), propertyFile, true);
+
+					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
+						for (int i=0; i < resource.getResourcePath().size(); i++) {
+							String resourcePath = resource.getResourcePath().get(i);
+							System.setProperty("RESOURCE_ID", resourceId);
+							createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
+							System.clearProperty("RESOURCE_ID");
+						}
+					} else {
+						if(logger.isInfoEnabled()){
+							logger.info("No resource paths found for resourceId "+resourceId);
+						}						
+					}
+				}
+			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Resource entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No resource entries were processed for the input list.  resourceIds="+resourceIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No resource entries found for Resource Module XML at path="+pathToResourceXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}
+		}		
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#getResourceType(java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -744,84 +1176,6 @@ public class ResourceManagerImpl implements ResourceManager{
 		}
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 */
-//	@Override
-	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive) throws CompositeException {
-		createFolder(serverId, resourcePath, pathToServersXML, recursive, "false");
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolder(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 */
-//	@Override
-	public void createFolder(String serverId, String resourcePath, String pathToServersXML, String recursive, String ignoreErrors) throws CompositeException {
-		if(logger.isInfoEnabled()){
-			logger.info("Creating folder "+resourcePath+" on server "+serverId);
-		}
-		getResourceDAO().createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cisco.dvbu.ps.deploytool.services.ResourceManager#createFolders(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 */
-//	@Override
-	public void createFolders(String serverId, String resourceIds, String pathToResourceXML, String pathToServersXML) throws CompositeException {
-
-		String prefix = "createFolders";
-		
-		// Extract variables for the resourceIds
-		resourceIds = CommonUtils.extractVariable(prefix, resourceIds, propertyFile, true);
-
-		// Validate whether the files exist or not
-		if (!CommonUtils.fileExists(pathToServersXML)) {
-			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
-		}
-
-		List<ResourceType> resourceList = getResources(serverId, resourceIds, pathToResourceXML, pathToServersXML);
-		if (resourceList != null && resourceList.size() > 0) {
-			
-			for (ResourceType resource : resourceList) {
-				String recursive = "true";
-				String ignoreErrors = "false";
-
-				if (resource.getRecursive() != null)
-					recursive = resource.getRecursive();
-
-				// Get the identifier and convert any $VARIABLES
-				String resourceId = CommonUtils.extractVariable(prefix, resource.getId(), propertyFile, true);
-				
-				/**
-				 * Possible values for archives 
-				 * 1. csv string like import1,import2 (we process only resource names which are passed in)
-				 * 2. '*' or what ever is configured to indicate all resources (we process all resources in this case)
-				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
-				 * 	  like -import1,import3 (we ignore passed in resources and process rest of the in the input xml
-				 */
-				if(DeployUtil.canProcessResource(resourceIds,resourceId)){
-
-					// Get ignore errors
-					if (resource.getIgnoreErrors() != null)
-						ignoreErrors = CommonUtils.extractVariable(prefix, resource.getIgnoreErrors(), propertyFile, true);
-
-					if (resource.getResourcePath() != null && resource.getResourcePath().size() > 0) {
-						for (int i=0; i < resource.getResourcePath().size(); i++) {
-							String resourcePath = resource.getResourcePath().get(i);
-							createFolder(serverId, resourcePath, pathToServersXML, recursive, ignoreErrors);
-						}
-					} else {
-						if(logger.isInfoEnabled()){
-							logger.info("No resource paths found for resourceId "+resourceId);
-						}						
-					}
-				}
-			}
-		}
-		
-	}
-	
 
 	/**
 	 * @return the resourceDAO

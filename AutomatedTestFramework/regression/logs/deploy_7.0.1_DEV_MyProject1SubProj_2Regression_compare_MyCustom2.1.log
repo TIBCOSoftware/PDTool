@@ -1,0 +1,292 @@
+------------------------------------------------------------------
+-----------                                            -----------
+----------- Cisco Advanced Services                    -----------
+----------- PDTool: Promotion and Deployment Tool      -----------
+-----------                                            -----------
+------------------------------------------------------------------
+ 
+ExecutePDTool::Mon 07/06/2015-12:10:11.40::***** BEGIN COMMAND: ExecutePDTool *****
+ 
+########################################################################################################################################
+ExecutePDTool: Parse command line and set input variables:
+########################################################################################################################################
+ExecutePDTool::Mon 07/06/2015-12:10:11.61::Command Line Arguments:
+ExecutePDTool::Mon 07/06/2015-12:10:11.64::   CMD=[-exec]
+ExecutePDTool::Mon 07/06/2015-12:10:11.66::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_2Regression_compare.dp]
+ExecutePDTool::Mon 07/06/2015-12:10:11.69::   VCS_USERNAME=[]
+ExecutePDTool::Mon 07/06/2015-12:10:11.71::   VCS_PASSWORD=[]
+ExecutePDTool::Mon 07/06/2015-12:10:11.74::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_DEV.properties]
+ExecutePDTool::Mon 07/06/2015-12:10:11.76::   RELEASE_FOLDER=[]
+ExecutePDTool::Mon 07/06/2015-12:10:11.79::   CIS_VERSION=[]
+ 
+ExecutePDTool::Mon 07/06/2015-12:10:11.84::----------------------------------------------------------
+ExecutePDTool::Mon 07/06/2015-12:10:11.87::Section: Invoking setVars.bat...C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat
+ExecutePDTool::Mon 07/06/2015-12:10:11.89::----------------------------------------------------------
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat": Setting pre-processing custom variables
+########################################################################################################################################
+------------------
+GENERAL VARIABLES
+------------------
+MY_JAVA_HOME               =
+PDTOOL_SUBSTITUTE_DRIVE    =O:
+PDTOOL_INSTALL_HOME        =
+PDTOOL_HOME                =
+MY_CONFIG_PROPERTY_FILE    =
+------------------
+CIS VARIABLES
+------------------
+CIS_PORT                   =9420
+CIS_REPO_PORT              =9428
+CIS_HTTP_TYPE              =http
+CIS_WSPORT                 =9420
+CIS_USERNAME               =admin
+CIS_PASSWORD               =Encrypted:7F6324FFD300BE8F
+CIS_DOMAIN                 =composite
+------------------
+TFS VARIABLES
+------------------
+TFS_HOME                   =
+TFS_VCS_HOST               =mtinius-ws
+TFS_VCS_REPOSITORY_URL     =
+TFS_VCS_PROJECT_ROOT       =
+TFS_VCS_USERNAME           =mtinius
+TFS_VCS_PASSWORD           =Encrypted:03A98497EEF59CF0
+TFS_VCS_WORKSPACE_NAME     =TFSww
+TFS_VCS_WORKSPACE_NAME_TEMP=TFSwwt
+------------------
+SVN VARIABLES
+------------------
+SVN_HOME                   =
+SVN_VCS_HOST               =dvbu-kauai.cisco.com
+SVN_VCS_REPOSITORY_URL     =
+SVN_VCS_PROJECT_ROOT       =
+SVN_VCS_USERNAME           =mtinius
+SVN_VCS_PASSWORD           =Encrypted:5240F442049ACB93D9D2DC3BC9421A68
+SVN_VCS_WORKSPACE_NAME     =SVNww
+SVN_VCS_WORKSPACE_NAME_TEMP=SVNwwt
+
+########################################################################################################################################
+C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat: Setting PDTool variables
+########################################################################################################################################
+MY_VARS_HOME               =C:\CompositeSoftware\PDTool_Test
+MY_PRE_VARS_PATH           =C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat
+MY_POST_VARS_PATH          =C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat
+JAVA_HOME                  =C:\Program Files\Java\jre7
+MIN_MEMORY                 =-Xms256m
+MAX_MEMORY                 =-Xmx1024m
+CONFIG_PROPERTY_FILE       =deploy.properties
+CURRDIR                    =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin
+SUBSTITUTE_DRIVE           =O:
+PROJECT_HOME               =O:
+PROJECT_HOME_PHYSICAL      =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+CERT_ARGS                  =-Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit
+HTTP_PROXY                 =
+JAVA_OPT                   =-Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit 
+
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat": Setting post-processing custom variables
+########################################################################################################################################
+propertyOrderPrecedence  =
+MODULE_HOME              =
+
+########################################################################################################################################
+ExecutePDTool: Command line resolved variables:
+########################################################################################################################################
+ExecutePDTool::Mon 07/06/2015-12:10:12.28::Resolved Arguments:
+ExecutePDTool::Mon 07/06/2015-12:10:12.30::   CMD=[-exec]
+ExecutePDTool::Mon 07/06/2015-12:10:12.33::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_2Regression_compare.dp]
+ExecutePDTool::Mon 07/06/2015-12:10:12.35::   VCS_USERNAME=[]
+ExecutePDTool::Mon 07/06/2015-12:10:12.38::   VCS_PASSWORD=[]
+ExecutePDTool::Mon 07/06/2015-12:10:12.40::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_DEV.properties]
+ExecutePDTool::Mon 07/06/2015-12:10:12.43::   RELEASE_FOLDER=[]
+ExecutePDTool::Mon 07/06/2015-12:10:12.46::   CIS_VERSION=[7.0.0]
+ 
+ExecutePDTool::Mon 07/06/2015-12:10:12.51::Section: Substitute Drives
+ExecutePDTool::Mon 07/06/2015-12:10:12.53::         Evaluate the substitute drive=O: path=C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+ExecutePDTool::Mon 07/06/2015-12:10:12.70::         Substitute drive O: is already mapped to path:C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+
+ 
+------------------------------------------------------------------
+-------------------- COMMAND-LINE DEPLOYMENT ---------------------
+------------------------------------------------------------------
+ 
+ 
+-- COMMAND: execCisDeployTool ----------------------
+ 
+"C:\Program Files\Java\jre7\bin\java" -Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit  -cp  "O:\dist\*;O:\lib\*" -Dcom.cisco.dvbu.ps.configroot="O:\resources\config" -Dlog4j.configuration="file:O:\resources\config\log4j.properties"   -Djava.endorsed.dirs="O:\lib\endorsed" -DPROJECT_HOME="O:" -DPROJECT_HOME_PHYSICAL="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31" -DCONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties com.cisco.dvbu.ps.deploytool.DeployManagerUtil execCisDeployTool "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_2Regression_compare.dp" "" ""
+ 
+-- BEGIN OUTPUT ------------------------------------
+ 
+2015-07-06 12:10:13,546 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <>
+2015-07-06 12:10:13,547 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-06 12:10:13,547 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties>
+2015-07-06 12:10:13,547 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-06 12:10:13,600 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:13,600 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-06 12:10:13,600 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:13,603 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-06 12:10:13,603 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action execCisDeployTool>
+2015-07-06 12:10:13,605 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-06 12:10:13,605 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <--------------- COMMAND-LINE DEPLOYMENT ---------------->
+2015-07-06 12:10:13,605 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-06 12:10:13,605 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <>
+2015-07-06 12:10:13,606 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-06 12:10:13,606 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties>
+2015-07-06 12:10:13,606 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <propertyOrderPrecedence=DEFAULT: JVM PROPERTY_FILE SYSTEM>
+2015-07-06 12:10:13,606 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN DEPLOYMENT ORCHESTRATION *****>
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Resolved Property Variables:>
+2015-07-06 12:10:13,610 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::PROJECT_HOME=     O:>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::MODULE_HOME=      O:/resources/modules>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SCHEMA_LOCATION=  O:/resources/schema/PDToolModules.xsd>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SUPPRESS_COMMENTS=true>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::suppress option=   -suppress>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG1=           true>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG2=           true>
+2015-07-06 12:10:13,611 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG3=           true>
+2015-07-06 12:10:13,617 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 12:10:13,617 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line  35 PASS	TRUE   ExecuteAction      compareRegressionFiles      $SERVERID    	Test2.2_$SCRIPT_CIS_VERSION		"$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  expectedStatus=PASS>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  exitOnError=   TRUE>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  actionType=    ExecuteAction>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  moduleAction=  compareRegressionFiles>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  arguments=     $SERVERID Test2.2_$SCRIPT_CIS_VERSION "$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN COMMAND: compareRegressionFiles *****>
+2015-07-06 12:10:13,618 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::Call Action args[0]=compareRegressionFiles with arguments:>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[1]=localhost9420http>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[2]=Test2.2_7.0>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[3]=C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/modules/MyProject1SubProj_RegressionModule.xml>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[4]=O:/resources/modules/servers.xml>
+2015-07-06 12:10:13,620 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::>
+2015-07-06 12:10:13,659 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:13,659 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-06 12:10:13,659 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:13,660 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-06 12:10:13,660 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action compareRegressionFiles>
+2015-07-06 12:10:14,408 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+2015-07-06 12:10:14,408 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <processing action "compare result files" for regression id: Test2.2_7.0>
+2015-07-06 12:10:14,408 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_4275736546
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_731745871
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_2313011060
+2015-07-06 12:10:14,429 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,429 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----- Regression Query Content Comparison Summary ------>
+2015-07-06 12:10:14,429 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Compares the contents of two regression files to        >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <determine if they are the same or not.                  >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <      Success=checksums are the same.                   >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <      Skipped=did not match database or resource filter.>
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <      Failure=file checksums are different.             >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <      Error=Unknown issue encountered.                  >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <      Total Successful Comparisons: 3                   >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <         Total Skipped Comparisons: 0                   >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <         Total Failure Comparisons: 0                   >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <           Total Error Comparisons: 0                   >
+2015-07-06 12:10:14,430 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                    ---------           >
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                 Total Comparisons: 3                   >
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    Regression comparsion duration:  000 00:00:00.0021  >
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Review "content comparison" Summary: C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/output/MyProject1SubProj/701R1/DEV_RegressionTest_CompareFiles_MyCustom2.log>
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,431 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Successfully completed compareRegressionFiles.>
+2015-07-06 12:10:14,432 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,432 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line   35   SCRIPT_RESULTS=PASS  EXPECTED=PASS  ACTUAL=PASS  EXIT_ON_ERROR=TRUE  ACTION=compareRegressionFiles>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line  37 PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test2.2_$SCRIPT_CIS_VERSION		"$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  expectedStatus=PASS>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  exitOnError=   TRUE>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  actionType=    ExecuteAction>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  moduleAction=  compareRegressionLogs>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  arguments=     $SERVERID Test2.2_$SCRIPT_CIS_VERSION "$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN COMMAND: compareRegressionLogs *****>
+2015-07-06 12:10:14,433 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::Call Action args[0]=compareRegressionLogs with arguments:>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[1]=localhost9420http>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[2]=Test2.2_7.0>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[3]=C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/modules/MyProject1SubProj_RegressionModule.xml>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[4]=O:/resources/modules/servers.xml>
+2015-07-06 12:10:14,434 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::>
+2015-07-06 12:10:14,468 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:14,468 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-06 12:10:14,468 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 12:10:14,469 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-06 12:10:14,469 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action compareRegressionLogs>
+2015-07-06 12:10:14,813 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+2015-07-06 12:10:14,813 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Processing action "compare log files" for regression id: Test2.2_7.0>
+2015-07-06 12:10:14,813 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_731745871
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_730986598
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_1155681307
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_1155681307
+SUCCESS-performance improved: "MY DB"."MY CATALOG"."MY SCHEMA".CompositeView_1155681307
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_731745871
+SUCCESS-within accepted range: "MY DB"."MY CATALOG"."MY SCHEMA".CompositeView_731745871
+tableUrl="MY CATALOG"."MY SCHEMA".CompositeView_730986598
+SUCCESS-within accepted range: "MY DB"."MY CATALOG"."MY SCHEMA".CompositeView_730986598
+2015-07-06 12:10:14,842 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,842 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------- Regression Log File Comparison Summary -------->
+2015-07-06 12:10:14,842 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,842 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Compare the query execution log files for two separate  >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <"Published Test" execution runs.  Compare each query    >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <result duration and apply a +- delta level to see if it >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <falls within the acceptable range.  Log File 1 is the   >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <baseline. Log File 2 is used to compare with log file 1.>
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <  Success = query duration met the following criteria:  >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    performance match:     duration2 = duration1        >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    performance improved:  duration2 < duration1        >
+2015-07-06 12:10:14,843 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    performance in acceptable range:                    >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                    duration2 > duration1 and           >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                    duration2-duration1 <= deltaDuration>
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <  Failure = query duration met the following criteria:  >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    performance worsened: duration2 > duration1         >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <    performance exceeded acceptable range:              >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                    duration2 > duration1 and           >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                    duration2-duration1 > deltaDuration >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <  No Match = query could not be matched in either file. >
+2015-07-06 12:10:14,844 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                 Duration Matched: 0                    >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                Duration Improved: 1                    >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <              Duration Acceptable: 2                    >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                   ---------            >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <     Total Successful Comparisons: 3                    >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <        Total Failure Comparisons: 0                    >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                   ---------            >
+2015-07-06 12:10:14,845 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                Total Comparisons: 3                    >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <           Total No Match Queries: 0                    >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <   Regression comparsion duration:  000 00:00:00.0028   >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <                                                        >
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Review "log comparison" Summary: C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/output/MyProject1SubProj/701R1/DEV_RegressionTest_CompareLogs_MyCustom2.log>
+2015-07-06 12:10:14,846 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <-------------------------------------------------------->
+2015-07-06 12:10:14,847 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Successfully completed compareRegressionLogs.>
+2015-07-06 12:10:14,847 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,848 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,848 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line   37   SCRIPT_RESULTS=PASS  EXPECTED=PASS  ACTUAL=PASS  EXIT_ON_ERROR=TRUE  ACTION=compareRegressionLogs>
+2015-07-06 12:10:14,848 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 12:10:14,851 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 12:10:14,851 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** COMPLETED DEPLOYMENT ORCHESTRATION SUCCESSFULLY *****>
+2015-07-06 12:10:14,851 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::End of CisDeployTool orchestration script.>
+2015-07-06 12:10:14,851 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+ 
+ExecutePDTool::Mon 07/06/2015-12:10:14.93::-------------- SUCCESSFUL SCRIPT COMPLETION [ExecutePDTool -exec] --------------
+ExecutePDTool::Mon 07/06/2015-12:10:14.96::End of script.

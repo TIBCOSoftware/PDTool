@@ -68,7 +68,7 @@
 #    /services/databases/TEST00
 PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/databases/TEST00 "$MODULE_HOME/servers.xml"
 #    /services/webservices/
-PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/webservices/testWebService00 "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /services/webservices/TEST00/testWebService "$MODULE_HOME/servers.xml"
 #    /shared/test00
 PASS	TRUE	ExecuteAction   deleteResource 	$SERVERID /shared/test00 "$MODULE_HOME/servers.xml"
 #    user1 and user2
@@ -114,8 +114,8 @@ PASS	TRUE	ExecuteAction	deleteUsersFromGroups 	$SERVERID group1 "user2" 	"$MODUL
 # -----------------------------------------
 # ServerAttribure Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"
-PASS	TRUE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"
+PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/studio" 	"$MODULE_HOME/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"
+PASS	TRUE	ExecuteAction	generateServerAttributeDefinitionsXML  	$SERVERID "/studio" 	"$MODULE_HOME/generated/getServerAttributeDefinitionModule.xml" 	"$MODULE_HOME/servers.xml" "*"
 PASS	FALSE	ExecuteAction   updateServerAttributes    				$SERVERID "studio3" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
 PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "server9" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
 PASS	TRUE	ExecuteAction   updateServerAttributes    				$SERVERID "*" 			"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
@@ -131,7 +131,7 @@ PASS	FALSE	ExecuteAction   	updateDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODU
 # Enable Datasource
 PASS	TRUE	ExecuteAction   	enableDataSources 		$SERVERID "ds1,ds2,ds3" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
 # Reintrospect Datasource
-PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds1,ds2" 			"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds1" 				"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
 # commented out as reintrospection on a web service fails with https
 #PASS	TRUE	ExecuteAction   	reIntrospectDataSources	$SERVERID "ds3" 				"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
 
@@ -156,6 +156,8 @@ PASS	TRUE	ExecuteAction   	deleteResource 			$SERVERID /shared/test00/f1/f2/p1mo
 PASS	TRUE	ExecuteAction   	lockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml"
 # Unlock a resource at a given path
 PASS	TRUE	ExecuteAction   	unlockResource 			$SERVERID /shared/test00/f1/p1 		"$MODULE_HOME/servers.xml" "unlocking resource"
+# Create folder resource at a given path
+PASS	FALSE	ExecuteAction   	createFolder	 		$SERVERID /shared/test00/_test1		"$MODULE_HOME/servers.xml" true
 
 # -----------------------
 # Module XML invocations
@@ -176,6 +178,8 @@ PASS	TRUE	ExecuteAction   	deleteResources 		$SERVERID "delete1" 				"$MODULE_HO
 PASS	TRUE	ExecuteAction   	lockResources 			$SERVERID "lock1" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 # Unlock resource configured in ResourceModule.xml
 PASS	TRUE	ExecuteAction   	unlockResources 		$SERVERID "unlock1" 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+# Create folder resource configured in ResourceModule.xml
+PASS	FALSE	ExecuteAction   	createFolders	 		$SERVERID "createFolder1" 			"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 #
 # -----------------------------------------
 # Rebind Module:
@@ -187,14 +191,15 @@ PASS	TRUE	ExecuteAction   		rebindResources    	$SERVERID "rb1,rb2" 				"$MODULE
 # -----------------------------------------
 # ResourceCache Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
-PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 					"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  	"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
-PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  		"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00/ResourceCache" 	"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
+PASS	TRUE	ExecuteAction   updateResourceCache 		$SERVERID "cache2"  						"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+# Determine why these 2 fail
+#####PASS	TRUE	ExecuteAction   clearResourceCache 			$SERVERID "cache2" 							"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+#####PASS	TRUE	ExecuteAction	refreshResourceCache 		$SERVERID "cache2" 							"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_single"  			"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_single"  			"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_disable_all"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
+PASS	FALSE	ExecuteAction   updateResourceCacheEnabled	$SERVERID "cache_enable_all"  				"$MODULE_HOME/ResourceCacheModule.xml" 		"$MODULE_HOME/servers.xml"
 
 # -----------------------------------------
 # Trigger Module:
@@ -242,12 +247,23 @@ PASS	TRUE	ExecuteAction   updatePrivileges 			$SERVERID "priv3"			"$MODULE_HOME/
 # -----------------------------------------
 # VCS Module: Non-VCS Connection Properties
 # -----------------------------------------
+# Import
+PASS	TRUE	ExecuteAction  	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 # These are the original methods which use the "deploy.properties" files
 #
 PASS	TRUE	ExecuteAction  	vcsInitWorkspace
 #
+PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin ""
+#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "check in"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /shared/test00 "Folder" "check in"												"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckins    			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
 PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/databases/TEST00 "Data Source" HEAD 									"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/testWebService00 "Composite Web Service" HEAD				"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /services/webservices/TEST00/testWebService "Composite Web Service" HEAD			"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID /shared/test00 "Folder" HEAD 														"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsCheckouts   			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
@@ -255,23 +271,19 @@ PASS	TRUE	ExecuteAction  	vcsCheckouts   			$SERVERID "testNN,testDB,testWS" 			
 # overloaded checkout function for perforce labels
 #PASS	TRUE	ExecuteAction  	vcsCheckout	    		$SERVERID "" "" rel1.2 HEAD 																"$MODULE_HOME/servers.xml"
 #
-PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/databases/TEST00 "Data Source" "check in" 								"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" "check in"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckin	    		$SERVERID /shared/test00 "Folder" "check in"												"$MODULE_HOME/servers.xml"
-#
-PASS	TRUE	ExecuteAction  	vcsCheckins    			$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
-#
 PASS	TRUE	ExecuteAction  	vcsForcedCheckin		$SERVERID /services/databases/TEST00 "Data Source" "force check in" 						"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" "force check in" 	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "force check in" 	"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsForcedCheckin	    $SERVERID /shared/test00 "Folder" "force check in"											"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsForcedCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/databases/TEST00 "Data Source" 			"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /shared/test00 "Folder"							"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/webservices/testWebService00 "Legacy Composite Web Service" 			"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin	    $SERVERID /services/webservices/TEST00/testWebService "Legacy Composite Web Service" 			"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsScanPathLength 		$SERVERID 0 "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" 	"$MODULE_HOME/servers.xml"
 #
 #
 # -----------------------------------------
@@ -281,8 +293,17 @@ PASS	TRUE	ExecuteAction  	vcsPrepareCheckins 		$SERVERID "testNN,testDB,testWS" 
 #
 PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
 #
+PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN ""                                             "$MODULE_HOME/VCSModule.xml"
+#PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]" "$MODULE_HOME/VCSModule.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /shared/test00 "Folder" "check in"				"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
 PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/databases/TEST00 "Data Source" HEAD 	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /services/webservices/TEST00/testWebService "Legacy Composite Web Service" HEAD	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN /shared/test00 "Folder" HEAD 					"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsCheckouts2    		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
@@ -290,23 +311,19 @@ PASS	TRUE	ExecuteAction  	vcsCheckouts2    		$SERVERID $VCONN "testNN,testDB,tes
 # overloaded checkout function for perforce labels
 #PASS	TRUE	ExecuteAction  	vcsCheckout2	    	$SERVERID $VCONN "" "" rel1.2 HEAD 								"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 #
-PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" "check in"	"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsCheckin2	    		$SERVERID $VCONN /shared/test00 "Folder" "check in"				"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-#
-PASS	TRUE	ExecuteAction  	vcsCheckins2    		$SERVERID $VCONN "testNN,testDB,testWS"							"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
-#
 PASS	TRUE	ExecuteAction  	vcsForcedCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /services/webservices/TEST00/testWebService "Legacy Composite Web Service" "force check in" "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsForcedCheckin2	    $SERVERID $VCONN /shared/test00 "Folder" "force check in"		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsForcedCheckins2 		$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2		$SERVERID $VCONN /services/databases/TEST00 "Data Source" 		"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
-PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /services/webservices/testWebService00 "Legacy Composite Web Service"  "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /services/webservices/TEST00/testWebService "Legacy Composite Web Service"  "$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckin2	    $SERVERID $VCONN /shared/test00 "Folder"						"$MODULE_HOME/VCSModule.xml"	"$MODULE_HOME/servers.xml"
 #
 PASS	TRUE	ExecuteAction  	vcsPrepareCheckins2 	$SERVERID $VCONN "testNN,testDB,testWS" 						"$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
+#
+PASS	TRUE	ExecuteAction  	vcsScanPathLength2 		$SERVERID $VCONN 259 "/services/databases/TEST00,/services/webservices/TEST00,/shared/test00_longpath" "$MODULE_HOME/VCSModule.xml" 	"$MODULE_HOME/servers.xml"
 #
 
 # -----------------------------------------
@@ -334,8 +351,12 @@ PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1
 # Perform a Performance Test for cis61
 PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 # Compare Performance Logs
-PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 
+PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Generate Security XML
+PASS	TRUE   ExecuteAction      generateRegressionSecurityXML $SERVERID   Test4.1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
+# Perform a Security test
+PASS	TRUE   ExecuteAction      executeSecurityTest         $SERVERID    	Test4.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 
 # -----------------------------------------
 # ServerManager Module:

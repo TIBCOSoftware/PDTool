@@ -82,6 +82,10 @@ public class GroupManagerImpl implements GroupManager {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 
+		// Set the Module Action Objective
+		String s1 = (domainName == null) ? "no_domainName" : "Domain="+domainName;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		GroupList groupList = getGroupDAO().getAllGroups(domainName, serverId, pathToServersXML);
 
 		GroupModule groupModule = new ObjectFactory().createGroupModule();
@@ -121,6 +125,7 @@ public class GroupManagerImpl implements GroupManager {
 	private void doGroupAction(String actionName, String serverId, String groupIds, String userName, String pathToGroupsXML, String pathToServersXML) throws CompositeException {
 
 		String prefix = "doGroupAction";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToGroupsXML)) {
@@ -137,6 +142,10 @@ public class GroupManagerImpl implements GroupManager {
 		// Extract variables for the groupIds
 		groupIds = CommonUtils.extractVariable(prefix, groupIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (groupIds == null) ? "no_groupIds" : "Ids="+groupIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
 		if (groupsList != null && groupsList.size() > 0) {
 
 			String groupName = null;
@@ -148,7 +157,15 @@ public class GroupManagerImpl implements GroupManager {
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, currGroup.getId(), propertyFile, true);
 					
-				if(DeployUtil.canProcessResource(groupIds, identifier)){
+				if(DeployUtil.canProcessResource(groupIds, identifier))
+				{
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+
 					//groupName = currGroup.getGroupName().toLowerCase();
 					//Change to lower case only if the domain is composite. AD domain can have mixed case domain names
 					if (currGroup.getGroupDomain().equalsIgnoreCase("composite")) {
@@ -184,20 +201,49 @@ public class GroupManagerImpl implements GroupManager {
 					if(actionName.equalsIgnoreCase(GroupDAO.action.DELETE.name())) {
 						Group group = getGroupDAO().getGroup(groupName, groupDomain, serverId, pathToServersXML);
 						if (group != null) {
+							// Set the Module Action Objective
+							s1 = identifier+"="+userName+"-->"+groupName+"@"+groupDomain;
+							System.setProperty("MODULE_ACTION_OBJECTIVE", actionName2+" : "+s1);
+
 							getGroupDAO().takeGroupAction(actionName2, groupName, groupDomain, userName, accessRights, serverId, pathToServersXML);
 							logger.info("Success: action="+actionName+"  user: "+userName);
 
 						} else {
-							logger.info("No "+actionName+" action taken due to group ("+groupName+") not found");	
+							// Set the Module Action Objective
+							s1 = identifier+"="+groupName+"@"+groupDomain+" not found.";
+							System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+							
+							logger.info("No "+actionName+" action taken due to group ("+groupName+") not found.");	
 						}
 					} else {
+						// Set the Module Action Objective
+						s1 = identifier+"="+userName+"-->"+groupName+"@"+groupDomain;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName2+" : "+s1);
+
 						getGroupDAO().takeGroupAction(actionName2, groupName, groupDomain, userName, accessRights, serverId, pathToServersXML);
 						logger.info("Successfully performed action="+actionName2+" for the group: "+groupName);
 					}
 				}
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Group entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No group entries were processed for the input list.  groupIds="+groupIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No group entries found for Group Module XML at path="+pathToGroupsXML;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}		
 		}
-
 	}
 
 	private List<GroupType> getGroups(String serverId, String groups,	String pathToGroupsXML, String pathToServersXML) {

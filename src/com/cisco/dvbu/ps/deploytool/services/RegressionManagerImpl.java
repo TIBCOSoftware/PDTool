@@ -175,6 +175,7 @@ public class RegressionManagerImpl implements RegressionManager
 	{
 		// Initialize prefix
 		String prefix = "generateInputFile";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
@@ -187,12 +188,16 @@ public class RegressionManagerImpl implements RegressionManager
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		List<RegressionTestType> regressionList = getRegression(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
-
+			for (RegressionTestType regression : regressionList) 
+			{
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
 
@@ -203,7 +208,14 @@ public class RegressionManagerImpl implements RegressionManager
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
 
 					if(logger.isInfoEnabled()){
 						logger.info("-----------------------------------------------------------------------");
@@ -223,6 +235,10 @@ public class RegressionManagerImpl implements RegressionManager
 					boolean isNewInputFileNeeded = RegressionManagerUtils.checkBooleanConfigParam(CommonUtils.extractVariable(prefix, this.regressionConfig.getCreateNewFile(), propertyFile, false));
 					if (isNewInputFileNeeded)
 					{
+						// Set the Module Action Objective
+						s1 = identifier+"=" + ((this.regressionConfig.getInputFilePath() == null) ? "no_inputFile" : this.regressionConfig.getInputFilePath());
+						System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 						// Generate the Regression Input file
 						RegressionInputFileDAO inputFileDao = getRegressionInputFileJdbcDAO();
 						String inputFileStr = inputFileDao.generateInputFile(this.cisServerConfig, this.regressionConfig, this.regressionQueries);
@@ -233,12 +249,32 @@ public class RegressionManagerImpl implements RegressionManager
 					// return inputFileStr;
 					else
 					{
+						// Set the Module Action Objective
+						s1 = identifier+"=No input file generated.";
+						System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 						if(logger.isInfoEnabled()){
-							logger.info("Configuration setting for new test file creation was set to false, so no new file was created.");
+							String moduleActionMessage = "Warning: Configuration setting for new test file creation was set to false, so no new file was created.";
+							logger.info(moduleActionMessage);
+							System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 						}
 					}
 				 }
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}			
 		}
 	}
 
@@ -254,6 +290,7 @@ public class RegressionManagerImpl implements RegressionManager
 	{
 		// Initialize prefix
 		String prefix = "executeRegressionTest";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRegressionXML)) {
@@ -269,11 +306,17 @@ public class RegressionManagerImpl implements RegressionManager
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		String s2 = null;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE : "+s1);
+
 		List<RegressionTestType> regressionList = getRegression(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
+			for (RegressionTestType regression : regressionList) 
+			{
 
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
@@ -285,7 +328,19 @@ public class RegressionManagerImpl implements RegressionManager
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+
+					// Set the Module Action Objective
+					s1 = "Id="+identifier;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE : "+s1);
+
 					if(logger.isInfoEnabled()){
 						logger.info("-----------------------------------------------------------------------");
 						logger.info("Processing action \"execute test\" for regression id: "+identifier);
@@ -304,17 +359,43 @@ public class RegressionManagerImpl implements RegressionManager
 					// Execute the functional or migration test if the test type is set to "functional" or "migration"
 					if (FUNCTIONAL.equalsIgnoreCase(testType) || MIGRATION.equalsIgnoreCase(testType) || REGRESSION.equalsIgnoreCase(testType)) 
 					{
+						// Set the Module Action Objective
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2 = "Id="+identifier;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+
 						// Execute the functional regression test for the given Regression ID
 						RegressionPubTestDAO testDAO = getRegressionPubTestJdbcDAO();
 						testDAO.executeAll(this.cisServerConfig, this.regressionConfig);
 					}
 					else
 					{
-						logger.info("Skipping regression id="+identifier+" because the test type is not set to \"functional\" or \"migration\".");
+						// Set the Module Action Objective
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2= "Id="+identifier+" Msg=Skipping unknown test type="+testType.toUpperCase();
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+
+						String moduleActionMessage = "Warning: Skipping regression id="+identifier+" because the test type is not set to \"functional\" or \"migration\".";
+						logger.info(moduleActionMessage);
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 					}
 
 				 }
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}								
 		}
 	}
 
@@ -374,7 +455,8 @@ public class RegressionManagerImpl implements RegressionManager
 				
 		// Initialize prefix
 		String prefix = "compareRegressionFiles";
-		
+		String processedIds = null;
+				
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRegressionXML)) {
 			throw new CompositeException("File ["+pathToRegressionXML+"] does not exist.");
@@ -388,12 +470,16 @@ public class RegressionManagerImpl implements RegressionManager
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 		
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "COMPARE_FILES : "+s1);
+
 		List<RegressionTestType> regressionList = getRegression(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
-
+			for (RegressionTestType regression : regressionList) 
+			{
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
 
@@ -404,8 +490,19 @@ public class RegressionManagerImpl implements RegressionManager
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
 					 
+					// Set the Module Action Objective
+					s1 = identifier;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "COMPARE_FILES : "+s1);
+
 					// Initialize variables
 					int totalSuccessComparisons = 0;
 					int totalFailureComparisons = 0;
@@ -653,12 +750,28 @@ public class RegressionManagerImpl implements RegressionManager
 						logger.info("                                                        ");
 						logger.info("Review \"content comparison\" Summary: "+logFilePath);
 						logger.info("--------------------------------------------------------");
+						
+						 String moduleActionMessage = "MODULE_INFO: Compare Files Summary: Successful="+totalSuccessComparisons+" Skipped="+totalSkippedComparisons+" Failed="+totalFailureComparisons+" Error="+totalErrorComparisons;
+						 System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 					}
 
 				} // end if(DeployUtil.canProcessResource(regressionIds, identifier))
 				 
 			} // end for (RegressionTestType regression : regressionList)
-			
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}			
 		} // end if (regressionList != null && regressionList.size() > 0)
 		
 	}// end method
@@ -677,6 +790,7 @@ public class RegressionManagerImpl implements RegressionManager
 		
 		// Initialize prefix
 		String prefix = "compareRegressionLogs";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRegressionXML)) {
@@ -692,6 +806,10 @@ public class RegressionManagerImpl implements RegressionManager
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "COMPARE_LOGS : "+s1);
+
 		List<RegressionTestType> regressionList = getRegression(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 		
 		// Populate the reqressionQuery ArrayList (this only needs to be done once per invocation.)
@@ -700,8 +818,8 @@ public class RegressionManagerImpl implements RegressionManager
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between log files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
-
+			for (RegressionTestType regression : regressionList) 
+			{
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
 
@@ -712,7 +830,19 @@ public class RegressionManagerImpl implements RegressionManager
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+
+					// Set the Module Action Objective
+					s1 = identifier;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "COMPARE_LOGS : "+s1);
+
 					if(logger.isInfoEnabled()){
 						logger.info("-----------------------------------------------------------------------");
 						logger.info("Processing action \"compare log files\" for regression id: "+identifier);
@@ -768,8 +898,21 @@ public class RegressionManagerImpl implements RegressionManager
 					compareLogs(logFilePath, logDelimiter, logAppend, logFilePath1, logDelimiter1, logFilePath2, logDelimiter2, durationDelta);
 				 }
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}						
 		}
-
 	}
 	
 	/** 
@@ -1072,6 +1215,9 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 				 logger.info("                                                        ");
 				 logger.info("Review \"log comparison\" Summary: "+logFilePath);
 				 logger.info("--------------------------------------------------------");
+				 
+				 String moduleActionMessage = "MODULE_INFO: Compare Logs Summary: Matched="+totalDurationMatch+" Improved="+totalPerformanceImproved+" Acceptable="+totalAcceptableRange+" Failed="+totalFailureComparisons+" NoMatch="+totalNoMatch;
+				 System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 			}
 		} catch (FileNotFoundException e) {
 			throw new CompositeException("Unable to find the query execution log file located at: "+currFile, e);
@@ -1093,6 +1239,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	{
 		// Initialize prefix
 		String prefix = "executePerformanceTest";
+		String processedIds = null;
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRegressionXML)) {
@@ -1108,12 +1255,17 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		String s2 = null;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE_PERFORMANCE : "+s1);
+
 		List<RegressionTestType> regressionList = getRegression(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
-
+			for (RegressionTestType regression : regressionList) 
+			{
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
 
@@ -1124,7 +1276,19 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;
+					 
+					// Set the Module Action Objective
+					s1 = "Id="+identifier;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE_PERFORMANCE : "+s1);
+					 
 					if(logger.isInfoEnabled()){
 						logger.info("-----------------------------------------------------------------------");
 						logger.info("Processing action \"execute performance test\" for regression id: "+identifier);
@@ -1138,23 +1302,47 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 
 					// Set the Regression Configuration for this ID;
 					this.regressionConfig = regression;	
-					
+					String testType = CommonUtils.extractVariable(prefix, this.regressionConfig.getTestRunParams().getTestType(), propertyFile, false);
+
 					// Execute the regression test for the given Regression ID
 					RegressionPerfTestDAO perfTestDAO = getRegressionPerfTestDAO();
 
 					// Only execute the performance test if the test type is set to "performance"
-					if (PERFORMANCE.equalsIgnoreCase(CommonUtils.extractVariable(prefix, this.regressionConfig.getTestRunParams().getTestType(), propertyFile, false))) 
+					if (PERFORMANCE.equalsIgnoreCase(testType)) 
 					{
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2 = "Id="+identifier;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+
 						perfTestDAO.executePerformanceTest(this.cisServerConfig, this.regressionConfig, regressionList);						
 					}
 					else 
 					{
-						logger.info("Skipping regression id="+identifier+" because the test type is not set to \"performance\".");
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2= "Id="+identifier+" Msg=Skipping unknown test type="+testType.toUpperCase();
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+
+						String moduleActionMessage = "Warning: Skipping regression id="+identifier+" because the test type is not set to \"performance\".";
+						logger.info(moduleActionMessage);
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 					}
 				 }
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}									
 		}
-
 	}
 
 	/** 
@@ -1169,6 +1357,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	{
 		// Initialize prefix
 		String prefix = "executeSecurityTest";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRegressionXML)) {
@@ -1184,6 +1373,11 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
 
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		String s2 = null;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE_SECURITY : "+s1);
+
 		// Get the regression security
 		RegressionSecurityType regressionSecurity = getRegressionSecurity(serverId, regressionIds, pathToRegressionXML, pathToServersXML);
 
@@ -1191,8 +1385,8 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 		if (regressionList != null && regressionList.size() > 0) {
 
 			// Loop over the list of regression compare ids and perform the comparison between files based on the target data source resources
-			for (RegressionTestType regression : regressionList) {
-
+			for (RegressionTestType regression : regressionList) 
+			{
 				// Get the identifier and convert any $VARIABLES
 				String identifier = CommonUtils.extractVariable(prefix, regression.getId(), propertyFile, true);
 
@@ -1203,7 +1397,19 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 				 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 				 * 	  like -test1,test2 (we ignore passed in resources and process rest of the in the input xml
 				 */
-				 if(DeployUtil.canProcessResource(regressionIds, identifier)){
+				 if(DeployUtil.canProcessResource(regressionIds, identifier))
+				 {
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;				 
+					 
+					// Set the Module Action Objective
+					s1 = identifier+"=security";
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "EXECUTE_SECURITY : "+s1);
+
 					if(logger.isInfoEnabled()){
 						logger.info("-----------------------------------------------------------------------");
 						logger.info("Processing action \"execute test\" for regression id: "+identifier);
@@ -1223,15 +1429,39 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 					// Execute the security test if the test type is set to "security"
 					if (SECURITY.equalsIgnoreCase(testType)) 
 					{
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2 = "Id="+identifier;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+						
 						// Execute the functional regression test for the given Regression ID
 						getRegressionSecurityTestDAO().executeSecurityTest(this.cisServerConfig, this.regressionConfig, regressionSecurity, pathToRegressionXML);
 					}
 					else
 					{
-						logger.info("Skipping regression id="+identifier+" because the test type is not set to \"security\".");
+						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
+						s2= "Id="+identifier+" Msg=Skipping unknown test type="+testType.toUpperCase();
+						System.setProperty("MODULE_ACTION_OBJECTIVE", s1 + " : " + s2);
+
+						String moduleActionMessage = "Warning: Skipping regression id="+identifier+" because the test type is not set to \"security\".";
+						logger.info(moduleActionMessage);
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 					}
 				 }
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToRegressionXML);
+			}			
 		}
 	}
 
@@ -1280,6 +1510,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	{
 		// Initialize prefix
 		String prefix = "generateRegressionSecurityXML";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToSourceRegressionXML)) {
@@ -1307,6 +1538,10 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 		
 		// Extract variables for the regressionIds
 		regressionIds = CommonUtils.extractVariable(prefix, regressionIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (regressionIds == null) ? "no_regressionIds" : "Ids="+regressionIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
 
 		try {
 			//using jaxb convert xml to corresponding java objects
@@ -1342,6 +1577,17 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 				 */
 				if (DeployUtil.canProcessResource(regressionIds, identifier))
 				{
+					// Add to the list of processed ids
+					if (processedIds == null)
+						processedIds = "";
+					else
+						processedIds = processedIds + ",";
+					processedIds = processedIds + identifier;				 
+					 
+					// Set the Module Action Objective
+					s1 = identifier;
+					System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+					
 					if (logger.isInfoEnabled())
 					{
 						logger.info("-----------------------------------------------------------------------");
@@ -1349,7 +1595,10 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 						logger.info("-----------------------------------------------------------------------");
 					}
 					
-					// Initialize variables
+					// Initialize start time and format
+			        Date startDate = new Date();
+
+			        // Initialize variables
 					String defaultEncryptedPassword = "";
 					String userFilter = "";
 			        String pathToTargetRegressionXML = null;
@@ -1357,6 +1606,9 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 					String queryMode = null;
 			        String planMode = null;
 			        String planModeType = null;
+			        int userCount = 0;
+					int queryCount = 0;
+					int planCount = 0;
 			        boolean planGenerateExpectedOutcome = false;
 			        boolean flattenSecurityUsersXML = true;
 			        boolean flattenSecurityQueryQueriesXML = true;
@@ -1530,7 +1782,6 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 
 							// Get the list of user ids and count
 							String userIds = "";
-							int userCount=0;
 							for (int i=0; i < regressionSecurityUsers.getRegressionSecurityUser().size(); i++) 
 							{
 								String userId = regressionSecurityUsers.getRegressionSecurityUser().get(i).getId();
@@ -1614,7 +1865,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 								regressionSecurity.getRegressionSecurityQueries().getRegressionSecurityQuery() != null &&
 								regressionSecurity.getRegressionSecurityQueries().getRegressionSecurityQuery().size() > 0) 
 							{
-								regressionSecurityQueries.getRegressionSecurityQuery().addAll(regressionSecurity.getRegressionSecurityQueries().getRegressionSecurityQuery());
+								regressionSecurityQueries.getRegressionSecurityQuery().addAll(regressionSecurity.getRegressionSecurityQueries().getRegressionSecurityQuery());								
 							}
 							
 					        CommonUtils.writeOutput("---------------------------------------------------",	prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -1640,6 +1891,11 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 							// Write the Regression Module XML back out to the target file.
 							writeRegressionXMLFile(prefix, regressionModule, pathToTargetRegressionXML, 
 									flattenSecurityUsersXML, flattenSecurityQueryQueriesXML, flattenSecurityQueryProceduresXML, flattenSecurityQueryWebServicesXML, flattenSecurityPlansXML);
+
+							// Get the number of queries generated
+							if (regressionSecurityQueries.getRegressionSecurityQuery() != null)
+								queryCount = regressionSecurityQueries.getRegressionSecurityQuery().size();
+
 						} // if (queryMode != null && queryMode.length() > 0 && ...
 
 						/************************
@@ -1650,10 +1906,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 						// SINGLEPLAN = Generate the Cartesian plan as a single plan
 						// MULTIPLAN = Generate the Cartesian plan as multiple plans for each user who has the same set of queries
 						if (planMode != null && planMode.length() > 0 && (planMode.equalsIgnoreCase("OVERWRITE") || planMode.equalsIgnoreCase("APPEND")) ) 
-						{	
-							// Initialize variables
-							int planCount = 0;
-							
+						{						
 							// Get the current regression security plans and determine whether to OVERWRITE or APPEND
 							RegressionSecurityPlansType regressionSecurityPlans = new RegressionSecurityPlansType();
 							if (planMode.equalsIgnoreCase("APPEND") && regressionSecurity.getRegressionSecurityPlans() != null && 
@@ -1936,13 +2189,50 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 					    CommonUtils.writeOutput("---------------------------------------------------",	prefix,"-debug2",logger,debug1,debug2,debug3);
 						writeRegressionXMLFile(prefix, regressionModule, pathToTargetRegressionXML, 
 								flattenSecurityUsersXML, flattenSecurityQueryQueriesXML, flattenSecurityQueryProceduresXML, flattenSecurityQueryWebServicesXML, flattenSecurityPlansXML);
+
+						// Print out timings
+						String duration = CommonUtils.getElapsedTime(startDate);
+
+						 int len = 56;
+						 logger.info("--------------------------------------------------------");
+						 logger.info("------------- Security Generation Summary --------------");
+						 logger.info("--------------------------------------------------------");
+						 logger.info("                                                        ");
+		logger.info(CommonUtils.rpad("            Total Users Generated: " + userCount, len, " "));
+		logger.info(CommonUtils.rpad("          Total Queries Generated: " + queryCount, len, " "));
+		logger.info(CommonUtils.rpad("            Total Plans Generated: " + planCount, len, " "));
+						 logger.info("                                                        ");
+		logger.info(CommonUtils.rpad("  Output file generation duration: " + duration, len, " "));
+						 logger.info("                                                        ");
+						 logger.info("Regression output file: "+pathToTargetRegressionXML);
+						 logger.info("--------------------------------------------------------");
+
+		 				String moduleActionMessage = "MODULE_INFO: Generate Summary: Users="+userCount+" Queries="+queryCount+" Plans="+planCount;
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
+
 					} // if (SECURITY.equalsIgnoreCase(testType))
 					else
 					{
-						logger.info("Skipping regression id="+identifier+" because the test type is not set to \"security\".");
+						String moduleActionMessage = "Warning: Skipping regression id="+identifier+" because the test type is not set to \"security\".";
+						logger.info(moduleActionMessage);
+						System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 					} // else
 				} // if(DeployUtil.canProcessResource(regressionIds, identifier)){
 			} // for (RegressionTestType regression : regressionList) {
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Regression entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Warning: No regression entries were processed for the input list.  regressionIds="+regressionIds);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				logger.info("Warning: No regression entries found for Regression Module XML at path="+pathToSourceRegressionXML);
+			}			
 		} // if (regressionList != null && regressionList.size() > 0) {
 	}
 

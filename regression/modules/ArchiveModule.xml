@@ -31,7 +31,7 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>host</attribute>
-				<value>http://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
+				<value>http://localhost:$CIS_PORT/services/TEST00/testWebService?wsdl</value>
 			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
@@ -74,7 +74,7 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>host</attribute>
-				<value>http://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
+				<value>http://localhost:$CIS_PORT/services/TEST00/testWebService?wsdl</value>
 			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>

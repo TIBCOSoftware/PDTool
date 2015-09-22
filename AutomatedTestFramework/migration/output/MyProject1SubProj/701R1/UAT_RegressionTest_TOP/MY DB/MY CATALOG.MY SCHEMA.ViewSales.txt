@@ -1,0 +1,2 @@
+ProductID|ProductName|CategoryID|CategoryName|ProductDescription|SerialNumber|UnitPrice|ReorderLevel|LeadTime|Status|Discount
+2|Mega Zip 750MB USB 2.0|1|Data Storage|Mega Zip 750 MB|5-76-9876|187.670000|5|7 Days|closed|0.20

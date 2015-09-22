@@ -41,6 +41,9 @@ public class WsApiHelperObjects {
 	// -- New method with logging capabilities
 	public static CompositeServer getServerLogger(String serverId, String pathToServersXML, String prefix, Log logger) throws CompositeException {
 		
+		// Extract the serverId variable if it exists
+		serverId = CommonUtils.extractVariable(prefix, serverId, propertyFile, true);
+		
 		// Get the server information
 		CompositeServer serverInfo = getServerImpl(serverId, pathToServersXML);
 
@@ -140,7 +143,7 @@ public class WsApiHelperObjects {
 					retval.setId(CommonUtils.extractVariable(prefix, server.getChildText("id"), propertyFile, true));
 					retval.setDomain(CommonUtils.extractVariable(prefix, server.getChildText("domain"), propertyFile, true));
 					retval.setHostname(CommonUtils.extractVariable(prefix, server.getChildText("hostname"), propertyFile, true));
-					
+										
 					String encryptedpassword = CommonUtils.extractVariable(prefix, server.getChildText("encryptedpassword"), propertyFile, true);
 					String decryptedpassword = null;
 					if(encryptedpassword != null){
@@ -192,11 +195,16 @@ public class WsApiHelperObjects {
 				break;
 			}
 		}
-		
-		if (retval == null) {
+
+		if (retval != null) {
+			// [mtinius: 2015-09-03] Used by java src: CisDeployTool.java for printing out details of SUMMARY.log
+			String host = retval.getHostname();
+			String port = String.valueOf(retval.getPort());
+			if (host != null && port != null)
+				System.setProperty("CIS_SERVER_HOST_PORT", host+ ":" + port);
+		} else {
 			throw new ApplicationException("No server information was found for serverId="+serverId);
 		}
-
 		return retval;		
 	}
 	
