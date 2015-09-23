@@ -502,6 +502,9 @@ logger.info(CommonUtils.rpad("        Published Test duration: " + duration, len
 				 logger.info("Review \"pubtest\" Summary: " + logFilePath);
 				 logger.info("--------------------------------------------------------");
 
+		String moduleActionMessage = "MODULE_INFO: Regression Summary: Successful="+totalSuccessTests+" Skipped="+totalSkippedTests+" Failed="+totalFailedTests;
+		System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
+				 
 // 3. Close all connections: 
         JdbcConnector connector = new JdbcConnector();
         if (this.cisConnections != null)

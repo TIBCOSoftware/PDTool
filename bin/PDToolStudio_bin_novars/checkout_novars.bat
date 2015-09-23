@@ -143,31 +143,39 @@ call %writeOutput% "--- Invoking setVars.bat...%DEFAULT_SET_VARS_PATH%"			 					
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %DEFAULT_SET_VARS_PATH% 
 
+
 REM #=======================================
 REM # Substitute PROJECT_HOME path
-REM #=======================================
-REM #   The PD Tool PROJECT HOME is a substituted
-REM #   path in order to shorten the path and
+REM #=====================================================================================
+REM #   The PDTool PROJECT HOME is a substituted path in order to shorten the path and
 REM #   prevent "too long a file name" error
-REM #=======================================
-if not defined SUBSTITUTE_DRIVE goto MAPSUCCESS
-    set PAD=         
+REM #=====================================================================================
+set PAD=         
+REM #-----------------------------------------------------------
+REM # This section creates a substitute drive using "subst"
+REM # This code was left here for backwards compatibility in the
+REM #   event that "net use" does not work properly in a particular
+REM #   environment.
+REM #-----------------------------------------------------------
+if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
 	call %writeOutput% "Section: Substitute Drives" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Evaluate the substitute drive=%SUBSTITUTE_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	REM 2014-12-04 mtinius - changed logic to only map the drive when necessary...not every time
-	if NOT EXIST %SUBSTITUTE_DRIVE% goto MAP
+	if NOT EXIST %SUBSTITUTE_DRIVE% goto MAP_SUBSTITUTE_DRIVE
 	REM 2014-12-04 mtinius - changed logic to evaluate if current mapped drive utilizes the correct path
-	call:EVALUATE_SUBST_DRIVES %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
+	call :EVALUATE_SUBST_DRIVES %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
 
-	if "%drivePathFound%" == "true" call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	if "%drivePathFound%" == "true" goto MAPSUCCESS
+	if "%drivePathFound%" == "true" (
+		call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		goto MAPSUCCESS
+	)
 	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
 	call %writeOutput% "%PAD%The substitute drive=%SUBSTITUTE_DRIVE% is mapped to a different path.  There are two options:" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     exit /b 1
-:MAP
+:MAP_SUBSTITUTE_DRIVE
 	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
     set ERROR=%ERRORLEVEL%
@@ -176,7 +184,59 @@ if not defined SUBSTITUTE_DRIVE goto MAPSUCCESS
 	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     exit /b 1
+
+REM #-----------------------------------------------------------
+REM # This section creates a substitute drive using "net use"
+REM # The advantage over "subst" is that this is permanent while
+REM #   "subst" is temporary in that id does not survive reboots.
+REM #-----------------------------------------------------------
+:MAP_NETWORK_DRIVE_BEGIN
+if not defined NETWORK_DRIVE goto MAPSUCCESS
+	call %writeOutput% "Section: Network Drives" 																			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Evaluate the network drive=%NETWORK_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	REM Only map the drive when necessary...not every time
+	if NOT EXIST %NETWORK_DRIVE% goto MAP_NETWORK_DRIVE
+	REM Evaluate if current mapped drive utilizes the correct path
+	call :EVALUATE_NETWORK_DRIVES %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
+
+	if "%drivePathFound%" == "true" (
+		call %writeOutput% "%PAD%Network drive %NETWORK_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		goto MAPSUCCESS
+	)
+	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
+	call %writeOutput% "%PAD%The network drive=%NETWORK_DRIVE% is mapped to a different path.  There are two options:" 		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+    exit /b 1
+:MAP_NETWORK_DRIVE
+	REM # Get the Drive letter for PROJECT_HOME_PHYSICAL
+	for /F "usebackq delims==" %%I IN (`echo %PROJECT_HOME_PHYSICAL%`) DO (
+		set PDTOOL_HOME_DRIVE=%%~dI
+		REM echo PDTOOL_HOME_DRIVE=%PDTOOL_HOME_DRIVE%
+	)
+	set PDTOOL_HOME_DRIVE_SHARE=%PDTOOL_HOME_DRIVE::=$%
+	if not exist "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" (
+		REM The share drive does not exist
+		call %writeOutput% "%PAD%The network share ^"\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%^" does not exist." 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Create the share drive=%PDTOOL_HOME_DRIVE_SHARE% for the installation drive=%PDTOOL_HOME_DRIVE% as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Command run as administrator: net share %PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%\" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		exit /b 1
+	)
+	
+	call :REPLACE "%PDTOOL_HOME_DRIVE%" "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" "%PROJECT_HOME_PHYSICAL%" PROJECT_HOME_PHYSICAL_NEW
+	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+    net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES
+    set ERROR=%ERRORLEVEL%
+    if "%ERROR%" == "0" goto MAPSUCCESS
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %0" 																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+    exit /b 1
+
 :MAPSUCCESS   
+
 
 REM #=======================================
 REM # Validate Paths exist
@@ -307,6 +367,164 @@ if exist %DEFAULT_LOG_PATH% echo.!logprefix!!output!>>%DEFAULT_LOG_PATH%
 ENDLOCAL
 GOTO:EOF
 
+
+:: -------------------------------------------------------------
+:EVALUATE_SUBST_DRIVES
+:: -------------------------------------------------------------
+::# Evaluate the substitute drives
+::#
+::# Description: call:EVALUATE_SUBST_DRIVES substdrive substpath debug pathFound  
+::#      -- substdrive [in]  - The drive letter such as P: that is to be used for a substitute drive
+::#      -- substpath  [in]  - The path that is to be mapped to the substitute drive.
+::#      -- debug      [in]  - 1=print debug, 0=do not pring debug
+::#      -- pathFound  [out] - lower case "true" or "false" indicating whether the substitute drive and path combination was found in the substitute list.
+::#
+REM Get the input parameters
+set substdrive=%1
+set substpath=%2
+set debug=%3
+
+REM Set default variables
+set trim=1
+set _pathfound=false
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+REM Remove double quotes around path
+set substpath=!substpath:"=!
+set pathfound=false
+if %debug%==1 echo.[DEBUG] %0: substdrive=%substdrive%
+if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
+
+REM Iterate over the subst command
+for /f tokens^=*^ delims^=^ eol^= %%a in ('subst') do (
+   set ln=%%a
+   if !debug!==1 echo.[DEBUG] %0: Parse the following line: !ln!
+   CALL :SPLIT_BY_TOKEN_EQU_GTR ln trim debug sdrive spath
+   
+   REM The drive was found
+   if "!substdrive!\:" == "!sdrive!" (
+     if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
+     if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
+     if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
+	 set msg=
+     if "!substpath!" NEQ "!spath!" set msg=%PAD%The substitute path does not match subst drive list. drive=!substdrive! path=[!spath!].
+	 if defined msg call %writeOutput% "!msg!" 	
+	 if "!substpath!" EQU "!spath!" set pathfound=true
+	 if "!substpath!" NEQ "!spath!" set pathfound=false
+	 goto LOOP_END
+   )
+)
+:LOOP_END
+ENDLOCAL & SET _pathfound=%pathfound%
+
+if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
+set %4=%_pathfound%
+GOTO:EOF
+
+
+:: -------------------------------------------------------------
+:EVALUATE_NETWORK_DRIVES
+:: -------------------------------------------------------------
+::# Evaluate the network drives
+::#
+::# Description: call:EVALUATE_NETWORK_DRIVES substdrive substpath debug pathFound  
+::#      -- substdrive [in]  - The drive letter such as P: that is to be used for a network drive
+::#      -- substpath  [in]  - The path that is to be mapped to the network drive.
+::#      -- debug      [in]  - 1=print debug, 0=do not pring debug
+::#      -- pathFound  [out] - lower case "true" or "false" indicating whether the network drive and path combination was found in the network drive list.
+::#
+REM Get the input parameters
+set substdrive=%1
+set substpath=%2
+set debug=%3
+
+REM Set default variables
+set trim=1
+set _pathfound=false
+set COMPUTER_NAME=%COMPUTERNAME%
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+REM Remove double quotes around path
+set substpath=!substpath:"=!
+set pathfound=false
+if %debug%==1 echo.[DEBUG] %0: substdrive=%substdrive%
+if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
+
+REM Iterate over the net use command
+for /F "tokens=2,3 skip=2" %%a IN ('net use') do (
+   set sdrive=%%a
+   set spath=%%b
+   if "!sdrive!"=="Local" set sdrive=
+   if "!sdrive!"=="Windows" set sdrive=
+   if "!sdrive!"=="command" set sdrive=
+   if "!sdrive!"=="are" set sdrive=
+   if "!sdrive!"=="connections" set sdrive=
+   if not defined sdrive set spath=
+   if !debug!==1 echo.[DEBUG] %0: sdrive=!sdrive!   path=!spath!
+
+   set outStr=
+   if defined spath call :REPLACE "\\%COMPUTER_NAME%\C$" "C:" "!spath!" spath 
+   if !debug!==1 echo.[DEBUG] %0: spath=!spath!
+ 
+   REM The drive was found
+   if "!substdrive!" == "!sdrive!" (
+     if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
+     if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
+     if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
+	 set msg=
+     if "!substpath!" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
+	 rem if defined msg call %writeOutput% "!msg!" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	 if "!substpath!" EQU "!spath!" set pathfound=true
+	 if "!substpath!" NEQ "!spath!" set pathfound=false
+	 goto LOOP_END
+   )
+)
+:LOOP_END
+ENDLOCAL & SET _pathfound=%pathfound%
+
+if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
+set %4=%_pathfound%
+GOTO:EOF
+
+
+::#----------------------------------------------------------
+:REPLACE
+::#----------------------------------------------------------
+::# replace - parses a string and replaces old string with new string
+::#           and returns the value in the outvariable that gets passed in
+::# syntax:  call :REPLACE "oldstring" "newstring" "searchstring" outvariable
+::# example: call :REPLACE "_" "__" "%searchStr%" outStr 
+::# OldStr [in] - string to be replaced
+::# NewStr [in] - string to replace with
+::# SearchStr [in] - String to search
+::# outvar [out] - name of the variable to place the results
+::#
+::# Remove double quotes (") for incoming SearchStr argument
+SETLOCAL EnableDelayedExpansion
+SET oldstring=%1
+SET oldstring=!oldstring:"=!
+SET newstring=%2
+SET newstring=!newstring:"=!
+SET searchstring=%3
+SET searchstring=!searchstring:"=!
+SET outvar=
+if !debug!==1 echo.[DEBUG] %0: oldstring=[%oldstring%]  newstring=[%newstring%]  searchstring=[%searchstring%]
+
+::# Don't continue if no text was passed in for the oldstring and searchstring.
+if "%oldstring%   "=="" goto REPLACE_END
+if "%searchstring%"=="" goto REPLACE_END
+
+::# Perform the text replacement
+call set "outvar=%%searchstring:%oldstring%=%newstring%%%"
+if !debug!==1 echo.[DEBUG] %0:  REPLACE: outvar=!outvar!
+
+:REPLACE_END
+ENDLOCAL& set outvar=%outvar%
+if !debug!==1 echo.[DEBUG] %0: ENDLOCAL: outvar=%outvar%
+set %4=%outvar%
+GOTO:EOF
+
+
 :: -------------------------------------------------------------
 :SPLIT_BY_TOKEN_EQU_GTR
 :: -------------------------------------------------------------
@@ -366,59 +584,6 @@ rem echo."%str%"
 SET %2=%str%
 GOTO:EOF
 
-:: -------------------------------------------------------------
-:EVALUATE_SUBST_DRIVES
-:: -------------------------------------------------------------
-::# Evaluate the substitute drives
-::#
-::# Description: call:EVALUATE_SUBST_DRIVES substdrive substpath debug pathFound  
-::#      -- substdrive [in]  - The drive letter such as P: that is to be used for a substitute drive
-::#      -- substpath  [in]  - The path that is to be mapped to the substitute drive.
-::#      -- debug      [in]  - 1=print debug, 0=do not pring debug
-::#      -- pathFound  [out] - lower case "true" or "false" indicating whether the substitute drive and path combination was found in the substitute list.
-::#
-REM Get the input parameters
-set substdrive=%1
-set substpath=%2
-set debug=%3
-
-REM Set default variables
-set trim=1
-set _pathfound=false
-
-SETLOCAL ENABLEDELAYEDEXPANSION
-REM Remove double quotes around path
-set substpath=!substpath:"=!
-set pathfound=false
-if %debug%==1 echo.[DEBUG] %0: substdrive=%substdrive%
-if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
-if %debug%==1 echo.[DEBUG] %0: Iterate over the temporary substitute file=%filename%
-
-REM Iterate over the subst command
-for /f tokens^=*^ delims^=^ eol^= %%a in ('subst') do (
-   set ln=%%a
-   if !debug!==1 echo.[DEBUG] %0: Parse the following line: !ln!
-   CALL:SPLIT_BY_TOKEN_EQU_GTR ln trim debug sdrive spath
-   
-   REM The drive was found
-   if "!substdrive!\:" == "!sdrive!" (
-     if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
-     if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
-     if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
-	 set msg=
-     if "!substpath!" NEQ "!spath!" set msg=%PAD%The substitute path does not match subst drive list. drive=!substdrive! path=[!spath!].
-	 if defined msg call %writeOutput% "!msg!" 	
-	 if "!substpath!" EQU "!spath!" set pathfound=true
-	 if "!substpath!" NEQ "!spath!" set pathfound=false
-	 goto LOOP_END
-   )
-)
-:LOOP_END
-ENDLOCAL & SET _pathfound=%pathfound%
-
-if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
-set %4=%_pathfound%
-GOTO:EOF
 REM ############################################################
 REM # FUNCTIONS: END
 REM ############################################################

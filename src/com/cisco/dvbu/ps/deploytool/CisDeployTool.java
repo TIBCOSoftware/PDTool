@@ -52,6 +52,7 @@ public class CisDeployTool {
     private static boolean debug1 = false;
     private static boolean debug2 = false;
     private static boolean debug3 = false;
+    private static String NONE = "none";
     
     /**
      * returns an instance of the class
@@ -103,14 +104,33 @@ public class CisDeployTool {
 			String exitOnError = null;
 			String actionType = null;
 			String moduleAction = null;
+			String serverId = null;
 			String arguments = null;
-	        String error = null;
+	        String message = null;
 	        String padCounter = null;
 			String overallExecutionStatus="PASS";
-	        String regressionStatus = null;
-	        String actualStatus = null;
-	        String exitOnErrorPad = null;
-	        String actionTypePad = null;
+	        String regressionStatus = "";
+	        String actualStatus = "";
+	        // Set pad amount
+			int exitOnErrorPadAmt = 13;
+			int actionTypePadAmt = 23;
+			int moduleActionPadAmt = 37;
+			int serverIdHostPortPadAmt = 50;
+			int moduleActionObjectivePadAmt = 70;
+			int messagePadAmt = 50;
+			int headerLinePadAmt = 10 + exitOnErrorPadAmt + actionTypePadAmt + moduleActionPadAmt + serverIdHostPortPadAmt + moduleActionObjectivePadAmt + messagePadAmt;
+			// Initialize Pad variables
+	        String exitOnErrorPad = "";
+	        String actionTypePad = "";
+	        String moduleActionPad = "";
+	        String serverIdHostPortPad = "";
+	        String moduleActionObjectivePad = "";
+	        String messagePad = "";
+	        String compositeServerHostnamePort = "";
+	        String serverIdHostPort = "";
+	        String moduleActionObjective = "";
+	        String moduleActionMessage = "";
+	        String headerLinePad = "";
 
 			logger.info("--------------------------------------------------------");
 			logger.info("--------------- COMMAND-LINE DEPLOYMENT ----------------");
@@ -154,19 +174,58 @@ public class CisDeployTool {
 			/*****************************************
 			 * INITIALIZE THE SUMMARY LOG
 			 *****************************************/
+			/* Overview of SUMMARY.log
+				========================================================================================================================================================================================================================================================================
+				Summary Status Log
+				========================================================================================================================================================================================================================================================================
+				Regression Status=Did the execution meet expectations.
+				Expected Status=Did the user expect this action to PASS or FAIL.
+				Actual Status=What really happened during execution of this action.
+				========================================================================================================================================================================================================================================================================
+				Line #     Regression  Expected  Actual  ExitOnError    ActionType               ModuleAction                    Server                                              ModuleObjective                                          Message                                               
+				---------  ----------  --------  ------  -------------  -----------------------  ------------------------------  --------------------------------------------------  -------------------------------------------------------  --------------------------------------------------  
+				Line   85  FAIL        PASS      FAIL    FALSE          ExecuteAction            vcsCheckouts                    DEV1_9420http=localhost:9420                        CHECKOUT : Rev=HEAD : /services/databases/TEST00         Review Stack Trace for details.
+				Line   95  PASS        PASS      PASS    TRUE           ExecuteAction            updateDataSources               DEV1_9420http=localhost:9420                        UPDATE : ds3=/shared/test00/DataSources/testWebService   none
+				Line   97  PASS        PASS      PASS    FALSE          ExecuteAction            updateServerAttributes          DEV1_9420http=localhost:9420                        UPDATE : studio6=/studio/lock/enabled                    none
+				Line   99  PASS        PASS      PASS    FALSE          ExecuteAction            executeConfiguredProcedures     DEV1_9420http=localhost:9420                        EXECUTE : testproc=testproc                              none
+				Line  112  PASS        FAIL      FAIL    FALSE          ExecuteAction            updateDataSources               unknown                                             unknown                                                  Passed in method  updateDataSources does not exist or does not match the number of required arguments.
+				Line  118  PASS        FAIL      FAIL    FALSE          ExecuteActionXXX         updateDataSources               unknown                                             unknown                                                  Action Type [ExecuteActionXXX] is not valid.
+				========================================================================================================================================================================================================================================================================
+				Overall Regression Execution Status=FAIL
+				Script ran to completion.																				 
+				========================================================================================================================================================================================================================================================================
+		 */
+	        
 			// Get the summary log location
 	        String summaryLogLocation = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"SUMMARY_LOG"), propertyFile, true);
 			CommonUtils.createFileWithContent(summaryLogLocation, "");
 	
-			writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
-			writeSummaryLog("Summary Status Log                                                                                      ",null,null, summaryLogLocation);
-			writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
-			writeSummaryLog("Regression Status=Did the execution meet expectations.                                                  ",null,null, summaryLogLocation);
-			writeSummaryLog("Expected Status=Did the user expect this action to PASS or FAIL.                                        ",null,null, summaryLogLocation);
-			writeSummaryLog("Actual Status=What really happened during execution of this action.                                     ",null,null, summaryLogLocation);
-			writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
-			writeSummaryLog("Line #     Regression  Expected  Actual  ExitOnError  ActionType             ModuleAction               ",null,null, summaryLogLocation);
-			writeSummaryLog("---------  ----------  --------  ------  -----------  ---------------------  ------------------         ",null,null, summaryLogLocation);
+			headerLinePad = CommonUtils.rpad("=", headerLinePadAmt, 			"=");
+			
+			writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
+			writeSummaryLog("Summary Status Log"																									,null,null, summaryLogLocation);
+			writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
+			writeSummaryLog("Regression Status=Did the execution meet expectations."																,null,null, summaryLogLocation);
+			writeSummaryLog("Expected Status=Did the user expect this action to PASS or FAIL."														,null,null, summaryLogLocation);
+			writeSummaryLog("Actual Status=What really happened during execution of this action."													,null,null, summaryLogLocation);
+			writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
+		  //writeSummaryLog("Line #     Regression  Expected  Actual  ExitOnError  ActionType             ModuleAction                  Server                                            ModuleObjective                                  Message"											,null,null, summaryLogLocation);
+		  //writeSummaryLog("---------  ----------  --------  ------  -----------  ---------------------  ----------------------------  ------------------------------------------------  -----------------------------------------------  -----------------------------------------------"	,null,null, summaryLogLocation);
+			exitOnErrorPad = 			CommonUtils.rpad("ExitOnError", exitOnErrorPadAmt, 					" ")+"  ";
+			actionTypePad = 			CommonUtils.rpad("ActionType", actionTypePadAmt, 					" ")+"  ";
+			moduleActionPad = 			CommonUtils.rpad("ModuleAction", moduleActionPadAmt, 				" ")+"  ";
+			serverIdHostPortPad = 		CommonUtils.rpad("Server", serverIdHostPortPadAmt, 					" ")+"  ";
+			moduleActionObjectivePad = 	CommonUtils.rpad("ModuleObjective", moduleActionObjectivePadAmt, 	" ")+"  ";
+			messagePad = 				CommonUtils.rpad("Message", messagePadAmt, 							" ")+"  ";
+			writeSummaryLog("Line #     Regression  Expected  Actual  "+exitOnErrorPad+actionTypePad+moduleActionPad+serverIdHostPortPad+moduleActionObjectivePad+messagePad,null,null, summaryLogLocation);
+
+			exitOnErrorPad = 			CommonUtils.rpad("-", exitOnErrorPadAmt, 			"-")+"  ";
+			actionTypePad = 			CommonUtils.rpad("-", actionTypePadAmt, 			"-")+"  ";
+			moduleActionPad = 			CommonUtils.rpad("-", moduleActionPadAmt, 			"-")+"  ";
+			serverIdHostPortPad = 		CommonUtils.rpad("-", serverIdHostPortPadAmt, 		"-")+"  ";
+			moduleActionObjectivePad = 	CommonUtils.rpad("-", moduleActionObjectivePadAmt, 	"-")+"  ";
+			messagePad = 				CommonUtils.rpad("-", messagePadAmt, 				"-")+"  ";
+			writeSummaryLog("---------  ----------  --------  ------  "+exitOnErrorPad+actionTypePad+moduleActionPad+serverIdHostPortPad+moduleActionObjectivePad+messagePad,null,null, summaryLogLocation);
 
 			/*****************************************
 			 * READ THE ORCHESTRATION PROPERTY FILE
@@ -204,7 +263,14 @@ public class CisDeployTool {
 					/*****************************************
 					 * PARSE THE LINE
 					 *****************************************/
-					// Convert tabs to spaces
+			        // [mtinius: 2015-09-03] These property values will be set in WsApiHelperObjects.java once the module is invoked
+			        System.clearProperty("CIS_SERVER_HOST_PORT");
+			        // [mtinius: 2015-09-03] This property gets set by each module based on the method being executed.  It identifies the objective for the method execution.
+			        System.clearProperty("MODULE_ACTION_OBJECTIVE");
+			        // [mtinius: 2015-09-03] This property gets set by each module based on the method being executed.  It identifies the return message which can be info or error.
+			        System.clearProperty("MODULE_ACTION_MESSAGE");
+
+			        // Convert tabs to spaces
 					line = line.replaceAll("\u0009" , " ");
 					// Convert ' "" ' (space quote quote space) into (space quote quote quote quote space) so that the intention of this is not lost during the next conversion
 					while (line.contains(" \"\" "))
@@ -239,14 +305,27 @@ public class CisDeployTool {
 				            }
 				    	}
 				    	if (arg == 3) {
+				            // Validate the actionType action against a valid list in the deploy.properties file [ExecuteAction]
 				            actionType=val;
 					        CommonUtils.writeOutput("  actionType=    "+actionType,											prefix,"-info",logger,debug1,debug2,debug3);
-				            // Valid the actionType action against a valid list in the deploy.properties file [ExecuteAction]
 				    	}
 				    	if (arg == 4) {
+				            // Validate the moduleAction action against a valid list in the deploy.properties file.
 				            moduleAction=val;	
 					        CommonUtils.writeOutput("  moduleAction=  "+moduleAction,										prefix,"-info",logger,debug1,debug2,debug3);
-				            // Valid the moduleAction action against a valid list in the deploy.properties file.
+				    	}
+				    	if (arg == 5) {
+				            // Get the serverId.
+				            String serverIdVar=val;
+					        if (moduleAction.equalsIgnoreCase("vcsInitWorkspace") || moduleAction.equalsIgnoreCase("vcsInitWorkspace2") || moduleAction.equalsIgnoreCase("vcsInitializeBaseFolderCheckin") || moduleAction.equalsIgnoreCase("vcsInitializeBaseFolderCheckin2")) {
+					        	serverId = "unknown";
+				            } else {
+					            serverId = CommonUtils.extractVariable(prefix, serverIdVar, propertyFile, true);
+					            if (serverIdVar.equalsIgnoreCase(serverId))
+					            	CommonUtils.writeOutput("  serverId=      "+serverIdVar,									prefix,"-info",logger,debug1,debug2,debug3);
+					            else
+					            	CommonUtils.writeOutput("  serverId=      "+serverIdVar+"  /  resolved="+serverId,			prefix,"-info",logger,debug1,debug2,debug3);
+				    		}
 				    	}
 				    	if (arg >= 5) {
 				    		arguments = arguments.trim() + " " + val;		    		
@@ -255,14 +334,21 @@ public class CisDeployTool {
 				    CommonUtils.writeOutput("  arguments=     "+arguments,													prefix,"-info",logger,debug1,debug2,debug3);
 			        CommonUtils.writeOutput("",																				prefix,"-info",logger,debug1,debug2,debug3);
 
+		            // Determine the padding for summary variables
+					exitOnErrorPad = 			CommonUtils.rpad(exitOnError, exitOnErrorPadAmt, " ")+"  ";
+					actionTypePad = 			CommonUtils.rpad(actionType, actionTypePadAmt, " ")+"  ";
+					moduleActionPad = 			CommonUtils.rpad(moduleAction, moduleActionPadAmt, " ")+"  ";
+					serverIdHostPortPad = 		CommonUtils.rpad(serverIdHostPort, serverIdHostPortPadAmt, " ")+"  ";
+					moduleActionObjectivePad = 	CommonUtils.rpad(moduleActionObjective, moduleActionObjectivePadAmt, " ")+"  ";
+
 			        /*****************************************
 					 * VALIDATE MODULE ACTION EXISTS
 					 * 	ExecuteAction - executeAction()
 					 *****************************************/
-			        if ( actionType.contains("ExecuteAction")) {
+			        if (actionType.equalsIgnoreCase("ExecuteAction")) {
 
 			        	CompositeException exception = null;
-			        	error = null;
+			        	message = NONE;
 				        /*****************************************
 						 * INVOKE THE MODULE ACTION: 
 						 *****************************************/
@@ -273,13 +359,35 @@ public class CisDeployTool {
 
 				        } catch(CompositeException e) {
 				        	exception = e;
-				        	error = "Review Stack Trace for details.";
+				        	message = "Review Stack Trace for details.";
 				        	if (e.getMessage() != null) {
-				        		error = e.getMessage().toString();
+				        		message = e.getMessage().toString();
 				        	}
 				        }
-			        
-				        /*****************************************
+
+						// [mtinius: 2015-09-03] Get the system property values post-execution
+				        // 		These property values were set in WsApiHelperObjects.java when "executeAction" was invoked
+						compositeServerHostnamePort = System.getProperty("CIS_SERVER_HOST_PORT");
+						if (compositeServerHostnamePort == null)
+							compositeServerHostnamePort = "unknown";
+						serverIdHostPort = serverId+"="+compositeServerHostnamePort;
+				        // 		This property gets set by each module based on the method being executed.  It identifies the objective for the method execution.
+						moduleActionObjective = System.getProperty("MODULE_ACTION_OBJECTIVE");
+						if (moduleActionObjective == null)
+							moduleActionObjective = "unknown";
+			            // 		Determine the padding for summary variables
+						serverIdHostPortPad = CommonUtils.rpad(serverIdHostPort, serverIdHostPortPadAmt, " ")+"  ";
+						moduleActionObjectivePad = CommonUtils.rpad(moduleActionObjective, moduleActionObjectivePadAmt, " ")+"  ";
+				        // 		This property gets set by each module based on the method being executed.  It identifies the return message which can be info or error.
+						moduleActionMessage = System.getProperty("MODULE_ACTION_MESSAGE");
+						if (message.equalsIgnoreCase(NONE)) {
+							if (moduleActionMessage != null && moduleActionMessage.length() > 0)
+								message = moduleActionMessage;
+						} else {
+							message = message + "  " + moduleActionMessage;
+						}
+
+						/*****************************************
 						 * PROCESS SUMMARY LOG and HANDLE ERRORS
 						 *****************************************/
 				         if (exception != null) {
@@ -297,9 +405,10 @@ public class CisDeployTool {
 					            }
 					            actualStatus="FAIL";
 		
-								exitOnErrorPad = CommonUtils.rpad(exitOnError, 13, " ");
-								actionTypePad = CommonUtils.rpad(actionType, 23, " ");
-								writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation);
+								// Write out the SUMMARY.log entry
+								//writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,	null,null, summaryLogLocation);
+								writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+ exitOnErrorPad + actionTypePad + moduleActionPad + serverIdHostPortPad + moduleActionObjectivePad + message,	null,null, summaryLogLocation);
+								
 					  		    // ###########################################
 					            // # End::Write out the summary status
 							    // ###########################################
@@ -312,7 +421,7 @@ public class CisDeployTool {
 						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
 						            	//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
 										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
-										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script will continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script will continue processing.  ERROR="+message,	prefix,"-info",logger,debug1,debug2,debug3);
 						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
 						            	
 						            } else { // expectedStatus=PASS
@@ -331,7 +440,7 @@ public class CisDeployTool {
 						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
 						            	//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
 										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
-										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Expected Script Error. Script is set to continue processing.  ERROR="+message,	prefix,"-info",logger,debug1,debug2,debug3);
 						            	CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
 						            	
 						            } else { // expectedStatus=PASS
@@ -340,7 +449,7 @@ public class CisDeployTool {
 										CommonUtils.writeOutput("",																					prefix,"-info",logger,debug1,debug2,debug3);
 										//CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,								prefix,"-info",logger,debug1,debug2,debug3);
 										CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
-										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+										CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+message,	prefix,"-info",logger,debug1,debug2,debug3);
 									  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
 						            }
 								}						            
@@ -360,10 +469,11 @@ public class CisDeployTool {
 				            }
 				            actualStatus="PASS";
 
-							exitOnErrorPad = CommonUtils.rpad(exitOnError,13," ");
-							actionTypePad = CommonUtils.rpad(actionType,23," ");
-							writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation); 
-					  		// ###########################################
+							// Write out the SUMMARY.log entry
+							//writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation); 
+							writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+ exitOnErrorPad + actionTypePad + moduleActionPad + serverIdHostPortPad + moduleActionObjectivePad + message,	null,null, summaryLogLocation);
+
+							// ###########################################
 					        // # End::Write out the summary status
 							// ###########################################
 							
@@ -371,11 +481,11 @@ public class CisDeployTool {
 				            	// Script is expected to FAIL and Script was set to exit orchestration on error
 					            if (expectedStatus.equalsIgnoreCase("FAIL")) {
 									exitOrchestrationOnError = true;
-									error = "Expected error but execution was successful.";
+									message = "Expected error but execution was successful.";
 
 								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
 									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
-									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination.  ERROR="+message,	prefix,"-info",logger,debug1,debug2,debug3);
 								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3);
 								  	
 					            } else { // expectedStatus=PASS
@@ -391,10 +501,10 @@ public class CisDeployTool {
 				            	// Script is expected to FAIL and Script was NOT set to exit orchestration on error
 					            if (expectedStatus.equalsIgnoreCase("FAIL")) {
 									exitOrchestrationOnError = false;
-									error = "Expected error but execution was successful.";
+									message = "Expected error but execution was successful.";
 								  	CommonUtils.writeOutput("",																							prefix,"-info",logger,debug1,debug2,debug3); 
 									CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS="+regressionStatus+"  EXPECTED="+expectedStatus+"  ACTUAL="+actualStatus+"  EXIT_ON_ERROR="+exitOnError+"  ACTION="+moduleAction, prefix,"-info",logger,debug1,debug2,debug3);
-									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+error,	prefix,"-info",logger,debug1,debug2,debug3);
+									CommonUtils.writeOutput("Line "+padCounter+"   MESSAGE=Abnormal Script Termination. Script is set to continue processing.  ERROR="+message,	prefix,"-info",logger,debug1,debug2,debug3);
 									
 					            } else { // expectedStatus=PASS
 					            	
@@ -407,30 +517,31 @@ public class CisDeployTool {
 				            }
 				         }
 				         
-			        } else { // else if (actionType.contains("ExecuteAction") ) {
+			        } else { // else if (actionType.equalsIgnoreCase("ExecuteAction") ) {
 
-			        	 error = "Action Type ["+actionType+"] is not valid.";
+			        	message = "Action Type ["+actionType+"] is not valid.";
 			        	 
-						 // ###########################################
-				         // # Begin::Write out the summary status
-						 // ###########################################
-				         if ( expectedStatus.equalsIgnoreCase("PASS") ) {
+						// ###########################################
+				        // # Begin::Write out the summary status
+						// ###########################################
+				        if ( expectedStatus.equalsIgnoreCase("PASS") ) {
 				             regressionStatus="FAIL";
 				             overallExecutionStatus="FAIL";
-				         }
-				         if ( expectedStatus.equalsIgnoreCase("FAIL") ) {
+				        }
+				        if ( expectedStatus.equalsIgnoreCase("FAIL") ) {
 				             regressionStatus="PASS";
-				         }
-				         actualStatus="FAIL";
+				        }
+				        actualStatus="FAIL";
 				         
-						 exitOnErrorPad = CommonUtils.rpad(exitOnError,13," ");
-						 actionTypePad = CommonUtils.rpad(actionType,23," ");
-						 writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation); 
-				  		 // ###########################################
-				         // # End::Write out the summary status
-						 // ###########################################
+						// Write out the SUMMARY.log entry
+						//writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+exitOnErrorPad+actionTypePad+moduleAction,null,null, summaryLogLocation); 
+						writeSummaryLog("Line "+padCounter+"  "+regressionStatus+"        "+expectedStatus+"      "+actualStatus+"    "+ exitOnErrorPad + actionTypePad + moduleActionPad + serverIdHostPortPad + moduleActionObjectivePad + message,	null,null, summaryLogLocation);
+
+						// ###########################################
+				        // # End::Write out the summary status
+						// ###########################################
 				        
-				         if ( exitOnError.equalsIgnoreCase("TRUE") ) {
+				        if ( exitOnError.equalsIgnoreCase("TRUE") ) {
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,											prefix,"-info",logger,debug1,debug2,debug3);
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
@@ -438,14 +549,14 @@ public class CisDeployTool {
 				            CommonUtils.writeOutput("---------------------------------------------------------------------------",					prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+" EXIT_ON_ERROR::"+exitOnError,												prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+"   ERROR_FOUND::"+actionType+" "+moduleAction+" "+arguments,				prefix,"-info",logger,debug1,debug2,debug3);
-				            CommonUtils.writeOutput("Abnormal Script Termination. Action Type "+actionType+" does not exist. ERROR="+error,			prefix,"-info",logger,debug1,debug2,debug3);
+				            CommonUtils.writeOutput("Abnormal Script Termination. Action Type "+actionType+" does not exist. ERROR="+message,			prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("End of $CONTROLSCRIPT orchestration script.",													prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("---------------------------------------------------------------------------",					prefix,"-info",logger,debug1,debug2,debug3);
 				            
 				            // Script was set to exit orchestration on error
 				            exitOrchestrationOnError = true;
 				            
-				         } else {
+				        } else {
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+"   SCRIPT_RESULTS::"+actualStatus,											prefix,"-info",logger,debug1,debug2,debug3);
 						  	CommonUtils.writeOutput("",																								prefix,"-info",logger,debug1,debug2,debug3);
@@ -453,7 +564,7 @@ public class CisDeployTool {
 				            CommonUtils.writeOutput("Line "+padCounter+" EXIT_ON_ERROR::"+exitOnError,												prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Line "+padCounter+"   ERROR_FOUND::"+actionType+" "+moduleAction+" "+arguments,				prefix,"-info",logger,debug1,debug2,debug3);
 				            CommonUtils.writeOutput("Action Type ["+actionType+"] does not exist.  Script is set to continue processing.",			prefix,"-info",logger,debug1,debug2,debug3);
-				         }
+				        }
 
 				  } // end inner if-then-else 
 			        
@@ -465,11 +576,11 @@ public class CisDeployTool {
 				/*****************************************
 				 * CLOSE OUT THE SUMMRY LOG
 				 *****************************************/
-				writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+				writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
 				writeSummaryLog("Overall Regression Execution Status="+overallExecutionStatus,											   null,null, summaryLogLocation);
 				writeSummaryLog("																										 ",null,null, summaryLogLocation);
 				writeSummaryLog("Script ran to completion.																				 ",null,null, summaryLogLocation);
-				writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+				writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
 	
 				/*****************************************
 				 * CLOSE OUT DEBUG LOG
@@ -482,21 +593,21 @@ public class CisDeployTool {
 				/*****************************************
 				 * CLOSE OUT THE SUMMRY LOG
 				 *****************************************/
-            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+				writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
             	writeSummaryLog("Overall Regression Execution Status="+overallExecutionStatus,null,null, summaryLogLocation);
             	writeSummaryLog("                                                                                                        ",null,null, summaryLogLocation);
             	writeSummaryLog("Script was set to exit on error.                                                                        ",null,null, summaryLogLocation);
-            	writeSummaryLog("========================================================================================================",null,null, summaryLogLocation);
+    			writeSummaryLog("========================================="+headerLinePad																,null,null, summaryLogLocation);
 
 				/*****************************************
 				 * CLOSE OUT DEBUG LOG
 				 *****************************************/
             	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);
-            	CommonUtils.writeOutput("Abnormal Script Termination. Script will exit.  ERROR="+error,						prefix,"-info",logger,debug1,debug2,debug3);
+            	CommonUtils.writeOutput("Abnormal Script Termination. Script will exit.  ERROR="+message,						prefix,"-info",logger,debug1,debug2,debug3);
             	CommonUtils.writeOutput("End of CisDeployTool orchestration script.",										prefix,"-info",logger,debug1,debug2,debug3);
             	CommonUtils.writeOutput("---------------------------------------------------------------------------",		prefix,"-info",logger,debug1,debug2,debug3);				            							            	
 
-            	throw new ApplicationException("Exiting Script with error.  ERROR="+error);
+            	throw new ApplicationException("Exiting Script with error.  ERROR="+message);
 			}
 			
 		} catch (ValidationException e) {

@@ -17,8 +17,13 @@
  */
 package com.cisco.dvbu.ps.deploytool.services;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +42,7 @@ import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.PropertyManager;
+import com.cisco.dvbu.ps.common.util.Sleep;
 import com.cisco.dvbu.ps.common.util.XMLUtils;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
 import com.cisco.dvbu.ps.common.util.wsapi.WsApiHelperObjects;
@@ -58,7 +64,7 @@ public class VCSManagerImpl implements VCSManager {
 	private ResourceManager resourceManager = null;
       
 	private static Log logger = LogFactory.getLog(VCSManagerImpl.class);
-    private static int milliSeconds = 1000;
+    private static int milliSeconds = 5000;
 
     private static String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
     private static String suppress = "";
@@ -149,6 +155,10 @@ public class VCSManagerImpl implements VCSManager {
 		if (!vcsV2Method)
 			vcsConnId = null;
 
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		getVCSDAO().generateVCSXML(serverId, startPath, pathToVcsXML, pathToServersXML);		
 	}		
 	
@@ -161,7 +171,11 @@ public class VCSManagerImpl implements VCSManager {
 		// Set the VCS Module XML Connection Properties in the JVM Environment
 		setVCSConnectionProperties(vcsConnectionId, pathToVcsXML);
 		vcsConnId = vcsConnectionId;
-		
+
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		// Invoke the command
 		getVCSDAO().generateVCSXML(serverId, startPath, pathToVcsXML, pathToServersXML);		
 	}		
@@ -201,6 +215,15 @@ public class VCSManagerImpl implements VCSManager {
 		try {
 			String prefix = "vcsCheckout";
 			String actionName = "vcsCheckout";
+		
+			// Set the Module Action Objective
+			String s1 = "";
+			if (vcsLabel != null)
+				s1 = "Label="+vcsLabel;
+			if (vcsRevision != null)
+				s1 = "Rev="+vcsRevision;
+			String s2 = (vcsResourcePath == null) ? "no_vcsResourcePath" : vcsResourcePath;
+			System.setProperty("MODULE_ACTION_OBJECTIVE", "CHECKOUT : "+s1+" : "+s2);
 
 			// Set the global suppress and debug flags for this class based on properties found in the property file
 			setGlobalProperties();
@@ -461,6 +484,10 @@ public class VCSManagerImpl implements VCSManager {
 			String prefix = "vcsCheckin";
 			String actionName = "vcsCheckin";
 
+			// Set the Module Action Objective
+			String s1 = (vcsResourcePath == null) ? "no_vcsResourcePath" : vcsResourcePath;
+			System.setProperty("MODULE_ACTION_OBJECTIVE", "CHECKIN : "+s1);
+
 			// Set the global suppress and debug flags for this class based on properties found in the property file
 			setGlobalProperties();
 			
@@ -676,7 +703,11 @@ public class VCSManagerImpl implements VCSManager {
 			String prefix = "vcsForcedCheckin";
 			String actionName = "vcsForcedCheckin";
 
-	        // Set the global suppress and debug flags for this class based on properties found in the property file
+			// Set the Module Action Objective
+			String s1 = (vcsResourcePath == null) ? "no_vcsResourcePath" : vcsResourcePath;
+			System.setProperty("MODULE_ACTION_OBJECTIVE", "FORCED_CHECKIN : "+s1);
+
+			// Set the global suppress and debug flags for this class based on properties found in the property file
 			setGlobalProperties();
 
 			CommonUtils.writeOutput("***** BEGIN COMMAND: "+actionName+" *****",prefix,"-info",logger,debug1,debug2,debug3);
@@ -887,7 +918,11 @@ public class VCSManagerImpl implements VCSManager {
 			String prefix = "vcsPrepareCheckin";
 			String actionName = "vcsPrepareCheckin";
 
-	        // Set the global suppress and debug flags for this class based on properties found in the property file
+			// Set the Module Action Objective
+			String s1 = (vcsResourcePath == null) ? "no_vcsResourcePath" : vcsResourcePath;
+			System.setProperty("MODULE_ACTION_OBJECTIVE", "PREPARE_CHECKIN : "+s1);
+
+			// Set the global suppress and debug flags for this class based on properties found in the property file
 			setGlobalProperties();
 			if (!vcsV2Method)
 				vcsConnId = null;
@@ -1126,6 +1161,10 @@ public class VCSManagerImpl implements VCSManager {
 			// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
 			vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
 
+			// Set the Module Action Objective
+			String s1 = (vcsStruct.getVcsUsername() == null) ? "no_User" : "User="+vcsStruct.getVcsUsername();
+			System.setProperty("MODULE_ACTION_OBJECTIVE", "INIT_BASE : "+s1);
+
 	        /*****************************************
 			 * DISPLAY/VALIDATE VCS VARIABLES
 			 *****************************************/	        
@@ -1344,7 +1383,10 @@ public class VCSManagerImpl implements VCSManager {
 					CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
 			        vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, revision,  vcsStruct);
 			        
-					CommonUtils.writeOutput("========== DIFFMERGER ROLLBACK ===========",prefix,"-debug2",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+			        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
+			        CommonUtils.writeOutput("========== DIFFMERGER ROLLBACK ===========",prefix,"-debug2",logger,debug1,debug2,debug3);
 			        diffmerger__rollback(resourcePath, resourceType, vcsStruct);
 			        
 					CommonUtils.writeOutput("====== COMPLETED VCS ["+vcsStruct.getVcsType()+"] Studio Checkout ======",prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -1498,6 +1540,9 @@ public class VCSManagerImpl implements VCSManager {
 					CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
 			        vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD",  vcsStruct);
 		
+					CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+			        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
 			        CommonUtils.writeOutput("============== VCS CHECKIN ===============",prefix,"-debug2",logger,debug1,debug2,debug3);
 					vcs_checkin_checkout__vcs_checkin(resourcePath, resourceType, message, vcsStruct);
 		
@@ -1640,6 +1685,9 @@ public class VCSManagerImpl implements VCSManager {
 				CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
 		        vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD",  vcsStruct);
 
+				CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+		        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
 				CommonUtils.writeOutput("========== DIFFMERGER CHECKIN ============",prefix,"-debug2",logger,debug1,debug2,debug3);
 		        diffmerger__checkin(resourcePath, resourceType, vcsStruct);
 		        
@@ -1768,6 +1816,10 @@ public class VCSManagerImpl implements VCSManager {
 				// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
 				vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
 				
+				// Set the Module Action Objective
+				String s1 = (vcsStruct.getVcsUsername() == null) ? "no_User" : "User="+vcsStruct.getVcsUsername();
+				System.setProperty("MODULE_ACTION_OBJECTIVE", "SCAN_PATH_LEN : "+s1);
+
 		        /*****************************************
 				 * DISPLAY/VALIDATE VCS VARIABLES
 				 *****************************************/	        
@@ -1918,6 +1970,11 @@ public class VCSManagerImpl implements VCSManager {
 				VcsStruct vcsStruct = (new VCSManagerImpl()).new VcsStruct();
 				// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the property file
 				vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
+
+				// Set the Module Action Objective
+				String s1 = (vcsStruct.getVcsUsername() == null) ? "no_User" : "User="+vcsStruct.getVcsUsername();
+				System.setProperty("MODULE_ACTION_OBJECTIVE", "INIT_WORKSPACE : "+s1);
+				
 
 		        CommonUtils.writeOutput("............................................",prefix,"-info",logger,debug1,debug2,debug3);
 		        CommonUtils.writeOutput("Initialize workspace for VCS_TYPE="+vcsStruct.getVcsType(),prefix,"-info",logger,debug1,debug2,debug3);
@@ -2262,66 +2319,24 @@ public class VCSManagerImpl implements VCSManager {
 					vcsStruct.getVcsType().equalsIgnoreCase("TFS2013") ) 
 				{
 			        // Set the directory to execute from the workspace home directory
-//					execFromDir = ".";
 					execFromDir = vcsStruct.getVcsWorkspaceHome();
 					
 					// Set the VCS Command
-					command = vcsStruct.getVcsExecCommand();					
-					try {
+					command = vcsStruct.getVcsExecCommand();	
 
-						// Delete the TFS workspace link
-						// tf workspace /delete ${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
-						// Note: All the tfs parameters can be preceded by / or -. While / works only on Windows,
-						// - works on both Windows and non-Windows platform. So for the sake of platform independent code
-						// it is changed to -
-						arguments="  workspace -delete -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getVcsWorkspaceName()+" -noprompt "+vcsStruct.getVcsOptions(); 
-						commandDesc = "    Delete the TFS workspace link...";
+			        // Bypass deleting and mapping the workspace when TFS_USE_EXISTING_WORKSPACE=true.  Only perform checkout to get latest resources.
+			        if (vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
+			        	if (logger.isInfoEnabled())
+			        		logger.info("Info: Workspace will not be unmapped or deleted when variable \"TFS_USE_EXISTING_WORKSPACE=true\" is set.");
 
-						// Print out command
-						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-						
-					    // Parse the command arguments into a list
-					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
-					    
-					    // Execute the command line
-					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-						
-					} catch (CompositeException e) {
-						boolean errorFound = false;
-						String ignoreMessage = "";
-						if (e.getMessage().contains("does not exist")) {
-							errorFound = true;
-							ignoreMessage = "does not exist";
-						}
-						if (e.getMessage().contains("could not be found")) {
-							errorFound = true;
-							ignoreMessage = "could not be found";
-						}
-						if (e.getMessage().contains("Unable to determine the source control server")) {
-							errorFound = true;
-							ignoreMessage = "Unable to determine the source control server";
-						}
-						if (errorFound) {
-							//continue processing, this is OK
-							if (logger.isErrorEnabled()) {
-								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
-						    }
-						} else {
-							throw new ApplicationException(e);
-						}
-					}
-					
-					try {
-
-						// Delete the TFS workfold link
-						// tf workfold /unmap  /collection:{VCS_REPOSITORY_URL} ${VCS_WORKSPACE_DIR} /workspace:${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
-						//    e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-						arguments="  workfold -unmap -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getVcsWorkspaceProject() + " -workspace:" +
-							vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions(); 
-						commandDesc = "    Unmap the TFS workfold link...";
+				        /********************
+				         * WORKSPACE EXISTS
+				         ********************/
+					    // Retrieve workspace status
+			        	// tf.cmd workspaces -collection:http://hostname:8080/tfs/DefaultCollection TFSww7 -noprompt -login:username,password
+					    // tf.cmd workspaces -collection:${TFS_SERVER_URL} ${VCS_WORKSPACE_NAME} -noprompt -login:${VCS_USERNAME},${VCS_PASSWORD}
+						arguments=" workspaces -collection:" + vcsStruct.getVcsRepositoryUrl() + " " + vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions();
+						commandDesc = "    Check if workspace exists...";
 
 						// Print out command
 						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
@@ -2333,137 +2348,304 @@ public class VCSManagerImpl implements VCSManager {
 					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
 					    
 					    // Execute the command line
-					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    StringBuilder stdout = getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+						// Determine if there is any status messages containing an "add" status which indicates a pending change that is not committed.
+					    // This results from a file or folder that is committed but the parent folder or folders have not yet been committed.
+					    if (stdout != null) {
+							boolean workspaceInitialized = false;
+					    	try {
+						    	String vcsout = stdout.toString();
+						    	StringReader is = new StringReader(vcsout);
+
+								BufferedReader reader = new BufferedReader(is);
+								String line = null;
+								int lnCount = 0;
+								// Iterate through the orchestration property file
+								while ( (line = reader.readLine()) != null) {
+									lnCount++;
+									// Make sure the workspace name contains a space so that the search yields a unique entry and not a name within a name.
+							    	int idx = line.indexOf(vcsStruct.getVcsWorkspaceName()+" "); // "TFSww7 "
+							    	
+							    	// Continue if the workspace exists in TFS.
+									if (idx >= 0 && !workspaceInitialized) 
+									{
+										// Continue as long as the line does not contain the message "No workspace matching " + workspace name
+								    	if (line.indexOf(CommonConstants.TFS_MSG_NO_WORKSPACE_MATCHING+" "+vcsStruct.getVcsWorkspaceName()) < 0) 
+								    	{
+									        // Set the execution directory
+									        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+									        execFromDir = vcsStruct.getVcsWorkspaceProject();
+	
+									        // Create the workspace directory
+									        createDirectory(prefix, vcsStruct.getVcsWorkspace());
+	
+											// Create the VCS Workspace Project directory
+									        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+											createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
+	
+											// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+									        if (!pdToolStudio) {
+									        	// Create the workspace temp directory
+									        	createDirectory(prefix, vcsStruct.getVcsTemp());
+									        }
+	
+									        /********************
+									         * CHECKOUT WORKSPACE
+									         ********************/
+											// Check out the repository to the local workspace	    
+										    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
+										    // tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+											arguments=" get -all -recursive " + vcsStruct.getTfsServerUrl() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+											commandDesc = "    Checking out the repository to the local workspace...";
+	
+											// Print out command
+											CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+											
+										    // Parse the command arguments into a list
+										    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+										    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+										    
+										    // Execute the command line
+										    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+										    
+										    // Set the workspace initialized flag to true
+										    workspaceInitialized = true;
+								    	}
+									}
+								}
+					    	} 
+					    	catch (Exception e) {
+								throw new CompositeException(e.getMessage(), e);
+					    	}
+					    	if (!workspaceInitialized) {
+								throw new ApplicationException("ERROR: Workspace Initialization error.  Workspace="+vcsStruct.getVcsWorkspaceName()+" not found for user="+vcsStruct.getVcsUsername()+" when \"TFS_USE_EXISTING_WORKSPACE=true\".   Map the workspace for this user="+vcsStruct.getVcsUsername()+" and computer to resolve the issue or set \"TFS_USE_EXISTING_WORKSPACE=false\".");
+					    	}
+					    } // if (stdout != null)
+					    else
+					    {
+							throw new ApplicationException("ERROR: Workspace Initialization error.  No workspaces found for user="+vcsStruct.getVcsUsername()+" when \"TFS_USE_EXISTING_WORKSPACE=true\".");
+					    }
+			        } 
+			        // Perform the full workspace initialization when TFS_USE_EXISTING_WORKSPACE=false
+			        else  
+			        {
+						try {
+					        /********************
+					         * DELETE LINK
+					         ********************/
+							// Delete the TFS workspace link
+							// tf workspace /delete ${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
+							// Note: All the tfs parameters can be preceded by / or -. While / works only on Windows,
+							// - works on both Windows and non-Windows platform. So for the sake of platform independent code
+							// it is changed to -
+							arguments="  workspace -delete -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getVcsWorkspaceName()+" -noprompt "+vcsStruct.getVcsOptions(); 
+							commandDesc = "    Delete the TFS workspace link...";
+	
+							// Print out command
+							CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+							
+						    // Parse the command arguments into a list
+						    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+						    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+						    
+						    // Execute the command line
+						    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+							
+						} catch (CompositeException e) {
+							boolean errorFound = false;
+							String ignoreMessage = "";
+							if (e.getMessage().contains("does not exist")) {
+								errorFound = true;
+								ignoreMessage = "does not exist";
+							}
+							if (e.getMessage().contains("could not be found")) {
+								errorFound = true;
+								ignoreMessage = "could not be found";
+							}
+							if (e.getMessage().contains("Unable to determine the source control server")) {
+								errorFound = true;
+								ignoreMessage = "Unable to determine the source control server";
+							}
+							if (errorFound) {
+								//continue processing, this is OK
+								if (logger.isErrorEnabled()) {
+									logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
+							    }
+							} else {
+								throw new ApplicationException(e);
+							}
+						}
+			        
+						try {
+	
+					        /********************
+					         * UNMAP WORKSPACE
+					         ********************/
+							// Delete the TFS workfold link
+							// tf workfold -unmap  -collection:{VCS_REPOSITORY_URL} ${VCS_WORKSPACE_DIR} -workspace:${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
+							//    e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+							arguments="  workfold -unmap -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getVcsWorkspaceProject() + " -workspace:" +
+								vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions(); 
+							commandDesc = "    Unmap the TFS workfold link...";
+	
+							// Print out command
+							CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+							
+						    // Parse the command arguments into a list
+						    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+						    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+						    
+						    // Execute the command line
+						    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+							
+						} catch (CompositeException e) {
+							boolean errorFound = false;
+							String ignoreMessage = "";
+							if (e.getMessage().contains("No working folder assigned")) {
+								errorFound = true;
+								ignoreMessage = "No working folder assigned";
+							}
+							if (e.getMessage().contains("could not be found")) {
+								errorFound = true;
+								ignoreMessage = "could not be found";
+							}
+							if (e.getMessage().contains("Unable to determine the source control server")) {
+								errorFound = true;
+								ignoreMessage = "Unable to determine the source control server";
+							}
+							if (errorFound) {
+								//continue processing, this is OK
+								if (logger.isErrorEnabled()) {
+									logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
+							    }
+							} else {
+								throw new ApplicationException(e);
+							}
+						}
 						
-					} catch (CompositeException e) {
-						boolean errorFound = false;
-						String ignoreMessage = "";
-						if (e.getMessage().contains("No working folder assigned")) {
-							errorFound = true;
-							ignoreMessage = "No working folder assigned";
-						}
-						if (e.getMessage().contains("could not be found")) {
-							errorFound = true;
-							ignoreMessage = "could not be found";
-						}
-						if (e.getMessage().contains("Unable to determine the source control server")) {
-							errorFound = true;
-							ignoreMessage = "Unable to determine the source control server";
-						}
-						if (errorFound) {
-							//continue processing, this is OK
-							if (logger.isErrorEnabled()) {
-								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
-						    }
-						} else {
-							throw new ApplicationException(e);
-						}
-					}
-					
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
-			        
-			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
-			        if (!pdToolStudio) {
-			        	// Explicitly remove the workspace temp directory
-			        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
-			        }
-			        
-			        // Create the workspace directory
-			        createDirectory(prefix, vcsStruct.getVcsWorkspace());
-
-					// Create the VCS Workspace Project directory
-			        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-					createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
-
-					// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
-			        if (!pdToolStudio) {
-			        	// Create the workspace temp directory
-			        	createDirectory(prefix, vcsStruct.getVcsTemp());
-			        }
-			        
-
-					// Link the VCS Repository URL and Project Root to the local workspace		
-					/*
-					 * Creating a new workspace
-					 * http://msdn.microsoft.com/en-US/library/y901w7se(v=VS.80).aspx
-						Before you can add files to the source control server or check out items on the server in order to edit them, 
-						you must create a workspace or associate an existing one with the current directory. 
-						For more information, see How to: Create a Workspace.
-						http://msdn.microsoft.com/en-US/library/ms181384(v=VS.80).aspx
-
-						To make the current directory a working folder for an existing workspace on your computer, 
-						type tf workspace workspacename, where workspacename is the name of the existing workspace, 
-						click click here to enter a new working folder, type the server path of which you want to map 
-						the current directory in the Team Foundation source control server Folder box, 
-						type the current directory in the Local Folder box, and then click OK.
-
-						When you create a new workspace, you can specify a template workspace as part of the /new option. 
-						When you specify a template workspace, Team Foundation creates a new workspace on the current computer, 
-						sets the owner to the current owner, and replicates the following workspace properties into the new workspace 
-						from the template workspace: mappings and comment. If no name is specified, a name based on the current computer name is used. 
-						When you create a workspace using a template, Team Foundation does not retrieve the files to which it maps from the server. 
-						Use the Get Command to synchronize the new workspace with the latest version on the server.
-					 */
-
-			        // Set the execution directory
-			        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-			        execFromDir = vcsStruct.getVcsWorkspaceProject();
-			        
-					// tf.cmd workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
-			        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-					arguments=" workspace -new -collection:"+vcsStruct.getVcsRepositoryUrl()+" "+vcsStruct.getVcsWorkspaceName()+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitNewOptions();
-
-					commandDesc = "    Linking local worksapce to VCS Repository...";
-
-					// Print out command
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-				    
-				    // tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-				    //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-					arguments="  workfold -map -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getTfsServerUrl() + " " + vcsStruct.getVcsWorkspaceProject() +
-						 " -workspace:" + vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
-
-					commandDesc = "    Mapping local workfold to VCS Repository...";
-
-					// Print out command
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-
-					// Check out the repository to the local workspace	    
-				    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
-				    // tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-					arguments=" get -all -recursive " + vcsStruct.getTfsServerUrl() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
-					commandDesc = "    Checking out the repository to the local workspace...";
-
-					// Print out command
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+				        /*********************
+				         * PREPARE DIRECTORIES
+				         *********************/
+				        // Explicitly remove the workspace directory
+				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        
+				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+				        if (!pdToolStudio) {
+				        	// Explicitly remove the workspace temp directory
+				        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
+				        }
+				        			        
+				        // Create the workspace directory
+				        createDirectory(prefix, vcsStruct.getVcsWorkspace());
+	
+						// Create the VCS Workspace Project directory
+				        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+						createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
+	
+						// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+				        if (!pdToolStudio) {
+				        	// Create the workspace temp directory
+				        	createDirectory(prefix, vcsStruct.getVcsTemp());
+				        }			        
+	
+						// Link the VCS Repository URL and Project Root to the local workspace		
+						/*
+						 * Creating a new workspace
+						 * http://msdn.microsoft.com/en-US/library/y901w7se(v=VS.80).aspx
+							Before you can add files to the source control server or check out items on the server in order to edit them, 
+							you must create a workspace or associate an existing one with the current directory. 
+							For more information, see How to: Create a Workspace.
+							http://msdn.microsoft.com/en-US/library/ms181384(v=VS.80).aspx
+	
+							To make the current directory a working folder for an existing workspace on your computer, 
+							type tf workspace workspacename, where workspacename is the name of the existing workspace, 
+							click click here to enter a new working folder, type the server path of which you want to map 
+							the current directory in the Team Foundation source control server Folder box, 
+							type the current directory in the Local Folder box, and then click OK.
+	
+							When you create a new workspace, you can specify a template workspace as part of the /new option. 
+							When you specify a template workspace, Team Foundation creates a new workspace on the current computer, 
+							sets the owner to the current owner, and replicates the following workspace properties into the new workspace 
+							from the template workspace: mappings and comment. If no name is specified, a name based on the current computer name is used. 
+							When you create a workspace using a template, Team Foundation does not retrieve the files to which it maps from the server. 
+							Use the Get Command to synchronize the new workspace with the latest version on the server.
+						 */
+	
+				        // Set the execution directory
+				        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+				        execFromDir = vcsStruct.getVcsWorkspaceProject();
+				        
+				        /********************
+				         * LINK WORKSPACE
+				         ********************/
+						// tf.cmd workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
+				        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+						arguments=" workspace -new -collection:"+vcsStruct.getVcsRepositoryUrl()+" "+vcsStruct.getVcsWorkspaceName()+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitNewOptions();
+	
+						commandDesc = "    Linking local worksapce to VCS Repository...";
+	
+						// Print out command
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+				        /********************
+				         * MAP WORKSPACE
+				         ********************/
+					    // tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+					    //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+						arguments="  workfold -map -collection:"+vcsStruct.getVcsRepositoryUrl()+ " " +vcsStruct.getTfsServerUrl() + " " + vcsStruct.getVcsWorkspaceProject() +
+							 " -workspace:" + vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
+	
+						commandDesc = "    Mapping local workfold to VCS Repository...";
+	
+						// Print out command
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+	
+				        /********************
+				         * CHECKOUT WORKSPACE
+				         ********************/
+						// Check out the repository to the local workspace	    
+					    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
+					    // tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+						arguments=" get -all -recursive " + vcsStruct.getTfsServerUrl() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+						commandDesc = "    Checking out the repository to the local workspace...";
+	
+						// Print out command
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+			        } // End: if (pdToolStudio && vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
 				}
 				
 				/**********************************************************
@@ -2472,18 +2654,26 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2005")) {
 					
-					try {
-				        // Set the directory to execute from the workspace home directory
-//						execFromDir = ".";
-						execFromDir = vcsStruct.getVcsWorkspaceHome();
-						
-						// Set the VCS Command
-						command = vcsStruct.getVcsExecCommand();
+			        // Set the directory to execute from the workspace home directory
+		        	//execFromDir = ".";
+					execFromDir = vcsStruct.getVcsWorkspaceHome();
+					
+					// Set the VCS Command
+					command = vcsStruct.getVcsExecCommand();
 
-						// Delete the TFS workspace link
-						// tf workspace /delete ${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
-						arguments="  workspace /delete "+vcsStruct.getVcsWorkspaceName()+" /noprompt "+vcsStruct.getVcsOptions(); 
-						commandDesc = "    Delete the TFS workspace link...";
+			        // Bypass deleting and mapping the workspace when TFS_USE_EXISTING_WORKSPACE=true.  Only perform checkout to get latest resources.
+			        if (vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
+			        	if (logger.isInfoEnabled())
+			        		logger.info("Info: Workspace will not be unmapped or deleted when variable \"TFS_USE_EXISTING_WORKSPACE=true\" is set.");
+
+				        /********************
+				         * WORKSPACE EXISTS
+				         ********************/
+					    // Retrieve workspace status
+			        	// tf.cmd workspaces -collection:http://hostname:8080/tfs/DefaultCollection TFSww7 -noprompt -login:username,password
+					    // tf.cmd workspaces -collection:${TFS_SERVER_URL} ${VCS_WORKSPACE_NAME} -noprompt -login:${VCS_USERNAME},${VCS_PASSWORD}
+						arguments=" workspaces -collection:" + vcsStruct.getVcsRepositoryUrl() + " " + vcsStruct.getVcsWorkspaceName() + " -noprompt "+vcsStruct.getVcsOptions();
+						commandDesc = "    Check if workspace exists...";
 
 						// Print out command
 						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
@@ -2495,114 +2685,229 @@ public class VCSManagerImpl implements VCSManager {
 					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
 					    
 					    // Execute the command line
-					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    StringBuilder stdout = getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+						// Determine if there is any status messages containing an "add" status which indicates a pending change that is not committed.
+					    // This results from a file or folder that is committed but the parent folder or folders have not yet been committed.
+					    if (stdout != null) {
+							boolean workspaceInitialized = false;
+					    	try {
+						    	String vcsout = stdout.toString();
+						    	StringReader is = new StringReader(vcsout);
+
+								BufferedReader reader = new BufferedReader(is);
+								String line = null;
+								int lnCount = 0;
+								// Iterate through the orchestration property file
+								while ( (line = reader.readLine()) != null) {
+									lnCount++;
+									// Make sure the workspace name contains a space so that the search yields a unique entry and not a name within a name.
+							    	int idx = line.indexOf(vcsStruct.getVcsWorkspaceName()+" "); // "TFSww7 "
+							    	
+							    	// Continue if the workspace exists in TFS.
+									if (idx >= 0 && !workspaceInitialized) 
+									{
+										// Continue as long as the line does not contain the message "No workspace matching " + workspace name
+								    	if (line.indexOf(CommonConstants.TFS_MSG_NO_WORKSPACE_MATCHING+" "+vcsStruct.getVcsWorkspaceName()) < 0) 
+								    	{
+									        // Set the execution directory
+									        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+									        execFromDir = vcsStruct.getVcsWorkspaceProject();
+	
+									        // Create the workspace directory
+									        createDirectory(prefix, vcsStruct.getVcsWorkspace());
+	
+											// Create the VCS Workspace Project directory
+									        //	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+											createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
+	
+											// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+									        if (!pdToolStudio) {
+									        	// Create the workspace temp directory
+									        	createDirectory(prefix, vcsStruct.getVcsTemp());
+									        }
+	
+									        /********************
+									         * CHECKOUT WORKSPACE
+									         ********************/
+											// Check out the repository to the local workspace	    
+										    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
+										    // tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
+											arguments=" get -all -recursive " + vcsStruct.getTfsServerUrl() + " -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+											commandDesc = "    Checking out the repository to the local workspace...";
+	
+											// Print out command
+											CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+											
+										    // Parse the command arguments into a list
+										    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+										    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+										    
+										    // Execute the command line
+										    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+										    
+										    // Set the workspace initialized flag to true
+										    workspaceInitialized = true;
+								    	}
+									}
+								}
+					    	} 
+					    	catch (Exception e) {
+								throw new CompositeException(e.getMessage(), e);
+					    	}
+					    	if (!workspaceInitialized) {
+								throw new ApplicationException("ERROR: Workspace Initialization error.  Workspace="+vcsStruct.getVcsWorkspaceName()+" not found for user="+vcsStruct.getVcsUsername()+" when \"TFS_USE_EXISTING_WORKSPACE=true\".   Map the workspace for this user="+vcsStruct.getVcsUsername()+" and computer to resolve the issue or set \"TFS_USE_EXISTING_WORKSPACE=false\".");
+					    	}
+					    } // if (stdout != null)
+					    else
+					    {
+							throw new ApplicationException("ERROR: Workspace Initialization error.  No workspaces found for user="+vcsStruct.getVcsUsername()+" when \"TFS_USE_EXISTING_WORKSPACE=true\".");
+					    }
+			        } 
+			        // Perform the full workspace initialization when TFS_USE_EXISTING_WORKSPACE=false
+			        else  
+			        {
+
+			        	try {
+					        /********************
+					         * DELETE WORKSPACE
+					         ********************/
+							// Delete the TFS workspace link
+							// tf workspace /delete ${VCS_WORKSPACE_NAME} ${VCS_OPTIONS}
+							arguments="  workspace /delete "+vcsStruct.getVcsWorkspaceName()+" /noprompt "+vcsStruct.getVcsOptions(); 
+							commandDesc = "    Delete the TFS workspace link...";
+	
+							// Print out command
+							CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+							CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+							
+						    // Parse the command arguments into a list
+						    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+						    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+						    
+						    // Execute the command line
+						    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+							
+						} catch (CompositeException e) {
+							boolean errorFound = false;
+							String ignoreMessage = "";
+							if (e.getMessage().contains("does not exist")) {
+								errorFound = true;
+								ignoreMessage = "does not exist";
+							}
+							if (e.getMessage().contains("Unable to determine the source control server")) {
+								errorFound = true;
+								ignoreMessage = "Unable to determine the source control server";
+							}
+							if (errorFound) {
+								//continue processing, this is OK
+								if (logger.isErrorEnabled()) {
+									logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
+							    }
+							} else {
+								throw new ApplicationException(e);
+							}
+						} // End: if (pdToolStudio && vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
 						
-					} catch (CompositeException e) {
-						boolean errorFound = false;
-						String ignoreMessage = "";
-						if (e.getMessage().contains("does not exist")) {
-							errorFound = true;
-							ignoreMessage = "does not exist";
-						}
-						if (e.getMessage().contains("Unable to determine the source control server")) {
-							errorFound = true;
-							ignoreMessage = "Unable to determine the source control server";
-						}
-						if (errorFound) {
-							//continue processing, this is OK
-							if (logger.isErrorEnabled()) {
-								logger.info(prefix+"::  "+"Warning: Error ignored.  Error message matches ignore message string=\""+ignoreMessage+"\"");
-						    }
-						} else {
-							throw new ApplicationException(e);
-						}
-					}
-					
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
-			        
-			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
-			        if (!pdToolStudio) {
-			        	// Explicitly remove the workspace temp directory
-			        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
+				        // Explicitly remove the workspace directory
+				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        
+				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+				        if (!pdToolStudio) {
+				        	// Explicitly remove the workspace temp directory
+				        	removeDirectory(prefix, vcsStruct.getVcsTemp());	        	
+				        }
+
+				        /*********************
+				         * PREPARE DIRECTORIES
+				         *********************/
+				        // Create the workspace directory
+				        createDirectory(prefix, vcsStruct.getVcsWorkspace());
+	
+						// Create the VCS Workspace Project directory
+				        //	  e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+				        createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
+	
+						// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
+				        if (!pdToolStudio) {
+				        	// Create the workspace temp directory
+				        	createDirectory(prefix, vcsStruct.getVcsTemp());
+				        }
+				        
+				        // Set the directory to execute from the workspace directory
+						execFromDir = vcsStruct.getVcsWorkspace();
+						
+						// Set the VCS command
+						command = vcsStruct.getVcsExecCommand();
+	
+						// Link the VCS Repository URL and Project Root to the local workspace		
+						/*
+						 * Creating a new workspace
+						 * http://msdn.microsoft.com/en-US/library/y901w7se(v=VS.80).aspx
+							Before you can add files to the source control server or check out items on the server in order to edit them, 
+							you must create a workspace or associate an existing one with the current directory. 
+							For more information, see How to: Create a Workspace.
+							http://msdn.microsoft.com/en-US/library/ms181384(v=VS.80).aspx
+	
+							To make the current directory a working folder for an existing workspace on your computer, 
+							type tf workspace workspacename, where workspacename is the name of the existing workspace, 
+							click click here to enter a new working folder, type the server path of which you want to map 
+							the current directory in the Team Foundation source control server Folder box, 
+							type the current directory in the Local Folder box, and then click OK.
+	
+							When you create a new workspace, you can specify a template workspace as part of the /new option. 
+							When you specify a template workspace, Team Foundation creates a new workspace on the current computer, 
+							sets the owner to the current owner, and replicates the following workspace properties into the new workspace 
+							from the template workspace: mappings and comment. If no name is specified, a name based on the current computer name is used. 
+							When you create a workspace using a template, Team Foundation does not retrieve the files to which it maps from the server. 
+							Use the Get Command to synchronize the new workspace with the latest version on the server.
+						 */
+	
+				        /********************
+				         * CREATE WORKSPACE
+				         ********************/
+						// tf workspace /new /collection:${VCS_REPOSITORY_URL} $VCS_WORKSPACE /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
+						arguments=" workspace /new /s:"+vcsStruct.getVcsRepositoryUrl()+"/ "+vcsStruct.getVcsWorkspaceName()+" /noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
+	
+						commandDesc = "    Linking local worksapce to VCS Repository...";
+	
+						// Print out command
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+	
+				        /********************
+				         * CHECKOUT WORKSPACE
+				         ********************/
+						// Check out the repository to the local workspace	    
+					    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
+					    // tf get /all /force /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_WORKSPACE_INIT_GET_OPTIONS}    
+						arguments=" get /all /noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
+						commandDesc = "    Checking out the repository to the local workspace...";
+	
+						// Print out command
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 			        }
-			        
-			        // Create the workspace directory
-			        createDirectory(prefix, vcsStruct.getVcsWorkspace());
-
-					// Create the VCS Workspace Project directory
-			        //	  e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-			        createDirectory(prefix, vcsStruct.getVcsWorkspaceProject());
-
-					// Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
-			        if (!pdToolStudio) {
-			        	// Create the workspace temp directory
-			        	createDirectory(prefix, vcsStruct.getVcsTemp());
-			        }
-			        
-			        // Set the directory to execute from the workspace directory
-					execFromDir = vcsStruct.getVcsWorkspace();
 					
-					// Set the VCS command
-					command = vcsStruct.getVcsExecCommand();
-
-					// Link the VCS Repository URL and Project Root to the local workspace		
-					/*
-					 * Creating a new workspace
-					 * http://msdn.microsoft.com/en-US/library/y901w7se(v=VS.80).aspx
-						Before you can add files to the source control server or check out items on the server in order to edit them, 
-						you must create a workspace or associate an existing one with the current directory. 
-						For more information, see How to: Create a Workspace.
-						http://msdn.microsoft.com/en-US/library/ms181384(v=VS.80).aspx
-
-						To make the current directory a working folder for an existing workspace on your computer, 
-						type tf workspace workspacename, where workspacename is the name of the existing workspace, 
-						click click here to enter a new working folder, type the server path of which you want to map 
-						the current directory in the Team Foundation source control server Folder box, 
-						type the current directory in the Local Folder box, and then click OK.
-
-						When you create a new workspace, you can specify a template workspace as part of the /new option. 
-						When you specify a template workspace, Team Foundation creates a new workspace on the current computer, 
-						sets the owner to the current owner, and replicates the following workspace properties into the new workspace 
-						from the template workspace: mappings and comment. If no name is specified, a name based on the current computer name is used. 
-						When you create a workspace using a template, Team Foundation does not retrieve the files to which it maps from the server. 
-						Use the Get Command to synchronize the new workspace with the latest version on the server.
-					 */
-
-					// tf workspace /new /collection:${VCS_REPOSITORY_URL} $VCS_WORKSPACE /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-					arguments=" workspace /new /s:"+vcsStruct.getVcsRepositoryUrl()+"/ "+vcsStruct.getVcsWorkspaceName()+" /noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions();
-
-					commandDesc = "    Linking local worksapce to VCS Repository...";
-
-					// Print out command
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-
-					// Check out the repository to the local workspace	    
-				    // Retrieves a read-only copy of a file from the Team Foundation Server to the workspace and creates folders on disk to contain it.
-				    // tf get /all /force /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_WORKSPACE_INIT_GET_OPTIONS}    
-					arguments=" get /all /noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitGetOptions();
-					commandDesc = "    Checking out the repository to the local workspace...";
-
-					// Print out command
-					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 				}
 
 				/**********************************************************
@@ -2974,6 +3279,10 @@ public class VCSManagerImpl implements VCSManager {
 		// Load the VCS structure and decrypt the vcs password -- Retrieve properties from the deploy.properties file
 		vcsStruct.loadVcs(prefix, vcsUser, vcsPassword);
 		
+		// Set the Module Action Objective
+		String s1 = (vcsIds == null) ? "no_Ids" : "Ids="+vcsIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
+
         /*****************************************
 		 * DISPLAY/VALIDATE VCS VARIABLES
 		 *****************************************/	        
@@ -3102,6 +3411,7 @@ public class VCSManagerImpl implements VCSManager {
 						if (vcsResource.getRevision() != null && vcsResource.getRevision().length() > 0) {
 							// Get the resource type and convert any $VARIABLES
 							vcsRevision = CommonUtils.extractVariable(prefix, vcsResource.getRevision().trim(), propertyFile, true);
+							
 							if (vcsRevision.equalsIgnoreCase("HEAD")) {
 								vcsRevision = vcsRevision.toUpperCase();
 							} else {
@@ -3131,7 +3441,15 @@ public class VCSManagerImpl implements VCSManager {
 						
 						CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 						CommonUtils.writeOutput("-- BEGIN OUTPUT ------------------------------------",prefix,"-info",logger,debug1,debug2,debug3);					
-											
+							
+						// Set the Module Action Objective
+						s1 = "";
+						if (vcsLabel != null)
+							s1 = "Label="+vcsLabel;
+						if (vcsRevision != null)
+							s1 = "Rev="+vcsRevision;
+						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1+" : "+origResourcePath);
+						
 						//--------------------------------------------------------------
 						// checkin
 						//--------------------------------------------------------------
@@ -3178,8 +3496,9 @@ public class VCSManagerImpl implements VCSManager {
 				processedVcsIds = processedVcsIds.substring(0, processedVcsIds.length()-1);
 				CommonUtils.writeOutput("Processed the following VCS Identifiers="+processedVcsIds+".",prefix,"-info",logger,debug1,debug2,debug3);				
 			} else {
-				CommonUtils.writeOutput("No VCS Identifiers were processed.  Cross-check the property/build file against the VCSModule.xml.",prefix,"-info",logger,debug1,debug2,debug3);				
-				
+				String msg = "Warning: No VCS Identifiers were processed.  Cross-check the property/build file against the VCSModule.xml.";
+				CommonUtils.writeOutput(msg,prefix,"-info",logger,debug1,debug2,debug3);				
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("Successfully completed "+actionName+".",prefix,"-info",logger,debug1,debug2,debug3);
@@ -3275,7 +3594,7 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("      pathToServersXML=   "+pathToServersXML,prefix,"-debug3",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
 
-			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("=============== CIS EXPORT ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 			
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3284,6 +3603,9 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("============== VCS CHECKOUT ==============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
 			
+			CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+	        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
 			CommonUtils.writeOutput("============== VCS CHECKIN ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkin(resourcePath, resourceType, message, vcsStruct);
 	
@@ -3352,7 +3674,10 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, vcsLabel, revision, vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+	        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
+	        CommonUtils.writeOutput("=============== CIS EXPORT ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("========== DIFFMERGER ROLLBACK ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3425,7 +3750,10 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+	        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
+			CommonUtils.writeOutput("=============== CIS EXPORT ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3493,7 +3821,10 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD", vcsStruct);
 			
-			CommonUtils.writeOutput("============= CIS EXPORT =============",prefix,"-debug3",logger,debug1,debug2,debug3);
+			CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+	        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+
+			CommonUtils.writeOutput("=============== CIS EXPORT ===============",prefix,"-debug3",logger,debug1,debug2,debug3);
 			cis_import_export__export(resourcePath, resourceType, vcsStruct, serverId, pathToServersXML);
 					
 			CommonUtils.writeOutput("=========== DIFFMERGER CHECKIN ===========",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3693,7 +4024,9 @@ public class VCSManagerImpl implements VCSManager {
 				getVCSDAO().vcsImportCommand(prefix, arguments, vcsStruct.getVcsIgnoreMessages(), propertyFile);
 
 			} else {
-				CommonUtils.writeOutput("Checkout.car does not exist.  Nothing to import.",prefix,"-debug3",logger,debug1,debug2,debug3);
+				String msg = "Warning: Checkout.car does not exist.  Nothing to import.";
+				CommonUtils.writeOutput(msg,prefix,"-debug3",logger,debug1,debug2,debug3);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
 			}
 			
 		} catch (Exception e) {
@@ -4137,15 +4470,9 @@ public class VCSManagerImpl implements VCSManager {
 			{
 				//cd "${Workspace}"
 				//	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
-				execFromDir=vcsStruct.getVcsWorkspaceProject();
-				
-				// Create a file in the execution directory with the checkin message
-				String filename = CommonUtils.getUniqueFilename("comment", "txt");
-				commentFilePath = (execFromDir+"/"+filename).replaceAll("//", "/");
-				CommonUtils.createFileWithContent(commentFilePath, message);
-				String commentCommand = "";
-				
+				execFromDir=vcsStruct.getVcsWorkspaceProject();			
 				preserveQuotes = true;
+				String filename = null;
 				
 				// 2012-10-29 mtinius: differentiate between folder and data_source
 				if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
@@ -4174,42 +4501,150 @@ public class VCSManagerImpl implements VCSManager {
 					
 					//logger.debug("TFS Unparsed Arguments: " + arguments);
 					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    //logger.debug("TFS Argument List: " + argList);
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-					
-					//------------------------------------------
-					// Check in Folder
-					//------------------------------------------
-				    
-					commentCommand = " -comment:@"+filename;
-					//Derived from script:				
-				    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-					arguments=" checkin "+fullResourcePath+commentCommand+" -recursive -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
-				    // tf.cmd checkin ./${resourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
-					//(previous code:) arguments=" checkin ./"+resourcePath+commentCommand+" -recursive -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
+					// Only checkin the resource folder workspace when TFS_USE_EXISTING_WORKSPACE=false
+			        if (vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
+			        	if (logger.isInfoEnabled()) {
+			        		logger.info("Warning: Resource folder will not be checked-in when variable \"TFS_USE_EXISTING_WORKSPACE=true\" is set.");
+			        		logger.info("Warning: User must commit resources using TFS Team Explorer.");
+			        	}
+			        } else {
 
-					commandDesc = "    Commit folder changes to the Team Foundation Server Repository...";
-					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
-					
-					//logger.debug("TFS Unparsed Arguments: " + arguments);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    //logger.debug("TFS Argument List: " + argList);
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-					
+			        	// Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    //logger.debug("TFS Argument List: " + argList);
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+						
+						//------------------------------------------
+						// Check in Folder
+						//------------------------------------------
+					    
+						// Create a file in the execution directory with the checkin message
+						filename = CommonUtils.getUniqueFilename("comment", "txt");
+						commentFilePath = (execFromDir+"/"+filename).replaceAll("//", "/");
+						CommonUtils.createFileWithContent(commentFilePath, message);
+						String commentCommand = " -comment:@"+filename;
+						
+						//Derived from script:				
+					    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+						arguments=" checkin "+fullResourcePath+commentCommand+" -recursive -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+					    // tf.cmd checkin ./${resourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+						//(previous code:) arguments=" checkin ./"+resourcePath+commentCommand+" -recursive -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
+	
+						commandDesc = "    Commit folder changes to the Team Foundation Server Repository...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+						//logger.debug("TFS Unparsed Arguments: " + arguments);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    //logger.debug("TFS Argument List: " + argList);
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+					    // Remove the comment file
+						boolean result = CommonUtils.removeFile(commentFilePath);
+						
+						//------------------------------------------
+						// Status of Folder - Get Pending changes
+						//------------------------------------------
+					    
+						// Get the status which will provide a list of pending changes for the parent folders that were checked in but not committed.
+					    //   The use case is occurs when a folder is checked in but the parent folder lineage is new and therefore does not yet exist
+					    //   in TFS.  The folder.cmf files get placed into TFS in a pending state but are not committed.  This process is intended
+					    //   to get the list of pending changes and then commit them if they fall within the parent path of the fullResourcePath.
+
+					    //arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
+						arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
+							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+					    // tf.cmd status -collection:{VCS_REPOSITORY_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+						
+						commandDesc = "    Status of pending changes to the Team Foundation Server Repository...";					
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    StringBuilder stdout = getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+						// Determine if there is any status messages containing an "add" status which indicates a pending change that is not committed.
+					    // This results from a file or folder that is committed but the parent folder or folders have not yet been committed.
+					    if (stdout != null) {
+					    	try {
+						    	String vcsout = stdout.toString();
+						    	StringReader is = new StringReader(vcsout);
+
+								BufferedReader reader = new BufferedReader(is);
+								String line = null;
+								int lnCount = 0;
+								String statusFilepath = null;
+								// Iterate through the orchestration property file
+								while ( (line = reader.readLine()) != null) {
+									lnCount++;
+							    	int idx = line.indexOf(" add ");
+									if (idx >= 0) {
+										String chkinFilename = line.substring(0, idx).trim();
+										statusFilepath = line.substring(idx+5, line.length()).trim();
+										statusFilepath = statusFilepath.replaceAll(Matcher.quoteReplacement("\\\\"), "/");
+										statusFilepath = statusFilepath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+
+										// Get the next parent directory to validate
+										String statusFilePathDir = CommonUtils.getDirectory(statusFilepath);
+
+										// Only commit when the status pending path is contained within the full resource path of the original resource.
+										if (fullResourcePath.contains(statusFilePathDir)) {
+											//------------------------------------------
+											// Check in File for Parent Lineage Folder
+											//------------------------------------------
+										    
+											// Create a file in the execution directory with the checkin message
+											filename = CommonUtils.getUniqueFilename("comment", "txt");
+											commentFilePath = (execFromDir+"/"+filename).replaceAll("//", "/");
+											CommonUtils.createFileWithContent(commentFilePath, message+"  Check-in parent folder="+chkinFilename);
+											commentCommand = " -comment:@"+filename;
+											
+											//Derived from script:
+										    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+											arguments=" checkin "+statusFilepath+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+										    // tf.cmd checkin ./${resourcePath}_${resourceType}.cmf -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+											//(previous code:) arguments=" checkin ./"+resourcePath+"_"+resourceType+".cmf"+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
+											
+											commandDesc = "    Commit parent lineage folder changes to the Team Foundation Server Repository...";					
+											CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+											
+										    // Parse the command arguments into a list
+										    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+										    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+										    
+										    // Execute the command line
+										    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+										    // Remove the comment file
+											result = CommonUtils.removeFile(commentFilePath);
+										}
+									}
+								}
+					    	} 
+					    	catch (Exception e) {
+								throw new CompositeException(e.getMessage(), e);
+					    	}
+					    } // if (stdout != null)
+			        }
+			        
 				} else {
 					
 				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
@@ -4234,37 +4669,144 @@ public class VCSManagerImpl implements VCSManager {
 					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
 					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
 					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-				    
-					//------------------------------------------
-					// Check in File
-					//------------------------------------------
-				    
-					commentCommand = " -comment:@"+filename;
-					//Derived from script:
-				    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-					arguments=" checkin "+fullResourcePath+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
-				    // tf.cmd checkin ./${resourcePath}_${resourceType}.cmf -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
-					//(previous code:) arguments=" checkin ./"+resourcePath+"_"+resourceType+".cmf"+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
-					
-					commandDesc = "    Commit file changes to the Team Foundation Server Repository...";					
-					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					// Only checkin the resource file workspace when TFS_USE_EXISTING_WORKSPACE=false
+			        if (vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
+			        	if (logger.isInfoEnabled()) {
+			        		logger.info("Warning: Resource file will not be checked-in when variable \"TFS_USE_EXISTING_WORKSPACE=true\" is set.");
+			        		logger.info("Warning: User must commit resources using TFS Team Explorer.");
+			        	}
+			        } else {
+			        	
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+						//------------------------------------------
+						// Check in File
+						//------------------------------------------
+					    
+						// Create a file in the execution directory with the checkin message
+						filename = CommonUtils.getUniqueFilename("comment", "txt");
+						commentFilePath = (execFromDir+"/"+filename).replaceAll("//", "/");
+						CommonUtils.createFileWithContent(commentFilePath, message);
+						String commentCommand = " -comment:@"+filename;
+						
+						//Derived from script:
+					    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+						arguments=" checkin "+fullResourcePath+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+					    // tf.cmd checkin ./${resourcePath}_${resourceType}.cmf -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+						//(previous code:) arguments=" checkin ./"+resourcePath+"_"+resourceType+".cmf"+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
+						
+						commandDesc = "    Commit file changes to the Team Foundation Server Repository...";					
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+					    // Remove the comment file
+						boolean result = CommonUtils.removeFile(commentFilePath);
+
+						//------------------------------------------
+						// Status of File - Get Pending changes
+						//------------------------------------------
+					    
+						// Get the status which will provide a list of pending changes for the parent folders that were checked in but not committed.
+					    //   The use case is occurs when a file is checked in but the parent folder lineage is new and therefore does not yet exist
+					    //   in TFS.  The folder.cmf files get placed into TFS in a pending state but are not committed.  This process is intended
+					    //   to get the list of pending changes and then commit them if they fall within the parent path of the fullResourcePath.
+
+					    //arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
+						arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
+							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+					    // tf.cmd status --collection:{VCS_REPOSITORY_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+						
+						commandDesc = "    Status of pending changes to the Team Foundation Server Repository...";					
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    StringBuilder stdout = getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+					    
+						// Determine if there is any status messages containing an "add" status which indicates a pending change that is not committed.
+					    // This results from a file or folder that is committed but the parent folder or folders have not yet been committed.
+					    if (stdout != null) {
+					    	try {
+						    	String vcsout = stdout.toString();
+						    	StringReader is = new StringReader(vcsout);
+
+								BufferedReader reader = new BufferedReader(is);
+								String line = null;
+								int lnCount = 0;
+								String statusFilepath = null;
+								// Iterate through the orchestration property file
+								while ( (line = reader.readLine()) != null) {
+									lnCount++;
+							    	int idx = line.indexOf(" add ");
+									if (idx >= 0) {
+										String chkinFilename = line.substring(0, idx).trim();
+										statusFilepath = line.substring(idx+5, line.length()).trim();
+										statusFilepath = statusFilepath.replaceAll(Matcher.quoteReplacement("\\\\"), "/");
+										statusFilepath = statusFilepath.replaceAll(Matcher.quoteReplacement("\\"), "/");
+
+										// Get the next parent directory to validate
+										String statusFilePathDir = CommonUtils.getDirectory(statusFilepath);
+
+										// Only commit when the status pending path is contained within the full resource path of the original resource.
+										if (fullResourcePath.contains(statusFilePathDir)) {
+											//------------------------------------------
+											// Check in File for Parent Lineage Folder
+											//------------------------------------------
+										    
+											// Create a file in the execution directory with the checkin message
+											filename = CommonUtils.getUniqueFilename("comment", "txt");
+											commentFilePath = (execFromDir+"/"+filename).replaceAll("//", "/");
+											CommonUtils.createFileWithContent(commentFilePath, message+"  Check-in parent folder="+chkinFilename);
+											commentCommand = " -comment:@"+filename;
+											
+											//Derived from script:
+										    // tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
+											arguments=" checkin "+statusFilepath+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+										    // tf.cmd checkin ./${resourcePath}_${resourceType}.cmf -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
+											//(previous code:) arguments=" checkin ./"+resourcePath+"_"+resourceType+".cmf"+commentCommand+" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getTfsCheckinOptions();
+											
+											commandDesc = "    Commit parent lineage file changes to the Team Foundation Server Repository...";					
+											CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+											CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+											
+										    // Parse the command arguments into a list
+										    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+										    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+										    
+										    // Execute the command line
+										    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+										    // Remove the comment file
+											result = CommonUtils.removeFile(commentFilePath);
+										}
+									}
+								}
+					    	} 
+					    	catch (Exception e) {
+								throw new CompositeException(e.getMessage(), e);
+					    	}
+					    } // if (stdout != null)
+			        }
 				}
-				boolean result = CommonUtils.removeFile(commentFilePath);
 			}
 			
 			/********************************************
@@ -4444,6 +4986,7 @@ public class VCSManagerImpl implements VCSManager {
 			throw new CompositeException(e.getMessage(), e);
 		}
 	}
+	
 	
 	// ***********************************************************************************************
 	// Execute a VCS Generalized Scripts  ** vcs_checkin_checkout_cvs vcs_checkout **
@@ -5074,8 +5617,135 @@ public class VCSManagerImpl implements VCSManager {
 	}
 
 	
+	// ***********************************************************************************************
+	// Execute a VCS Validation Scripts  ** vcs_checkout_validate **
+	// ***********************************************************************************************
+	// This method is used to validate that the "folder.cmf" files exist for each folder and parent folder in the resourcePath.
+	// If a "folder.cmf" file does not exit, unusual and unexpected results happen with a VCS Checkout.  In some cases,
+	//   the resources won't import and in other cases, the resources may get deleted.
+	private void vcs_checkout_validate(String resourcePath, String resourceType, VcsStruct vcsStruct) throws CompositeException 
+	{
+		String prefix = "vcs_checkout_validate";
+	    String execFromDir = null;
+	    String directory = null;
+	    String directoryCMF = null;
+	    String invalidDirectoryList = null;
+		
+		try {
+			/********************************************
+			 * [CVS] vcs_checkin_checkout__vcs_checkout:
+			 *      CVS=Concurrent Versions System
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
 
+				// Execute from the Workspace Project Directory
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/cvs_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
+						
+			/********************************************
+			 * [P4] vcs_checkin_checkout__vcs_checkout:
+			 *      P4=Perforce
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
+				//cd "${Workspace}"
+				//   e.g: vcsWorkspaceProject:  D:/PDTool/p4_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
+			/********************************************
+			 * [SVN] vcs_checkin_checkout__vcs_checkout:
+			 *      SVN=Subversion
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
+			/********************************************
+			 * [TFS] vcs_checkin_checkout__vcs_checkout:
+			 *      TFS=Team Foundation Server
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2012") ||
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2013") ||
+				vcsStruct.getVcsType().equalsIgnoreCase("TFS2005")) 
+			{
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/tfs_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
+			
+			/********************************************
+			 * [GIT] vcs_checkin_checkout__vcs_checkout:
+			 *      GIT=Git
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
+			/********************************************
+			 * [CLC] vcs_checkin_checkout__vcs_checkout:
+			 *      CLC=Clearcase
+			 ********************************************/
+			if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
+				//cd "${Workspace}"
+				//	 e.g: vcsWorkspaceProject:  D:/PDTool/svn_workspace/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+			}
 
+			if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+				//------------------------------------------
+				// Validate Folder
+				//------------------------------------------
+
+				String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+				CommonUtils.writeOutput("    VCS Checkout Validate [FOLDER] fullResourcePath="+fullResourcePath,prefix,"-debug3",logger,debug1,debug2,debug3);
+				directory = fullResourcePath;
+
+			} else {
+				//------------------------------------------
+				// Validate File
+				//------------------------------------------
+				
+				String fullResourcePath = (execFromDir+"/"+resourcePath+"_"+resourceType+".cmf").replaceAll("//", "/");
+				CommonUtils.writeOutput("    VCS Checkout Validate [FILE] fullResourcePath="+fullResourcePath,prefix,"-debug3",logger,debug1,debug2,debug3);
+				directory = CommonUtils.getDirectory(fullResourcePath);
+			}				
+
+			// Validate the workspace structure and insure that the "folder.cmf" file exists for each parent folder of the passed in resourcePath.  
+			//   This is required for a validate VCS operation to take place.
+			//   Throw an exception if any parent "folder.cmf" file is missing.
+			while (directory != null && directory.length() > 0 && !directory.equals(execFromDir)) {
+				directoryCMF = CommonUtils.getPathName(directory) + ".cmf";
+				String directoryFullPath = directory+"/"+directoryCMF;
+				boolean dirExists = CommonUtils.fileExists(directory);
+				if (dirExists) {
+					boolean fileExists = CommonUtils.fileExists(directoryFullPath);
+					if (!fileExists) {
+						if (invalidDirectoryList == null)
+							invalidDirectoryList = "Invalid Workspace Folder List:\r\n";
+						else
+							invalidDirectoryList = invalidDirectoryList + "\r\n";
+						
+						invalidDirectoryList = invalidDirectoryList + "   Workspace folder ["+directoryCMF+"] does not exist.  Path="+directoryFullPath;					
+					}
+				}
+				// Get the next parent directory to validate
+				directory = CommonUtils.getDirectory(directory);
+			}
+
+			if (invalidDirectoryList != null)
+				throw new CompositeException(invalidDirectoryList);
+			
+		} catch (CompositeException e) {
+		    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
+			logger.error("Failed executing "+prefix+".",e);
+			throw new CompositeException(e.getMessage(), e);
+		}
+	}
+	
+	
 	/******************************************************************************************
 	 *  PRIVATE IMPLEMENTATION
 	 *  
@@ -6389,18 +7059,22 @@ public class VCSManagerImpl implements VCSManager {
 	private static void createDirectory(String prefix, String directory) throws CompositeException {
        // Create the directory
         if (!CommonUtils.fileExists(directory)) {
-			CommonUtils.writeOutput("Make directory:: create directory="+directory,prefix,"-debug3",logger,debug1,debug2,debug3);
 	        int maxTries = 3;
+	        int attempts = 1;
 	        boolean exitLoop = false;
 	        while (maxTries > 0 && !exitLoop) {
+				CommonUtils.writeOutput("Make directory attempt="+attempts+" :: create directory="+directory,prefix,"-debug3",logger,debug1,debug2,debug3);
 				if (CommonUtils.mkdirs(directory)) {
 		        	exitLoop = true;
 		        }
 				try {
-					Thread.sleep(milliSeconds);
-				} catch (Exception e){
+					if (!exitLoop)
+						Thread.sleep(milliSeconds);
+				} 
+				catch (Exception e){
 				}
 				maxTries--;
+				attempts++;
 	        }
 	        if (!CommonUtils.fileExists(directory)) {
 	           	throw new ValidationException("The directory ["+directory+"] could not be created.");	        	
@@ -6415,19 +7089,23 @@ public class VCSManagerImpl implements VCSManager {
 	private static void removeDirectory(String prefix, String directory) throws CompositeException {
         // Remove the directory
         if (CommonUtils.fileExists(directory)) {
-			CommonUtils.writeOutput("Remove directory:: delete directory="+directory,prefix,"-debug3",logger,debug1,debug2,debug3);
 			File dir = new File(directory);
 	        int maxTries = 3;
+	        int attempts = 1;
 	        boolean exitLoop = false;
 	        while (maxTries > 0 && !exitLoop) {
+				CommonUtils.writeOutput("Remove directory attempt="+attempts+" :: delete directory="+directory,prefix,"-debug3",logger,debug1,debug2,debug3);
 		        if (CommonUtils.removeDirectory(dir)) {
 		        	exitLoop = true;
 		        }
 				try {
-					Thread.sleep(milliSeconds);
-				} catch (Exception e){
+					if (!exitLoop)
+						Thread.sleep(milliSeconds);
+				} 
+				catch (Exception e){
 				}
 				maxTries--;
+				attempts++;
 	        }
 	        if (CommonUtils.fileExists(directory)) {
 	           	throw new ValidationException("The directory ["+directory+"] could not be removed.");	        	
@@ -6556,6 +7234,7 @@ public class VCSManagerImpl implements VCSManager {
 	    private String vcsPassword;
 	    private String vcsIgnoreMessages;
 	    private String vcsMessagePrepend;
+	    private String vcsUseExistingWorkspace;
 	    /* 3-7-2012: may not need 		
 	    private String vcsMessageMandatory;
 	    */
@@ -6600,6 +7279,7 @@ public class VCSManagerImpl implements VCSManager {
 		    vcsIgnoreMessages = null;
 		    vcsMessagePrepend = null;
 		    tfsCheckinOptions = null;
+		    vcsUseExistingWorkspace = "false";
 		    
 		    tfsServerUrl = null;
 		    /* 3-7-2012: may not need 		
@@ -6620,20 +7300,23 @@ public class VCSManagerImpl implements VCSManager {
 		//-------------------------------------------------------------------	
 	    private void loadVcs(String prefix, String user, String password) {
 	    	// Get the VCS_USERNAME from the (1) command or (2) Java Env or (3) Property File
+	    	// Trim the username
 			if (user == null || user.length() == 0) {
-				this.setVcsUsername(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_USERNAME"), propertyFile, true));
+				this.setVcsUsername(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_USERNAME").trim(), propertyFile, true));
 			} else {
-				setVcsUsername(user);
+				setVcsUsername(user.trim());
 			}
 			// Set the username in Java Env space so that it gets resolved when using it in the context of other commands for substitution
 			System.setProperty("VCS_USERNAME", this.getVcsUsername());
 			
 	    	// Get the VCS_PASSWORD from the (1) command or (2) Java Env or (3) Property File
+			// Trim the password
 			if (password == null || password.length() == 0) {
-				this.setVcsPassword(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_PASSWORD"), propertyFile, true));
+				this.setVcsPassword(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_PASSWORD").trim(), propertyFile, true));
 			} else {
-				this.setVcsPassword(password);
+				this.setVcsPassword(password.trim());
 			}
+			
 			// Decrypt the VCS encrypted password string if the string contains encryptedpassword:
 			this.setVcsPassword(CommonUtils.decrypt(this.getVcsPassword()));
 			// Set the password in Java Env space so that it gets resolved when using it in the context of other commands for substitution
@@ -6697,7 +7380,7 @@ public class VCSManagerImpl implements VCSManager {
 				&& !this.getVcsType().equalsIgnoreCase("TFS2012")
 				&& !this.getVcsType().equalsIgnoreCase("TFS2013")
 				&& !this.getVcsType().equalsIgnoreCase("GIT")
-//				&& !this.getVcsType().equalsIgnoreCase("CLC")
+				&& !this.getVcsType().equalsIgnoreCase("CLC")
 				) {
 				throw new ValidationException("VCS_TYPE must be in the set of values [SVN, P4, CVS, TFS2005, TFS2010, TFS2012, TFS2013, GIT, CLC].  The VCS_TYPE="+this.getVcsType());							
 			}
@@ -6926,8 +7609,17 @@ public class VCSManagerImpl implements VCSManager {
 				// The usage is /login:username[,password]. 
 				// If /login:username is supplied but /noprompt is not, the user is prompted for the password. 
 				// If /login:username,password is specified, Team Foundation Server uses the supplied parameters.
+
+				String separator = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"FILE_SYSTEM_SEPARATOR");
+				// Default the login switch to Windows style login
+				String tfsLoginSwitch = "/login:";
+				if (separator.equalsIgnoreCase("/") || separator.equalsIgnoreCase("//")) {
+					// Set the loging switch to UNIX style login
+					tfsLoginSwitch = "-login:";	
+				}
+				
 				if (getVcsUsername() != null && getVcsUsername().length() > 0) {
-					this.setVcsOptions(this.getVcsOptions() + " /login:"+this.getVcsUsername());					
+					this.setVcsOptions(this.getVcsOptions() + " " + tfsLoginSwitch+this.getVcsUsername());					
 				}
 				if (getVcsPassword() != null && getVcsPassword().length() > 0) {
 					this.setVcsOptions(this.getVcsOptions() + ","+this.getVcsPassword());			
@@ -6950,6 +7642,11 @@ public class VCSManagerImpl implements VCSManager {
 				if (this.getTfsServerUrl() == null || this.getTfsServerUrl().equals("")) {
 					this.setTfsServerUrl("$");
 				}
+				
+				//Set the Use Existing Workspace variable - TFS_USE_EXISTING_WORKSPACE
+				String useExistingWorkspace = CommonUtils.getFileOrSystemPropertyValue(propertyFile,"TFS_USE_EXISTING_WORKSPACE").toLowerCase();
+				if (useExistingWorkspace.equals("true") || useExistingWorkspace.equals("false"))
+					this.setVcsUseExistingWorkdspace(useExistingWorkspace);
 			}
 						
 			//-------------------------------------------------------------------
@@ -7168,8 +7865,46 @@ public class VCSManagerImpl implements VCSManager {
 			CommonUtils.writeOutput("      VCS_TEMP_DIR=                   "+this.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("      VCS LifecycleListener=          "+this.getVcsLifecycleListener(),prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+			
+			//Define the VCS Custom Environment Property Type
+			if (this.getVcsType() != null && this.getVcsType().length() > 0) {
+				String vcsEnvPropertyType = this.getVcsType() + "_ENV";
+				CommonUtils.writeOutput("---VCS Custom Variables:             ",prefix,"-debug2",logger,debug1,debug2,debug3);
+				displayVcsCustomEnvVars(prefix, vcsEnvPropertyType);
+				CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+			}
 	    }
 
+		// Display the custom VCS environment property variables: TFS_ENV, SVN_ENV, GIT_ENV, CVS_ENV, P4_ENV
+	    private void displayVcsCustomEnvVars(String prefix, String customEnvProperty) {
+			// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+			// This is to insure backward compatability with the original VCS methods
+	    	String propertyValue = null;
+			if (!vcsV2Method) {
+				propertyValue = System.clearProperty(customEnvProperty);
+			}
+			// Get the VCS specific environment variables
+			String envVars = CommonUtils.getFileOrSystemPropertyValue(propertyFile,customEnvProperty);
+			// Remove any inadvertant $ or % signs from the variables.  This is a list of variable.  Not actual variables for substitution
+			envVars = envVars.replaceAll(Matcher.quoteReplacement("$"), "");
+			envVars = envVars.replaceAll(Matcher.quoteReplacement("%"), "");
+			// Get the list of variables
+			StringTokenizer st = new StringTokenizer(envVars,","); 
+			while(st.hasMoreTokens()){
+				String property = st.nextToken().trim();
+				// When the non-V2 methods are being invoked, make sure there are no Java Environment variables set prior getting the dynamic property.
+				// This is to insure backward compatability with the original VCS methods
+				if (!vcsV2Method) {
+					propertyValue = System.clearProperty(property);
+				}
+				// Resolve the variables in the list
+				propertyValue = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,property), propertyFile, true);
+				CommonUtils.writeOutput("      "+property+"=          "+propertyValue,prefix,"-debug2",logger,debug1,debug2,debug3);
+			}
+	
+	    }
+	    
+	    
 		// Validate the VCS variables (property file + derived properties)
 	    private void validateVcs(String prefix) {
 			/*****************************************
@@ -7550,6 +8285,13 @@ public class VCSManagerImpl implements VCSManager {
 	    }  
 	    private String getTfsServerUrl() {
 	    	return this.tfsServerUrl;
+	    }
+	    // Set/Get vcsUseExistingWorkspace
+	    private void setVcsUseExistingWorkdspace(String s) {
+	    	this.vcsUseExistingWorkspace = s;
+	    }  
+	    private String getVcsUseExistingWorkdspace() {
+	    	return this.vcsUseExistingWorkspace;
 	    }
 	}
 

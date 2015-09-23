@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -383,6 +385,7 @@ public class RegressionManagerUtils {
     	Pattern p = null;
     	Matcher m = null;
     	
+    	// Parse the FROM clause
     	if (query.toUpperCase().indexOf("FROM") > 0) {
     		String fromClause = query.substring(query.toUpperCase().indexOf("FROM")+4).trim();
 
@@ -441,7 +444,9 @@ public class RegressionManagerUtils {
     	   	tableUrl = tableUrl.replaceAll("_0020", " ");
     	   	// Decode all encoded periods _002e with a period "."
     	   	tableUrl = tableUrl.replaceAll("_002e", ".");
-}
+    	}
+    	
+    	// Extract the procedure CALL syntax
     	if (query.toUpperCase().indexOf("CALL") > 0) {
     		String proc = query.substring(query.toUpperCase().indexOf("CALL")+4).trim();
     	   	int pos = proc.indexOf("(");
@@ -449,6 +454,22 @@ public class RegressionManagerUtils {
     	   		tableUrl = proc.substring(0, pos).trim();
     	   	}
     	}
+    	
+		/* 2015-07-06 mtinius - Adding a checksum to the URL allows for unique identification of queries that invoke the same table. */
+    	// Calculate the CRC for the string to produce a unique identifier
+    	Checksum checksum = new CRC32();
+    	long currentLineCheckSumValue = 0L;
+    	String queryTmp = query.replace("\n", " ").replaceAll("\r", " ").trim().replaceAll("  ", " ");
+    	byte bytes[] = queryTmp.getBytes();
+    	checksum.reset();
+    	checksum.update(bytes, 0, bytes.length);
+   		currentLineCheckSumValue = checksum.getValue();	
+   		
+   		// Rewrite the table URL to include the query checksum value
+   		tableUrl = tableUrl+"_"+currentLineCheckSumValue;
+   		//System.out.println("query="+queryTmp);
+   		//System.out.println("tableUrl="+tableUrl);
+   		
     	return tableUrl;
     }
 

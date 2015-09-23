@@ -63,7 +63,7 @@ public interface VCSDAO {
 	 * @param vcsIgnoreMessages - comma separate list of error messages to ignore upon command execution
 	 * @throws CompositeException
 	 */
-	public void execCommandLineVCS(String prefix, String execFromDir, String command, List<String> args, List<String> envList, String vcsIgnoreMessages) throws CompositeException;
+	public StringBuilder execCommandLineVCS(String prefix, String execFromDir, String command, List<String> args, List<String> envList, String vcsIgnoreMessages) throws CompositeException;
 	
 	/**
 	 * @param serverId target server id from servers config xml

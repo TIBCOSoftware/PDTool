@@ -106,6 +106,10 @@ public class RebindManagerImpl implements RebindManager {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
 		}
 
+		// Set the Module Action Objective
+		String s1 = (startPath == null) ? "no_startPath" : "Path="+startPath;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "GENERATE : "+s1);
+
 		// Set the list of rebindable resource types for the filter list
 		String rebindableResourceTypeFilter = "TABLE,PROCEDURE,LINK,DEFINITION_SET,DATA_SOURCE,TRIGGER";
 		
@@ -229,6 +233,7 @@ public class RebindManagerImpl implements RebindManager {
 	public void rebindResources(String serverId, String rebindIds, String pathToRebindXml, String pathToServersXML) throws CompositeException {
 
 		String prefix = "rebindResources";
+		String processedIds = null;
 		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToRebindXml)) {
@@ -243,6 +248,10 @@ public class RebindManagerImpl implements RebindManager {
 
 		// Extract variables for the rebindIds
 		rebindIds = CommonUtils.extractVariable(prefix, rebindIds, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (rebindIds == null) ? "no_rebindIds" : "Ids="+rebindIds;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", "REBIND : "+s1);
 
 		List<RebindType> rebindList = getRebinds(serverId, rebindIds, pathToRebindXml, pathToServersXML);
 		if (rebindList != null && rebindList.size() > 0) {
@@ -263,7 +272,14 @@ public class RebindManagerImpl implements RebindManager {
 					 * 3. csv string with '-' or what ever is configured to indicate exclude resources as prefix 
 					 * 	  like -datasource1,datasource2 (we ignore passed in resources and process rest of the in the input xml
 					 */
-					if(DeployUtil.canProcessResource(rebindIds, identifier)){
+					if(DeployUtil.canProcessResource(rebindIds, identifier))
+					{
+						// Add to the list of processed ids
+						if (processedIds == null)
+							processedIds = "";
+						else
+							processedIds = processedIds + ",";
+						processedIds = processedIds + identifier;
 
 						// Get the path and type of the single resource to rebind
 						String resourcePath = CommonUtils.extractVariable(prefix, rebindResource.getResourcePath(), propertyFile, true);
@@ -301,6 +317,11 @@ public class RebindManagerImpl implements RebindManager {
 						// If all of the old and new rebinable paths exist in CIS then use rebindResource() method to rebind.
 						if (rebindRuleListValidated != null && rebindRuleListValidated.getRebindRule().size() > 0) 
 						{
+							
+							// Set the Module Action Objective
+							s1 = identifier+"=" + ((resourcePath == null) ? "no_resourcePath" : resourcePath);
+							System.setProperty("MODULE_ACTION_OBJECTIVE", "REBIND_RESOURCE : "+s1);
+
 							// Setup the list of path/type pairs to hold a single resource
 							PathTypePair singlePathTypePair = new PathTypePair();
 							singlePathTypePair.setPath(resourcePath);
@@ -373,6 +394,11 @@ public class RebindManagerImpl implements RebindManager {
 							 *			port.updateStreamTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, model, isExplicitDesign, parameters, annotation, attributes);
 							 */
 							Resource resource = getResourceDAO().getResource(serverId, resourcePath, pathToServersXML);
+							
+							// Set the Module Action Objective
+							s1 = identifier+"=" + ((resource == null) ? "no_resource" : resource);
+							System.setProperty("MODULE_ACTION_OBJECTIVE", "REBIND_FOLDER : "+s1);
+
 							for (RebindRuleType rule : rules)
 							{
 								String fromFolder = CommonUtils.extractVariable(prefix, rule.getOldPath(), propertyFile, true);
@@ -384,6 +410,24 @@ public class RebindManagerImpl implements RebindManager {
 					}
 				}
 			}
+			// Determine if any resourceIds were not processed and report on this
+			if (processedIds != null) {
+				if(logger.isInfoEnabled()){
+					logger.info("Rebind entries processed="+processedIds);
+				}
+			} else {
+				if(logger.isInfoEnabled()){
+					String msg = "Warning: No rebind entries were processed for the input list.  rebindIds="+rebindIds;
+					logger.info(msg);
+					System.setProperty("MODULE_ACTION_MESSAGE", msg);
+				}		
+			}
+		} else {
+			if(logger.isInfoEnabled()){
+				String msg = "Warning: No rebind entries found for Rebind Module XML at path="+pathToRebindXml;
+				logger.info(msg);
+				System.setProperty("MODULE_ACTION_MESSAGE", msg);
+			}							
 		}
 	}
 

@@ -72,15 +72,16 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 
 		try {
 			
-			if (validateResourceExists) {
-				// Make sure the resource exists before executing any actions
-				if (!DeployManagerUtil.getDeployManager().doResourceExist(serverId, resourceCachePath, pathToServersXML)) {
-					throw new ApplicationException("The resource "+resourceCachePath+" does not exist.");
-				}
-			}
-			
 			if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.UPDATE.name())){
 
+				if (validateResourceExists) {
+					// Make sure the resource exists before executing any actions
+					if (!DeployManagerUtil.getDeployManager().resourceExists(serverId, resourceCachePath, resourceCacheType, pathToServersXML)) {
+							//.doResourceExist(serverId, resourceCachePath, pathToServersXML)
+						throw new ApplicationException("The resource "+resourceCachePath+" does not exist.");
+					}
+				}
+				
 				Holder<CacheConfig> cacheConfig = new Holder<CacheConfig>(resourceCacheConfig);			
 
 				if(logger.isDebugEnabled()) {
@@ -394,7 +395,8 @@ Faults:
 		try {
 			if (validateResourceExists) {
 				// Make sure the resource exists before executing any actions
-				if (!DeployManagerUtil.getDeployManager().doResourceExist(serverId, resourceCachePath, pathToServersXML)) {
+				if (!DeployManagerUtil.getDeployManager().resourceExists(serverId, resourceCachePath, resourceCacheType, pathToServersXML)) {
+					//.doResourceExist(serverId, resourceCachePath, pathToServersXML)
 					throw new ApplicationException("The resource "+resourceCachePath+" does not exist.");
 				}
 			}
@@ -436,25 +438,18 @@ Faults:
 		}
 		boolean enabled = false;
 		try {
-			// Make sure the resource exists before executing any actions
-			if (DeployManagerUtil.getDeployManager().doResourceExist(serverId, resourceCachePath, pathToServersXML)) {
-				
-				CacheConfig cacheConfig = getResourceCacheConfig(resourceCachePath, resourceCacheType, serverId, pathToServersXML, true);
-				if (cacheConfig != null) {
-					if (cacheConfig.isEnabled() != null) {
-						if (cacheConfig.isEnabled()) {
-							enabled = true;
-						}
+			CacheConfig cacheConfig = getResourceCacheConfig(resourceCachePath, resourceCacheType, serverId, pathToServersXML, true);
+			if (cacheConfig != null) {
+				if (cacheConfig.isEnabled() != null) {
+					if (cacheConfig.isEnabled()) {
+						enabled = true;
 					}
 				}
-				if(logger.isInfoEnabled())
-				{
-					logger.debug("ResourceCacheWSDAOImpl.isCacheEnabled::enabled="+enabled+"  resourcePath="+resourceCachePath);
-				}
-			} else {
-				throw new ApplicationException("The resource "+resourceCachePath+" does not exist.");
 			}
-
+			if(logger.isInfoEnabled())
+			{
+				logger.debug("ResourceCacheWSDAOImpl.isCacheEnabled::enabled="+enabled+"  resourcePath="+resourceCachePath);
+			}
 		} catch (ApplicationException e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "isCacheEnabled", "ResourceCache", resourceCachePath, null));
 			throw new ApplicationException(e.getMessage(), e);

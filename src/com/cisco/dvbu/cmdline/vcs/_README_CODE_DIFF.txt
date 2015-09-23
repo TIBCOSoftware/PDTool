@@ -52,6 +52,12 @@ D	SVNLifecycleListener.java
 	com.cisco.dvbu.cmdline.vcs.spi.tfs
 N	TFSLifecycleListener.java
 	
+	com.cisco.dvbu.cmdline.vcs.spi.git
+N	GITLifecycleListener.java
+	
+	com.cisco.dvbu.cmdline.vcs.spi.clc
+N	CLCLifecycleListener.java
+	
 	com.cisco.dvbu.cmdline.vcs.util
 I	NameCodecCommand.java
 

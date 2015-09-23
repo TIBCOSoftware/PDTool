@@ -138,8 +138,8 @@ public class DeployManagerUtil {
 			}
 			
 			if(!validMethod){
-				logger.error("Passed in method "+args[0]+" does not exist");
-				throw new ValidationException("Passed in method  "+args[0]+" does not exist ");
+				logger.error("Passed in method "+args[0]+" does not exist or does not match the number of required arguments.");
+				throw new ValidationException("Passed in method  "+args[0]+" does not exist or does not match the number of required arguments.");
 			}
 			
 		} catch (CompositeException e) {
@@ -158,6 +158,12 @@ public class DeployManagerUtil {
 			String configDirRoot = System.getProperty(configRootProperty);
 			if (configDirRoot != null && configDirRoot.length() > 0) {
 				File dir = new File(configDirRoot);
+				
+				// Set the file system separator type
+				@SuppressWarnings("static-access")
+				String sep = dir.separator;
+				System.setProperty("FILE_SYSTEM_SEPARATOR", sep);
+				
 				if (dir.exists() && dir.isDirectory()) {
 					File file = new File(dir,springConfigFile);
 	

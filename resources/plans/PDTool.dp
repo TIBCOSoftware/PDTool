@@ -70,9 +70,9 @@
 #VCS Checkin from dev server to VCS Server
 #PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin1,chkin2,chkin3,chkin4,chkin5,chkin6,chkin7,chkin8" "$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
 #PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin9" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin10" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin11" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin12" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin10" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin11" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#PASS	FALSE	ExecuteAction   vcsCheckins    		$SERVERID  "chkin12" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
 
 #
 # Remove Resources
@@ -80,27 +80,29 @@
 #PASS	TRUE   ExecuteAction    deleteResources    	$SERVERID "remove3-spaces" 					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml" 
 #
 #VCS Checkout from VCS and import into target
-#PASS	TRUE	ExecuteAction   vcsCheckouts    		$SERVERID  "chkout2,chkout3" 	"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-#FAIL	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "chkout4" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-PASS	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "chkout5" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
-PASS	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "chkout6" 			"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#PASS	TRUE	ExecuteAction   vcsCheckouts    	$SERVERID  "saut2,saut3" 		"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#FAIL	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "saut4" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+########PASS	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "saut5" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
+#PASS	FALSE	ExecuteAction   vcsCheckouts   		$SERVERID  "saut6" 				"$MODULE_HOME/VCSModule.xml" "$MODULE_HOME/servers.xml" 
 #
 # Backup
-PASS	TRUE	ExecuteAction  	backup_export    	$SERVERID   "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+#PASS	TRUE	ExecuteAction  	backup_export    	$SERVERID   "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 # Export
 #PASS	TRUE	ExecuteAction  pkg_export       	$SERVERID  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 # Import
 #PASS	TRUE	ExecuteAction  pkg_import       	$SERVERID  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 # Update Datasource
-PASS	TRUE   ExecuteAction    updateDataSources   $SERVERID  "datatsource1,datasource2" "$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml" 
+PASS	TRUE   ExecuteAction    updateDataSources   $SERVERID  "datatsource1,ds2" "$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml" 
+# Update Server Attribute
+PASS	FALSE	ExecuteAction   updateServerAttributes $SERVERID "studio4" 	"$MODULE_HOME/ServerAttributeModule.xml" 				"$MODULE_HOME/servers.xml" 
 # Execute Configured Procedure
-PASS	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc-success 			"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
-#FAIL	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc-fail 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+PASS	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc					"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
+#FAIL	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testproc-fail 			"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 #PASS	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testprocsimple-success 	"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 #FAIL	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testprocsimple-fail 		"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 #PASS	FALSE 	ExecuteAction	executeConfiguredProcedures $SERVERID testnoparams 				"$MODULE_HOME/ResourceModule.xml" "$MODULE_HOME/servers.xml"
 # Execute Procedure
-#PASS	FALSE 	ExecuteAction	executeProcedure $SERVERID testproc TEST 						"$MODULE_HOME/servers.xml" "'testproc Success','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
+PASS	FALSE 	ExecuteAction	executeProcedure $SERVERID testproc TEST 						"$MODULE_HOME/servers.xml" "'testproc Success','0','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
 #FAIL	FALSE 	ExecuteAction	executeProcedure $SERVERID testproc TEST 						"$MODULE_HOME/servers.xml" "'testproc Fail','5','12.3','3.141592653589793','2000-02-01','23:59:01','1923-03-06 23:59:31','','1'"
 #PASS	FALSE 	ExecuteAction	executeProcedure $SERVERID testprocsimple TEST 					"$MODULE_HOME/servers.xml" "'testprocsimple Success','0'"
 #FAIL	FALSE 	ExecuteAction	executeProcedure $SERVERID testprocsimple TEST 					"$MODULE_HOME/servers.xml" "'testprocsimple Fail','1'"
@@ -113,7 +115,7 @@ FAIL	FALSE  	ExecuteAction   updateDataSources    $SERVERID    	"datasource1,dat
 #FAIL	FALSE 	ExecuteAction
 #FAIL	FALSE
 # FAIL	FALSE ExecuteAction    	updateDataSourcesZZ  $SERVERID    	"datasource1,datasource2" 	"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"    
-# FAIL	FALSE ExecuteActionXXX 	updateDataSourcesZZ  $SERVERID    	"datasource1,datasource2" 	"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"    
+FAIL	FALSE ExecuteActionXXX 	updateDataSources  $SERVERID    	"datasource1,datasource2" 	"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"    
 #FAIL	FALSE  ExecuteAction   updateDataSourcesZZ  $SERVERID
 #FAIL	FALSE  ExecuteAction    	updateDataSources 	$SERVERID 		"datasource5"	  		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml" 
 # FAIL	TRUE  ExecuteActionXXX  updateDataSourcesZZ  $SERVERID    	"datasource1,datasource2" 	"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml" 

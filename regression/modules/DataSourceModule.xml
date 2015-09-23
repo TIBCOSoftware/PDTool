@@ -173,7 +173,7 @@
             <genericAttribute>
                 <name>url</name>
                 <type>STRING</type>
-                <value>$CIS_HTTP_TYPE$://localhost:$CIS_WSPORT/services/TEST00/testWebService?wsdl</value>
+                <value>$CIS_HTTP_TYPE$://localhost:$CIS_PORT/services/TEST00/testWebService?wsdl</value>
             </genericAttribute>
         </genericDataSource>
     </datasource>
@@ -211,12 +211,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>SUMMARY</reportDetail>
 			<plan>
-				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
+				<updateAllIntrospectedResources>false</updateAllIntrospectedResources>
 				<failFast>true</failFast>
 				<commitOnFailure>true</commitOnFailure>
 					<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 				<resourceId>
 					<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
@@ -237,12 +240,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>FULL</reportDetail>
 			<plan>
-				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
+				<updateAllIntrospectedResources>false</updateAllIntrospectedResources>
 				<failFast>true</failFast>
 				<commitOnFailure>true</commitOnFailure>
 				<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
 						<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
@@ -262,12 +268,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>FULL</reportDetail>
 			<plan>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
 				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
 				<failFast>true</failFast>
 				<commitOnFailure>true</commitOnFailure>
 				<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
 						<resourcePath>$CIS_CATALOG$shippingmethods</resourcePath>
@@ -295,12 +304,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>SIMPLE_COMPRESSED</reportDetail>
 			<plan>
-				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
+				<updateAllIntrospectedResources>false</updateAllIntrospectedResources>
 				<failFast>true</failFast>
 				<commitOnFailure>true</commitOnFailure>
 				<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
 						<resourcePath>CISORADEMO/EMPLOYEES</resourcePath>
@@ -345,12 +357,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>FULL</reportDetail>
 			<plan>
-				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
+				<updateAllIntrospectedResources>false</updateAllIntrospectedResources>
 				<failFast>true</failFast>
 				<commitOnFailure>true</commitOnFailure>
 				<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
 						<resourcePath>CISORADEMO</resourcePath>
@@ -372,12 +387,15 @@
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>FULL</reportDetail>
 			<plan>
-				<updateAllIntrospectedResources>true</updateAllIntrospectedResources>
+				<!-- TRUE=Updates all resources regardless of targeted planEntry section 
+				     FALSE=Recommended when using planEntry setting. -->
+				<updateAllIntrospectedResources>false</updateAllIntrospectedResources>
 				<failFast>false</failFast>
 				<commitOnFailure>true</commitOnFailure>
 				<autoRollback>true</autoRollback>
 				<scanForNewResourcesToAutoAdd>false</scanForNewResourcesToAutoAdd>
-				<!--Element planEntry is optional-->
+				<!--Element planEntry is optional. 
+				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
 						<resourcePath>information_schema</resourcePath>

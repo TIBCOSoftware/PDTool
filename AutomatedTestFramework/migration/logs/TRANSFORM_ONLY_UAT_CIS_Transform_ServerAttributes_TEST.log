@@ -1,0 +1,7 @@
+########################################################################################################################################
+#  XSL TRANSFORMATION ONLY FOR ENV=UAT  TIMESTAMP=Tue 07/21/2015 16:50:22.76  #
+########################################################################################################################################
+Tue 07/21/2015 16:50:22.80 COMMAND: call "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\bin\Xslt\XsltTransform.bat" "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/ServerAttributes_TEST_UAT.xml"  "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\bin\Xslt\ServerAttributes_Transform_62_to_70.xsl"  "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/ServerAttributes_TEST_UAT_xform.xml"
+Tue 07/21/2015 16:50:23.20 SUCCESS: UAT - Transformed: SOURCE="C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/ServerAttributes_TEST_UAT.xml"
+Tue 07/21/2015 16:50:23.20 SUCCESS: UAT - Transformed: TARGET="C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/ServerAttributes_TEST_UAT_xform.xml" 
+########################################################################################################################################

@@ -46,7 +46,6 @@ import com.cisco.dvbu.ps.deploytool.services.RegressionItem;
 import com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl;
 import com.cisco.dvbu.ps.deploytool.services.RegressionManagerUtils;
 import com.cisco.dvbu.ps.deploytool.services.RegressionQuery;
-
 import com.cisco.dvbu.ps.deploytool.modules.RegressionQueriesType;
 import com.cisco.dvbu.ps.deploytool.modules.RegressionSecurityQueriesType;
 import com.cisco.dvbu.ps.deploytool.modules.RegressionSecurityQueryType;
@@ -529,6 +528,9 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 				 logger.info("                                                        ");
 				 logger.info("Review input file: "+filePath);
 				 logger.info("--------------------------------------------------------");
+
+		String moduleActionMessage = "MODULE_INFO: Generate Summary: Queries="+totalQueriesGenerated+" Procedures="+totalProceduresGenerated+" WebServices="+totalWebServicesGenerated;
+		System.setProperty("MODULE_ACTION_MESSAGE", moduleActionMessage);
 
 		return outString;
 	} // end method

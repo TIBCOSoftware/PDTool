@@ -92,8 +92,14 @@ public class ServerManagerImpl implements ServerManager {
 	private void serverManagerAction(String actionName, String serverId, String pathToServersXML) throws CompositeException {
 
 		String prefix = "serverManagerAction";
+		String processedIds = null;
+
 		// Extract variables for the serverId
 		serverId = CommonUtils.extractVariable(prefix, serverId, propertyFile, true);
+
+		// Set the Module Action Objective
+		String s1 = (serverId == null) ? "no_serverId" : "Ids="+serverId;
+		System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
 
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {

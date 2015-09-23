@@ -1,0 +1,427 @@
+------------------------------------------------------------------
+-----------                                            -----------
+----------- Cisco Advanced Services                    -----------
+----------- PDTool: Promotion and Deployment Tool      -----------
+-----------                                            -----------
+------------------------------------------------------------------
+ 
+ExecutePDTool::Mon 07/06/2015-15:16:56.58::***** BEGIN COMMAND: ExecutePDTool *****
+ 
+########################################################################################################################################
+ExecutePDTool: Parse command line and set input variables:
+########################################################################################################################################
+ExecutePDTool::Mon 07/06/2015-15:16:56.80::Command Line Arguments:
+ExecutePDTool::Mon 07/06/2015-15:16:56.83::   CMD=[-exec]
+ExecutePDTool::Mon 07/06/2015-15:16:56.85::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_3Performance_exec.dp]
+ExecutePDTool::Mon 07/06/2015-15:16:56.88::   VCS_USERNAME=[]
+ExecutePDTool::Mon 07/06/2015-15:16:56.90::   VCS_PASSWORD=[]
+ExecutePDTool::Mon 07/06/2015-15:16:56.93::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_DEV.properties]
+ExecutePDTool::Mon 07/06/2015-15:16:56.95::   RELEASE_FOLDER=[]
+ExecutePDTool::Mon 07/06/2015-15:16:56.98::   CIS_VERSION=[]
+ 
+ExecutePDTool::Mon 07/06/2015-15:16:57.03::----------------------------------------------------------
+ExecutePDTool::Mon 07/06/2015-15:16:57.06::Section: Invoking setVars.bat...C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat
+ExecutePDTool::Mon 07/06/2015-15:16:57.08::----------------------------------------------------------
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat": Setting pre-processing custom variables
+########################################################################################################################################
+------------------
+GENERAL VARIABLES
+------------------
+MY_JAVA_HOME               =
+PDTOOL_SUBSTITUTE_DRIVE    =O:
+PDTOOL_INSTALL_HOME        =
+PDTOOL_HOME                =
+MY_CONFIG_PROPERTY_FILE    =
+------------------
+CIS VARIABLES
+------------------
+CIS_PORT                   =9420
+CIS_REPO_PORT              =9428
+CIS_HTTP_TYPE              =http
+CIS_WSPORT                 =9420
+CIS_USERNAME               =admin
+CIS_PASSWORD               =Encrypted:7F6324FFD300BE8F
+CIS_DOMAIN                 =composite
+------------------
+TFS VARIABLES
+------------------
+TFS_HOME                   =
+TFS_VCS_HOST               =mtinius-ws
+TFS_VCS_REPOSITORY_URL     =
+TFS_VCS_PROJECT_ROOT       =
+TFS_VCS_USERNAME           =mtinius
+TFS_VCS_PASSWORD           =Encrypted:03A98497EEF59CF0
+TFS_VCS_WORKSPACE_NAME     =TFSww
+TFS_VCS_WORKSPACE_NAME_TEMP=TFSwwt
+------------------
+SVN VARIABLES
+------------------
+SVN_HOME                   =
+SVN_VCS_HOST               =dvbu-kauai.cisco.com
+SVN_VCS_REPOSITORY_URL     =
+SVN_VCS_PROJECT_ROOT       =
+SVN_VCS_USERNAME           =mtinius
+SVN_VCS_PASSWORD           =Encrypted:5240F442049ACB93D9D2DC3BC9421A68
+SVN_VCS_WORKSPACE_NAME     =SVNww
+SVN_VCS_WORKSPACE_NAME_TEMP=SVNwwt
+
+########################################################################################################################################
+C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin\setVars.bat: Setting PDTool variables
+########################################################################################################################################
+MY_VARS_HOME               =C:\CompositeSoftware\PDTool_Test
+MY_PRE_VARS_PATH           =C:\CompositeSoftware\PDTool_Test\setMyPrePDToolVars_7.0.0.bat
+MY_POST_VARS_PATH          =C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat
+JAVA_HOME                  =C:\Program Files\Java\jre7
+MIN_MEMORY                 =-Xms256m
+MAX_MEMORY                 =-Xmx1024m
+CONFIG_PROPERTY_FILE       =deploy.properties
+CURRDIR                    =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\bin
+SUBSTITUTE_DRIVE           =O:
+PROJECT_HOME               =O:
+PROJECT_HOME_PHYSICAL      =C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+CERT_ARGS                  =-Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit
+HTTP_PROXY                 =
+JAVA_OPT                   =-Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit 
+
+########################################################################################################################################
+"C:\CompositeSoftware\PDTool_Test\setMyPostPDToolVars_7.0.0.bat": Setting post-processing custom variables
+########################################################################################################################################
+propertyOrderPrecedence  =
+MODULE_HOME              =
+
+########################################################################################################################################
+ExecutePDTool: Command line resolved variables:
+########################################################################################################################################
+ExecutePDTool::Mon 07/06/2015-15:16:57.47::Resolved Arguments:
+ExecutePDTool::Mon 07/06/2015-15:16:57.50::   CMD=[-exec]
+ExecutePDTool::Mon 07/06/2015-15:16:57.52::   PROPERTY_FILE=[C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_3Performance_exec.dp]
+ExecutePDTool::Mon 07/06/2015-15:16:57.55::   VCS_USERNAME=[]
+ExecutePDTool::Mon 07/06/2015-15:16:57.57::   VCS_PASSWORD=[]
+ExecutePDTool::Mon 07/06/2015-15:16:57.60::   CONFIG_PROPERTY_FILE=[deploy_7.0.1_DEV.properties]
+ExecutePDTool::Mon 07/06/2015-15:16:57.62::   RELEASE_FOLDER=[]
+ExecutePDTool::Mon 07/06/2015-15:16:57.65::   CIS_VERSION=[7.0.0]
+ 
+ExecutePDTool::Mon 07/06/2015-15:16:57.71::Section: Substitute Drives
+ExecutePDTool::Mon 07/06/2015-15:16:57.73::         Evaluate the substitute drive=O: path=C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+ExecutePDTool::Mon 07/06/2015-15:16:57.90::         Substitute drive O: is already mapped to path:C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31
+
+ 
+------------------------------------------------------------------
+-------------------- COMMAND-LINE DEPLOYMENT ---------------------
+------------------------------------------------------------------
+ 
+ 
+-- COMMAND: execCisDeployTool ----------------------
+ 
+"C:\Program Files\Java\jre7\bin\java" -Xms256m -Xmx1024m -Djavax.net.ssl.trustStore="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31\security\cis_studio_truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit  -cp  "O:\dist\*;O:\lib\*" -Dcom.cisco.dvbu.ps.configroot="O:\resources\config" -Dlog4j.configuration="file:O:\resources\config\log4j.properties"   -Djava.endorsed.dirs="O:\lib\endorsed" -DPROJECT_HOME="O:" -DPROJECT_HOME_PHYSICAL="C:\CompositeSoftware\PDTool_Test\PDTool7.0.0_2015_03_31" -DCONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties com.cisco.dvbu.ps.deploytool.DeployManagerUtil execCisDeployTool "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression\plans\MyProject1SubProj_3Performance_exec.dp" "" ""
+ 
+-- BEGIN OUTPUT ------------------------------------
+ 
+2015-07-06 15:16:58,744 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <>
+2015-07-06 15:16:58,745 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-06 15:16:58,745 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties>
+2015-07-06 15:16:58,746 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <---------------------------------------------->
+2015-07-06 15:16:58,804 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 15:16:58,804 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-06 15:16:58,805 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 15:16:58,808 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-06 15:16:58,808 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action execCisDeployTool>
+2015-07-06 15:16:58,810 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-06 15:16:58,810 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <--------------- COMMAND-LINE DEPLOYMENT ---------------->
+2015-07-06 15:16:58,810 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <-------------------------------------------------------->
+2015-07-06 15:16:58,810 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <>
+2015-07-06 15:16:58,810 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-06 15:16:58,811 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CONFIG_PROPERTY_FILE=deploy_7.0.1_DEV.properties>
+2015-07-06 15:16:58,811 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <propertyOrderPrecedence=DEFAULT: JVM PROPERTY_FILE SYSTEM>
+2015-07-06 15:16:58,811 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <---------------------------------------------->
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN DEPLOYMENT ORCHESTRATION *****>
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Resolved Property Variables:>
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------->
+2015-07-06 15:16:58,815 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::PROJECT_HOME=     O:>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::MODULE_HOME=      O:/resources/modules>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SCHEMA_LOCATION=  O:/resources/schema/PDToolModules.xsd>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::SUPPRESS_COMMENTS=true>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::suppress option=   -suppress>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG1=           true>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG2=           true>
+2015-07-06 15:16:58,816 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::DEBUG3=           true>
+2015-07-06 15:16:58,822 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 15:16:58,822 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line  35 PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1_$SCRIPT_CIS_VERSION		"$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  expectedStatus=PASS>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  exitOnError=   TRUE>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  actionType=    ExecuteAction>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  moduleAction=  executePerformanceTest>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::  arguments=     $SERVERID Test3.1_$SCRIPT_CIS_VERSION "$REGRESSION_TEST_MODULES/%BusLineBusAreaSubjArea%_RegressionModule.xml" "$MODULE_HOME/servers.xml">
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** BEGIN COMMAND: executePerformanceTest *****>
+2015-07-06 15:16:58,823 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 15:16:58,824 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::Call Action args[0]=executePerformanceTest with arguments:>
+2015-07-06 15:16:58,824 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[1]=localhost9420http>
+2015-07-06 15:16:58,824 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[2]=Test3.1_7.0>
+2015-07-06 15:16:58,824 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[3]=C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/modules/MyProject1SubProj_RegressionModule.xml>
+2015-07-06 15:16:58,825 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::    arg[4]=O:/resources/modules/servers.xml>
+2015-07-06 15:16:58,825 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <DEBUG2::CisDeployTool::>
+2015-07-06 15:16:58,863 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 15:16:58,863 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <------------------ DEPLOYMENT MANAGER ------------------>
+2015-07-06 15:16:58,863 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <-------------------------------------------------------->
+2015-07-06 15:16:58,863 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Set environment variable PDTOOL_ADAPTER_CONFIG_PATH=O:/resources/config/7.0.0/cis_adapter_config.xml>
+2015-07-06 15:16:58,864 main INFO [com.cisco.dvbu.ps.deploytool.DeployManagerUtil] - <Calling Action executePerformanceTest>
+2015-07-06 15:16:59,658 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+2015-07-06 15:16:59,658 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <Processing action "execute performance test" for regression id: Test3.1_7.0>
+2015-07-06 15:16:59,658 main INFO [com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl] - <----------------------------------------------------------------------->
+------------------------ Test 1 -----------------------------
+Execute Query:  SELECT TOP 1 * 
+FROM "MY CATALOG"."MY SCHEMA".CompositeView 
+where ProductID = 9
+
+  HEADER|Threads=5   |Duration (s)=60  |Print Sleep (s)=1  |Exec Sleep (s)=0  ||||
+  HEADER|Execs       |Execs/sec   |Rows/exec   |Latency (ms) |1st row (ms) |Duration (ms) ||
+  DETAIL|76          |75.92       |1.00        |65.09        |21.02        |1001.00             ||
+  DETAIL|147         |147.00      |1.00        |33.69        |8.68         |1000.00             ||
+  DETAIL|137         |137.00      |1.00        |36.59        |9.33         |1000.00             ||
+  DETAIL|124         |124.00      |1.00        |39.76        |9.41         |1000.00             ||
+  DETAIL|134         |134.00      |1.00        |37.38        |8.94         |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |34.37        |10.27        |1000.00             ||
+  DETAIL|150         |150.00      |1.00        |34.52        |9.59         |1000.00             ||
+  DETAIL|143         |142.85      |1.00        |35.08        |8.53         |1001.00             ||
+  DETAIL|142         |142.00      |1.00        |35.35        |8.54         |1000.00             ||
+  DETAIL|133         |133.00      |1.00        |37.09        |8.69         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.79        |9.01         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.93        |8.89         |1000.00             ||
+  DETAIL|138         |138.00      |1.00        |35.91        |9.19         |1000.00             ||
+  DETAIL|136         |134.25      |1.00        |35.82        |8.61         |1013.00             ||
+  DETAIL|139         |139.00      |1.00        |37.13        |8.17         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.78        |8.09         |1000.00             ||
+  DETAIL|134         |134.00      |1.00        |37.20        |8.85         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |33.88        |7.84         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |34.25        |8.66         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |35.06        |8.34         |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |35.41        |8.61         |1000.00             ||
+  DETAIL|165         |165.00      |1.00        |30.72        |7.61         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |34.10        |7.84         |1000.00             ||
+  DETAIL|131         |131.00      |1.00        |37.55        |8.55         |1000.00             ||
+  DETAIL|125         |125.00      |1.00        |40.25        |9.16         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |33.26        |8.66         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |36.07        |8.91         |1000.00             ||
+  DETAIL|160         |160.00      |1.00        |31.54        |7.50         |1000.00             ||
+  DETAIL|149         |148.85      |1.00        |33.56        |8.14         |1001.00             ||
+  DETAIL|152         |151.84      |1.00        |32.65        |8.75         |1001.00             ||
+  DETAIL|152         |152.00      |1.00        |33.25        |8.32         |1000.00             ||
+  DETAIL|153         |152.84      |1.00        |32.51        |7.64         |1001.00             ||
+  DETAIL|155         |155.00      |1.00        |32.53        |7.43         |1000.00             ||
+  DETAIL|132         |132.00      |1.00        |37.84        |8.09         |1000.00             ||
+  DETAIL|125         |125.00      |1.00        |39.35        |8.24         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |34.26        |7.86         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.55        |8.26         |1000.00             ||
+  DETAIL|150         |150.00      |1.00        |33.25        |7.28         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.55        |8.59         |1000.00             ||
+  DETAIL|131         |131.00      |1.00        |37.74        |9.01         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.64        |8.00         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.52        |7.87         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |32.63        |8.22         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.68        |9.18         |1000.00             ||
+  DETAIL|141         |141.00      |1.00        |34.78        |8.93         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.40        |7.77         |1000.00             ||
+  DETAIL|156         |155.68      |1.00        |32.24        |7.91         |1002.00             ||
+  DETAIL|139         |139.00      |1.00        |36.12        |9.10         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |32.93        |7.94         |1000.00             ||
+  DETAIL|158         |157.84      |1.00        |31.94        |7.55         |1001.00             ||
+  DETAIL|146         |146.00      |1.00        |34.34        |8.11         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |34.72        |8.13         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.01        |8.28         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |34.46        |8.25         |1000.00             ||
+  DETAIL|129         |129.00      |1.00        |39.27        |10.03        |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |36.22        |8.27         |1000.00             ||
+  DETAIL|150         |150.00      |1.00        |33.40        |8.20         |1000.00             ||
+  DETAIL|154         |154.00      |1.00        |32.52        |7.72         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.29        |8.03         |1000.00             ||
+  DETAIL|155         |155.00      |1.00        |32.52        |7.97         |1000.00             ||
+  TOTALS|142.83      |142.78      |1.00        |35.35        |8.64         |1000.35             ||
+
+SUCCESS |2015-07-06 15:16:59.0672  |000 00:00:06.0463   |1                   |"MY DB"                       |SELECT TOP 1 *  FROM "MY CATALOG"."MY SCHEMA".CompositeView  where ProductID = 9 |QUERY      |                                                  |
+------------------------ Test 2 -----------------------------
+Execute Query:  SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView
+
+  HEADER|Threads=5   |Duration (s)=60  |Print Sleep (s)=1  |Exec Sleep (s)=0  ||||
+  HEADER|Execs       |Execs/sec   |Rows/exec   |Latency (ms) |1st row (ms) |Duration (ms) ||
+  DETAIL|130         |130.00      |1.00        |37.80        |9.16         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.26        |7.91         |1000.00             ||
+  DETAIL|128         |128.00      |1.00        |38.83        |11.51        |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |35.91        |8.16         |1000.00             ||
+  DETAIL|132         |132.00      |1.00        |38.10        |8.72         |1000.00             ||
+  DETAIL|134         |134.00      |1.00        |37.17        |8.16         |1000.00             ||
+  DETAIL|163         |163.00      |1.00        |30.68        |7.07         |1000.00             ||
+  DETAIL|138         |138.00      |1.00        |36.60        |8.81         |1000.00             ||
+  DETAIL|138         |138.00      |1.00        |36.02        |9.17         |1000.00             ||
+  DETAIL|150         |149.00      |1.00        |33.34        |8.63         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.65        |9.04         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |34.09        |7.55         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |33.19        |8.01         |1000.00             ||
+  DETAIL|141         |141.00      |1.00        |35.43        |8.07         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |33.67        |7.83         |1000.00             ||
+  DETAIL|140         |140.00      |1.00        |35.69        |8.65         |1000.00             ||
+  DETAIL|155         |155.00      |1.00        |32.31        |7.54         |1000.00             ||
+  DETAIL|154         |153.84      |1.00        |32.09        |7.65         |1001.00             ||
+  DETAIL|157         |157.00      |1.00        |31.89        |7.57         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.68        |7.84         |1000.00             ||
+  DETAIL|153         |152.84      |1.00        |32.73        |7.65         |1001.00             ||
+  DETAIL|151         |151.00      |1.00        |32.13        |7.65         |1000.00             ||
+  DETAIL|159         |159.00      |1.00        |32.16        |8.16         |1000.00             ||
+  DETAIL|136         |136.00      |1.00        |36.56        |8.22         |1000.00             ||
+  DETAIL|131         |131.00      |1.00        |38.43        |9.64         |1000.00             ||
+  DETAIL|160         |160.00      |1.00        |31.19        |7.43         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.08        |7.68         |1000.00             ||
+  DETAIL|150         |150.00      |1.00        |33.54        |7.24         |1000.00             ||
+  DETAIL|166         |166.00      |1.00        |29.82        |7.35         |1000.00             ||
+  DETAIL|155         |155.00      |1.00        |32.87        |8.18         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |33.46        |8.40         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |31.88        |7.78         |1000.00             ||
+  DETAIL|156         |156.00      |1.00        |33.12        |8.73         |1000.00             ||
+  DETAIL|140         |140.00      |1.00        |35.50        |8.39         |1000.00             ||
+  DETAIL|132         |131.86      |1.00        |37.63        |8.99         |1001.00             ||
+  DETAIL|153         |153.00      |1.00        |33.02        |8.60         |1000.00             ||
+  DETAIL|157         |157.00      |1.00        |31.98        |7.88         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |32.33        |7.70         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.83        |8.43         |1000.00             ||
+  DETAIL|158         |158.00      |1.00        |31.63        |7.39         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.81        |7.73         |1000.00             ||
+  DETAIL|135         |135.00      |1.00        |36.91        |8.59         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |33.65        |7.65         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.21        |7.59         |1000.00             ||
+  DETAIL|127         |127.00      |1.00        |39.17        |10.33        |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |35.22        |8.44         |1000.00             ||
+  DETAIL|150         |150.00      |1.00        |33.36        |8.22         |1000.00             ||
+  DETAIL|162         |162.00      |1.00        |30.88        |8.08         |1000.00             ||
+  DETAIL|147         |147.00      |1.00        |33.91        |8.22         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |35.21        |8.61         |1000.00             ||
+  DETAIL|164         |163.83      |1.00        |30.14        |7.48         |1001.00             ||
+  DETAIL|161         |161.00      |1.00        |31.19        |7.53         |1000.00             ||
+  DETAIL|155         |155.00      |1.00        |32.55        |8.28         |1000.00             ||
+  DETAIL|144         |144.00      |1.00        |34.48        |8.19         |1000.00             ||
+  DETAIL|144         |144.00      |1.00        |34.80        |8.38         |1000.00             ||
+  DETAIL|142         |142.00      |1.00        |35.41        |7.95         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.42        |8.98         |1000.00             ||
+  DETAIL|162         |161.67      |1.00        |31.09        |7.27         |1002.00             ||
+  DETAIL|154         |154.00      |1.00        |32.53        |7.94         |1000.00             ||
+  DETAIL|152         |152.00      |1.00        |33.05        |8.17         |1000.00             ||
+  TOTALS|147.61      |147.60      |1.00        |34.00        |8.20         |1000.10             ||
+
+SUCCESS |2015-07-06 15:18:00.0136  |000 00:00:06.0019   |1                   |"MY DB"                       |SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView            |QUERY      |                                                  |
+------------------------ Test 3 -----------------------------
+Execute Query:  SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView 
+where ProductID = 8
+
+  HEADER|Threads=5   |Duration (s)=60  |Print Sleep (s)=1  |Exec Sleep (s)=0  ||||
+  HEADER|Execs       |Execs/sec   |Rows/exec   |Latency (ms) |1st row (ms) |Duration (ms) ||
+  DETAIL|150         |150.00      |1.00        |32.91        |8.05         |1000.00             ||
+  DETAIL|164         |164.00      |1.00        |30.83        |7.00         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |32.66        |8.21         |1000.00             ||
+  DETAIL|136         |136.00      |1.00        |36.72        |8.84         |1000.00             ||
+  DETAIL|125         |125.00      |1.00        |39.76        |8.74         |1000.00             ||
+  DETAIL|154         |154.00      |1.00        |32.31        |8.26         |1000.00             ||
+  DETAIL|156         |156.00      |1.00        |32.20        |8.13         |1000.00             ||
+  DETAIL|140         |140.00      |1.00        |35.23        |8.64         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |34.69        |9.06         |1000.00             ||
+  DETAIL|126         |126.00      |1.00        |39.48        |8.93         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.84        |7.94         |1000.00             ||
+  DETAIL|144         |144.00      |1.00        |34.59        |8.10         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |31.91        |8.21         |1000.00             ||
+  DETAIL|149         |148.55      |1.00        |34.38        |7.56         |1003.00             ||
+  DETAIL|130         |130.00      |1.00        |38.52        |8.55         |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |35.82        |8.28         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.19        |7.82         |1000.00             ||
+  DETAIL|154         |154.00      |1.00        |32.53        |7.46         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |32.79        |7.74         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.77        |8.33         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |32.98        |8.06         |1000.00             ||
+  DETAIL|162         |162.00      |1.00        |31.63        |7.51         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |33.24        |8.63         |1000.00             ||
+  DETAIL|138         |138.00      |1.00        |36.23        |8.21         |1000.00             ||
+  DETAIL|134         |134.00      |1.00        |37.11        |8.26         |1000.00             ||
+  DETAIL|137         |137.00      |1.00        |36.66        |8.81         |1000.00             ||
+  DETAIL|152         |151.84      |1.00        |32.42        |7.84         |1001.00             ||
+  DETAIL|161         |161.00      |1.00        |31.22        |6.83         |1000.00             ||
+  DETAIL|152         |152.00      |1.00        |33.16        |7.49         |1000.00             ||
+  DETAIL|153         |153.00      |1.00        |32.56        |7.37         |1000.00             ||
+  DETAIL|160         |160.00      |1.00        |31.39        |7.49         |1000.00             ||
+  DETAIL|158         |158.00      |1.00        |31.93        |7.34         |1000.00             ||
+  DETAIL|139         |139.00      |1.00        |35.52        |8.27         |1000.00             ||
+  DETAIL|141         |141.00      |1.00        |34.92        |7.87         |1000.00             ||
+  DETAIL|141         |141.00      |1.00        |36.04        |8.24         |1000.00             ||
+  DETAIL|132         |132.00      |1.00        |37.99        |8.77         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.65        |7.73         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |33.44        |8.69         |1000.00             ||
+  DETAIL|151         |151.00      |1.00        |33.33        |7.90         |1000.00             ||
+  DETAIL|144         |144.00      |1.00        |34.34        |8.65         |1000.00             ||
+  DETAIL|136         |136.00      |1.00        |37.11        |9.20         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |33.80        |8.28         |1000.00             ||
+  DETAIL|154         |154.00      |1.00        |32.64        |8.01         |1000.00             ||
+  DETAIL|143         |143.00      |1.00        |34.17        |7.88         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |35.23        |7.98         |1000.00             ||
+  DETAIL|144         |144.00      |1.00        |34.60        |8.09         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |34.42        |7.51         |1000.00             ||
+  DETAIL|133         |132.86      |1.00        |37.47        |8.53         |1001.00             ||
+  DETAIL|152         |152.00      |1.00        |33.05        |7.36         |1000.00             ||
+  DETAIL|148         |148.00      |1.00        |33.65        |8.04         |1000.00             ||
+  DETAIL|156         |156.00      |1.00        |32.21        |7.97         |1000.00             ||
+  DETAIL|152         |152.00      |1.00        |32.93        |7.69         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.30        |7.67         |1000.00             ||
+  DETAIL|140         |140.00      |1.00        |35.76        |8.05         |1000.00             ||
+  DETAIL|146         |146.00      |1.00        |34.17        |7.86         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.28        |7.96         |1000.00             ||
+  DETAIL|159         |159.00      |1.00        |31.92        |7.66         |1000.00             ||
+  DETAIL|154         |154.00      |1.00        |32.03        |8.14         |1000.00             ||
+  DETAIL|149         |149.00      |1.00        |33.67        |7.83         |1000.00             ||
+  DETAIL|145         |145.00      |1.00        |34.46        |9.16         |1000.00             ||
+  TOTALS|146.75      |146.73      |1.00        |34.17        |8.07         |1000.08             ||
+
+SUCCESS |2015-07-06 15:19:00.0156  |000 00:00:06.0014   |1                   |"MY DB"                       |SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView  where ProductID = 8 |QUERY      |                                                  |
+2015-07-06 15:20:00,171 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <-------------------------------------------------------->
+2015-07-06 15:20:00,171 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <--------- Regression Performance Test Summary ---------->
+2015-07-06 15:20:00,171 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <-------------------------------------------------------->
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <-------------------------------------------------------->
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Test Type: performance                                  >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <  Execute a full query from the query list.             >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Successful        Queries: 3                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Successful     Procedures: 0                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Successful   Web Services: 0                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                 ---------              >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Successful -------> Tests: 3                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Skipped           Queries: 0                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Skipped        Procedures: 0                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Skipped      Web Services: 0                      >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                 ---------              >
+2015-07-06 15:20:00,172 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Skipped ----------> Tests: 0                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Failed            Queries: 0                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Failed         Procedures: 0                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Failed       Web Services: 0                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                 ---------              >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Failed -----------> Tests: 0                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Total Combined ---------> Tests: 3                      >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <      Performance Test duration:  000 00:00:18.0512     >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <                                                        >
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <Review "perftest" Summary: C:/CompositeSoftware/PDTool_Test/PD Tool/AutomatedTestFramework/regression/output/MyProject1SubProj/701R1/DEV_PerfTest_MyCustom2.log>
+2015-07-06 15:20:00,173 main INFO [com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl] - <-------------------------------------------------------->
+
+Completed executePerformanceTest()
+2015-07-06 15:20:00,174 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Successfully completed executePerformanceTest.>
+2015-07-06 15:20:00,174 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 15:20:00,175 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 15:20:00,175 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::Line   35   SCRIPT_RESULTS=PASS  EXPECTED=PASS  ACTUAL=PASS  EXIT_ON_ERROR=TRUE  ACTION=executePerformanceTest>
+2015-07-06 15:20:00,175 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::>
+2015-07-06 15:20:00,178 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+2015-07-06 15:20:00,178 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::***** COMPLETED DEPLOYMENT ORCHESTRATION SUCCESSFULLY *****>
+2015-07-06 15:20:00,178 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::End of CisDeployTool orchestration script.>
+2015-07-06 15:20:00,178 main INFO [com.cisco.dvbu.ps.deploytool.CisDeployTool] - <CisDeployTool::--------------------------------------------------------------------------->
+ 
+ExecutePDTool::Mon 07/06/2015-15:20:00.26::-------------- SUCCESSFUL SCRIPT COMPLETION [ExecutePDTool -exec] --------------
+ExecutePDTool::Mon 07/06/2015-15:20:00.28::End of script.

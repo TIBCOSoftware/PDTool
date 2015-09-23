@@ -1,0 +1,2 @@
+OrderID|ProductID|Discount|OrderDate|CompanyName|CustomerContactFirstName|CustomerContactLastName|CustomerContactPhone|ProductName|TransactionID|DateRequired|DatePromised|ShipDate|SupplierID|SupplierName|SupplierContactName|SupplierPhoneNumber
+5|8|0.12|2003-02-05|Connect Software|David|Padillo|(215) 665-0312|Deluxe RedPagoda PCI V.90 56K|22|2003-02-06|2003-02-08|2003-02-06|10|American Systems|Sebastian Ganas|(610) 939-3000

@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.zip.Checksum;
 import java.util.zip.CheckedInputStream;
@@ -310,7 +311,7 @@ public class CommonUtils {
 		}
 		return exists;
 	}
-	
+
 	// Test for file exists
 	public static boolean fileExists(String filePath) {
 		File file=new File(filePath);
@@ -357,6 +358,26 @@ public class CommonUtils {
 		return dir;
 	}
 
+	 /**
+	  Get path name from full file path.  Returns the name at the end of the path.
+	*/
+	public static String getPathName(String filePath) {
+		String name = null;
+		if (filePath != null) {
+			if (filePath.contains("\\")) {
+				int idx = filePath.lastIndexOf("\\") + 1;
+				name = filePath.substring(idx, filePath.length());
+			} else if (filePath.contains("/")) {
+				int idx = filePath.lastIndexOf("/") + 1;
+				name = filePath.substring(idx, filePath.length());
+			} else {
+				name = filePath;
+			}
+		}
+		return name;
+	}
+
+	
 	 /**
 	  Remove a directory and all of its contents.
 
@@ -601,6 +622,12 @@ public class CommonUtils {
 		return formatter.format(date).toString();
 	}
 
+	// Generate a unique random string
+	public static String getUniqueRandomString() {
+		UUID uniqueID = UUID.randomUUID();
+		return uniqueID.toString();
+	}
+	
 	// Generate unique file name based on a date
 	public static String getUniqueFilename(String filename, String extension) {
 		return filename+"_"+getCurrentDateAsString("yyyy_MM_dd_HH_mm_ss_SSS")+"."+extension;
@@ -1668,10 +1695,14 @@ public class CommonUtils {
 			// Command Format: 			[/login:user,[password]]	
 			// Example (Mask): 			/login:user1,password
 			// Example (Do not mask): 	/login:user1
-			if (arguments.contains("/login:")) {
+			if (arguments.contains("/login:") || arguments.contains("-login:")) {
 				int pswdBeg = -1;
 				int pswdEnd = -1;
-				int login_beg = arguments.indexOf("/login:");
+				int login_beg = -1;
+				if (arguments.contains("/login:"))
+					login_beg = arguments.indexOf("/login:");
+				if (arguments.contains("-login:"))
+					login_beg = arguments.indexOf("-login:");
 				// Count the number of : prior to 
 				boolean exitLoop = false;
 				for (int i=login_beg; i < arguments.length() && !exitLoop; i++) {
@@ -1692,6 +1723,7 @@ public class CommonUtils {
 					} else {
 						arguments = arguments.substring(0, pswdBeg) + maskValue + arguments.substring(pswdEnd, arguments.length());
 					}
+					//System.out.println("************* masked argument="+arguments);
 					exitLoop = true;
 				}
 			}
@@ -1970,11 +2002,19 @@ public class CommonUtils {
 			// make it positive
 			duration = duration * -1;
 		}
-		long days=0, hours=0, minutes=0, seconds=0, milliseconds=0;
+		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
+		/* original
 		long DAY=24*60*60*1000;
 		long HOUR=60*60*1000;
 		long MINUTE=60*1000;
 		long SECOND=1000;
+		*/
+		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
+		long DAY=24*60*60*10000;
+		long HOUR=60*60*10000;
+		long MINUTE=60*10000;
+		long SECOND=10000;
+
 		// days
 		if (duration > DAY) {
 			days = duration / DAY;
@@ -1993,20 +2033,20 @@ public class CommonUtils {
 		if (duration > SECOND) {
 			seconds = duration / SECOND;
 		}
-		milliseconds = duration % SECOND;
+		tenThousandthsSecond = duration % SECOND;
 
 		// Return a standard format: "000 00:00:00.0000"
 		//	  000=days
 		//	  00:=hours
 		//	  00:=minutes
 		//    00:=seconds
-		//	.0000=milliseconds
+		//	.0000=The ten thousandths of a second in a date and time value
 		elapsedString = plus_minus+
 			lpad(Long.toString(days), 3, "0")+" "+
 			lpad(Long.toString(hours), 2, "0")+":"+
 			lpad(Long.toString(minutes), 2, "0")+":"+
 			lpad(Long.toString(seconds), 2, "0")+"."+
-			lpad(Long.toString(milliseconds), 4, "0");
+			lpad(Long.toString(tenThousandthsSecond), 4, "0");
 		
 		/* mtinius: this is commented out but left for documentation purposes
 		 *  I wanted to have a record of the actual word label format.
@@ -2060,11 +2100,19 @@ public class CommonUtils {
 		if (duration.lastIndexOf(".") != 12) {
 			throw new ApplicationException("The format of the duration parameter ("+duration+") is incorrect: period in wrong position.  It must be in the format of ["+validFormat+"].");
 		}
-		long days=0, hours=0, minutes=0, seconds=0, milliseconds=0;
+		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
+		/* original
 		long DAY=24*60*60*1000;
 		long HOUR=60*60*1000;
 		long MINUTE=60*1000;
 		long SECOND=1000;
+		*/ 
+		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
+		long DAY=24*60*60*10000;
+		long HOUR=60*60*10000;
+		long MINUTE=60*10000;
+		long SECOND=10000;
+
 		// days
 		String d= duration.substring(0,3);
 		days = Long.valueOf(d) * DAY;	
@@ -2077,12 +2125,12 @@ public class CommonUtils {
 		// seconds
 		String s = duration.substring(10,12);
 		seconds = Long.valueOf(s) * SECOND;
-		// milliseconds
+		// The ten thousandths of a second in a date and time value
 		String ms = duration.substring(13,17);
-		milliseconds = Long.valueOf(ms);
+		tenThousandthsSecond = Long.valueOf(ms);
 		
 		// Sum it up
-		longDuration = days + hours + minutes + seconds + milliseconds;
+		longDuration = days + hours + minutes + seconds + tenThousandthsSecond;
 		
 		return longDuration;
 	}

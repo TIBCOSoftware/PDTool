@@ -32,8 +32,8 @@ set MY_POST_VARS_PATH=
 REM #
 REM # The My Vars path provides with the user the ability to set specific environment variables for their login
 REM #   The location of these batch files is typically outside of the PDTOOL_HOME in the user's directory space.
-REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool
-set MY_VARS_HOME=E:\dev\Workspaces\PDToolGitTest\PDTool\bin
+REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool<ver>_<vcs> or set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool<ver>_<vcs>\bin
+set MY_VARS_HOME=C:\Users\%USERNAME%\git\PDToolGitTest\PDTool\bin
 REM #
 if not defined MY_VARS_HOME goto MAIN
   set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolVars.bat
@@ -43,47 +43,47 @@ if not defined MY_VARS_HOME goto MAIN
 :MAIN
 REM #
 REM # For Command-line execution - Set to JRE 1.6 or 1.7 Home Directory
-set JAVA_HOME=C:\Program Files\Java\jre7
-REM #
-REM # Configure the Java Heap Min and Max memory
-set MIN_MEMORY=-Xms256m
-set MAX_MEMORY=-Xmx1024m
+set JAVA_HOME=%MY_JAVA_HOME%
 REM #
 REM # Default name of the configuration property file located in CisDeployTool/resources/config
 REM #   Note: This property may be overwritten by using -config <prop_name.properties> on the command line
-set CONFIG_PROPERTY_FILE=deploy.properties
+set CONFIG_PROPERTY_FILE=%MY_CONFIG_PROPERTY_FILE%
 REM #
 REM # -----------------------
 REM # PDTool Substitute Drive
 REM # -----------------------
-REM # Remember the current directory .../PDTool/bin
-set CURRDIR=%CD%
-REM # Currently in PDTool/bin directory so back up one level to .../PDTool which is PROJECT_HOME
-cd ..
-REM # -----------------------
 REM # Derive PROJECT_HOME from a substituted drive letter in order to shorten the overall path in an attempt to avert the "too long file name" errors
-REM # -----------------------
+REM #
 REM # Set the substituted path variable such as S: for PDToolStudio or P: for PDTool
 REM # Change this variable if you already have an S: or P: mapped.  It can be any unused drive letter.
 REM # The actual subst command is performed in the ExecutePDTool batch file.
 REM # CAUTION: Each instance of PDTool or PDToolStudio on a single host must use its own unique substitution letter and have its own workspace.
-REM #          PDTool and PDToolStudio must NOT share the same workspace.     
-set SUBSTITUTE_DRIVE=P:
+REM #          PDTool and PDToolStudio must NOT share the same workspace.
+REM # DEPRECATED:
+REM #    SUBSTITUTE_DRIVE remains here for backward compatibility in case there are issues assigning a network drive.
+set SUBSTITUTE_DRIVE=
+REM # Use network drive to permantly assign a drive letter to a PDTool installation folder.
+REM #    Currently only C: or D: drive is supported for PDTool installation.  This requires the standard share C$ or D$ to be present.
+REM #    Create command used: net use %NETWORK_DRIVE% "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%\%PROJECT_HOME_PHYSICAL%" /PERSISTENT:YES
+REM #    Delete command used: net use %NETWORK_DRIVE% /DELETE
+set NETWORK_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%
 REM #
-REM # Set the PROJECT_HOME so that it points to the substituted path variable
-set PROJECT_HOME=%SUBSTITUTE_DRIVE%
-if not defined SUBSTITUTE_DRIVE ( 
-  set PROJECT_HOME=%CD%
+REM # Set the PROJECT_HOME so that it points to the substituted path variable.  Use either the subtitute drive or network drive but not both.
+set PROJECT_HOME=
+if defined SUBSTITUTE_DRIVE set PROJECT_HOME=%SUBSTITUTE_DRIVE%
+if defined NETWORK_DRIVE set PROJECT_HOME=%NETWORK_DRIVE%
+if not defined PROJECT_HOME ( 
+  set PROJECT_HOME=%PDTOOL_HOME%
 )
-REM # If substitute drives are not allowed then set to the actual path and comment out both 'set SUBSTITUTE_DRIVE' and 'set PROJECT_HOME=%SUBSTITUTE_DRIVE%
-REM set PROJECT_HOME=%CD%
 REM #
 REM # Remember the PROJECT_HOME_PHYSICAL as it points to PROJECT_HOME full path 
-set PROJECT_HOME_PHYSICAL=%CD%
-REM # Mapping a network drive
-REM -- set PROJECT_HOME_PHYSICAL=\\%COMPUTERNAME%\%CD%
+set PROJECT_HOME_PHYSICAL=%PDTOOL_HOME%
 REM #
-cd %CURRDIR%
+REM #----------------------------------------------------------
+REM # Configure the Java Heap Min and Max memory
+REM #----------------------------------------------------------
+set MIN_MEMORY=-Xms256m
+set MAX_MEMORY=-Xmx512m
 REM #
 REM # -----------------------
 REM # PDTool Over SSL (https)
@@ -143,13 +143,13 @@ set MSG=!MSG!MY_VARS_HOME               =%MY_VARS_HOME%!LF!
 set MSG=!MSG!MY_PRE_VARS_PATH           =%MY_PRE_VARS_PATH%!LF!
 set MSG=!MSG!MY_POST_VARS_PATH          =%MY_POST_VARS_PATH%!LF!
 set MSG=!MSG!JAVA_HOME                  =%JAVA_HOME%!LF!
-set MSG=!MSG!MIN_MEMORY                 =%MIN_MEMORY%!LF!
-set MSG=!MSG!MAX_MEMORY                 =%MAX_MEMORY%!LF!
 set MSG=!MSG!CONFIG_PROPERTY_FILE       =%CONFIG_PROPERTY_FILE%!LF!
-set MSG=!MSG!CURRDIR                    =%CURRDIR%!LF!
 set MSG=!MSG!SUBSTITUTE_DRIVE           =%SUBSTITUTE_DRIVE%!LF!
+set MSG=!MSG!NETWORK_DRIVE              =%NETWORK_DRIVE%!LF!
 set MSG=!MSG!PROJECT_HOME               =%PROJECT_HOME%!LF!
 set MSG=!MSG!PROJECT_HOME_PHYSICAL      =%PROJECT_HOME_PHYSICAL%!LF!
+set MSG=!MSG!MIN_MEMORY                 =%MIN_MEMORY%!LF!
+set MSG=!MSG!MAX_MEMORY                 =%MAX_MEMORY%!LF!
 set MSG=!MSG!CERT_ARGS                  =%CERT_ARGS%!LF!
 set MSG=!MSG!HTTP_PROXY                 =%HTTP_PROXY%!LF!
 set MSG=!MSG!JAVA_OPT                   =%JAVA_OPT%!LF!

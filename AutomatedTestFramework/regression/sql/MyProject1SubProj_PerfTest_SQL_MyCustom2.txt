@@ -1,0 +1,66 @@
+# PubTest Input File 
+# Version: 
+# 
+# There are two types of entries allowed in this file: 
+#   SQL queries and web service calls. 
+# 
+# The format of a SQL query is 
+# 
+#   [QUERY] 
+#   database=<name of published database> 
+#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the "FROM" clause.> 
+#   <one or more lines containing the query ended by a blank line.> 
+# 
+#    Query Governor:  Use SELECT TOP n column-list to limit the number of rows returned. 
+# 
+# The format of a SQL stored procedure call is 
+# 
+#   [PROCEDURE] 
+#   database=<name of published database> 
+#   outTypes=<list of comma separated java.sql.Types JDBC type names> 
+#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the "FROM" clause.> 
+#   <one or more lines containing the call statement or select statement ended by a blank line.> 
+# 
+#    Query Governor:  Use SELECT TOP n column-list to limit the number of rows returned.
+# 
+#    For SELECT or CALL statements only IN and INOUT parameter values need to be provided. 
+#    Select will not work for procedures containg more than one OUT or INOUT parameter if one of them is a cursor. 
+# 
+#    outTypes should only be used if the procedure has non-cursor output values. 
+#    Each non-cursor output value is represented by a ? in the query. 
+#    The number of type names in outTypes should match the number of ? in the query. 
+# 
+# The format of a web service call is 
+# 
+#   [WEB_SERVICE] 
+#   database=<name of published web service> 
+#   path=<path to the port of the published web service.  Legacy WS uses soap11.  CIS 6.1 and higher WS may use soap11 or soap12. > 
+#   action=<the web service operation to execute> 
+#   encrypt=<use http (unencrypted) or https (encrypted) [true|false] > 
+#   contentType=<soap header content type: [soap11=text/xml;charset=UTF-8 | soap12=application/soap+xml;charset=UTF-8] > 
+#   outputFilename=<(optional) The name of the file to be used for Regression Test output otherwise filename is constructed as best effort from the "path" + "action".> 
+#   <input document> 
+# 
+# The path will be prefixed with "http://<host>:<wsPort>/". 
+# The input can span multiple lines. A blank line terminates the input. 
+#  
+
+
+
+[QUERY]
+database="MY DB"
+outputFilename=MY CATALOG.MY SCHEMA.CompositeView3.txt
+SELECT TOP 1 * 
+FROM "MY CATALOG"."MY SCHEMA".CompositeView 
+where ProductID = 9
+
+[QUERY]
+database="MY DB"
+outputFilename=MY CATALOG.MY SCHEMA.CompositeView1.txt
+SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView
+
+[QUERY]
+database="MY DB"
+outputFilename=MY CATALOG.MY SCHEMA.CompositeView2.txt
+SELECT TOP 1 * FROM "MY CATALOG"."MY SCHEMA".CompositeView 
+where ProductID = 8

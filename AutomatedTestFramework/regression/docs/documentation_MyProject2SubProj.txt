@@ -1,0 +1,143 @@
+=========================================================================
+Regression Test Plan Documentation for MyProject2SubProj
+=========================================================================
+
+######################################################################
+# (c) 2015 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE.
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar,
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar,
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an
+# optional version number) are provided as a convenience, but are covered under the licensing for the
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except
+# through a valid license for that product.
+# 
+# This software is released AS-IS. Support for this software is not covered by standard maintenance agreements with Cisco.
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
+######################################################################
+
+------------------------------------------------------------------------------------
+PURPOSE:
+The purpose of these scripts are to perform "REGRESSION" testing when promoting from one CIS code release to another.
+The "Regression Automated Test Framework" uses PDTool Regression Module to execute the scripts.
+
+The following steps are repeated for each Business Line, Business Area, Subject Area
+------------------------------------------------------------------------------------
+1. Prepare the test scripts
+    a. Execute the script copyPlanTemplates.bat by double clicking on it.
+         It will prompt for the "BusLineBusAreaSubjArea" project identifier.
+         It will prompt for the "DATA_SOURCE_NAME" used to connect to generate or execute queries.
+         It will prompt for the "RESOURCE_NAME" used as a filter for CATALOG.SCHEMA.*.
+         It will prompt you to edit/verify the Regression Module XML file.
+         It will copy the following files.
+"            \regression\templates\BusLineBusAreaSubjArea_1Smoke_gen.dp           --> \regression\plans\MyProject2SubProj_1Smoke_gen.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_1Smoke_exec.dp          --> \regression\plans\MyProject2SubProj_1Smoke_exec.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_2Regression_exec.dp     --> \regression\plans\MyProject2SubProj_2Regression_exec.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_2Regression_compare.dp  --> \regression\plans\MyProject2SubProj_2Regression_compare.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_3Performance_exec.dp    --> \regression\plans\MyProject2SubProj_3Performance_exec.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_3Performance_compare.dp --> \regression\plans\MyProject2SubProj_3Performance_compare.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_4Security_gen.dp        --> \regression\plans\MyProject2SubProj_4Security_gen.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_4Security_exec.dp       --> \regression\plans\MyProject2SubProj_4Security_exec.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_RegressionModule.xml    --> \regression\modules\MyProject2SubProj_RegressionModule.xml"
+
+------------------------------------------------------------------------------------
+Replacements performed:
+------------------------------------------------------------------------------------
+    BusLineBusAreaSubjArea=MyProject2SubProj
+    DATA_SOURCE_NAME=MY_DB
+    RESOURCE_NAME=MY_CATALOG.*
+
+2. Open command line window for script execution
+    cd C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression
+
+    Script Parameters General Information
+    -------------------------------------
+     script_test_62.bat and script_test_70.bat parameter definitions:
+        ENV - Example: [DEV,UAT,PROD]
+        DEPLOYMENT_PLAN - The name of the deployment plan such as:
+              1. BusLineBusArea_1Smoke_gen.dp
+              2. BusLineBusArea_1Smoke_exec.dp
+              3. BusLineBusArea_2Regression_exec.dp
+              4. BusLineBusArea_2Regression_compare.dp
+              5. BusLineBusArea_3Performance_exec.dp
+              6. BusLineBusArea_3Performance_compare.dp
+              7. BusLineBusArea_4Security_gen.dp
+              8. BusLineBusArea_4Security_exec.dp
+     
+        CUSTOM - [optional] variable
+              1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.
+              2. TOP - If the word TOP is provided then generate or execute using the SELECT TOP 1 * command.  Top is a special type of CUSTOM.
+              3. CUSTOM value - If any other word is used then execute the SQL file using this pattern and the value of the CUSTOM variable:
+                     Example: Developer creates a custom SQL file where the custom name = MyQueries
+                              Template:                                             Example:
+                              \sql\BusLineBusArea_RegressionTest_SQL_%CUSTOM%.txt = \sql\BusLineBusArea_RegressionTest_SQL_MyQueries.txt
+                              \sql\BusLineBusArea_PerfTest_SQL_%CUSTOM%.txt       = \sql\BusLineBusArea_PerfTest_SQL_MyQueries.txt
+     
+        RENAME_REL - [optional] variable. Default=true
+              1. blank or "" or true - force a rename of the release output folders upon each execution of this script.
+              2. false - disable the rename function and allow the results to go to the existing RELEASE_FOLDER1 directory.
+                 Example.  This can be useful when executing a series of tests for the same release such as the following:
+                           Smoke Test, Regression Test, Performance Test and Security Test.
+                 Note:     This script will automatically ignore renaming the output folder for the following and thus the RENAME_REL does not have to be set.
+                           Generating Smoke Test, Compare Regression Test, Compare Performance Test and Generate Security Test.
+     
+        PAUSE - [optional] variable. Default=true  
+              1. blank or "" or true - pause during script execution.
+              2. false - no pause during script execution.
+
+
+3.  Test 1: Generate Smoke Test SQL for ENV
+      a. Generate Smoke Test for SELECT COUNT(*)
+         script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
+         script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
+
+         If desired...
+           Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_RegressionTest_SQL.txt
+           Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_PerfTest_SQL.txt
+
+      b. Generate Smoke Test for SELECT TOP 1 *
+         script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
+         script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
+
+         If desired...
+           Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_RegressionTest_SQL_TOP.txt
+           Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_PerfTest_SQL_TOP.txt
+
+4.  Test 1: Execute Smoke Test for ENV
+    [OPTIONAL]
+    script_test_62.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
+    script_test_70.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
+         Executing the smoke test is redundant as the regression test incorprates the same test.
+         Additionally, a smoke-test automatically executes a SELECT COUNT(*) regardless of the query provided.
+
+5.  Test 2: Execute Regression Test for ENV
+    6.2: script_test_62.bat ENV MyProject2SubProj_2Regression_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_2Regression_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]
+
+6.  Test 2: Execute Regression Test Compare for ENV - Compare files and logs for difference
+    6.2: script_test_62.bat ENV MyProject2SubProj_2Regression_compare.dp   [CUSTOM]  ""   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_2Regression_compare.dp   [CUSTOM]  ""   [PAUSE]
+
+7.  Test 3: Execute Performance Test for ENV
+    6.2: script_test_62.bat ENV MyProject2SubProj_3Performance_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_3Performance_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]
+
+8.  Test 3: Execute Performance Test Compare for ENV - Compare logs for difference
+    6.2: script_test_62.bat ENV MyProject2SubProj_3Performance_compare.dp   [CUSTOM]  ""   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_3Performance_compare.dp   [CUSTOM]  ""   [PAUSE]
+
+9.  Test 4: Generate Security Test for ENV
+    6.2: script_test_62.bat ENV MyProject2SubProj_4Security_gen.dp   ""  ""   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_4Security_gen.dp   ""  ""   [PAUSE]
+
+         Manually modify the XML generated to add different LDAP app id users/passwords for the security test.
+         Since there are only 4 LDAP users to work with the test may need to be split up and run at different
+         times.  This will require adding and removing LDAP app id users in and out of different groups.
+
+10. Test 4: Execute Security Test for ENV
+    6.2: script_test_62.bat ENV MyProject2SubProj_4Security_exec.dp   ""  [RENAME_REL]   [PAUSE]
+    7.0: script_test_70.bat ENV MyProject2SubProj_4Security_exec.dp   ""  [RENAME_REL]   [PAUSE]

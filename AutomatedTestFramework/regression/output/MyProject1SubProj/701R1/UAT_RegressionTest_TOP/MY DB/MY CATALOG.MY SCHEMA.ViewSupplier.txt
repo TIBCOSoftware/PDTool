@@ -1,0 +1,2 @@
+ProductID|TransactionID|OrderDate|DateRequired|DatePromised|ShipDate|SupplierID|SupplierName|SupplierContactName|SupplierPhoneNumber
+14|19|2003-02-03|2003-02-09|2003-02-09|2003-02-07|8|Top Notch Supplier|Joe Owner|(215) 226-1000

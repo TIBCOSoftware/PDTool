@@ -1,0 +1,6 @@
+########################################################################################################################################
+#  XSL TRANSFORMATION ONLY FOR ENV=6.2  TIMESTAMP=Tue 07/21/2015 16:03:51.08  #
+########################################################################################################################################
+Tue 07/21/2015 16:03:51.11 COMMAND: call "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\bin\Xslt\XsltTransform.bat" "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/UAT.xml"  "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\bin\Xslt\ServerAttributes_Transform_62_to_70.xsl"  "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/UAT_xform.xml"
+Tue 07/21/2015 16:03:51.17 ERROR: 6.2 - An Error occurred transforming "C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\migration\modules/UAT.xml" 
+########################################################################################################################################

@@ -14,7 +14,7 @@ REM # through a valid license for that product.
 REM # 
 REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
 REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
-REM # 
+REM #
 REM ############################################################################################################################
 REM #
 REM #==========================================================
@@ -32,49 +32,34 @@ set MY_POST_VARS_PATH=
 REM #
 REM # The My Vars path provides with the user the ability to set specific environment variables for their login
 REM #   The location of these batch files is typically outside of the PDTOOL_HOME in the user's directory space.
-REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool
+REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDToolStudio<ver>
 set MY_VARS_HOME=
 REM #
 if not defined MY_VARS_HOME goto MAIN
-  set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolStudioVars.bat
-  set MY_POST_VARS_PATH=%MY_VARS_HOME%\setMyPostPDToolStudioVars.bat
+  set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolStudioVars_host1.bat
+  set MY_POST_VARS_PATH=%MY_VARS_HOME%\setMyPostPDToolStudioVars_host1.bat
   if not defined MY_PRE_VARS_PATH goto MAIN
   if exist "%MY_PRE_VARS_PATH%" call "%MY_PRE_VARS_PATH%"
 :MAIN
 REM #
 REM #----------------------------------------------------------
-REM # PDToolStudio CUSTOM HOST ENVIRONMENT VARIABLES
+REM # PDToolStudio CUSTOM MULTI-HOST ENVIRONMENT VARIABLES
 REM #----------------------------------------------------------
-REM # Name of the configuration property file located in PDToolStudio62/resources/config
-set CONFIG_PROPERTY_FILE=studio_svn_multi_host.properties
-REM #
-REM # HOST Variables
-REM # These are minimum set of variables needed to abstract the CONFIG_PROPERTY_FILE.
-REM # Use these variables in the designated CONFIG_PROPERTY_FILE to achieve reusability of that file for different hosts.
-set CONFIG_VCS_WORKSPACE_NAME=SVN1sw
-set CONFIG_VCS_REPOSITORY_URL=http:////%SVN_VCS_HOST1%/svn/sandbox/PDTOOL/6_2
-set CONFIG_VCS_PROJECT_ROOT=cis_objects
+REM # Name of the configuration property file located in PDToolStudio/resources/config
+set CONFIG_PROPERTY_FILE=%MY_CONFIG_PROPERTY_FILE%
 REM #
 REM #----------------------------------------------------------
 REM # PDToolStudio STANDARD ENVIRONMENT VARIABLES
 REM #----------------------------------------------------------
 REM #
-REM # For Command-line execution - Set to JRE 1.6 or 1.7 Home Directory
-set JAVA_HOME=C:\Program Files\Java\jre7
+REM # Set to JRE 1.7 Home Directory
+set JAVA_HOME=%MY_JAVA_HOME%
 REM #
 REM #----------------------------------------------------------
 REM # PDTool Substitute Drive
 REM #----------------------------------------------------------
-REM # Remember the current directory .../PDToolStudio62/bin
-set CURRDIR=%CD%
-REM # Currently in PDToolStudio62/bin directory so back up one level to ../PDToolStudio62 which is PROJECT_HOME
-cd ..
-REM # Remember the PROJECT_HOME_PHYSICAL as it points to PROJECT_HOME full path 
-set PROJECT_HOME_PHYSICAL=%CD%
-REM #
-REM #=======================================
 REM # Derive PROJECT_HOME from a substituted drive letter in order to shorten the overall path in an attempt to avert the "too long file name" errors
-REM #=======================================
+REM #
 REM # ****** IMPORTANT ******
 REM # This is only necessary when using TFS.   Subversion, Perforce and CVS do not require the use of a mapped drive to shorten the overall path length.
 REM #
@@ -85,19 +70,24 @@ REM #   3. Change this variable if you already have an S: or P: mapped.  It can 
 REM #   4. The actual subst command is performed in the ExecutePDToolStudio batch file.
 REM # CAUTION: Each instance of PDTool or PDToolStudio on a single host must use its own unique substitution letter and have its own workspace.
 REM #          PDTool and PDToolStudio must NOT share the same workspace when installed on the same machine.       
+REM # DEPRECATED:
+REM #    SUBSTITUTE_DRIVE remains here for backward compatibility in case there are issues assigning a network drive.
 set SUBSTITUTE_DRIVE=
+REM # Use network drive to permantly assign a drive letter to a PDTool installation folder.
+REM #    Currently only C: or D: drive is supported for PDTool installation.  This requires the standard share C$ or D$ to be present.
+REM #    Create command used: net use %NETWORK_DRIVE% "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%\%PROJECT_HOME_PHYSICAL%" /PERSISTENT:YES
+REM #    Delete command used: net use %NETWORK_DRIVE% /DELETE
+set NETWORK_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%
+REM #
 REM # Set the PROJECT_HOME so that it points to the substituted path variable
-set PROJECT_HOME=%SUBSTITUTE_DRIVE%
-if not defined SUBSTITUTE_DRIVE ( 
-  set PROJECT_HOME=%CD%
+set PROJECT_HOME=
+if defined SUBSTITUTE_DRIVE set PROJECT_HOME=%SUBSTITUTE_DRIVE%
+if defined NETWORK_DRIVE set PROJECT_HOME=%NETWORK_DRIVE%
+if not defined PROJECT_HOME ( 
+  set PROJECT_HOME=%PDTOOL_HOME%
 )
-REM #
-REM # Remember the PROJECT_DIR as it points to PROJECT_HOME full path 
-set PROJECT_DIR=%CD%
-REM # Mapping a network drive
-REM -- set PROJECT_DIR=\\%COMPUTERNAME%\%CD%
-REM #
-cd %CURRDIR%
+REM # Remember the PROJECT_HOME_PHYSICAL as it points to PROJECT_HOME full path 
+set PROJECT_HOME_PHYSICAL=%PDTOOL_HOME%
 REM #
 REM #----------------------------------------------------------
 REM # Configure the Java Heap Min and Max memory
@@ -127,7 +117,7 @@ REM #
 if not defined PRINT_VARS echo PRINT_VARS is not defined.  Set default PRINT_VARS=1
 if not defined PRINT_VARS set PRINT_VARS=1
 REM # Print out the setVars.bat variables
-if %PRINT_VARS%==1 call:writeOutput %0
+if "%PRINT_VARS%"=="1" call:writeOutput %0
 REM #
 REM #---------------------------------------------
 REM # POST-PROCESSING CUSTOM VARIABLES:
@@ -156,18 +146,14 @@ set MSG=!MSG!MY_VARS_HOME              =%MY_VARS_HOME%!LF!
 set MSG=!MSG!MY_PRE_VARS_PATH          =%MY_PRE_VARS_PATH%!LF!
 set MSG=!MSG!MY_POST_VARS_PATH         =%MY_POST_VARS_PATH%!LF!
 set MSG=!MSG!CONFIG_PROPERTY_FILE      =%CONFIG_PROPERTY_FILE%!LF!
-set MSG=!MSG!CONFIG_VCS_WORKSPACE_NAME =%CONFIG_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!CONFIG_VCS_REPOSITORY_URL =%CONFIG_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!CONFIG_VCS_PROJECT_ROOT   =%CONFIG_VCS_PROJECT_ROOT%!LF!
 set MSG=!MSG!JAVA_HOME                 =%JAVA_HOME%!LF!
-set MSG=!MSG!MIN_MEMORY                =%MIN_MEMORY%!LF!
-set MSG=!MSG!MAX_MEMORY                =%MAX_MEMORY%!LF!
 set MSG=!MSG!CONFIG_PROPERTY_FILE      =%CONFIG_PROPERTY_FILE%!LF!
-set MSG=!MSG!CURRDIR                   =%CURRDIR%!LF!
 set MSG=!MSG!SUBSTITUTE_DRIVE          =%SUBSTITUTE_DRIVE%!LF!
+set MSG=!MSG!NETWORK_DRIVE             =%NETWORK_DRIVE%!LF!
 set MSG=!MSG!PROJECT_HOME              =%PROJECT_HOME%!LF!
 set MSG=!MSG!PROJECT_HOME_PHYSICAL     =%PROJECT_HOME_PHYSICAL%!LF!
-set MSG=!MSG!PROJECT_DIR               =%PROJECT_DIR%!LF!
+set MSG=!MSG!MIN_MEMORY                =%MIN_MEMORY%!LF!
+set MSG=!MSG!MAX_MEMORY                =%MAX_MEMORY%!LF!
 set MSG=!MSG!CERT_ARGS                 =%CERT_ARGS%!LF!
 set MSG=!MSG!HTTP_PROXY                =%HTTP_PROXY%!LF!
 set MSG=!MSG!JAVA_OPT                  =%JAVA_OPT%!LF!
