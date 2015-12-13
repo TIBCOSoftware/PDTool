@@ -455,24 +455,43 @@ public class RegressionManagerUtils {
     	   	}
     	}
     	
-		/* 2015-07-06 mtinius - Adding a checksum to the URL allows for unique identification of queries that invoke the same table. */
+    	return tableUrl;
+    }
+
+    /**
+     * append the checksum value for the entire query to the end of resource URL.
+     *   Eliminate any double quote "\"" characters from the URL.
+     * 
+     * Examples:
+     *   incoming from clause										    outgoing result
+     *   -----------------------										----------------
+     *   CAT1.SCH1.ViewSales										--> CAT1.SCH1.ViewSales_1717783081
+     *   
+     * @param query
+     * @param resourceURL
+     * @return resourceURL
+     */
+    public static String appendUrlChecksum(String query, String resourceURL) {
+		/* 2015-07-06 mtinius - Adding a checksum to the URL allows for unique identification of queries that invoke the same table. 
+		 * 2015-10-13 mtinius - Moved this code to a separate method from getTableUrl() as it was interfering with the FUNCTIONAL test.
+		 * */
     	// Calculate the CRC for the string to produce a unique identifier
     	Checksum checksum = new CRC32();
     	long currentLineCheckSumValue = 0L;
+    	// Make sure there are no line feeds, carriage returns or double spaces in the query.
     	String queryTmp = query.replace("\n", " ").replaceAll("\r", " ").trim().replaceAll("  ", " ");
     	byte bytes[] = queryTmp.getBytes();
     	checksum.reset();
     	checksum.update(bytes, 0, bytes.length);
    		currentLineCheckSumValue = checksum.getValue();	
    		
-   		// Rewrite the table URL to include the query checksum value
-   		tableUrl = tableUrl+"_"+currentLineCheckSumValue;
-   		//System.out.println("query="+queryTmp);
-   		//System.out.println("tableUrl="+tableUrl);
+   		// Rewrite the resource URL to include the query checksum value and make sure there are no double quote "\"" characters present.
+   		resourceURL = resourceURL.replaceAll("\"", "") + "_" + currentLineCheckSumValue;
    		
-    	return tableUrl;
+    	return resourceURL;
     }
-
+    
+    
     /**
      * get the procedure with its parameters.
      * 

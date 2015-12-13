@@ -73,6 +73,8 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
 
 	// Test Types from Regression XML schema
     static final String FUNCTIONAL = "functional";
+    static final String FUNCTIONAL_AS_IS = "functional_as_is";
+    static final String REGRESSION = "regression";
     static final String MIGRATION = "migration";
     static final String PERFORMANCE = "performance";
 
@@ -243,6 +245,8 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
         	String query = "";     	
         	String resourceType = "";
            	String resourceURL = "";
+           	String uniqueReourceURL = "";
+           	
         	// Execute Queries
         	if (item.type == RegressionManagerUtils.TYPE_QUERY) {
             	resourceType = "QUERY";
@@ -251,10 +255,14 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
             	
             	// Retrieve only the FROM clause table URL with no where clause and no SELECT * FROM projections
             	resourceURL = RegressionManagerUtils.getTableUrl(query);
-            	if (outputFilename == null || outputFilename.length() == 0)
-            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
 
-            	// Only use the this for functional testing
+            	// mtinius 2015-10-13: Fixed execute smoke test issue by adding checksum to a separate "uniqueResourceURL" variable instead of the original "resourceURL".
+        		uniqueReourceURL = RegressionManagerUtils.appendUrlChecksum(item.input, resourceURL);
+            	
+        		if (outputFilename == null || outputFilename.length() == 0)
+            		outputFilename = uniqueReourceURL + ".txt";
+
+            	// Only use the this for functional testing.  It forces PDTool to use the standard SELECT COUNT(*) + FROM clause and ignores the query in the input file.
             	if (FUNCTIONAL.equalsIgnoreCase(testType)) 
             	{
             		query = publishedViewQry + " " + resourceURL;
@@ -273,14 +281,19 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
 
             	// Retrieve only the FROM clause procedure URL with no where clause and no SELECT * FROM projections and no parameters.
             	resourceURL = RegressionManagerUtils.getTableUrl(query); 
-            	if (outputFilename == null)
-            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
+
+            	// mtinius 2015-10-13: Fixed execute smoke test issue by adding checksum to a separate "uniqueResourceURL" variable instead of the original "resourceURL".
+        		uniqueReourceURL = RegressionManagerUtils.appendUrlChecksum(item.input, resourceURL);
+        		
+            	if (outputFilename == null || outputFilename.length() == 0)
+            		outputFilename = uniqueReourceURL + ".txt";
           	
-            	// Only use the this for functional testing
+             	// Only use the this for functional testing.  It forces PDTool to use the standard SELECT COUNT(*) + FROM clause and ignores the query in the input file.
             	if (FUNCTIONAL.equalsIgnoreCase(testType)) 
             	{
             		query = publishedProcQry + " " + RegressionManagerUtils.getProcedure(query);
             	}
+
             	item.input = query;
             	
             	// Derive the base directory for the output file (remove any double quotes from the file name).
@@ -294,8 +307,12 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
             	resourceURL = (item.path + "/" + item.action).replaceAll("//", "/").replaceAll("/", "."); // construct ws path from the path and action combined.
             	if (resourceURL.indexOf(".") == 0)
             		resourceURL = resourceURL.substring(1);
-               	if (outputFilename == null)
-            		outputFilename = resourceURL.replaceAll("\"", "") + ".txt";
+            	
+            	// mtinius 2015-10-13: Fixed execute smoke test issue by adding checksum to a separate "uniqueResourceURL" variable instead of the original "resourceURL".
+        		uniqueReourceURL = RegressionManagerUtils.appendUrlChecksum(item.input, resourceURL);
+
+        		if (outputFilename == null || outputFilename.length() == 0)
+            		outputFilename = uniqueReourceURL + ".txt";
 
                	// Derive the base directory for the output file (remove any double quotes from the file name).
             	if (baseDir != null) 
@@ -467,6 +484,10 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
         String testTypeMessage = "";
         if (FUNCTIONAL.equalsIgnoreCase(testType)) 
         	testTypeMessage = "Execute a default query: SELECT COUNT(1) FROM...";
+        if (FUNCTIONAL_AS_IS.equalsIgnoreCase(testType)) 
+        	testTypeMessage = "Execute a full query from the query list.";
+        if (REGRESSION.equalsIgnoreCase(testType)) 
+        	testTypeMessage = "Execute a full query from the query list.";
         if (MIGRATION.equalsIgnoreCase(testType))
         	testTypeMessage = "Execute a full query from the query list.";
         

@@ -1,4 +1,11 @@
 @echo off
+REM ############################################################################################################################
+REM # NOTE: SPECIAL VERSION
+REM #
+REM # This is a special ExecutePDTool.bat file specifically modified for PDTool_GitTest/bin.
+REM # It accommodates testing with lib7.0.0 folders as the DEFAULT_CIS_VERSION has been set to 7.0.0.
+REM # It allows testing from the main Github folder so the developer does not have to perform a build and deploy for testing.
+REM ############################################################################################################################
 SETLOCAL
 REM ############################################################################################################################
 REM # (c) 2014 Cisco and/or its affiliates. All rights reserved.
@@ -339,8 +346,8 @@ REM #call %writeOutput% " "
 REM #=======================================
 REM # Set DeployManager Environment Variables
 REM #=======================================
-set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\*"
-set ENDORSED_DIR=%PROJECT_HOME%\lib\endorsed
+set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\PDTool%DEFAULT_CIS_VERSION%.jar;%PROJECT_HOME%\lib%DEFAULT_CIS_VERSION%\*;%PROJECT_HOME%\libcommon\*"
+set ENDORSED_DIR=%PROJECT_HOME%\lib%DEFAULT_CIS_VERSION%\endorsed
 set DEPLOY_MANAGER=com.cisco.dvbu.ps.deploytool.DeployManagerUtil
 set DEPLOY_COMMON_UTIL=com.cisco.dvbu.ps.common.scriptutil.ScriptUtil
 set CONFIG_LOG4J=-Dlog4j.configuration="file:%PROJECT_HOME%\resources\config\log4j.properties" 
@@ -464,7 +471,7 @@ if NOT EXIST "%ANT_HOME%" (
    exit /B 1
 )
 REM # Set the Ant classpath and options
-set ANT_CLASSPATH=%PROJECT_HOME%\dist;%PROJECT_HOME%\lib;%PROJECT_HOME%\lib\endorsed;%ANT_HOME%\lib
+set ANT_CLASSPATH=%PROJECT_HOME%\dist\PDTool%DEFAULT_CIS_VERSION%.jar;%PROJECT_HOME%\lib%DEFAULT_CIS_VERSION%;%PROJECT_HOME%\lib%DEFAULT_CIS_VERSION%\endorsed;%PROJECT_HOME%\libcommon;%ANT_HOME%\lib
 set ANT_OPTS=%CONFIG_LOG4J% %CONFIG_ROOT% -Djava.endorsed.dirs="%ENDORSED_DIR%"
 
 REM #***********************************************

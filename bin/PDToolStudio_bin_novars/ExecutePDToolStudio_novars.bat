@@ -1132,8 +1132,10 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 REM Remove double quotes around path
 set substpath=!substpath:"=!
 set pathfound=false
+set driveletter=!substpath:~0,1!
 if %debug%==1 echo.[DEBUG] %0: substdrive=%substdrive%
 if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
+if %debug%==1 echo.[DEBUG] %0:driveletter=%driveletter%
 
 REM Iterate over the net use command
 for /F "tokens=2,3 skip=2" %%a IN ('net use') do (
@@ -1148,20 +1150,20 @@ for /F "tokens=2,3 skip=2" %%a IN ('net use') do (
    if !debug!==1 echo.[DEBUG] %0: sdrive=!sdrive!   path=!spath!
 
    set outStr=
-   if defined spath call :REPLACE "\\%COMPUTER_NAME%\C$" "C:" "!spath!" spath 
+   if defined spath call :REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath 
    if !debug!==1 echo.[DEBUG] %0: spath=!spath!
- 
+
    REM The drive was found
    if "!substdrive!" == "!sdrive!" (
      if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
      if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
      if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
-	 set msg=
-     if "!substpath!" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
-	 rem if defined msg call %writeOutput% "!msg!" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	 if "!substpath!" EQU "!spath!" set pathfound=true
-	 if "!substpath!" NEQ "!spath!" set pathfound=false
-	 goto LOOP_END
+                set msg=
+    if "!substpath!" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
+                rem if defined msg call %writeOutput% "!msg!"                                                                                                                                                                                                                                                                                                                               "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+                if "!substpath!" EQU "!spath!" set pathfound=true
+                if "!substpath!" NEQ "!spath!" set pathfound=false
+                goto LOOP_END
    )
 )
 :LOOP_END

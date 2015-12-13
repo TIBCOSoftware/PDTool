@@ -30,12 +30,13 @@ REM #
 REM #   DEPLOYMENT_PLAN - The name of the deployment plan such as:
 REM #         1. BusLineBusArea_1Smoke_gen.dp
 REM #         2. BusLineBusArea_1Smoke_exec.dp
-REM #         3. BusLineBusArea_2Regression_exec.dp
-REM #         4. BusLineBusArea_2Regression_compare.dp
-REM #         5. BusLineBusArea_3Performance_exec.dp
-REM #         6. BusLineBusArea_3Performance_compare.dp
-REM #         7. BusLineBusArea_4Security_gen.dp
-REM #         8. BusLineBusArea_4Security_exec.dp
+REM #         3. BusLineBusArea_1SmokeAsIs_exec.dp
+REM #         4. BusLineBusArea_2Regression_exec.dp
+REM #         5. BusLineBusArea_2Regression_compare.dp
+REM #         6. BusLineBusArea_3Performance_exec.dp
+REM #         7. BusLineBusArea_3Performance_compare.dp
+REM #         8. BusLineBusArea_4Security_gen.dp
+REM #         9. BusLineBusArea_4Security_exec.dp
 REM #
 REM #   CUSTOM - [optional] variable 
 REM #         1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.

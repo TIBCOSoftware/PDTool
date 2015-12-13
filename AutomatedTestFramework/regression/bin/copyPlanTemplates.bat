@@ -36,7 +36,7 @@ REM #    copyPlanTemplates.bat [BusLineBusAreaSubjArea] [DATA_SOURCE_NAME] [RESO
 REM #
 REM #      BusLineBusAreaSubjArea -  The BusLineBusAreaSubjArea is the portion of the deployment plan file name that occurs prior to the mandatory test type descriptor.
 REM #         Affix any prefix or postfix desired to BusLineBusAreaSubjArea such as prefix_BusLineBusAreaSubjArea_postfix
-REM #         Test type descriptor: _1Smoke_gen.dp, _1Smoke_exec.dp, _2Regression_exec.dp, _2Regression_compare.dp, _3Performance_exec.dp, _3Performance_compare.dp, _4Security_gen.dp, _4Security_exec.dp
+REM #         Test type descriptor: _1Smoke_gen.dp, _1Smoke_exec.dp, _1SmokeAsIs.dp, _2Regression_exec.dp, _2Regression_compare.dp, _3Performance_exec.dp, _3Performance_compare.dp, _4Security_gen.dp, _4Security_exec.dp
 REM #         Example constructed Deployment plan: prefix_MyProject1_MySubject_post_3Performance_exec.dp
 REM #                                              |____BusLineBusAreaSubjArea____|
 REM #                                              |______________Deployment Plan File Name____________|
@@ -200,9 +200,11 @@ echo.###########################
 echo.Copying PLAN files
 echo.###########################
 echo.
-CALL:COPY_FILE "%TEMPLATES%\BusLineBusAreaSubjArea_1Smoke_gen.dp"           "%PLANS_HOME%\%BusLineBusAreaSubjArea%_1Smoke_gen.dp"			"Smoke Generate deployment plan"		ERROR
+CALL:COPY_FILE "%TEMPLATES%\BusLineBusAreaSubjArea_1Smoke_gen.dp"            "%PLANS_HOME%\%BusLineBusAreaSubjArea%_1Smoke_gen.dp"			"Smoke Generate deployment plan"		ERROR
 if %ERROR%==1 goto END
 CALL:COPY_FILE "%TEMPLATES%\BusLineBusAreaSubjArea_1Smoke_exec.dp"           "%PLANS_HOME%\%BusLineBusAreaSubjArea%_1Smoke_exec.dp"			"Smoke Execute deployment plan"			ERROR
+if %ERROR%==1 goto END
+CALL:COPY_FILE "%TEMPLATES%\BusLineBusAreaSubjArea_1SmokeAsIs_exec.dp"       "%PLANS_HOME%\%BusLineBusAreaSubjArea%_1SmokeAsIs_exec.dp"		"Smoke As Is Execute deployment plan"	ERROR
 if %ERROR%==1 goto END
 CALL:COPY_FILE "%TEMPLATES%\BusLineBusAreaSubjArea_2Regression_exec.dp"     "%PLANS_HOME%\%BusLineBusAreaSubjArea%_2Regression_exec.dp"		"Regression Execute deployment plan"	ERROR
 if %ERROR%==1 goto END
@@ -356,6 +358,7 @@ echo.         It will prompt you to edit/verify the Regression Module XML file.>
 echo.         It will copy the following files.>>"%DOCUMENTATION%"
 echo."            \regression\templates\BusLineBusAreaSubjArea_1Smoke_gen.dp           --> \regression\plans\%BusLineBusAreaSubjArea%_1Smoke_gen.dp">>"%DOCUMENTATION%"
 echo."            \regression\templates\BusLineBusAreaSubjArea_1Smoke_exec.dp          --> \regression\plans\%BusLineBusAreaSubjArea%_1Smoke_exec.dp">>"%DOCUMENTATION%"
+echo."            \regression\templates\BusLineBusAreaSubjArea_1SmokeAsIs_exec.dp      --> \regression\plans\%BusLineBusAreaSubjArea%_1SmokeAsIs_exec.dp">>"%DOCUMENTATION%"
 echo."            \regression\templates\BusLineBusAreaSubjArea_2Regression_exec.dp     --> \regression\plans\%BusLineBusAreaSubjArea%_2Regression_exec.dp">>"%DOCUMENTATION%"
 echo."            \regression\templates\BusLineBusAreaSubjArea_2Regression_compare.dp  --> \regression\plans\%BusLineBusAreaSubjArea%_2Regression_compare.dp">>"%DOCUMENTATION%"
 echo."            \regression\templates\BusLineBusAreaSubjArea_3Performance_exec.dp    --> \regression\plans\%BusLineBusAreaSubjArea%_3Performance_exec.dp">>"%DOCUMENTATION%"
@@ -381,12 +384,13 @@ echo.        ENV - Example: [DEV,UAT,PROD]>>"%DOCUMENTATION%"
 echo.        DEPLOYMENT_PLAN - The name of the deployment plan such as:>>"%DOCUMENTATION%"
 echo.              1. BusLineBusArea_1Smoke_gen.dp>>"%DOCUMENTATION%"
 echo.              2. BusLineBusArea_1Smoke_exec.dp>>"%DOCUMENTATION%"
-echo.              3. BusLineBusArea_2Regression_exec.dp>>"%DOCUMENTATION%"
-echo.              4. BusLineBusArea_2Regression_compare.dp>>"%DOCUMENTATION%"
-echo.              5. BusLineBusArea_3Performance_exec.dp>>"%DOCUMENTATION%"
-echo.              6. BusLineBusArea_3Performance_compare.dp>>"%DOCUMENTATION%"
-echo.              7. BusLineBusArea_4Security_gen.dp>>"%DOCUMENTATION%"
-echo.              8. BusLineBusArea_4Security_exec.dp>>"%DOCUMENTATION%"
+echo.              3. BusLineBusArea_1SmokeAsIs_exec.dp>>"%DOCUMENTATION%"
+echo.              4. BusLineBusArea_2Regression_exec.dp>>"%DOCUMENTATION%"
+echo.              5. BusLineBusArea_2Regression_compare.dp>>"%DOCUMENTATION%"
+echo.              6. BusLineBusArea_3Performance_exec.dp>>"%DOCUMENTATION%"
+echo.              7. BusLineBusArea_3Performance_compare.dp>>"%DOCUMENTATION%"
+echo.              8. BusLineBusArea_4Security_gen.dp>>"%DOCUMENTATION%"
+echo.              9. BusLineBusArea_4Security_exec.dp>>"%DOCUMENTATION%"
 echo.     >>"%DOCUMENTATION%"
 echo.        CUSTOM - [optional] variable>>"%DOCUMENTATION%"
 echo.              1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.>>"%DOCUMENTATION%"
@@ -411,28 +415,33 @@ echo.              2. false - no pause during script execution.>>"%DOCUMENTATION
 echo.>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
 echo.3.  Test 1: Generate Smoke Test SQL for ENV>>"%DOCUMENTATION%"
-echo.      a. Generate Smoke Test for SELECT COUNT(*)>>"%DOCUMENTATION%"
-echo.         script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   ""   ""   [PAUSE]>>"%DOCUMENTATION%"
-echo.         script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   ""   ""   [PAUSE]>>"%DOCUMENTATION%"
+echo.    a. Generate Smoke Test for SELECT COUNT(*)>>"%DOCUMENTATION%"
+echo.       script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   ""   ""   [PAUSE]>>"%DOCUMENTATION%"
+echo.       script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   ""   ""   [PAUSE]>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
-echo.         If desired...>>"%DOCUMENTATION%"
-echo.           Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL.txt into %BusLineBusAreaSubjArea%_RegressionTest_SQL.txt>>"%DOCUMENTATION%"
-echo.           Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL.txt into %BusLineBusAreaSubjArea%_PerfTest_SQL.txt>>"%DOCUMENTATION%"
+echo.       If desired...>>"%DOCUMENTATION%"
+echo.         Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL.txt into %BusLineBusAreaSubjArea%_RegressionTest_SQL.txt>>"%DOCUMENTATION%"
+echo.         Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL.txt into %BusLineBusAreaSubjArea%_PerfTest_SQL.txt>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
-echo.      b. Generate Smoke Test for SELECT TOP 1 *>>"%DOCUMENTATION%"
-echo.         script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   TOP  ""   [PAUSE]>>"%DOCUMENTATION%"
-echo.         script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   TOP  ""   [PAUSE]>>"%DOCUMENTATION%"
+echo.    b. Generate Smoke Test for SELECT TOP 1 *>>"%DOCUMENTATION%"
+echo.       script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   TOP  ""   [PAUSE]>>"%DOCUMENTATION%"
+echo.       script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_gen.dp   TOP  ""   [PAUSE]>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
-echo.         If desired...>>"%DOCUMENTATION%"
-echo.           Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL_TOP.txt into %BusLineBusAreaSubjArea%_RegressionTest_SQL_TOP.txt>>"%DOCUMENTATION%"
-echo.           Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL_TOP.txt into %BusLineBusAreaSubjArea%_PerfTest_SQL_TOP.txt>>"%DOCUMENTATION%"
+echo.       If desired...>>"%DOCUMENTATION%"
+echo.         Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL_TOP.txt into %BusLineBusAreaSubjArea%_RegressionTest_SQL_TOP.txt>>"%DOCUMENTATION%"
+echo.         Copy queries from %BusLineBusAreaSubjArea%_SmokeTest_SQL_TOP.txt into %BusLineBusAreaSubjArea%_PerfTest_SQL_TOP.txt>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
 echo.4.  Test 1: Execute Smoke Test for ENV>>"%DOCUMENTATION%"
-echo.    [OPTIONAL]>>"%DOCUMENTATION%"
-echo.    script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
-echo.    script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
-echo.         Executing the smoke test is redundant as the regression test incorprates the same test.>>"%DOCUMENTATION%"
-echo.         Additionally, a smoke-test automatically executes a SELECT COUNT(*) regardless of the query provided.>>"%DOCUMENTATION%"
+echo.    a.[OPTIONAL] Execute Default Smoke Test rewriting query as SELECT COUNT(*) FROM "table" or "procedure".>>"%DOCUMENTATION%"
+echo.      script_test_62.bat ENV %BusLineBusAreaSubjArea%_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
+echo.      script_test_70.bat ENV %BusLineBusAreaSubjArea%_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
+echo.>>"%DOCUMENTATION%"
+echo.    b.[OPTIONAL] Execute Smoke Test "As Is" using query directly from input file without rewriting.>>"%DOCUMENTATION%"
+echo.      script_test_62.bat ENV %BusLineBusAreaSubjArea%_1SmokeAsIs_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
+echo.      script_test_70.bat ENV %BusLineBusAreaSubjArea%_1SmokeAsIs_exec.dp   ""  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"
+echo.>>"%DOCUMENTATION%"
+echo.      Executing the smoke test is redundant as the regression test incorprates the same test.>>"%DOCUMENTATION%"
+echo.      Additionally, a smoke-test automatically executes a SELECT COUNT(*) regardless of the query provided.>>"%DOCUMENTATION%"
 echo.>>"%DOCUMENTATION%"
 echo.5.  Test 2: Execute Regression Test for ENV>>"%DOCUMENTATION%"
 echo.    6.2: script_test_62.bat ENV %BusLineBusAreaSubjArea%_2Regression_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]>>"%DOCUMENTATION%"

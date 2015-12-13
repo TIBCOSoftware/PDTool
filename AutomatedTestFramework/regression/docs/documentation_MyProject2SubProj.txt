@@ -36,6 +36,7 @@ The following steps are repeated for each Business Line, Business Area, Subject 
          It will copy the following files.
 "            \regression\templates\BusLineBusAreaSubjArea_1Smoke_gen.dp           --> \regression\plans\MyProject2SubProj_1Smoke_gen.dp"
 "            \regression\templates\BusLineBusAreaSubjArea_1Smoke_exec.dp          --> \regression\plans\MyProject2SubProj_1Smoke_exec.dp"
+"            \regression\templates\BusLineBusAreaSubjArea_1SmokeAsIs_exec.dp      --> \regression\plans\MyProject2SubProj_1SmokeAsIs_exec.dp"
 "            \regression\templates\BusLineBusAreaSubjArea_2Regression_exec.dp     --> \regression\plans\MyProject2SubProj_2Regression_exec.dp"
 "            \regression\templates\BusLineBusAreaSubjArea_2Regression_compare.dp  --> \regression\plans\MyProject2SubProj_2Regression_compare.dp"
 "            \regression\templates\BusLineBusAreaSubjArea_3Performance_exec.dp    --> \regression\plans\MyProject2SubProj_3Performance_exec.dp"
@@ -52,7 +53,7 @@ Replacements performed:
     RESOURCE_NAME=MY_CATALOG.*
 
 2. Open command line window for script execution
-    cd C:\CompositeSoftware\PDTool_Test\PD Tool\AutomatedTestFramework\regression
+    cd C:\Users\mtinius\git\PDToolGitTest\PDTool\AutomatedTestFramework\regression
 
     Script Parameters General Information
     -------------------------------------
@@ -61,12 +62,13 @@ Replacements performed:
         DEPLOYMENT_PLAN - The name of the deployment plan such as:
               1. BusLineBusArea_1Smoke_gen.dp
               2. BusLineBusArea_1Smoke_exec.dp
-              3. BusLineBusArea_2Regression_exec.dp
-              4. BusLineBusArea_2Regression_compare.dp
-              5. BusLineBusArea_3Performance_exec.dp
-              6. BusLineBusArea_3Performance_compare.dp
-              7. BusLineBusArea_4Security_gen.dp
-              8. BusLineBusArea_4Security_exec.dp
+              3. BusLineBusArea_1SmokeAsIs_exec.dp
+              4. BusLineBusArea_2Regression_exec.dp
+              5. BusLineBusArea_2Regression_compare.dp
+              6. BusLineBusArea_3Performance_exec.dp
+              7. BusLineBusArea_3Performance_compare.dp
+              8. BusLineBusArea_4Security_gen.dp
+              9. BusLineBusArea_4Security_exec.dp
      
         CUSTOM - [optional] variable
               1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.
@@ -91,28 +93,33 @@ Replacements performed:
 
 
 3.  Test 1: Generate Smoke Test SQL for ENV
-      a. Generate Smoke Test for SELECT COUNT(*)
-         script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
-         script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
+    a. Generate Smoke Test for SELECT COUNT(*)
+       script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
+       script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   ""   ""   [PAUSE]
 
-         If desired...
-           Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_RegressionTest_SQL.txt
-           Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_PerfTest_SQL.txt
+       If desired...
+         Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_RegressionTest_SQL.txt
+         Copy queries from MyProject2SubProj_SmokeTest_SQL.txt into MyProject2SubProj_PerfTest_SQL.txt
 
-      b. Generate Smoke Test for SELECT TOP 1 *
-         script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
-         script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
+    b. Generate Smoke Test for SELECT TOP 1 *
+       script_test_62.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
+       script_test_70.bat ENV MyProject2SubProj_1Smoke_gen.dp   TOP  ""   [PAUSE]
 
-         If desired...
-           Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_RegressionTest_SQL_TOP.txt
-           Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_PerfTest_SQL_TOP.txt
+       If desired...
+         Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_RegressionTest_SQL_TOP.txt
+         Copy queries from MyProject2SubProj_SmokeTest_SQL_TOP.txt into MyProject2SubProj_PerfTest_SQL_TOP.txt
 
 4.  Test 1: Execute Smoke Test for ENV
-    [OPTIONAL]
-    script_test_62.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
-    script_test_70.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
-         Executing the smoke test is redundant as the regression test incorprates the same test.
-         Additionally, a smoke-test automatically executes a SELECT COUNT(*) regardless of the query provided.
+    a.[OPTIONAL] Execute Default Smoke Test rewriting query as SELECT COUNT(*) FROM "table" or "procedure".
+      script_test_62.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
+      script_test_70.bat ENV MyProject2SubProj_1Smoke_exec.dp   ""  [RENAME_REL]   [PAUSE]
+
+    b.[OPTIONAL] Execute Smoke Test "As Is" using query directly from input file without rewriting.
+      script_test_62.bat ENV MyProject2SubProj_1SmokeAsIs_exec.dp   ""  [RENAME_REL]   [PAUSE]
+      script_test_70.bat ENV MyProject2SubProj_1SmokeAsIs_exec.dp   ""  [RENAME_REL]   [PAUSE]
+
+      Executing the smoke test is redundant as the regression test incorprates the same test.
+      Additionally, a smoke-test automatically executes a SELECT COUNT(*) regardless of the query provided.
 
 5.  Test 2: Execute Regression Test for ENV
     6.2: script_test_62.bat ENV MyProject2SubProj_2Regression_exec.dp   [CUSTOM]  [RENAME_REL]   [PAUSE]

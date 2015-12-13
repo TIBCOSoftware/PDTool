@@ -45,17 +45,17 @@ REM ################################
 REM # 0=Do not print this section, 1=Print this section
 set GEN_PRINT=1
 REM # My Java Home
-set MY_JAVA_HOME=
+set MY_JAVA_HOME=C:\Program Files\Java\jre7
 REM # PDTool Studio Substitute Drive Letter used for making the path shorter
 REM # PDTool and PDTool Studio must use different drive letters.
 set PDTOOL_SUBSTITUTE_DRIVE=Q:
 REM # PDTool Installation Home Directory
-set PDTOOL_INSTALL_HOME=
+set PDTOOL_INSTALL_HOME=C:\Users\mtinius\git\PDToolGitTest\PDTool
 REM # PDTool Home directory
-set PDTOOL_HOME=
+set PDTOOL_HOME=C:\Users\mtinius\git\PDToolGitTest\PDTool
 REM # Name of the configuration property file located in PDToolStudio62/resources/config
 REM #    e.g. Default=studio.properties or SVN=studio_SVN.properties or TFS=studio_TFS.properties
-set MY_CONFIG_PROPERTY_FILE=
+set MY_CONFIG_PROPERTY_FILE=depoy9400.properties
 REM #
 REM ################################
 REM # CISCO SERVER VARIABLES
@@ -63,11 +63,11 @@ REM ################################
 REM # 0=Do not print this section, 1=Print this section
 set CIS_PRINT=1
 REM # Cisco Server Username
-set CIS_USERNAME=
+set CIS_USERNAME=admin
 REM # Cisco Server Password
-set CIS_PASSWORD=
+set CIS_PASSWORD=admin
 REM # Cisco Server Domain
-set CIS_DOMAIN=
+set CIS_DOMAIN=composite
 REM #
 REM ################################
 REM # TFS VARIABLES

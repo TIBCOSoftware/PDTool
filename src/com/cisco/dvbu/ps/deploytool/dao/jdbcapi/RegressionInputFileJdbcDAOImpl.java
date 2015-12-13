@@ -984,7 +984,8 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 					item.resourceType = resourceType;
 
 		        	// Retrieve only the FROM clause table URL with no where clause and no projections in order to create a file name.
-		        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+					String resURL = RegressionManagerUtils.getTableUrl(item.input);
+		        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, resURL) + ".txt";
 
 		        	items.add(item);
 		        	
@@ -1098,7 +1099,8 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		        				item.input = item.input + ")";
 		        			}
 		    	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
-		    	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+							String resURL = RegressionManagerUtils.getTableUrl(item.input);
+				        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, resURL) + ".txt";
 
 		    	        	// Add to the list of items
 							items.add(item);
@@ -1155,7 +1157,9 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        		item.input = item.input + ")";
 	        	}
 	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
-	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+	        	//item.outputFilename = RegressionManagerUtils.appendUrlChecksum(RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "")) + ".txt";
+				String resURL = RegressionManagerUtils.getTableUrl(item.input);
+	        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, resURL) + ".txt";
 	        	
 	        	// Add to the list of items
 				items.add(item);
@@ -1268,7 +1272,8 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 			        			item.input = item.input + " )}";
 		        			}
 		    	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
-		    	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+							String resURL = RegressionManagerUtils.getTableUrl(item.input);
+				        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, resURL) + ".txt";
 
 		    	        	// Add to the list of items
 							items.add(item);
@@ -1324,7 +1329,8 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        		item.input = item.input + ")}";
 	        	}
 	        	// Retrieve only the FROM clause procedure URL with no where clause and no projections in order to create a file name.
-	        	item.outputFilename = RegressionManagerUtils.getTableUrl(item.input).replaceAll("\"", "") + ".txt";
+				String resURL = RegressionManagerUtils.getTableUrl(item.input);
+	        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, resURL) + ".txt";
 
 	        	// Add to the list of items
 				items.add(item);
@@ -2086,7 +2092,6 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 		            	String wsURL = (item.path + "/" + item.action).replaceAll("//", "/").replaceAll("/", "."); // construct ws path from the path and action combined.
 		            	if (wsURL.indexOf(".") == 0)
 		            		wsURL = wsURL.substring(1);
-		               	item.outputFilename = wsURL.replaceAll("\"", "") + ".txt";
 
 			        	// The query was provided by the RegressionModule.xml (or equivalent) file.
 		        		StringBuffer buf = new StringBuffer("");
@@ -2131,6 +2136,8 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 				        	buf.append(soapMsgEnd);
 			        	}
 			        	item.input = buf.toString();
+			        	item.outputFilename = RegressionManagerUtils.appendUrlChecksum(item.input, wsURL) + ".txt";
+			        	
 			        	items.add(item);
 					} //  while (doMoreSoapProtocols && protocolList.size() > 0) 
 	        	} //if (resourceMatch) {

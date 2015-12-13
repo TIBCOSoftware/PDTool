@@ -123,6 +123,7 @@ public class RegressionManagerImpl implements RegressionManager
 
 	// Test Types from Regression XML schema
     static final String FUNCTIONAL = "functional";
+    static final String FUNCTIONAL_AS_IS = "functional_as_is";
     static final String MIGRATION = "migration";
     static final String REGRESSION = "regression";
     static final String PERFORMANCE = "performance";
@@ -357,7 +358,7 @@ public class RegressionManagerImpl implements RegressionManager
 					String testType = CommonUtils.extractVariable(prefix, this.regressionConfig.getTestRunParams().getTestType(), propertyFile, false);
 					
 					// Execute the functional or migration test if the test type is set to "functional" or "migration"
-					if (FUNCTIONAL.equalsIgnoreCase(testType) || MIGRATION.equalsIgnoreCase(testType) || REGRESSION.equalsIgnoreCase(testType)) 
+					if (FUNCTIONAL.equalsIgnoreCase(testType) || FUNCTIONAL_AS_IS.equalsIgnoreCase(testType) || MIGRATION.equalsIgnoreCase(testType) || REGRESSION.equalsIgnoreCase(testType)) 
 					{
 						// Set the Module Action Objective
 						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());

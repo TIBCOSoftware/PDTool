@@ -64,11 +64,7 @@
 # -----------------------------------------
 # Begin task definition list:
 # -----------------------------------------
-# Import Regression Module Resources for testing (comment out if already imported)
-PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "regression01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
 
-# Generate Input file
-PASS	TRUE   ExecuteAction      createRegressionInputFile   $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
 # Perform a Functional Test
 PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 # Perform a Functional As Is Test
@@ -77,23 +73,3 @@ PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.1
 # Perform a Regression Test
 PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 
-# Perform a Migration Test for cis51
-PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-# Perform a Migration Test for cis61
-PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-# Compare query result files (checksum)
-PASS	TRUE   ExecuteAction      compareRegressionFiles      $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-# Compare Migration Log files
-PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test2.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-
-# Perform a Performance Test for cis51
-PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-# Perform a Performance Test for cis61
-PASS	TRUE   ExecuteAction      executePerformanceTest      $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-# Compare Performance Logs
-PASS	TRUE   ExecuteAction      compareRegressionLogs       $SERVERID    	Test3.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
-#
-# Generate Security XML
-PASS	TRUE   ExecuteAction      generateRegressionSecurityXML $SERVERID   Test4.1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
-# Perform a Security test
-PASS	TRUE   ExecuteAction      executeSecurityTest         $SERVERID    	Test4.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"

@@ -16,6 +16,12 @@ PDTool-7.0.0-2015-09-22.r1
 Section 2:
 Release Notes (newest first):
 ===================================================
+
+============================
+Release 2015-10-16:
+============================
+1) Added the ability to use "functional_as_is" test type for Regression Module.
+
 ============================
 Release 2015-09-22:
 ============================

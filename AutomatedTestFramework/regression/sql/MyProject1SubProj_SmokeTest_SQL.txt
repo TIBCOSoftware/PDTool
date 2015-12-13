@@ -48,7 +48,7 @@
 [QUERY]
 database="MY DB"
 outputFilename=MY CATALOG.MY SCHEMA.ViewSales.txt
-SELECT count(*) cnt FROM "MY CATALOG"."MY SCHEMA".ViewSales
+SELECT count(*) cnt FROM "MY CATALOG"."MY SCHEMA".ViewSales where 1=1
 
 [QUERY]
 database="MY DB"
