@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	For passwords use the following XML Escape characters within the encryptedpassword field:
+			"   &quot;
+			'   &apos;
+			<   &lt;
+			>   &gt;
+			&   &amp;
+		Example:  <encryptedpassword>Pass &quot; &apos; &lt; &gt; &amp; word</encryptedpassword>
+-->
 <servers>
   <!-- CIS 7.0.1 Server -->
   <server>
@@ -10,12 +19,11 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>/CompositeSoftware/CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
-
   <server>
     <id>UAT1_9420http</id>
     <hostname>localhost</hostname>
@@ -25,12 +33,11 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>/CompositeSoftware/CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
-
   <server>
     <id>PROD1_9420http</id>
     <hostname>localhost</hostname>
@@ -40,12 +47,11 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>/CompositeSoftware/CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
- 
   <server>
     <id>localhost9400http</id>
     <hostname>localhost</hostname>
@@ -55,12 +61,11 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
-
   <server>
     <id>localhost9420http</id>
     <hostname>localhost</hostname>
@@ -70,12 +75,11 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
- 
   <server>
     <id>lab9420http</id>
     <hostname>localhost</hostname>
@@ -85,10 +89,10 @@
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
     <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
-    <clustername></clustername>
+    <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
-
 </servers>
+

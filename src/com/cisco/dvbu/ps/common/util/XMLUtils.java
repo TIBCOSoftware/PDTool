@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -478,20 +479,14 @@ public class XMLUtils {
 
 	@SuppressWarnings("unchecked")
 	private static void processChildNodes(List<Element> childNodes,boolean encrypt){
-		
+
+		boolean allowVariables = false;
+		// Look ahead to see how allowVariables is set in order to know how to encrypt the password field.
 		for (Element element : childNodes) {
 			if(element.getChildren() == null || element.getChildren().isEmpty()){
-				
-				// Look for any name in the encrypted password list:
-				//  "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD";
-				if( (CommonUtils.existsEncryptPropertyList(element.getName()) && element.getValue() != null)){
-					if(encrypt){
-						element.setText(CommonUtils.encrypt(element.getValue()));
-					}
-				}
-				// Look for PASSWORD_STRING
-				if(element.getValue() != null && CommonUtils.existsEncryptPropertyList(element.getValue())){
-					processChildNodesSiblings(childNodes,encrypt);
+				// Determine if the allowVariables is set to true or false
+				if( (element.getName().equalsIgnoreCase("allowVariables") && element.getValue() != null)){
+					allowVariables = Boolean.valueOf(element.getValue());
 				}
 
 			}else{
@@ -499,15 +494,39 @@ public class XMLUtils {
 			}
 		}
 
+		for (Element element : childNodes) {
+			if(element.getChildren() == null || element.getChildren().isEmpty()){
+				
+				// Look for any name in the encrypted password list:
+				//  "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD";
+				if( (CommonUtils.existsEncryptPropertyList(element.getName()) && element.getValue() != null)){
+					// encrypt the password if directed to and the allowVariables=true
+					if(encrypt && !allowVariables){
+						String password = XMLUtils.convertXMLEscapeChar(element.getValue());
+						element.setText(CommonUtils.encrypt(password));
+					}
+				}
+				// Look for PASSWORD_STRING
+				if(element.getValue() != null && CommonUtils.existsEncryptPropertyList(element.getValue())){
+					processChildNodesSiblings(childNodes, encrypt, allowVariables);
+				}
+
+			}else{
+				processChildNodes(element.getChildren(), encrypt);
+			}
+		}
+
 	}
 
-	private static void processChildNodesSiblings(List<Element> childNodes,boolean encrypt){
+	
+	private static void processChildNodesSiblings(List<Element> childNodes, boolean encrypt, boolean allowVariables){
 		for (Element element : childNodes) {
 			if(element.getChildren() == null || element.getChildren().isEmpty()){
 				
 				if((element.getName().equalsIgnoreCase("value") || element.getName().equalsIgnoreCase("defaultValue") ) && element.getValue() != null){
-					if(encrypt){
-						element.setText(CommonUtils.encrypt(element.getValue()));
+					if(encrypt && !allowVariables){
+						String password = XMLUtils.convertXMLEscapeChar(element.getValue());
+						element.setText(CommonUtils.encrypt(password));
 					}
 				}
 			}
@@ -515,6 +534,33 @@ public class XMLUtils {
 
 	}
 
+
+	private static String convertXMLEscapeChar(String str) {
+		/* 
+		 * direction
+		 * 	0 = convert XML escape to original character
+		 *  1 = convert regular characters to XML escape
+		 * Modify any XML escaped values: 
+			"   &quot;
+			'   &apos;
+			<   &lt;
+			>   &gt;
+			&   &amp;
+		*/
+		if (str.contains("&quot;"))
+			str = str.replaceAll(Matcher.quoteReplacement("&quot;"), Matcher.quoteReplacement("\""));
+		if (str.contains("&apos;"))
+			str = str.replaceAll(Matcher.quoteReplacement("&apos;"), Matcher.quoteReplacement("'"));
+		if (str.contains("&lt;"))
+			str = str.replaceAll(Matcher.quoteReplacement("&lt;"), Matcher.quoteReplacement("<"));
+		if (str.contains("&gt;"))
+			str = str.replaceAll(Matcher.quoteReplacement("&gt;"), Matcher.quoteReplacement(">"));
+		if (str.contains("&amp;"))
+			str = str.replaceAll(Matcher.quoteReplacement("&amp;"), Matcher.quoteReplacement("&"));
+		return str;
+	}
+
+	
 	/**
 	 * Return a flat name value pairs string constructed based on passed in xml content and separators 
 	 * "=","|" are defaulted as separators 1 and 2 if the values are not passed. Here is the flattened servers.xml
