@@ -181,6 +181,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 		<xs:enumeration value="DATA_SOURCE"/>
 		<xs:enumeration value="DEFINITION_SET"/>
 		<xs:enumeration value="LINK"/>
+        <xs:enumeration value="MODEL"/>
 		<xs:enumeration value="PROCEDURE"/>
 		<xs:enumeration value="TABLE"/>
 		<xs:enumeration value="TREE"/>

@@ -78,8 +78,11 @@ public class SoapHttpConfig implements ConnectorConfig {
 	
 	public String getEndpoint(String ep) {
 		String http = config.getProperty(AdapterConstants.ADAPTER_USE_HTTPS);
+		int port = Integer.parseInt (config.getProperty(AdapterConstants.ADAPTER_PORT));
+		
 		http = ((http != null) && (http.equalsIgnoreCase("true"))) ? "https" : "http";
-		return http + "://" + config.getProperty(AdapterConstants.ADAPTER_HOST) + ":" + config.getProperty(AdapterConstants.ADAPTER_PORT) + connEndpoints.get(ep);
+		if (http.equals("https")) port += 2;
+		return http + "://" + config.getProperty(AdapterConstants.ADAPTER_HOST) + ":" + port + connEndpoints.get(ep);
 	}
 	
 	public String getNsUrl() {
