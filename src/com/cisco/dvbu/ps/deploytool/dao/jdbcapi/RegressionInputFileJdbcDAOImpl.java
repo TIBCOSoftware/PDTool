@@ -69,6 +69,7 @@ import com.compositesw.services.system.admin.resource.Resource;
  * 	2013-02-13 (mtinius): added support for variables for all fields in RegressionModule.xml
  *  2013-11-27 (mtinius): resolved resource URLs with spaces and periods.  Added better support for parsing complex FROM clauses.
  *  2014-02-03 (mtinius): added ability to filter on resources for generateInputFile().
+ *  2016-01-30 (mtinius): set resourceType="LINK" for all published resources instead of TABLE or PROCEDURE. 
  */
 public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 {
@@ -934,7 +935,12 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 				String schemaName = CommonUtils.applyReservedListToPath(rsViews.getString(3), "/");
 				String tableName = CommonUtils.applyReservedListToPath(rsViews.getString(4), "/");
 				String resourcePath = rsViews.getString(5) + "/" + rsViews.getString(4);
-				String resourceType = "TABLE";
+				
+				/*
+				 * mtinius: 2016-01-30 - modified type for published resources.
+				 */
+				//String resourceType = "TABLE";
+				String resourceType = "LINK";
 
 				/* Determine if the specific resource should be compared by checking the XML resource list.
 				 * If the resourceURL pattern matches what is in this list then process it.
@@ -1063,7 +1069,12 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 				String procedureName = CommonUtils.applyReservedListToPath(rsProcs.getString(5), "/");
 				String dataType = rsProcs.getString(6);
 				String resourcePath = rsProcs.getString(7) + "/" + rsProcs.getString(5);
-				String resourceType = "PROCEDURE";
+
+				/*
+				 * mtinius: 2016-01-30 - modified type for published resources.
+				 */
+				//String resourceType = "PROCEDURE";
+				String resourceType = "LINK";
 
 				/* Determine if the specific resource should be compared by checking the XML resource list.
 				 * If the resourceURL pattern matches what is in this list then process it.
@@ -1237,7 +1248,12 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 				String paramName = rsProcs.getString(6);
 				String dataType = rsProcs.getString(7);
 				String resourcePath = rsProcs.getString(8) + "/" + rsProcs.getString(5);
-				String resourceType = "PROCEDURE";
+
+				/*
+				 * mtinius: 2016-01-30 - modified type for published resources.
+				 */
+				//String resourceType = "PROCEDURE";
+				String resourceType = "LINK";
 
 				/* Determine if the specific resource should be compared by checking the XML resource list.
 				 * If the resourceURL pattern matches what is in this list then process it.
@@ -1563,7 +1579,11 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 	        	boolean resourceMatch = RegressionManagerUtils.findResourceMatch(resourceURL, regressionConfig.getNewFileParams().getResources(), propertyFile);
 	        	
 	        	if (resourceMatch) 
-	        	{        	       	
+	        	{   
+/* mtinius: 2016-01-30 - Commented out as all resources that are published are of type LINK which is set as a default type.
+ *   The significance of this is that when the Regression Module security generates the xml, it does a lookup on privileges
+ *   using the resource path and type.  In 7.0.1 it returned the privileges when the type was TABLE or PROCEDURE.  However,
+ *   in 7.0.2, no privileges are returned unless the type is specifically a LINK instead of the actual type.  		
 					// Get the actual resource type
 					if (getActualLinkType) 
 					{
@@ -1572,7 +1592,7 @@ logger.info(CommonUtils.rpad("     Input file generation duration: " + duration,
 						if (linkResource.getTargetType() != null)
 							resourceType = linkResource.getTargetType().name();
 					}
-	
+*/	
 					if (logger.isDebugEnabled()) {
 						System.out.println("");
 						System.out.println("-----------------------------------------------------");

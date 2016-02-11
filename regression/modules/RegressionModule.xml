@@ -416,7 +416,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 			
 		</compareLogs>
 				
@@ -628,7 +628,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 		</compareLogs>
 	</regressionTest>
 
@@ -890,7 +890,7 @@
       <datasource>MYTEST</datasource>
       <query>SELECT * FROM SCH1.ViewOrder</query>
       <!-- Duration delta for this query.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-      <durationDelta>000 00:00:00.0005</durationDelta>
+      <durationDelta>000 00:00:00.005</durationDelta>
     </regressionQuery>
     <regressionQuery>
       <datasource>MYTEST</datasource>

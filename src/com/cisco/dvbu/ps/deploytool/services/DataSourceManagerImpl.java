@@ -1101,7 +1101,7 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 
 	private void populateNameAndPathAttributes(Integer seqId, DataSourceResource dsResource,DataSourceChoiceType dataSourceChoiceType) {
 		
-		if(dsResource.getSubtype().name().equalsIgnoreCase(ResourceSubType.RELATIONAL_DATA_SOURCE.name())){
+		if(dsResource.getSubtype() != null && dsResource.getSubtype().name().equalsIgnoreCase(ResourceSubType.RELATIONAL_DATA_SOURCE.name())){
 
 			RelationalDataSourceType relationalDataSourceType = new RelationalDataSourceType();
 			relationalDataSourceType.setId("ds"+seqId);
@@ -1155,7 +1155,7 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 
 		// Iterate over the list of Data Source Attributes retrieved from the Server
 		for (Attribute attribute : attributes) {
-			if(dsResource.getSubtype().name().equalsIgnoreCase(ResourceSubType.RELATIONAL_DATA_SOURCE.name())){
+			if(dsResource.getSubtype() != null && dsResource.getSubtype().name().equalsIgnoreCase(ResourceSubType.RELATIONAL_DATA_SOURCE.name())){
 				
 				poupulateRelationalDataSourceTypeAttributes(dataSourceChoiceType, attribute, attributeDefList);
 

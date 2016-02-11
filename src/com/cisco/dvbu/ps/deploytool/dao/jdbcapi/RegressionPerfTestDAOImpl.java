@@ -122,7 +122,7 @@ public class RegressionPerfTestDAOImpl implements RegressionPerfTestDAO
 
 		// Initialize start time and format
 		java.util.Date startDate = new java.util.Date();
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
      // 1. Initialize configuration items: 
 		String prefix = "executePerformanceTest";

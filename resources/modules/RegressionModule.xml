@@ -608,7 +608,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 			
 		</compareLogs>
 				
@@ -828,7 +828,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 		</compareLogs>
 	</regressionTest>
 
@@ -1093,7 +1093,7 @@
       <datasource>MYTEST</datasource>
       <query>SELECT * FROM SCH1.ViewOrder</query>
       <!-- Duration delta for this query.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-      <durationDelta>000 00:00:00.0005</durationDelta>
+      <durationDelta>000 00:00:00.005</durationDelta>
     </regressionQuery>
     <regressionQuery>
       <datasource>MYTEST</datasource>
@@ -1343,9 +1343,9 @@
 		
 		<!-- List of queries, procedures or web services to be used for security testing.  Only one query per object is needed.  Typically a select count(1) as a functional test is all that is needed to test security. -->
 		<regressionSecurityQueries>
-			<regressionSecurityQuery><id>rsq1</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.customers</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
-			<regressionSecurityQuery><id>rsq2</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.customers</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
-			<regressionSecurityQuery><id>rsq3</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM Common.Common.customers</query><resourcePath>/services/databases/TEST00/Common/Common/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq1</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.customers</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq2</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.customers</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq3</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM Common.Common.customers</query><resourcePath>/services/databases/TEST00/Common/Common/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq4</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq5</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq6</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM Common.Common.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/Common/Common/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>

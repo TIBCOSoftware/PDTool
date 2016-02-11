@@ -32,11 +32,11 @@ REM #
 REM # The My Vars path provides with the user the ability to set specific environment variables for their login
 REM #   The location of these batch files is typically outside of the PDTOOL_HOME in the user's directory space.
 REM #   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool
-set MY_VARS_HOME=
+set MY_VARS_HOME=C:\Users\%USERNAME%\.compositesw\PDToolRegression
 REM #
 if not defined MY_VARS_HOME goto MAIN
-  set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolVars.bat
-  set MY_POST_VARS_PATH=%MY_VARS_HOME%\setMyPostPDToolVars.bat
+  set MY_PRE_VARS_PATH=%MY_VARS_HOME%\setMyPrePDToolVars_%VERSION%.bat
+  set MY_POST_VARS_PATH=%MY_VARS_HOME%\setMyPostPDToolVars_%VERSION%.bat
   if not defined MY_PRE_VARS_PATH goto MAIN
   if exist "%MY_PRE_VARS_PATH%" call "%MY_PRE_VARS_PATH%"
 :MAIN

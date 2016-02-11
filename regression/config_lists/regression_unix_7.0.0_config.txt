@@ -25,8 +25,10 @@
 # Regression Module Only
 #regression_unix_7.0.0          regression_plan_regession_list.txt
 
-# PDTool - All modules except VCS
+# PDTool - All modules except VCS using HTTP
 regression_unix_7.0.0          regression_plan_base_list.txt            # Full regression of base modules
+# PDTool - All modules except VCS using HTTPS
+regression_unix_7.0.0__https   regression_plan_base_list.txt            # Full regression of base modules
 # TEST:
 #regression_unix_7.0.0          regression_plan_test_list.txt            # test the base module connection
 

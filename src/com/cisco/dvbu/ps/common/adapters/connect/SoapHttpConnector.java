@@ -116,13 +116,13 @@ public class SoapHttpConnector implements Connector {
 		    }
 		    
 		    endpoint = new URL(shConfig.getEndpoint(cb.getEndpoint()));
-	
+		    
 		    // now make that call over the SOAP connection
 		    SOAPMessage reply = null;
 		    AdapterException ae = null;
 		    
 		    for (int i=1; (i <= shConfig.getRetryAttempts() && reply==null); i++) {
-			    log.debug("Attempt " + i + ": sending request to: " + endpoint);
+			    log.debug("Attempt " + i + ": sending request to endpoint: " + endpoint);
 			    try {
 			    	reply = soapConnection.call( soapMessage, endpoint );
 			    	log.debug("Attempt " + i + ": received response: " + reply);

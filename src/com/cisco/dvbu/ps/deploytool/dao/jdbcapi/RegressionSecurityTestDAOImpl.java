@@ -99,7 +99,7 @@ public class RegressionSecurityTestDAOImpl implements RegressionSecurityTestDAO
 
 		// Initialize start time and format
         Date startDate = new Date();
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 // 1. Initialize configuration items: 
         String prefix = "executeSecurityTest";
@@ -641,7 +641,7 @@ public class RegressionSecurityTestDAOImpl implements RegressionSecurityTestDAO
 				        	}
 				            catch (Exception e)
 				            {
-				            	if (e.getMessage().contains("insufficient privileges")) {
+				            	if (e.getMessage().toLowerCase().contains("insufficient privileges") || e.getMessage().toLowerCase().contains("permission denied")) {
 					            	actual = "FAIL";
 					            	// Determine the outcome based on the actual result and expected outcome
 				                	if (expectedOutcome.equalsIgnoreCase("PASS")) {

@@ -108,7 +108,7 @@ public class RegressionPubTestJdbcDAOImpl implements RegressionPubTestDAO
 
 		// Initialize start time and format
         Date startDate = new Date();
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 // 1. Initialize configuration items: 
         String prefix = "executeAll";

@@ -49,6 +49,20 @@ import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRe
 import com.compositesw.services.system.admin.resource.UpdatePrivilegesMode;
 import com.compositesw.services.system.util.common.AttributeTypeValueMap.Entry;
 
+/**
+ * Privilege module implements the ability to get and set privileges using the HTTP adapter style
+ * of connection to CIS. 
+ * 
+ * @author mtinius
+ * 
+ * Modification History
+ * =========================
+ * 01/30/2016	mtinius	Code affected: getResourcePrivileges
+ * 						Modified the XSLT in cis_adapter_config.xml to return a null PrivilegeModule node
+ * 						when there are no privilege entries in the response.  It was throwing a schema validation
+ * 						exception otherwise.
+ */
+
 public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 
 	private static String prefix = "PrivilegeWSDAOImpl";
@@ -272,10 +286,22 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 				logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
 			}
 			/*****************************************************
-			 * Invoke Method=getServerAttributes
+			 * Invoke Method=getResourcePrivileges
 			 *****************************************************/
 			// Invoke the web service method
-			// String requestXml = "<?xml version=\"1.0\"?> <p1:ServerAttributeModule xmlns:p1=\"http://www.dvbu.cisco.com/ps/deploytool/modules\">  <serverAttribute>         <id>sa1</id>         <name>/server/event/generation/sessions/sessionLoginFail</name>         <type>UNKNOWN</type>         <!--Element value is optional-->         <value>string</value>         <!--Element valueArray is optional-->         <valueArray>             <!--Element item is optional, maxOccurs=unbounded-->             <item>string</item>             <item>string</item>             <item>string</item>         </valueArray>         <!--Element valueList is optional-->         <valueList>             <!--Element item is optional, maxOccurs=unbounded-->             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>             <item>                 <!--Element type is optional-->                 <type>UNKNOWN</type>                 <!--Element value is optional-->                 <value>string</value>             </item>         </valueList>         <!--Element valueMap is optional-->         <valueMap>             <!--Element entry is optional, maxOccurs=unbounded-->             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>             <entry>                 <!--Element key is optional-->                 <key>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </key>                 <!--Element value is optional-->                 <value>                     <!--Element type is optional-->                     <type>UNKNOWN</type>                     <!--Element value is optional-->                     <value>string</value>                 </value>             </entry>         </valueMap>     </serverAttribute> </p1:ServerAttributeModule>";
+			/* String requestXml = "<?xml version=\"1.0\"?> 
+			 * <p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" 
+			 * xmlns:resource="http://www.compositesw.com/services/system/admin/resource">
+			  <resourcePrivilege>
+			    <id>priv1</id>
+			    <resourcePath>/services/webservices/TEST00/CAT1/SCH1/CustomerWS/customers</resourcePath>
+			    <resourceType>TABLE</resourceType>
+			    <privilege>
+			    ....
+			    </privilege>
+			  </resourcePrivilege>
+			</p1:PrivilegeModule>"
+			*/
 			String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
 	
 			if(logger.isDebugEnabled()) {
@@ -283,7 +309,7 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 				logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
 			}
 			
-			// Convert XML String to ServerAttributeModule Object for easier processing
+			// Convert XML String to PrivilegeModule Object for easier processing
 			Object obj = XMLUtils.getJavaObjectFromXML(response);
 			PrivilegeModule retPrivilegeEntries = (PrivilegeModule) obj;
 						

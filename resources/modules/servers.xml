@@ -67,6 +67,20 @@
     <allowVariables>true</allowVariables>
   </server>
   <server>
+    <id>localhost9400https</id>
+    <hostname>localhost</hostname>
+    <port>9400</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
     <id>localhost9420http</id>
     <hostname>localhost</hostname>
     <port>9420</port>

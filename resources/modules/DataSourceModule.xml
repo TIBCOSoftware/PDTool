@@ -173,7 +173,7 @@
             <genericAttribute>
                 <name>url</name>
                 <type>STRING</type>
-                <value>$CIS_HTTP_TYPE$://localhost:$CIS_PORT/services/TEST00/testWebService?wsdl</value>
+                <value>$CIS_HTTP_TYPE$://localhost:$CIS_PORT_WS/services/TEST00/testWebService?wsdl</value>
             </genericAttribute>
         </genericDataSource>
     </datasource>
