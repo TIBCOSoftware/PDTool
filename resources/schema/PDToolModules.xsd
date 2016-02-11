@@ -181,6 +181,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 		<xs:enumeration value="DATA_SOURCE"/>
 		<xs:enumeration value="DEFINITION_SET"/>
 		<xs:enumeration value="LINK"/>
+        <xs:enumeration value="MODEL"/>
 		<xs:enumeration value="PROCEDURE"/>
 		<xs:enumeration value="TABLE"/>
 		<xs:enumeration value="TREE"/>
@@ -1805,6 +1806,9 @@ group replace the previous value for that user or group.
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -1818,6 +1822,7 @@ group replace the previous value for that user or group.
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="functional"/>
+						<xs:enumeration value="functional_as_is"/>
 						<xs:enumeration value="migration"/>
 						<xs:enumeration value="regression"/>
 						<xs:enumeration value="performance"/>

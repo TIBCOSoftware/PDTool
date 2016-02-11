@@ -58,6 +58,20 @@ import com.cisco.dvbu.ps.deploytool.modules.VCSConnectionType;
 import com.cisco.dvbu.ps.deploytool.modules.VCSModule;
 import com.cisco.dvbu.ps.deploytool.modules.VCSResourceType;
 
+/** 
+ * This class is an implementation of VCSManager that provides VCS checkin and checkout for the VCS Module.
+ * 
+ * Also see comments for the VCSManager interface
+ * 
+ * @author mtinius
+ * @since 2012-06-05
+ * @modified 
+ * 	2016-01-30 (mtinius): tf status was throwing an exception when the -associate:1 option was included in the VCS Checkin Options.
+ *                        Resolution: removed this code "+ vcsStruct.getVcsCheckinOptions()" from the line:
+ * 							arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
+ * 								vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+ */
+
 public class VCSManagerImpl implements VCSManager {
 
     private VCSDAO vcsDAO = null;
@@ -4564,7 +4578,7 @@ public class VCSManagerImpl implements VCSManager {
 
 					    //arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
 						arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
-							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " ";
 					    // tf.cmd status -collection:{VCS_REPOSITORY_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
 						
 						commandDesc = "    Status of pending changes to the Team Foundation Server Repository...";					
@@ -4726,7 +4740,7 @@ public class VCSManagerImpl implements VCSManager {
 
 					    //arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
 						arguments=" status -collection:"+vcsStruct.getVcsRepositoryUrl()+ " -workspace:" +
-							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsCheckinOptions();
+							vcsStruct.getVcsWorkspaceName() +" -noprompt "+vcsStruct.getVcsOptions() + " ";
 					    // tf.cmd status --collection:{VCS_REPOSITORY_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS}
 						
 						commandDesc = "    Status of pending changes to the Team Foundation Server Repository...";					

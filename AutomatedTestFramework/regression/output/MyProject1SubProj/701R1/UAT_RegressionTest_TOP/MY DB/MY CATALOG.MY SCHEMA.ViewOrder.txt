@@ -1,2 +1,0 @@
-OrderID|ProductID|Discount|OrderDate|CompanyName|CustomerContactFirstName|CustomerContactLastName|CustomerContactPhone
-2|1|0.10|2003-02-03|Able Computing|Jason|Born|(510) 556-9944

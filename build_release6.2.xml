@@ -54,8 +54,8 @@
 	<property name="security" location="security"/>
 	<property name="docs" location="PDToolDocs/docs"/>
 	<property name="project-PDToolModules" value="PDToolModules"/>
-	<property name="pdtool-zip-target" value="PDTool${ver}"/>
-	<property name="pdtoolstudio-zip-target" value="PDToolStudio${ver}"/>
+	<property name="pdtool-zip-target" value="PDTool-${ver}"/>
+	<property name="pdtoolstudio-zip-target" value="PDToolStudio-${ver}"/>
 	<property name="pdtool-installer-target" value="PDTool${ver}_installer"/>
 	<property name="pdtoolstudio-installer-target" value="PDToolStudio${ver}_installer"/>
 	<property name="pdtool-target" value="${pdtool-installer-target}/installer_source/PDTool"/>
@@ -359,7 +359,7 @@
 		</copy>
 		<copy todir="${pdtool-target}/security">
 		    <fileset dir="${security}">
-		        <include name="cis_studio_truststore.jks"/>
+		        <include name="*.jks"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/security">
@@ -546,7 +546,7 @@
 		</copy>
 		<copy todir="${pdtoolstudio-target}/security">
 		    <fileset dir="${security}">
-		        <include name="cis_studio_truststore.jks"/>
+		        <include name="*.jks"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/security">

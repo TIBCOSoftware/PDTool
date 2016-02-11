@@ -1981,10 +1981,17 @@ public class CommonUtils {
 	/**
 	 * Calculate elapsed time
 	 * @param startDate
-	 * @return String with a format like "000 00:00:00.0000"
+	 * @return String with a format like "000 00:00:00.000"
 	 */
 	public static String getElapsedTime(Date startDate) {
-		long duration = System.currentTimeMillis() - startDate.getTime();
+		Date date = new Date();
+		/* debugging code */
+		/*
+		Format formatter;
+		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		System.out.println("Current Date="+formatter.format(date).toString());
+		*/
+		long duration = date.getTime() - startDate.getTime();
 		String elapsedString = getElapsedDuration(duration);
 		return elapsedString;
 	}
@@ -1992,7 +1999,7 @@ public class CommonUtils {
 	/**
 	 * Calculate elapsed time
 	 * @param duration - long number representing the difference between two dates
-	 * @return String with a format like "000 00:00:00.0000"
+	 * @return String with a format like "000 00:00:00.000"
 	 */
 	public static String getElapsedDuration(long duration) {
 		String elapsedString = "";
@@ -2002,19 +2009,14 @@ public class CommonUtils {
 			// make it positive
 			duration = duration * -1;
 		}
-		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
-		/* original
-		long DAY=24*60*60*1000;
-		long HOUR=60*60*1000;
-		long MINUTE=60*1000;
-		long SECOND=1000;
-		*/
-		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
-		long DAY=24*60*60*10000;
-		long HOUR=60*60*10000;
-		long MINUTE=60*10000;
-		long SECOND=10000;
+		long days=0, hours=0, minutes=0, seconds=0, thousandthsSecond=0;
 
+		/* original */
+		long DAY=24*60*60*1000;		// 86400000
+		long HOUR=60*60*1000;		//  3600000
+		long MINUTE=60*1000;		//    60000
+		long SECOND=1000;			//     1000
+		
 		// days
 		if (duration > DAY) {
 			days = duration / DAY;
@@ -2033,20 +2035,20 @@ public class CommonUtils {
 		if (duration > SECOND) {
 			seconds = duration / SECOND;
 		}
-		tenThousandthsSecond = duration % SECOND;
+		thousandthsSecond = duration % SECOND;
 
-		// Return a standard format: "000 00:00:00.0000"
+		// Return a standard format: "000 00:00:00.000"
 		//	  000=days
 		//	  00:=hours
 		//	  00:=minutes
 		//    00:=seconds
-		//	.0000=The ten thousandths of a second in a date and time value
+		//	.000=The thousandths of a second in a date and time value
 		elapsedString = plus_minus+
 			lpad(Long.toString(days), 3, "0")+" "+
 			lpad(Long.toString(hours), 2, "0")+":"+
 			lpad(Long.toString(minutes), 2, "0")+":"+
 			lpad(Long.toString(seconds), 2, "0")+"."+
-			lpad(Long.toString(tenThousandthsSecond), 4, "0");
+			lpad(Long.toString(thousandthsSecond), 3, "0");
 		
 		/* mtinius: this is commented out but left for documentation purposes
 		 *  I wanted to have a record of the actual word label format.
@@ -2073,20 +2075,33 @@ public class CommonUtils {
 	/**
 	 * Get the actual long value from the formatted duration
 	 * 
-	 * @param String with a format like "000 00:00:00.0000"
+	 * @param String with a format like "000 00:00:00.000"
 	 *                                   01234567890123456
 	 * @return duration - long number representing the difference between two dates
 	 */
 	public static long getLongDuration(String duration) throws CompositeException {
+		duration = duration.trim();
 		long longDuration = 0L;
-		String validFormat = "000 00:00:00.0000";
-		int validFormatLen = validFormat.length();
+		String validFormat1 = "000 00:00:00.000";	// length=16
+		String validFormat2 = "000 00:00:00.0000";	// length=17
+		int validFormatLen1 = validFormat1.length();
+		int validFormatLen2 = validFormat2.length();
+		int validLen = 0;
+		String validFormat = null;
 		
 		if (duration == null) {
 			throw new ApplicationException("The duration parameter cannot be null.");			
 		}
-		if (duration.length() != validFormatLen) { // length=17
-			throw new ApplicationException("The format of the duration parameter ("+duration+") does not meet the required length of "+validFormatLen+" characters.");
+		if (duration.length() != validFormatLen1) { // length=16
+			if (duration.length() != validFormatLen2) { // length=17
+				throw new ApplicationException("The format of the duration parameter ("+duration+") does not meet the required length of "+validFormatLen1+" or "+validFormatLen2+" characters.");
+			} else {
+				validLen = validFormatLen2;
+				validFormat = validFormat2;
+			}
+		} else {
+			validLen = validFormatLen1;
+			validFormat = validFormat1;
 		}
 		if (duration.indexOf(" ") != 3) {
 			throw new ApplicationException("The format of the duration parameter ("+duration+") is incorrect: space in wrong position.  It must be in the format of ["+validFormat+"].");
@@ -2100,18 +2115,13 @@ public class CommonUtils {
 		if (duration.lastIndexOf(".") != 12) {
 			throw new ApplicationException("The format of the duration parameter ("+duration+") is incorrect: period in wrong position.  It must be in the format of ["+validFormat+"].");
 		}
-		long days=0, hours=0, minutes=0, seconds=0, tenThousandthsSecond=0;
-		/* original
-		long DAY=24*60*60*1000;
-		long HOUR=60*60*1000;
-		long MINUTE=60*1000;
-		long SECOND=1000;
-		*/ 
-		/* 2015-07-06 mtinius - Original calculation was incorrect.  4 decimal places is ten thousandths of a second, not milliseconds. */
-		long DAY=24*60*60*10000;
-		long HOUR=60*60*10000;
-		long MINUTE=60*10000;
-		long SECOND=10000;
+		long days=0, hours=0, minutes=0, seconds=0, thousandthsSecond=0;
+
+		/* original */
+		long DAY=24*60*60*1000;		// 86400000
+		long HOUR=60*60*1000;		//  3600000
+		long MINUTE=60*1000;		//    60000
+		long SECOND=1000;			//     1000
 
 		// days
 		String d= duration.substring(0,3);
@@ -2125,12 +2135,12 @@ public class CommonUtils {
 		// seconds
 		String s = duration.substring(10,12);
 		seconds = Long.valueOf(s) * SECOND;
-		// The ten thousandths of a second in a date and time value
-		String ms = duration.substring(13,17);
-		tenThousandthsSecond = Long.valueOf(ms);
+		// The thousandths of a second in a date and time value
+		String ms = duration.substring(13,validLen);
+		thousandthsSecond = Long.valueOf(ms);
 		
 		// Sum it up
-		longDuration = days + hours + minutes + seconds + tenThousandthsSecond;
+		longDuration = days + hours + minutes + seconds + thousandthsSecond;
 		
 		return longDuration;
 	}
@@ -2350,6 +2360,7 @@ public class CommonUtils {
 		boolean areFilesTheSame = utilsObject.compareFiles(file1, file2);
 		System.out.println("areFilesTheSame = " + areFilesTheSame);
 */
+/* 
 		String dirpath = "C:/temp/PDTool/resources/vcs_initial/baseFolders";	
 	    boolean includeParentDir = false;
 	    boolean includeFiles = true;
@@ -2359,6 +2370,21 @@ public class CommonUtils {
 		File dir = new File(dirpath);
 		
 		File[] filelist = getFilesParent(dir, excludeFiles, includeParentDir, includeFiles, includeDirs, recursive);
+*/
+		Date startDate = new Date();
+		Format formatter;
+		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+		System.out.println("Begin Date="+formatter.format(startDate).toString());
+		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		System.out.println("Begin Date="+formatter.format(startDate).toString());
+
+		String duration = CommonUtils.getElapsedTime(startDate);
+		System.out.println(duration);
+		long val = getLongDuration(duration);
+		System.out.println(val);
+		val = getLongDuration("000 00:10:59.0102");
+		System.out.println(val);
+		
 	}
 
 }

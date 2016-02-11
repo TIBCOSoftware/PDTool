@@ -1,2 +1,0 @@
-OrderID|ProductID|Discount|OrderDate|CompanyName|CustomerContactFirstName|CustomerContactLastName|CustomerContactPhone|ProductName|TransactionID|DateRequired|DatePromised|ShipDate|SupplierID|SupplierName|SupplierContactName|SupplierPhoneNumber
-4|9|0.00|2003-02-04|Blackard Electronics|Jennifer|Smith|(650) 998-0332|Acme Super Memory|21|2003-02-07|2003-02-07|2003-02-06|1|Acme Parts|Joe Acme|(510) 776-2000

@@ -1,0 +1,75 @@
+######################################################################
+# (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# 
+# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
+# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
+# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
+# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
+# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
+# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
+# optional version number) are provided as a convenience, but are covered under the licensing for the 
+# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
+# through a valid license for that product.
+# 
+# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
+# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# 
+######################################################################
+# ----------------------------
+# UnitTest-Regression.dp
+# ----------------------------
+# ----------------------------
+# Parameter Specification:
+# ----------------------------
+# Param1=[PASS or FAIL]  :: Expected Regression Behavior.  Informs the script whether you expect the action to pass or fail.  Can be used for regression testing.
+# Param2=[TRUE or FALSE] :: Exit Orchestration script on error
+# Param3=Module Batch/Shell Script name to execute (no extension).  Extension is added by script.
+# Param4=Module Action to execute
+# Param5-ParamN=Specific space separated parameters for the action.  See Property Rules below.
+#
+# ----------------------------
+# Property File Rules:
+# ----------------------------
+#   1. All parameters are space separated.  Commas are not used.
+#         a. Any number of spaces may occur before or after any parameter and are trimmed.
+#
+#   2. Parameters should always be enclosed in double quotes according to these rules:
+#         a. when the parameter value contains a comma separated list:
+#                                    ANSWER: "ds1,ds2,ds3"
+#
+#         b. when the parameter value contain spaces or contains a dynamic variable that will resolve to spaces
+#            i.   There is no distinguising between Windows and Unix variables.   Both UNIX style variables ($VAR) and
+#                 and Windows style variables (%VAR%) are valid and will be parsed accordingly.
+#            ii.  All parameters that need to be grouped together that contain spaces are enclosed in double quotes. 
+#            iii. All paths that contain or will resolve to a space must be enclosed in double quotes.
+#                 An environment variable (e.g. $MODULE_HOME) gets resolved on invocation CisDeployTool. 
+#                       Paths containing spaces must be enclosed in double quotes:
+#                              ANSWER: "$MODULE_HOME/LabVCSModule.xml"
+#                       Given that MODULE_HOME=C:/dev/Cis Deploy Tool/resources/modules, CisDeployTool automatically resolves the variable to
+#                       "C:/dev/Cis Deploy Tool/resources/modules/LabVCSModule.xml".
+#
+#         c. when the parameter value is complex and the inner value contains spaces
+#			 i. In this example $PROJECT_HOME will resolve to a path that contains spaces such as C:/dev/Cis Deploy Tool
+#                       For example take the parameter -pkgfile $PROJECT_HOME$/bin/carfiles/testout.car.
+#                       Since the entire command contains a space it must be enclosed in double quotes:
+#                              ANSWER: "-pkgfile $PROJECT_HOME/bin/carfiles/testout.car"
+#
+#   3. A comment is designated by a # sign preceeding any other text.
+#         a. Comments may occur on any line and will not be processed.  
+#
+#   4. Blank lines are not processed 
+#         a. Blank lines are counted as lines for display purposes
+#         b. If the last line of the file is blank, it is not counted for display purposes.
+#   
+# -----------------------------------------
+# Begin task definition list:
+# -----------------------------------------
+
+# Perform a Functional Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Perform a Functional As Is Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+
+# Perform a Regression Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+

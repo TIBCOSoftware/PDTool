@@ -286,7 +286,7 @@ INSTRUCTIONS TO MODIFY:
 		</newFileParams>
 	</regressionTest>
 
-	<!-- SMOKE: Execute first test -->
+	<!-- SMOKE: Execute first test.  This is the default smoke test behavior for "functional". -->
 	<regressionTest>
 		<id>Test1.2_6.2</id>
 		<!-- MyProject1SubProj_SmokeTest_SQL$CUSTOM$.txt -->
@@ -297,13 +297,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>functional</testType>
 			<!-- Test run results are written to this log file. -->
@@ -338,7 +342,7 @@ INSTRUCTIONS TO MODIFY:
 		</testRunParams>
 	</regressionTest>
 
-	<!-- SMOKE: Execute first test -->
+	<!-- SMOKE: Execute first test.  This is the default smoke test behavior for "functional". -->
 	<regressionTest>
 		<id>Test1.2_7.0</id>
 		<!-- MyProject1SubProj_SmokeTest_SQL$CUSTOM$.txt -->
@@ -349,13 +353,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>functional</testType>
 			<!-- Test run results are written to this log file. -->
@@ -366,6 +374,118 @@ INSTRUCTIONS TO MODIFY:
 			<logAppend>no</logAppend>
 			<!-- Base directory for output data files  -->
 			<baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/$ENV_TYPE$_SmokeTest$CUSTOM$</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources FROM the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources>
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>MY DB</dsName>
+			</datasources>
+			<!-- Resource filter: This is a list of Catalog, Schema or Web Services resources for which to perform comparisons.  -->
+			<!-- Comment out to get all queries in the input file
+			<resources>
+				<resource>MY CATALOG.MY SCHEMA.*</resource>
+			</resources>
+			-->
+		</testRunParams>
+	</regressionTest>
+
+	<!-- SMOKE AS IS: Execute first test.  This is a new capability that allows executing SQL input file as is. -->
+	<regressionTest>
+		<id>Test1.3_6.2</id>
+		<!-- MyProject1SubProj_SmokeTest_SQL$CUSTOM$.txt -->
+		<inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+		<createNewFile>no</createNewFile>
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
+			-->
+			<testType>functional_as_is</testType>
+			<!-- Test run results are written to this log file. -->
+			<logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/$ENV_TYPE$_SmokeTestAsIs$CUSTOM$.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			<!-- Base directory for output data files  -->
+			<baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/$ENV_TYPE$_SmokeTestAsIs$CUSTOM$</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources FROM the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources>
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>MY DB</dsName>
+			</datasources>
+			<!-- Resource filter: This is a list of Catalog, Schema or Web Services resources for which to perform comparisons.  -->
+			<!-- Comment out to get all queries in the input file
+			<resources>
+				<resource>MY CATALOG.MY SCHEMA.*</resource>
+			</resources>
+			-->
+		</testRunParams>
+	</regressionTest>
+
+	<!-- SMOKE AS IS: Execute first test.  This is a new capability that allows executing SQL input file as is. -->
+	<regressionTest>
+		<id>Test1.3_7.0</id>
+		<!-- MyProject1SubProj_SmokeTest_SQL$CUSTOM$.txt -->
+		<inputFilePath>%REGRESSION_TEST_SQL%/%REGRESSION_TEST_SQL_FILE_NAME%</inputFilePath>
+		<createNewFile>no</createNewFile>
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
+			-->
+			<testType>functional_as_is</testType>
+			<!-- Test run results are written to this log file. -->
+			<logFilePath>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/$ENV_TYPE$_SmokeTestAsIs$CUSTOM$.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			<!-- Base directory for output data files  -->
+			<baseDir>%REGRESSION_TEST_OUTPUT%/MyProject1SubProj/$RELEASE_FOLDER1/$ENV_TYPE$_SmokeTestAsIs$CUSTOM$</baseDir>
 			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
 			<delimiter>PIPE</delimiter>
 			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
@@ -390,6 +510,7 @@ INSTRUCTIONS TO MODIFY:
 		</testRunParams>
 	</regressionTest>
 	
+	
 	<!-- REGRESSION: Execute first test -->
 	<regressionTest>
 		<id>Test2.1_6.2</id>
@@ -402,13 +523,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>regression</testType>
 			
@@ -457,13 +582,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>regression</testType>
 			
@@ -628,13 +757,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>performance</testType>
 
@@ -691,13 +824,17 @@ INSTRUCTIONS TO MODIFY:
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-				migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
-				regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality. 
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
-				performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>performance</testType>
 
@@ -907,17 +1044,20 @@ INSTRUCTIONS TO MODIFY:
 		<!-- SECURITY: Execute test -->
 		<testRunParams>
 			<!-- Type of test: [functional|migration|performance] 
-					functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
-									This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
-									If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-					migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
-									A second instance of this test is executed and the result files are compared for equality.
-					regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
-									A second instance of this test is executed and the result files are compared for equality. 
-									Note: functionally the same as migration but provided as a way of documenting the test type.								
-					performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
-									A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
-					security - A query is provided to test the security privileges for a given user.
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 				-->
 			<testType>security</testType>
 			<!-- Comparison results are written to this log file. -->
@@ -1074,17 +1214,20 @@ INSTRUCTIONS TO MODIFY:
 		<!-- SECURITY: Execute test -->
 		<testRunParams>
 			<!-- Type of test: [functional|migration|performance] 
-					functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
-									This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
-									If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
-					migration - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed so that a result set is returned and saved to a file.  
-									A second instance of this test is executed and the result files are compared for equality.
-					regression - A full query like "select * FROM {table} WHERE {WHERE_clause}" is executed so that a result set is returned and saved to a file.  
-									A second instance of this test is executed and the result files are compared for equality. 
-									Note: functionally the same as migration but provided as a way of documenting the test type.								
-					performance - A full query like "select * FROM <table> WHERE <WHERE_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
-									A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
-					security - A query is provided to test the security privileges for a given user.
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 				-->
 			<testType>security</testType>
 			<!-- Comparison results are written to this log file. -->

@@ -32,12 +32,13 @@ REM #
 REM #   DEPLOYMENT_PLAN - The name of the deployment plan such as:
 REM #         1. BusLineBusArea_1Smoke_gen.dp
 REM #         2. BusLineBusArea_1Smoke_exec.dp
-REM #         3. BusLineBusArea_2Regression_exec.dp
-REM #         4. BusLineBusArea_2Regression_compare.dp
-REM #         5. BusLineBusArea_3Performance_exec.dp
-REM #         6. BusLineBusArea_3Performance_compare.dp
-REM #         7. BusLineBusArea_4Security_gen.dp
-REM #         8. BusLineBusArea_4Security_exec.dp
+REM #         3. BusLineBusArea_1SmokeAsIs_exec.dp
+REM #         4. BusLineBusArea_2Regression_exec.dp
+REM #         5. BusLineBusArea_2Regression_compare.dp
+REM #         6. BusLineBusArea_3Performance_exec.dp
+REM #         7. BusLineBusArea_3Performance_compare.dp
+REM #         8. BusLineBusArea_4Security_gen.dp
+REM #         9. BusLineBusArea_4Security_exec.dp
 REM #
 REM #   CUSTOM - [optional] variable 
 REM #         1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.
@@ -229,6 +230,7 @@ if "!errorMsg!" NEQ "" goto USAGE
 REM # Determine what command is being executed based on the name in the deployment plan
 call :findString %DEPLOYMENT_PLAN% Smoke_gen 			FOUND_STR_SMOKE_GEN
 call :findString %DEPLOYMENT_PLAN% Smoke_exec 			FOUND_STR_SMOKE_EXEC
+call :findString %DEPLOYMENT_PLAN% SmokeAsIs_exec 		FOUND_STR_SMOKE_ASIS_EXEC
 call :findString %DEPLOYMENT_PLAN% Regression_exec 		FOUND_STR_REGRESSION_EXEC
 call :findString %DEPLOYMENT_PLAN% Regression_compare 	FOUND_STR_REGRESSION_COMP
 call :findString %DEPLOYMENT_PLAN% Performance_exec 	FOUND_STR_PERFORMANCE_EXEC
@@ -239,6 +241,7 @@ call :findString %DEPLOYMENT_PLAN% ServerAttribute 		FOUND_STR_SERVER_ATTRIBUTE
 if %DEBUG%==Y (
 	echo.[DEBUG] FOUND_STR_SMOKE_GEN=%FOUND_STR_SMOKE_GEN%
 	echo.[DEBUG] FOUND_STR_SMOKE_EXEC=%FOUND_STR_SMOKE_EXEC%
+	echo.[DEBUG] FOUND_STR_SMOKE_ASIS_EXEC=%FOUND_STR_SMOKE_ASIS_EXEC%
 	echo.[DEBUG] FOUND_STR_REGRESSION_EXEC=%FOUND_STR_REGRESSION_EXEC%
 	echo.[DEBUG] FOUND_STR_REGRESSION_COMP=%FOUND_STR_REGRESSION_COMP%
 	echo.[DEBUG] FOUND_STR_PERFORMANCE_EXEC=%FOUND_STR_PERFORMANCE_EXEC%
@@ -258,6 +261,10 @@ if %FOUND_STR_SMOKE_GEN%==1 (
 if %FOUND_STR_SMOKE_EXEC%==1 (
 	set REGRESSION_TEST_TYPE=Smoke Test Execute
 	call :replace _1Smoke_exec.dp          "" "%BusLineBusAreaSubjArea%" BusLineBusAreaSubjArea
+)
+if %FOUND_STR_SMOKE_ASIS_EXEC%==1 (
+	set REGRESSION_TEST_TYPE=Smoke As Is Test Execute
+	call :replace _1SmokeAsIs_exec.dp      "" "%BusLineBusAreaSubjArea%" BusLineBusAreaSubjArea
 )
 if %FOUND_STR_REGRESSION_EXEC%==1 (
 	set REGRESSION_TEST_TYPE=Regression Test Execute
@@ -296,6 +303,7 @@ if not defined BusLineBusAreaSubjArea (
 REM # Determine whether to rename the output release folder based on the type of command being executed
 SET RENAME_FOLDER_CMD=FALSE
 if %FOUND_STR_SMOKE_EXEC%==1 		SET RENAME_FOLDER_CMD=TRUE
+if %FOUND_STR_SMOKE_ASIS_EXEC%==1 	SET RENAME_FOLDER_CMD=TRUE
 if %FOUND_STR_REGRESSION_EXEC%==1 	SET RENAME_FOLDER_CMD=TRUE
 if %FOUND_STR_PERFORMANCE_EXEC%==1 	SET RENAME_FOLDER_CMD=TRUE
 if %FOUND_STR_SECURITY_EXEC%==1 	SET RENAME_FOLDER_CMD=TRUE
@@ -333,12 +341,14 @@ REM # Construct the SQL Query Input File Name
 SET REGRESSION_TEST_SQL_FILE_NAME=
 if %FOUND_STR_SMOKE_GEN%==1 		SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_SmokeTest_SQL%CUSTOM%.txt
 if %FOUND_STR_SMOKE_EXEC%==1 		SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_SmokeTest_SQL%CUSTOM%.txt
+if %FOUND_STR_SMOKE_ASIS_EXEC%==1 	SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_SmokeTest_SQL%CUSTOM%.txt
 if %FOUND_STR_REGRESSION_EXEC%==1 	SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_RegressionTest_SQL%CUSTOM%.txt
 if %FOUND_STR_REGRESSION_COMP%==1 	SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_RegressionTest_SQL%CUSTOM%.txt
 if %FOUND_STR_PERFORMANCE_EXEC%==1 	SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_PerfTest_SQL%CUSTOM%.txt
 if %FOUND_STR_PERFORMANCE_COMP%==1 	SET REGRESSION_TEST_SQL_FILE_NAME=%BusLineBusAreaSubjArea%_PerfTest_SQL%CUSTOM%.txt
 REM # Check whether executing Smoke, Regression or Performance test and validate tha the SQL input file exists.
 if %FOUND_STR_SMOKE_EXEC%==1 		goto SQL_INPUT_FILE_VALIDATE
+if %FOUND_STR_SMOKE_ASIS_EXEC%==1 	goto SQL_INPUT_FILE_VALIDATE
 if %FOUND_STR_REGRESSION_EXEC%==1  	goto SQL_INPUT_FILE_VALIDATE
 if %FOUND_STR_REGRESSION_COMP%==1  	goto SQL_INPUT_FILE_VALIDATE
 if %FOUND_STR_PERFORMANCE_EXEC%==1  goto SQL_INPUT_FILE_VALIDATE

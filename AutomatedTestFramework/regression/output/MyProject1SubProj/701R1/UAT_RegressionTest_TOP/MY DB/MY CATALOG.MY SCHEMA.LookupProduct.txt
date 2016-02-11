@@ -1,2 +1,0 @@
-ProductName|ProductID|ProductDescription
-Maxtific 40GB ATA133 7200|1|Maxtific Storage  40 GB

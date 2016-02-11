@@ -1215,6 +1215,11 @@ if "%VALID_PDTOOL_SUBSTITUTE_DRIVE%"=="N" (
    echo. PDTool network substitute drive letter.
    echo.    Objective: Used to shorten the overall path to workspace folder mainly for TFS.
    echo.
+   echo.         Note: If PDTool installation is executed more than once, it will permanently map drive letters to the PDTool location.
+   echo.               It may be necessary to unmap a drive letter and free it up before proceeding with installation again.
+   echo.               To remove a drive manually execute this command from a command window: net use [drive_letter]: /DELETE        e.g. net use L: /DELETE
+   echo.               Restart the installation so that PDTool will recognize the freed up drive letter.
+   echo.
    set /P PDTOOL_SUBSTITUTE_DRIVE_DECISION=Do you want to use the substitute drive letter="%PDTOOL_SUBSTITUTE_DRIVE%"  [Y or N]:
    call:UCase PDTOOL_SUBSTITUTE_DRIVE_DECISION PDTOOL_SUBSTITUTE_DRIVE_DECISION
    if "%PDTOOL_SUBSTITUTE_DRIVE_DECISION%"=="N" (
@@ -1591,11 +1596,17 @@ if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 REM #---------------------------------------
 REM # Setup VCS [SVN,TFS,GIT,P4,CVS]
 REM #---------------------------------------
-if "%I_VCS_BASE_TYPE%"=="SVN" set SVN_HOME=
-if "%I_VCS_BASE_TYPE%"=="TFS" set TFS_HOME=
-if "%I_VCS_BASE_TYPE%"=="GIT" set GIT_HOME=
-if "%I_VCS_BASE_TYPE%"=="P4"  set P4_HOME=
-if "%I_VCS_BASE_TYPE%"=="CVS" set CVS_HOME=
+set VCS_HOME=!I_VCS_HOME:"=!
+set SVN_HOME=
+set TFS_HOME=
+set GIT_HOME=
+set P4_HOME=
+set CVS_HOME=
+if "%I_VCS_BASE_TYPE%"=="SVN" set SVN_HOME=%VCS_HOME%
+if "%I_VCS_BASE_TYPE%"=="TFS" set TFS_HOME=%VCS_HOME%
+if "%I_VCS_BASE_TYPE%"=="GIT" set GIT_HOME=%VCS_HOME%
+if "%I_VCS_BASE_TYPE%"=="P4"  set P4_HOME=%VCS_HOME%
+if "%I_VCS_BASE_TYPE%"=="CVS" set CVS_HOME=%VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="" goto INSTALLER_MODIFY_SET_VARS
 
 REM #---------------------------------------

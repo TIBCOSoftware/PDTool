@@ -108,6 +108,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -115,6 +118,7 @@
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
 				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>functional</testType>
 
@@ -185,7 +189,187 @@
 		</testRunParams>
 
 	</regressionTest>
+
+	<regressionTest>
+		<id>Test1.1</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>yes</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
+			-->
+			<testType>functional_as_is</testType>
+
+			<!-- Test run results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/FunctionalAsIsTest.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>c:/tmp/pdtool/functestasis</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+			<!-- (Optional) The number of threads to create when doing performance testing. -->
+			<perfTestThreads>10</perfTestThreads>
+			<!-- (Optional) The duration in seconds to execute the performance test for. -->
+			<perfTestDuration>60</perfTestDuration>
+			<!-- (Optional) The number of seconds to sleep in between printing stats when executing the performance test. -->
+			<perfTestSleepPrint>5</perfTestSleepPrint>
+			<!-- (Optional) The number of seconds to sleep in between query executions when executing the performance test. -->
+			<perfTestSleepExec>1</perfTestSleepExec>
+			
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>examplesWS</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
+					-->
+			<resources/>		
+		</testRunParams>
+	</regressionTest>
 	
+	<regressionTest>
+		<id>Test1.1</id>
+		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
+		<createNewFile>yes</createNewFile>
+			
+		<testRunParams>
+			<!-- Type of test: [functional|migration|performance] 
+				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
+				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality.
+				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
+								A second instance of this test is executed and the result files are compared for equality. 
+								Note: functionally the same as migration but provided as a way of documenting the test type.								
+				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
+								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
+			-->
+			<testType>regression</testType>
+
+			<!-- Test run results are written to this log file. -->
+			<logFilePath>C:/tmp/pdtool/RegressionTest.log</logFilePath>
+			<!-- Log file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<logDelimiter>PIPE</logDelimiter>
+			<!-- Append results to existing log (yes) or overwrite existing log (no) -->
+			<logAppend>no</logAppend>
+			
+			<!-- Base directory for output data files  -->
+			<baseDir>c:/tmp/pdtool/regressiontest</baseDir>
+			<!-- Output data file delimiter [COMMA\,\PIPE\|\TAB\TILDE\~] -->
+			<delimiter>PIPE</delimiter>
+			<!-- Print output: [verbose,summary,silent] verbose=print summary and results, summary=print query context, silent=nothing is printed to the command line. -->
+			<printOutput>summary</printOutput>
+			<!-- (Optional) The number of threads to create when doing performance testing. -->
+			<perfTestThreads>10</perfTestThreads>
+			<!-- (Optional) The duration in seconds to execute the performance test for. -->
+			<perfTestDuration>60</perfTestDuration>
+			<!-- (Optional) The number of seconds to sleep in between printing stats when executing the performance test. -->
+			<perfTestSleepPrint>5</perfTestSleepPrint>
+			<!-- (Optional) The number of seconds to sleep in between query executions when executing the performance test. -->
+			<perfTestSleepExec>1</perfTestSleepExec>
+			
+			<!-- Category filter:  Turn of/off the execution of an entire category. -->
+			<runQueries>yes</runQueries>
+			<runProcedures>yes</runProcedures>
+			<runWS>yes</runWS>
+			<!--  If Yes, run tests for all data sources from the input file, datasources below are ignored -->
+			<useAllDatasources>no</useAllDatasources> 
+			<!-- Datasource filter: published datasources for which tests are run for JDBC and Web Services datasources. -->
+			<datasources>
+				<dsName>My Orders</dsName>
+				<dsName>system</dsName>
+				<dsName>MYTEST</dsName>
+				<dsName>examplesWS</dsName>
+				<dsName>testWebService</dsName>
+				<dsName>testWebService_Params_bare</dsName>
+				<dsName>testWebService_Params_wrapped</dsName>
+				<dsName>testWebService_NoParams_bare</dsName>
+				<dsName>testWebService_NoParams_wrapped</dsName>
+			</datasources>	
+			
+			<!-- Resource filter: This is a list of resources for which to perform comparisons.  
+					This is a filter that can be fine-tuned for one or more resources.  If left empty then all resources are compared. 
+					A fully qualified resource may be used.  The resource validation is case insensitive.
+					A single wildcard may be used before "*.resource", after "resource.*" or in the middle "folder.*.resource". 
+					Overlapping resource wild cards will use the highest level specified in this list. 
+					It may be used at the catalog or schema level to denote that all resources under that level should be compared.  
+					For web services, use the CIS path starting after in the Web Services but excluding [/services/webservices]. 
+					   e.g. New Composite Web Service: Folder1.Folder2.WebServiceName.OperationMethod
+					   e.g. Legacy Web Service: Folder1.Folder2.WebServiceName.ServiceName.operations.OperationMethod
+					Examples of filters for database tables and procedures [the database name is not included in the resource filter]:
+						<resource>SCH1.*</resource>
+						<resource>CAT1.*.customers</resource>
+						<resource>ViewSales</resource>
+						<resource>LookupProduct</resource>
+					
+					Examples of filters for web services [the web service name is included in the resource filter]:
+						<resource>testWebService</resource> 				<- this is a legacy web service at the root of the web service folder
+						<resource>testWebService_NoParams_bare</resource>	<- new composite web service at the root of the web service folder
+						<resource>folder1.*</resource>						<- new composite web service located in the folder1 web service folder		
+						<resource>folder2.testWebService*</resource>		<- new composite web service located in folder2 and matching a wild card starting with testWebService	
+					-->
+			<resources/>
+		</testRunParams>
+	</regressionTest>
+
 	<regressionTest>
 		<id>Test2.1</id>
 		<inputFilePath>C:\\tmp\\pdtool\\regression1.inp</inputFilePath>
@@ -196,6 +380,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -203,6 +390,7 @@
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
 				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>migration</testType>
 			
@@ -276,6 +464,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -283,6 +474,7 @@
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
 				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>migration</testType>
 			
@@ -416,7 +608,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 			
 		</compareLogs>
 				
@@ -432,6 +624,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -439,6 +634,7 @@
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
 				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>performance</testType>
 
@@ -527,6 +723,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -534,6 +733,7 @@
 								Note: functionally the same as migration but provided as a way of documenting the test type.								
 				performance - A full query like "select * from <table> where <where_clause>" is executed repeatedly on multiple threads for a specified duration of time to capture results.	
 								A performance test does not write results to an output file.  It is only concerned with gathering statistics on executions.	
+				security - A query is provided to test the security privileges for a given user.
 			-->
 			<testType>performance</testType>
 
@@ -628,7 +828,7 @@
 			<logDelimiter2>PIPE</logDelimiter2>
 
 			<!-- Default duration delta for all queries.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-			<durationDelta>000 00:00:01.0000</durationDelta>
+			<durationDelta>000 00:00:01.000</durationDelta>
 		</compareLogs>
 	</regressionTest>
 
@@ -762,6 +962,9 @@
 				functional - Only execute the default query against a table or procedure.  For a web service it is whatever input is provided.  
 								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
 							 	If the input file contains a full query, it will be rewritten using the FROM clause to use the default queries described in the <newFileParams> section
+				functional_as_is - Execute the full query, procedure or a web service "as is" with whatever input is provided in the input file.  
+								This test only cares about whether the resources executes or not.  Results may be output if the logFilePath contains a file path.
+							 	Queries and Procedures are NOT rewritten using the FROM clause to use the default queries described in the "newFileParams" section
 				migration - A full query like "select * from <table> where <where_clause>" is executed so that a result set is returned and saved to a file.  
 								A second instance of this test is executed and the result files are compared for equality.
 				regression - A full query like "select * from {table} where {where_clause}" is executed so that a result set is returned and saved to a file.  
@@ -890,7 +1093,7 @@
       <datasource>MYTEST</datasource>
       <query>SELECT * FROM SCH1.ViewOrder</query>
       <!-- Duration delta for this query.  When the difference between duration in file2 and file1 is greater than the default duration then it is an error (outside acceptable range). -->
-      <durationDelta>000 00:00:00.0005</durationDelta>
+      <durationDelta>000 00:00:00.005</durationDelta>
     </regressionQuery>
     <regressionQuery>
       <datasource>MYTEST</datasource>
@@ -1140,9 +1343,9 @@
 		
 		<!-- List of queries, procedures or web services to be used for security testing.  Only one query per object is needed.  Typically a select count(1) as a functional test is all that is needed to test security. -->
 		<regressionSecurityQueries>
-			<regressionSecurityQuery><id>rsq1</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.customers</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
-			<regressionSecurityQuery><id>rsq2</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.customers</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
-			<regressionSecurityQuery><id>rsq3</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM Common.Common.customers</query><resourcePath>/services/databases/TEST00/Common/Common/customers</resourcePath><resourceType>TABLE</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq1</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.customers</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq2</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.customers</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
+			<regressionSecurityQuery><id>rsq3</id><datasource>TEST00</datasource><queryType>QUERY</queryType><query>SELECT count(1) cnt FROM Common.Common.customers</query><resourcePath>/services/databases/TEST00/Common/Common/customers</resourcePath><resourceType>LINK</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq4</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT1.SCH1.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT1/SCH1/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq5</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM CAT2.SCH2.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/CAT2/SCH2/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>
 			<regressionSecurityQuery><id>rsq6</id><datasource>TEST00</datasource><queryType>PROCEDURE</queryType><query>SELECT count(1) cnt FROM Common.Common.getCustomerById( 1 )</query><resourcePath>/services/databases/TEST00/Common/Common/getCustomerById</resourcePath><resourceType>PROCEDURE</resourceType></regressionSecurityQuery>

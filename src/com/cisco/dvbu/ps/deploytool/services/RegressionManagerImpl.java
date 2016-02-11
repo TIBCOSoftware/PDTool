@@ -123,6 +123,7 @@ public class RegressionManagerImpl implements RegressionManager
 
 	// Test Types from Regression XML schema
     static final String FUNCTIONAL = "functional";
+    static final String FUNCTIONAL_AS_IS = "functional_as_is";
     static final String MIGRATION = "migration";
     static final String REGRESSION = "regression";
     static final String PERFORMANCE = "performance";
@@ -357,7 +358,7 @@ public class RegressionManagerImpl implements RegressionManager
 					String testType = CommonUtils.extractVariable(prefix, this.regressionConfig.getTestRunParams().getTestType(), propertyFile, false);
 					
 					// Execute the functional or migration test if the test type is set to "functional" or "migration"
-					if (FUNCTIONAL.equalsIgnoreCase(testType) || MIGRATION.equalsIgnoreCase(testType) || REGRESSION.equalsIgnoreCase(testType)) 
+					if (FUNCTIONAL.equalsIgnoreCase(testType) || FUNCTIONAL_AS_IS.equalsIgnoreCase(testType) || MIGRATION.equalsIgnoreCase(testType) || REGRESSION.equalsIgnoreCase(testType)) 
 					{
 						// Set the Module Action Objective
 						s1 = "EXECUTE_"+((testType == null) ? "no_testType" : testType.toUpperCase());
@@ -574,8 +575,8 @@ public class RegressionManagerImpl implements RegressionManager
 			        // Write out the header log entry
 					/*
 					 * Result,  CompareStartTime,         Database,  URL,              Type,         File1              File2             Message
-					 * SUCCESS| 2012-05-09 01:00:00.0000| MYDB|      CAT.SCHEMA.V1|    TABLE|        C:\tmp\51\V1.txt|  C:\tmp\61\V1.txt|
-					 * FAILURE| 2012-05-09 01:00:00.0000| MYDB|      CAT.SCHEMA.P1|    PROCEDURE|    C:\tmp\51\P1.txt|  C:\tmp\61\P1.txt|
+					 * SUCCESS| 2012-05-09 01:00:00.000| MYDB|      CAT.SCHEMA.V1|    TABLE|        C:\tmp\51\V1.txt|  C:\tmp\61\V1.txt|
+					 * FAILURE| 2012-05-09 01:00:00.000| MYDB|      CAT.SCHEMA.P1|    PROCEDURE|    C:\tmp\51\P1.txt|  C:\tmp\61\P1.txt|
 					 */
 			        String padChar = " "; // pad characters
 			        String content = 
@@ -630,7 +631,7 @@ public class RegressionManagerImpl implements RegressionManager
 			        	// Construct the path and remove any double quotes from the path
 			        	String filePath1 = (baseDir1 + "/" + database + "/" + outputFilename).replaceAll("//", "/").replaceAll("\"", "");
 			        	String filePath2 = (baseDir2 + "/" + database + "/" + outputFilename).replaceAll("//", "/").replaceAll("\"", "");
-				        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+				        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 				        Date beginDate = new Date();
 			        	String executionStartTime = formatter.format(beginDate);
 
@@ -932,27 +933,27 @@ public class RegressionManagerImpl implements RegressionManager
 Query Execution Log files look like this:
 ------------------------------------------------
 Result |ExecutionStartTime     |       Duration|          Rows|               Database|                     Query|                                                                Type|      OutputFile|                                       Message
-SUCCESS| 2012-06-03 15:08:38.0416| 000 00:00:00.0016| 9|                  MYTEST|                       SELECT * FROM ViewSales WHERE ReorderLevel <= 3|                      QUERY|     C:/tmp/cis61/MYTEST/ViewSales.txt|                
-SUCCESS| 2012-06-03 15:08:38.0432| 000 00:00:00.0031| 50|                 MYTEST|                       SELECT * FROM SCH1.ViewOrder|                                         QUERY|     C:/tmp/cis61/MYTEST/SCH1.ViewOrder.txt|           
-SUCCESS| 2012-06-03 15:08:38.0463| 000 00:00:00.0015| 14|                 MYTEST|                       SELECT * FROM SCH1.ViewSales WHERE CategoryID = 7|                    QUERY|     C:/tmp/cis61/MYTEST/SCH1.ViewSales.txt|           
-SUCCESS| 2012-06-03 15:08:38.0478| 000 00:00:00.0016| 23|                 MYTEST|                       SELECT * FROM CAT1.SCH1.ViewSales where Discount > 0|                 QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH1.ViewSales.txt|      
-SUCCESS| 2012-06-03 15:08:38.0494| 000 00:00:00.0000| 4|                  MYTEST|                       SELECT * FROM CAT1.SCH2.ViewSales WHERE ProductName like 'Mega%'|     QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH2.ViewSales.txt|      
-SUCCESS| 2012-06-03 15:08:38.0510| 000 00:00:00.0015| 35|                 MYTEST|                       SELECT * FROM CAT1.SCH2.ViewSupplier|                                 QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH2.ViewSupplier.txt|   
-SKIPPED| 2012-06-03 15:08:38.0525| 000 00:00:00.0000| 0|                  MYTEST|                       SELECT * FROM getProductName(1)|                                      PROCEDURE| C:/tmp/cis61/MYTEST/getProductName.txt|           
-SUCCESS| 2012-06-03 15:08:38.0525| 000 00:00:00.0016| 1|                  MYTEST|                       SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1 )|                PROCEDURE| C:/tmp/cis61/MYTEST/CAT1.SCH1.LookupProduct.txt|  
-SUCCESS| 2012-06-03 15:08:38.0541| 000 00:00:00.0000| 1|                  MYTEST|                       SELECT count(*) cnt FROM CAT1.SCH2.LookupProduct( 1 )|                PROCEDURE| C:/tmp/cis61/MYTEST/CAT1.SCH2.LookupProduct.txt|  
-SUCCESS| 2012-06-03 15:08:38.0541| 000 00:00:00.0015| 1|                  MYTEST|                       SELECT count(*) cnt FROM SCH1.LookupProduct( 1 )|                     PROCEDURE| C:/tmp/cis61/MYTEST/SCH1.LookupProduct.txt|       
-SUCCESS| 2012-06-03 15:08:38.0556| 000 00:00:00.0000| 1|                  MYTEST|                       SELECT count(*) cnt FROM LookupProduct( 1 )|                          PROCEDURE| C:/tmp/cis61/MYTEST/LookupProduct.txt|            
-SKIPPED| 2012-06-03 15:08:38.0556| 000 00:00:00.0016| 0|                  testWebService00|             /services/testWebService00/testService/testPort.ws/testprocecho|      WS|        C:/tmp/cis61/testWebService00/services.testWebService00.testService.testPort.ws.testprocecho.txt|
-SKIPPED| 2012-06-03 15:08:38.0572| 000 00:00:00.0000| 0|                  testWebService00|             /services/testWebService00/testService/testPort.ws/testprocsimple|    WS|        C:/tmp/cis61/testWebService00/services.testWebService00.testService.testPort.ws.testprocsimple.txt|
+SUCCESS| 2012-06-03 15:08:38.416| 000 00:00:00.016| 9|                  MYTEST|                       SELECT * FROM ViewSales WHERE ReorderLevel <= 3|                      QUERY|     C:/tmp/cis61/MYTEST/ViewSales.txt|                
+SUCCESS| 2012-06-03 15:08:38.432| 000 00:00:00.031| 50|                 MYTEST|                       SELECT * FROM SCH1.ViewOrder|                                         QUERY|     C:/tmp/cis61/MYTEST/SCH1.ViewOrder.txt|           
+SUCCESS| 2012-06-03 15:08:38.463| 000 00:00:00.015| 14|                 MYTEST|                       SELECT * FROM SCH1.ViewSales WHERE CategoryID = 7|                    QUERY|     C:/tmp/cis61/MYTEST/SCH1.ViewSales.txt|           
+SUCCESS| 2012-06-03 15:08:38.478| 000 00:00:00.016| 23|                 MYTEST|                       SELECT * FROM CAT1.SCH1.ViewSales where Discount > 0|                 QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH1.ViewSales.txt|      
+SUCCESS| 2012-06-03 15:08:38.494| 000 00:00:00.000| 4|                  MYTEST|                       SELECT * FROM CAT1.SCH2.ViewSales WHERE ProductName like 'Mega%'|     QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH2.ViewSales.txt|      
+SUCCESS| 2012-06-03 15:08:38.510| 000 00:00:00.015| 35|                 MYTEST|                       SELECT * FROM CAT1.SCH2.ViewSupplier|                                 QUERY|     C:/tmp/cis61/MYTEST/CAT1.SCH2.ViewSupplier.txt|   
+SKIPPED| 2012-06-03 15:08:38.525| 000 00:00:00.000| 0|                  MYTEST|                       SELECT * FROM getProductName(1)|                                      PROCEDURE| C:/tmp/cis61/MYTEST/getProductName.txt|           
+SUCCESS| 2012-06-03 15:08:38.525| 000 00:00:00.016| 1|                  MYTEST|                       SELECT count(*) cnt FROM CAT1.SCH1.LookupProduct( 1 )|                PROCEDURE| C:/tmp/cis61/MYTEST/CAT1.SCH1.LookupProduct.txt|  
+SUCCESS| 2012-06-03 15:08:38.541| 000 00:00:00.000| 1|                  MYTEST|                       SELECT count(*) cnt FROM CAT1.SCH2.LookupProduct( 1 )|                PROCEDURE| C:/tmp/cis61/MYTEST/CAT1.SCH2.LookupProduct.txt|  
+SUCCESS| 2012-06-03 15:08:38.541| 000 00:00:00.015| 1|                  MYTEST|                       SELECT count(*) cnt FROM SCH1.LookupProduct( 1 )|                     PROCEDURE| C:/tmp/cis61/MYTEST/SCH1.LookupProduct.txt|       
+SUCCESS| 2012-06-03 15:08:38.556| 000 00:00:00.000| 1|                  MYTEST|                       SELECT count(*) cnt FROM LookupProduct( 1 )|                          PROCEDURE| C:/tmp/cis61/MYTEST/LookupProduct.txt|            
+SKIPPED| 2012-06-03 15:08:38.556| 000 00:00:00.016| 0|                  testWebService00|             /services/testWebService00/testService/testPort.ws/testprocecho|      WS|        C:/tmp/cis61/testWebService00/services.testWebService00.testService.testPort.ws.testprocecho.txt|
+SKIPPED| 2012-06-03 15:08:38.572| 000 00:00:00.000| 0|                  testWebService00|             /services/testWebService00/testService/testPort.ws/testprocsimple|    WS|        C:/tmp/cis61/testWebService00/services.testWebService00.testService.testPort.ws.testprocsimple.txt|
   ERROR| ....
 
 ------------------------------------------------
 Performance Log files look like this:
 ------------------------------------------------
 Result |  ExecutionStartTime|       Duration|          Rows|               Database|                     Query|                                                                Type|      OutputFile|                                       Message
-SKIPPED|2012-06-08 09:22:25.0322  |000 00:00:00.0016   |0                   |MYTEST                        |SELECT * FROM CAT1.SCH2.ViewSupplier                                  |QUERY      |                                                  |  ::Reason: type=QUERY  runQueries=false  databaseMatch=true  resourceMatch=true
-SUCCESS|2012-06-08 09:22:25.0338  |000 00:00:15.0017   |1                   |MYTEST                        |{ CALL SCH1.LookupProduct( 3 ) }                                      |PROCEDURE  |                                                  |
+SKIPPED|2012-06-08 09:22:25.322  |000 00:00:00.016   |0                   |MYTEST                        |SELECT * FROM CAT1.SCH2.ViewSupplier                                  |QUERY      |                                                  |  ::Reason: type=QUERY  runQueries=false  databaseMatch=true  resourceMatch=true
+SUCCESS|2012-06-08 09:22:25.338  |000 00:00:15.017   |1                   |MYTEST                        |{ CALL SCH1.LookupProduct( 3 ) }                                      |PROCEDURE  |                                                  |
  HEADER|Threads=10  |Duration (s)=10  |Print Sleep (s)=5  |Exec Sleep (s)=0  ||||
  HEADER|Execs       |Execs/sec   |Rows/exec   |Latency (ms) |1st row (ms) |Duration (ms) ||
  DETAIL|12483       |2498.29     |1.00        |3.99         |0.44         |4995.00             ||

@@ -71,6 +71,11 @@ PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "regression01"   	"$MODULE_HOME
 PASS	TRUE   ExecuteAction      createRegressionInputFile   $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml"	"$MODULE_HOME/servers.xml"
 # Perform a Functional Test
 PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+# Perform a Functional As Is Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
+
+# Perform a Regression Test
+PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test1.2		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"
 
 # Perform a Migration Test for cis51
 PASS	TRUE   ExecuteAction      executeRegressionTest       $SERVERID    	Test2.1		"$MODULE_HOME/RegressionModule.xml" "$MODULE_HOME/servers.xml"

@@ -109,8 +109,13 @@ updateServerAttributes localhost " * " resources/modules/getServerAttributeModul
    Set break points in the code
    click on the Debug icon
    
+Examples-HTTPS:
+---------------
+generatePrivilegesXML	localhost9400https "/shared/test00"	 "resources/modules/getPrivilegeModule2.xml" "resources/modules/servers.xml" "ALL" "GROUP USER NONSYSTEM PARENT CHILD" "composite"
+generateServerAttributesXML  localhost9400https  "/" "resources/modules/generated/getServerAttributeModule.xml" "resources/modules/servers.xml" "READ_WRITE"
+
    
-Examples:
+Examples-HTTP:
 ------------
 generateDataSourcesXML localhost /shared/test00    resources/modules/DataSources1.xml resources/modules/servers.xml
 generateServerAttributesXML  localhost9440 "/" resources/modules/getServerAttributeModule.xml resources/modules/servers.xml "READ_WRITE"

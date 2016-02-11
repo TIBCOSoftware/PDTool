@@ -501,28 +501,30 @@
 	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
 	<xsl:template match="/">
 		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+		<xsl:if test="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry/resource:privileges/resource:privilege">
 		  <xsl:for-each select="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry">
 			<xsl:variable name="count" select="position()"/>
-		    <resourcePrivilege>
-		        <id>priv<xsl:value-of select="$count"/></id>
-		        <resourcePath><xsl:value-of select="resource:path"/></resourcePath>
-		        <resourceType><xsl:value-of select="resource:type"/></resourceType>
-		        <xsl:for-each select="resource:privileges/resource:privilege">
-			        <privilege>
-			            <name><xsl:value-of select="resource:name"/></name>
-			            <nameType><xsl:value-of select="resource:nameType"/></nameType>
-			            <domain><xsl:value-of select="resource:domain"/></domain>
-			            <privileges><xsl:value-of select="resource:privs"/></privileges>
-					    <xsl:if test="resource:combinedPrivs">
+			<resourcePrivilege>
+				<id>priv<xsl:value-of select="$count"/></id>
+				<resourcePath><xsl:value-of select="resource:path"/></resourcePath>
+				<resourceType><xsl:value-of select="resource:type"/></resourceType>
+				<xsl:for-each select="resource:privileges/resource:privilege">
+					<privilege>
+						<name><xsl:value-of select="resource:name"/></name>
+						<nameType><xsl:value-of select="resource:nameType"/></nameType>
+						<domain><xsl:value-of select="resource:domain"/></domain>
+						<privileges><xsl:value-of select="resource:privs"/></privileges>
+						<xsl:if test="resource:combinedPrivs">
 							<combinedPrivileges><xsl:value-of select="resource:combinedPrivs"/></combinedPrivileges>
-					    </xsl:if>
-					    <xsl:if test="resource:inheritedPrivs">
+						</xsl:if>
+						<xsl:if test="resource:inheritedPrivs">
 							<inheritedPrivileges><xsl:value-of select="resource:inheritedPrivs"/></inheritedPrivileges>
-					    </xsl:if>
-			       </privilege>
-			    </xsl:for-each>
-		    </resourcePrivilege>
+						</xsl:if>
+				   </privilege>
+				</xsl:for-each>
+			</resourcePrivilege>
 		  </xsl:for-each>
+		</xsl:if> 
 		</p1:PrivilegeModule>
 	</xsl:template>
 </xsl:stylesheet>
