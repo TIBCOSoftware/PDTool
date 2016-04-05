@@ -186,6 +186,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 		<xs:enumeration value="TABLE"/>
 		<xs:enumeration value="TREE"/>
 		<xs:enumeration value="TRIGGER"/>
+		<xs:enumeration value="POLICY"/>
 	</xs:restriction>
   </xs:simpleType>
 <!-- END: Generic ResourceTypeSimpleType Complex Type Definition-->
@@ -1272,10 +1273,12 @@ This software is released AS-IS!. Support for this software is not covered by st
 		    </xs:element>
 			<xs:element name="resourcePath" type="xs:string"/>
 			<xs:element name="resourceType" minOccurs="0" type="ns:ResourceTypeSimpleType"/>
+			<xs:element name="resourceOwner" type="ns:ResourceOwnerType" minOccurs="0" maxOccurs="1"/>
+
 			<xs:element name="recurse" minOccurs="0" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						Recurse informs how to process the resource children
+						Recurse=[true|false] informs how to process privileges for the resource children
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>	
@@ -1308,6 +1311,48 @@ This software is released AS-IS!. Support for this software is not covered by st
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:complexType name="ResourceOwnerType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A grouping of columns related to the resource owner.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="resourceOwnerApply" minOccurs="1" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						resourceOwnerApply=[true|false] informs whether to apply resource ownership or not.
+						This provides the ability to have a single instantiation of resource ownership but
+						decide whether to apply it or not based on the use of variables.  This way the user
+						can decide to apply resource ownership in some CIS environments and not others. For
+						example, you might want to apply privileges in DEV but you don't want to wipe out
+						the existing resource ownership.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+			<xs:element name="resourceOwnerName" type="xs:string" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						resourceOwnerName is the name of the CIS user who will take ownership of the resource.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="resourceOwnerDomain" type="xs:string" minOccurs="1">
+					<xs:annotation>
+					<xs:documentation xml:lang="en">
+						resourceOwnerDomain is the CIS domain of the resource owner name who will take ownership of the resource.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="resourceOwnerRecurse" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						resourceOwnerRecurse=[true|false] informs how to process the ownership of the resource children
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>	
+		</xs:sequence>
+	</xs:complexType>
 
 	<xs:simpleType name="PrivilegeModeValidationList">
 	  	<xs:annotation>

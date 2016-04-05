@@ -17,6 +17,7 @@
  */
 package com.cisco.dvbu.ps.deploytool.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -44,6 +45,7 @@ import com.cisco.dvbu.ps.deploytool.modules.PrivilegeModule;
 import com.cisco.dvbu.ps.deploytool.modules.PrivilegeNameTypeValidationList;
 import com.cisco.dvbu.ps.deploytool.modules.PrivilegeType;
 import com.cisco.dvbu.ps.deploytool.modules.PrivilegeValidationList;
+import com.cisco.dvbu.ps.deploytool.modules.ResourceOwnerType;
 import com.cisco.dvbu.ps.deploytool.modules.ResourceTypeSimpleType;
 import com.compositesw.services.system.admin.resource.Column;
 import com.compositesw.services.system.admin.resource.ColumnList;
@@ -153,7 +155,8 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						// Construct the Privilege Entries
 						PrivilegeModule updPrivilegeModule = new PrivilegeModule();
 						PrivilegeEntryType updPrivilegeEntry = new PrivilegeEntryType();
-
+						String resourceType = null;
+						
 						if (privilege.getResourcePath() != null) {
 							// Get the resource path
 							resourcePath = CommonUtils.extractVariable(prefix, privilege.getResourcePath(), propertyFile, true);
@@ -162,17 +165,61 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 							// Get the resource type
 							if (privilege.getResourceType() == null || privilege.getResourceType().toString().length() == 0) {
 								// Get the Resource Type for the Resource Path
-								String resourceType = getResourceManager().getResourceType(serverId, resourcePath, pathToServersXML);
+								resourceType = getResourceManager().getResourceType(serverId, resourcePath, pathToServersXML);
 								updPrivilegeEntry.setResourceType(ResourceTypeSimpleType.valueOf(resourceType));
 							} else {
 								updPrivilegeEntry.setResourceType(ResourceTypeSimpleType.valueOf(privilege.getResourceType().toString()));
 							}
 						}
-						
+						resourceType = updPrivilegeEntry.getResourceType().toString();
+								
 						// Set the Module Action Objective
 						s1 = identifier+"=" + ((resourcePath == null) ? "no_resourcePath" : resourcePath);
 						System.setProperty("MODULE_ACTION_OBJECTIVE", actionName+" : "+s1);
-						
+
+						// Set the resource owner and domain. Both must be non-null in order to set the target
+						if (privilege.getResourceOwner() != null) {
+							if (privilege.getResourceOwner().getResourceOwnerApply() != null) {
+								// Get the "resourceOwnerApply" and check for variables and then change to lower.
+								String resourceOwnerApply = CommonUtils.extractVariable(prefix, privilege.getResourceOwner().getResourceOwnerApply(), propertyFile, true).toLowerCase();
+								// Validate "resourceOwnerApply"
+								if (resourceOwnerApply.equalsIgnoreCase("true") || resourceOwnerApply.equalsIgnoreCase("false")) {
+									// Continue applying the resource ownership only if "resourceOwnerApply" == true
+									if (resourceOwnerApply.equalsIgnoreCase("true")) {
+										// Make sure both resourceOwnerName and resourceOwnerDomain are not null before continuing
+										if (privilege.getResourceOwner().getResourceOwnerName() != null && privilege.getResourceOwner().getResourceOwnerDomain() == null)
+											throw new CompositeException("Resource Owner Domain \"resourceOwnerDomain\" may not be null when Resource Owner \"resourceOwner\" is not null for resourcePath="+resourcePath);
+										if (privilege.getResourceOwner().getResourceOwnerName() == null && privilege.getResourceOwner().getResourceOwnerDomain() != null)
+											throw new CompositeException("Resource Owner \"resourceOwner\" may not be null when Resource Owner Domain \"resourceOwnerDomain\" is not null for resourcePath="+resourcePath);
+										if (privilege.getResourceOwner().getResourceOwnerName() != null && privilege.getResourceOwner().getResourceOwnerDomain() != null) {
+											if (resourceType.equalsIgnoreCase("COLUMN")) {
+												throw new CompositeException("Resource type of COLUMN is not permitted when setting \"resourceOwner\" and \"resourceOwnerDomain\" for resourcePath="+resourcePath);
+											}
+											ResourceOwnerType resourceOwner = new ResourceOwnerType();
+											
+											resourceOwner.setResourceOwnerName(CommonUtils.extractVariable(prefix, privilege.getResourceOwner().getResourceOwnerName(), propertyFile, true));
+											resourceOwner.setResourceOwnerDomain(CommonUtils.extractVariable(prefix, privilege.getResourceOwner().getResourceOwnerDomain(), propertyFile, true));
+											if (privilege.getResourceOwner().getResourceOwnerRecurse() != null) {
+												String resourceOwnerRecurse = CommonUtils.extractVariable(prefix, privilege.getResourceOwner().getResourceOwnerRecurse().toLowerCase(), propertyFile, true).toLowerCase();
+												if (resourceOwnerRecurse.equalsIgnoreCase("true") || resourceOwnerRecurse.equalsIgnoreCase("false")) {
+													resourceOwner.setResourceOwnerRecurse(resourceOwnerRecurse);
+												}
+												else {
+													throw new CompositeException("Resource Owner Recurse \"resourceOwnerRecurse\" must be either [true or false] for resourcePath="+resourcePath);
+												}
+											}
+											else {
+												resourceOwner.setResourceOwnerRecurse("false");
+											}
+											updPrivilegeEntry.setResourceOwner(resourceOwner);
+										}
+									}
+								}
+								else {
+									throw new CompositeException("Resource Owner Apply \"resourceOwnerApply\" must either be [true or false] for resourcePath="+resourcePath);								
+								}
+							}
+						}
 						// Set the child recursion
 						if (privilege.isRecurse() != null)
 							updPrivilegeEntry.setRecurse(privilege.isRecurse());
@@ -574,7 +621,8 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 			// Recursively walk the folder tree and get "ALL" resources by passing in null for resourceType
 			ResourceList resourceList = new ResourceList();
 			resourceList.getResource().addAll(DeployManagerUtil.getDeployManager().getResourcesFromPath(serverId, startPath, currResourcePath.getType().name(), dependentFilter, DetailLevel.FULL.name(), pathToServersXML).getResource());
-
+			HashMap<String,String> resourceOwnerMap = new HashMap<String,String>();
+			
 			if(resourceList != null && resourceList.getResource() != null && !resourceList.getResource().isEmpty()) {
 			
 				String privFilter = null; // only valid values are ALL_EXPLICIT and null
@@ -584,21 +632,37 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 				Entries entries = new Entries();
 
 				for (Resource resource : resourceList.getResource()) {
+
+					String resourcePath = resource.getPath();
+					String resourceType = resource.getType().name();
+					String resourceOwner = null;
+					String resourceOwnerDomain = null;
+					
+					if (resource.getOwnerName() != null)
+						resourceOwner = resource.getOwnerName().toString();
+					if (resource.getOwnerDomain() != null)
+						resourceOwnerDomain = resource.getOwnerDomain().toString();
 					
 					// If the type of resource returned is a member of the filter list or the filter contains ALL then process that resource
 					// Additionally, if the filter contains a COLUMN or TABLE then allow the dependency interrogation to pass through
-					if (filter.contains(resource.getType().name()) || dependentResource) {
+					if (filter.contains(resourceType) || dependentResource) {
 
 						// Only add the resource to the list if it is contained in the original filter
-						if ( filter.contains(resource.getType().name()) ) {
+						if ( filter.contains(resourceType) ) {
 								PathTypeOrColumnPair pathPair = new PathTypeOrColumnPair();
-								pathPair.setPath(resource.getPath());
-								pathPair.setType(ResourceOrColumnType.valueOf(resource.getType().name()));
+								pathPair.setPath(resourcePath);
+								pathPair.setType(ResourceOrColumnType.valueOf(resourceType));
 								entries.getEntry().add(pathPair);
+								
+								// Now add the resource owner and owner domain to a hashmap for later retrieval
+								if (resourceOwner != null && resourceOwnerDomain != null)
+									resourceOwnerMap.put(resourcePath+"::"+resourceType, resourceOwner+"::"+resourceOwnerDomain);
+								else
+									resourceOwnerMap.put(resourcePath+"::"+resourceType, null);
 						}
 				
 						// If the current resource is of type TABLE and the filter contains COLUMN then process the columns
-						if ( resource.getType().name().equalsIgnoreCase("TABLE") && filter.contains("COLUMN") ) {
+						if ( resourceType.equalsIgnoreCase("TABLE") && filter.contains("COLUMN") ) {
 							TableResource tableResource = (TableResource) resource;
 													
 							// Loop over the list of columns
@@ -648,12 +712,41 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						PrivilegeEntryType resourcePrivilege = new PrivilegeEntryType();
 						resourcePrivilege.setId("priv"+seq++);
 	
-						resourcePrivilege.setResourcePath(retPrivs.getResourcePath());
+						String resourcePath = retPrivs.getResourcePath();
+						
+						resourcePrivilege.setResourcePath(resourcePath);
 						// Generate resourceType.  Required to do this since COLUMN cannot be looked up by getAllResourcePaths
 						//   This is an optional element to maintain compatibility.
+						String resourceType = null;
 						if (retPrivs.getResourceType() != null) {
-							resourcePrivilege.setResourceType(ResourceTypeSimpleType.valueOf(retPrivs.getResourceType().toString()));
+							resourceType = retPrivs.getResourceType().toString();
+							resourcePrivilege.setResourceType(ResourceTypeSimpleType.valueOf(resourceType));
 						}
+						
+						// Based on the results of the resourceOwner and resourceOwnerDomain, add them into the PrivilegeModule XML response.
+						if (resourcePath != null && resourceType != null) {
+							String resOwner = resourceOwnerMap.get(resourcePath+"::"+resourceType);
+							String resourceOwnerName = null;
+							String resourceOwnerDomain = null;
+							// Split out the owner and domain from the result
+							if (resOwner != null) {
+								String[] resArry = resOwner.split("::",2);
+								resourceOwnerName = resArry[0];
+								resourceOwnerDomain = resArry[1];
+							}
+							// Add the XML tags for "resourceOwner" and "resourceOwnerDomain"
+							if (resourceOwnerName != null && resourceOwnerDomain != null) {
+								ResourceOwnerType resourceOwner = new ResourceOwnerType();
+								// Set the resource ownership XML section
+								resourceOwner.setResourceOwnerApply("true");
+								resourceOwner.setResourceOwnerName(resourceOwnerName);
+								resourceOwner.setResourceOwnerDomain(resourceOwnerDomain);
+								resourceOwner.setResourceOwnerRecurse("false");
+								resourcePrivilege.setResourceOwner(resourceOwner);
+							}
+						}
+						
+						// Set the recurse XML tag
 						resourcePrivilege.setRecurse(true);
 						
 						//Loop through privileges

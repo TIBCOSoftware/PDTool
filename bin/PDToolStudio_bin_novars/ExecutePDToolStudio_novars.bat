@@ -150,7 +150,10 @@ set ARG=
 set ERRORMSG=
 call :parse %*
 SET ERROR=%ERRORLEVEL%
-IF %ERROR% GTR 0 ( exit /B %ERROR% )
+IF %ERROR% GTR 0 ( 
+	if defined PWD cd %PWD%
+	exit /B %ERROR% 
+)
 
 REM # Set the default to perform a vcsinit if no parameters are specified
 if "%PDTOOL_CMD%" == "" set PDTOOL_CMD=-vcsinit
@@ -207,6 +210,7 @@ if exist %DEFAULT_SET_VARS_PATH% goto INVOKE_SET_VARS
   set ARG=DEFAULT_SET_VARS_PATH
   set ERRORMSG=Execution Failed::Path does not exist: %DEFAULT_SET_VARS_PATH%
   call:USAGE
+  if defined PWD cd %PWD%
   exit /B 2
 			
 :INVOKE_SET_VARS
@@ -298,6 +302,7 @@ if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
 	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 :MAP_SUBSTITUTE_DRIVE
 	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -307,6 +312,7 @@ if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
 	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
 REM #-----------------------------------------------------------
@@ -332,6 +338,7 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 :MAP_NETWORK_DRIVE
 	REM # Get the Drive letter for PROJECT_HOME_PHYSICAL
@@ -346,6 +353,7 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 		call %writeOutput% "%PAD%   Create the share drive=%PDTOOL_HOME_DRIVE_SHARE% for the installation drive=%PDTOOL_HOME_DRIVE% as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 		call %writeOutput% "%PAD%   Command run as administrator: net share %PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%\" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 		call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		if defined PWD cd %PWD%
 		exit /b 1
 	)
 	
@@ -357,6 +365,7 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
 :MAPSUCCESS   
@@ -368,11 +377,13 @@ REM #=======================================
 if NOT EXIST "%PROJECT_HOME%" (
    call %writeOutput% "Execution Failed::PROJECT_HOME does not exist: %PROJECT_HOME%" 										"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 if NOT EXIST "%JAVA_HOME%" (
    call %writeOutput% "Execution Failed::JAVA_HOME does not exist: %JAVA_HOME%" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 call %writeOutput% " " 
@@ -497,31 +508,37 @@ REM # Validate parameters are present
 IF NOT DEFINED USERPROFILE (
   set ARG=USERPROFILE
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED WINDOWS_LOGIN (
   set ARG=winlogin
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED USER (
   set ARG=user
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED DOMAIN (
   set ARG=domain
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED HOST (
   set ARG=host
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED INCLUDE_RESOURCE_SECURITY (
   set ARG=includeResourceSecurity
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED VCS_WORKSPACE_PATH_OVERRIDE (
@@ -568,6 +585,7 @@ set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 (
    call %writeOutput% "Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B %ERROR%
 )
 
@@ -579,6 +597,7 @@ call %writeOutput% "-------------- SUCCESSFUL SCRIPT COMPLETION [%SCRIPT% %PDTOO
 call %writeOutput% "End of script." 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 IF "%PAUSECMD%" == "true" pause
 ENDLOCAL
+if defined PWD cd %PWD%
 exit /B 0
 
 
@@ -948,6 +967,7 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " "
 	ENDLOCAL
+	if defined PWD cd %PWD%
 	exit /B 1
 
 :: -------------------------------------------------------------

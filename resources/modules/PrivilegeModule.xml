@@ -22,6 +22,12 @@
     <resourcePrivilege>
         <id>priv1</id>
         <resourcePath>/shared/test00/DataSources/ServerAttributeDefinitions</resourcePath>
+        <resourceOwner>
+            <resourceOwnerApply>true</resourceOwnerApply>
+            <resourceOwnerName>user2</resourceOwnerName>
+            <resourceOwnerDomain>composite</resourceOwnerDomain>
+            <resourceOwnerRecurse>true</resourceOwnerRecurse>
+        </resourceOwner>
         <recurse>true</recurse>
         <privilege>
             <name>USER2</name>
@@ -33,6 +39,12 @@
     <resourcePrivilege>
         <id>priv2</id>
         <resourcePath>/services/webservices/TEST00/testWebService</resourcePath>
+        <resourceOwner>
+            <resourceOwnerApply>true</resourceOwnerApply>
+            <resourceOwnerName>admin</resourceOwnerName>
+            <resourceOwnerDomain>composite</resourceOwnerDomain>
+            <resourceOwnerRecurse>true</resourceOwnerRecurse>
+        </resourceOwner>
         <recurse>true</recurse>
 
         <privilege>

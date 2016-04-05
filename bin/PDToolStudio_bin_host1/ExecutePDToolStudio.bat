@@ -90,3 +90,4 @@ REM #---------------------------------------------
 REM # Invoke the actual script that does the work
 REM #---------------------------------------------
 call ..\bin_novars\ExecutePDToolStudio_novars.bat "%CD%" "%DEFAULT_SET_VARS_PATH%" %*
+if defined PWD cd %PWD%

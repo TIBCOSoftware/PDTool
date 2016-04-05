@@ -2233,9 +2233,9 @@
   </vcsConnections>
   <!--Element vcsResources, maxOccurs=unbounded-->
   
-  <!-- *************************
-	 REGRESSION CHECKIN TESTS 
-	 ************************* -->
+  <!-- **********************************
+	 REGRESSION CHECKIN/CHECKOUT TESTS 
+	 ************************************ -->
   <vcsResource>
     <id>testDB</id>
     <resourcePath>/services/databases/TEST00</resourcePath>
@@ -2255,6 +2255,28 @@
     <resourcePath>/shared/test00</resourcePath>
     <resourceType>Folder</resourceType>
     <revision>HEAD</revision>
+    <message>checkin testNN</message>
+  </vcsResource>
+
+  <vcsResource>
+    <id>testDB-BASE</id>
+    <resourcePath>/services/databases/TEST00</resourcePath>
+    <resourceType>Composite Database</resourceType>
+    <revision>BASE</revision>
+    <message>checkin testDB</message>
+  </vcsResource>
+  <vcsResource>
+    <id>testWS-BASE</id>
+    <resourcePath>/services/webservices/TEST00/testWebService</resourcePath>
+    <resourceType>Composite Web Service</resourceType>
+    <revision>BASE</revision>
+    <message>checkin testWS</message>
+  </vcsResource>
+  <vcsResource>
+    <id>testNN-BASE</id>
+    <resourcePath>/shared/test00</resourcePath>
+    <resourceType>Folder</resourceType>
+    <revision>BASE</revision>
     <message>checkin testNN</message>
   </vcsResource>
   

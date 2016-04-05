@@ -125,7 +125,10 @@ set ARG=
 set ERRORMSG=
 call :parse %*
 SET ERROR=%ERRORLEVEL%
-IF %ERROR% GTR 0 ( exit /B %ERROR% )
+IF %ERROR% GTR 0 (
+	if defined PWD cd %PWD%
+	exit /B %ERROR% 
+)
 
 REM # Validate the parameters
 if "%PDTOOL_CMD%" == "-exec" goto VALID_PARAMS
@@ -166,6 +169,7 @@ if exist %DEFAULT_SET_VARS_PATH% goto INVOKE_SET_VARS
   set ARG=DEFAULT_SET_VARS_PATH
   set ERRORMSG=Execution Failed::Path does not exist: %ARG1%
   call:USAGE
+  if defined PWD cd %PWD%
   exit /B 2
 			
 :INVOKE_SET_VARS
@@ -245,6 +249,7 @@ if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
 	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 :MAP_SUBSTITUTE_DRIVE
 	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -254,6 +259,7 @@ if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
 	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
 REM #-----------------------------------------------------------
@@ -293,6 +299,7 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 		call %writeOutput% "%PAD%   Create the share drive=%PDTOOL_HOME_DRIVE_SHARE% for the installation drive=%PDTOOL_HOME_DRIVE% as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 		call %writeOutput% "%PAD%   Command run as administrator: net share %PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%\" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 		call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		if defined PWD cd %PWD%
 		exit /b 1
 	)
 	
@@ -304,6 +311,7 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %0" 																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
 :MAPSUCCESS   
@@ -315,11 +323,13 @@ REM #=======================================
 if NOT EXIST "%PROJECT_HOME%" (
    call %writeOutput% "Execution Failed::PROJECT_HOME does not exist: %PROJECT_HOME%" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 if NOT EXIST "%JAVA_HOME%" (
    call %writeOutput% "Execution Failed::JAVA_HOME does not exist: %JAVA_HOME%" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 echo.
@@ -461,6 +471,7 @@ set ANT_HOME=%PROJECT_HOME%/ext/ant
 if NOT EXIST "%ANT_HOME%" (
    call %writeOutput% "Execution Failed::ANT_HOME does not exist: %ANT_HOME%" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 REM # Set the Ant classpath and options
@@ -516,6 +527,7 @@ GOTO START_SCRIPT
 	call %writeOutput% " "
 	call %writeOutput% "            Example: %SCRIPT%%ext% -xform test-doc.xml test-xform.xsl
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 
 :--------------
@@ -541,6 +553,8 @@ set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 (
    call %writeOutput% "Execution Failed::Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   REM # If PWD defined then return to the previous working directory as set in the batch file that invokes ExecutePDTool
+   if defined PWD cd %PWD%
    exit /B %ERROR%
 )
 
@@ -551,6 +565,8 @@ call %writeOutput% " "
 call %writeOutput% "-------------- SUCCESSFUL SCRIPT COMPLETION [%SCRIPT% %PDTOOL_CMD%] --------------" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "End of script." 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 ENDLOCAL
+REM # If PWD defined then return to the previous working directory as set in the batch file that invokes ExecutePDTool
+if defined PWD cd %PWD%
 exit /B 0
 
 
@@ -818,6 +834,7 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " "
 	ENDLOCAL
+	if defined PWD cd %PWD%
 	exit /B 1
 
 :: -------------------------------------------------------------

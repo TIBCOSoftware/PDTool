@@ -54,15 +54,18 @@
 	<property name="security" location="security"/>
 	<property name="docs" location="PDToolDocs/docs"/>
 	<property name="project-PDToolModules" value="PDToolModules"/>
-	<property name="pdtool-zip-target" value="PDTool-${ver}"/>
-	<property name="pdtoolstudio-zip-target" value="PDToolStudio-${ver}"/>
+
+	<!-- Release variables -->
+	<property name="relbase" value="../PDToolRelease"/>
+	<property file="${relbase}/_general_release/release_date_candidate.properties"/>
+	<property name="rel" value="${relbase}/${ver}/Release-${ver}-${RELEASE_DT_CANDIDATE}"/>
+	<property name="pdtool-zip-file-name" value="PDTool-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.zip"/>
+	<property name="pdtoolstudio-zip-file-name" value="PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.zip"/>
 	<property name="pdtool-installer-target" value="PDTool${ver}_installer"/>
 	<property name="pdtoolstudio-installer-target" value="PDToolStudio${ver}_installer"/>
 	<property name="pdtool-target" value="${pdtool-installer-target}/installer_source/PDTool"/>
 	<property name="pdtoolstudio-target" value="${pdtoolstudio-installer-target}/installer_source/PDToolStudio"/>
-	<property name="rel" value="../PDToolRelease/${ver}"/>
-	<property name="regression_rel" location="../PDToolRelease/regression"/>
-	<property name="regression-target" value="PDToolRegression"/>
+	
 	<!-- These environment variables are used to modify the windows batch file for the build environment vs. the release environment. -->
 	<property name="BUILD_ENV_DEPLOY_CLASSPATH" value="%PROJECT_HOME%\dist\PDTool%CIS_VERSION%.jar;%PROJECT_HOME%\lib%CIS_VERSION%\*;%PROJECT_HOME%\libcommon\*"/>
 	<property name="BUILD_ENV_ENDORSED_DIR" value="%PROJECT_HOME%\lib%CIS_VERSION%\endorsed"/>
@@ -81,7 +84,24 @@
 		</fileset>
 	</path>
 
-	<target name="init">
+	<!-- Check for existence of a PDTool release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
+	<target name="PdtoolZipExist">
+		<fail message="PDTOOL ZIP FILE ALREADY EXISTS: ${rel}/${pdtool-zip-file-name}">
+			<condition>
+				<available file="${rel}/${pdtool-zip-file-name}"/>
+			</condition>
+		</fail>
+	</target>
+	<!-- Check for existence of a PDToolStudio release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
+	<target name="PdtoolStudioZipExist">
+		<fail message="PDTOOL STUDIO ZIP FILE ALREADY EXISTS: ${rel}/${pdtoolstudio-zip-file-name}">
+			<condition>
+				<available file="${rel}/${pdtoolstudio-zip-file-name}"/>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="init" depends="PdtoolZipExist,PdtoolStudioZipExist">
 		<!-- Create the time stamp -->
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
@@ -107,6 +127,9 @@
 	<!-- Create the PDTool distribution zip file. -->
 	<target name="dist" depends="dist-jar">
 
+		<!-- Create the release directory if it does not exist -->
+		<mkdir dir="${rel}"/>
+
 		<!-- Copy ExecutePDTool.bat into the /bin directory so that it can be used for testing. -->
 		<copy todir="${bin}">
 		    <fileset dir="${bin}/PDTool">
@@ -128,11 +151,6 @@
             file="${bin}/ExecutePDTool.bat"
             token="@ENDORSED_DIR@"
             value="${BUILD_ENV_ENDORSED_DIR}" />
-		<tstamp>
-		  <format property="TODAY_US"
-		          pattern="yyyy-MM-dd"
-		          locale="en,US"/>
-		</tstamp>
 
 		<!-- 
 		***************************************************************
@@ -194,13 +212,14 @@
 		    </fileset>
 		</copy>
 
-		<!-- Copy the generated Schema HTML file and images directory in preparation for zipping the distribution. -->
-		<copy todir="${pdtool-target}">
-		    <fileset dir="${rel}">
-		        <include name="PDTool-${ver}-${TODAY_US}.${relNum}.txt"/>
+		<!-- Copy the release notes in preparation for zipping the distribution. -->
+		<copy tofile="${pdtool-target}/PDTool-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
+		    <fileset dir="${relbase}/_general_release">
+		        <include name="PDTool_release_notes.txt"/>
 		    </fileset>
 		</copy>
 
+		<!-- Copy the generated Schema HTML file and images directory in preparation for zipping the distribution. -->
 		<copy todir="${pdtool-target}/docs">
 		    <fileset dir="${project-PDToolModules}/docs">
 		        <include name="PDToolModules.xsd.html"/>
@@ -369,7 +388,13 @@
 		</copy>
 		
 		<!-- Create the PDTool zip file -->
-		<zip destfile="${rel}/${pdtool-zip-target}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtool-installer-target}/**" />
+		<zip destfile="${rel}/${pdtool-zip-file-name}" basedir="." includes="${pdtool-installer-target}/**" />
+		<!-- Copy the release notes to the target release directory. -->
+		<copy tofile="${rel}/PDTool-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
+		    <fileset dir="${relbase}/_general_release">
+		        <include name="PDTool_release_notes.txt"/>
+		    </fileset>
+		</copy>
 
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtool-installer-target}"/>
@@ -420,9 +445,10 @@
 		    </fileset>
 		</copy>
 
-		<copy todir="${pdtoolstudio-target}">
-		    <fileset dir="${rel}">
-		        <include name="PDToolStudio-${ver}-${TODAY_US}.${relNum}.txt"/>
+		<!-- Copy the release notes in preparation for zipping the distribution. -->
+		<copy tofile="${pdtoolstudio-target}/PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
+		    <fileset dir="${relbase}/_general_release">
+		        <include name="PDToolStudio_release_notes.txt"/>
 		    </fileset>
 		</copy>
 		
@@ -556,77 +582,16 @@
 		</copy>
 		
 		<!-- Create the PDToolStudio zip file -->
-		<zip destfile="${rel}/${pdtoolstudio-zip-target}-${TODAY_US}.${relNum}.zip" basedir="." includes="${pdtoolstudio-installer-target}/**" />
+		<zip destfile="${rel}/${pdtoolstudio-zip-file-name}" basedir="." includes="${pdtoolstudio-installer-target}/**" />
+		<!-- Copy the release notes to the target release directory. -->
+		<copy tofile="${rel}/PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
+		    <fileset dir="${relbase}/_general_release">
+		        <include name="PDToolStudio_release_notes.txt"/>
+		    </fileset>
+		</copy>
 		
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtoolstudio-installer-target}"/>
-
-		<!-- 
-		***************************************************************
-		Create Regression distribution zip file.
-		***************************************************************
-		-->
-		<!-- Create the Regression zip file target directories -->
-		<mkdir dir="${regression-target}"/>
-		<mkdir dir="${regression-target}/carfiles"/>
-		<mkdir dir="${regression-target}/config"/>
-		<mkdir dir="${regression-target}/config_lists"/>
-		<mkdir dir="${regression-target}/modules"/>
-		<mkdir dir="${regression-target}/modules/generated"/>
-		<mkdir dir="${regression-target}/modules/test"/>
-		<mkdir dir="${regression-target}/plan_lists"/>
-		<mkdir dir="${regression-target}/plans"/>
-		<!-- Copy files from the regression source to the regression target directories -->
-		<copy todir="${regression-target}">
-		    <fileset dir="${regression}">
-		        <include name="*.txt"/>
-		        <include name="*.bat"/>
-		        <include name="*.sh"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/carfiles">
-		    <fileset dir="${regression}/carfiles">
-		        <include name="*.car"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/config">
-		    <fileset dir="${regression}/config">
-		        <include name="*.car"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/config">
-		    <fileset dir="${regression}/config">
-		        <include name="*.properties"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/config_lists">
-		    <fileset dir="${regression}/config_lists">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/modules/test">
-		    <fileset dir="${regression}/modules/test">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/modules">
-		    <fileset dir="${regression}/modules">
-		        <include name="*.xml"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/plan_lists">
-		    <fileset dir="${regression}/plan_lists">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/plans">
-		    <fileset dir="${regression}/plans">
-		        <include name="*.dp"/>
-		    </fileset>
-		</copy>
-		<!-- Create the PDToolRegression zip file -->
-		<zip destfile="${regression_rel}/regression-${TODAY_US}.zip" basedir="." includes="${regression-target}/**" />
-		<delete dir="${regression-target}"/>
 
 	</target>
 	
@@ -635,5 +600,5 @@
 		<delete dir="${build}" />
 	</target>
 
-	<target name="default" depends="clean,dist" description="Distribute CIS Deploy tool libs"/>
+	<target name="default" depends="clean,dist" description="Create the PDTool and PDToolStudio Distribution"/>
 </project>

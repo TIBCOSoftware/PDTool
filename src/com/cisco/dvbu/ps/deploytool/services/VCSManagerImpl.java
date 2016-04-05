@@ -360,7 +360,8 @@ public class VCSManagerImpl implements VCSManager {
 			if (vcsRevision == null || vcsRevision.length() == 0) {
 				throw new ValidationException("VCS Revision is null or empty.");							
 			}
-			if (vcsRevision.equalsIgnoreCase("HEAD")) {
+			/* mtinius 2016-04-01:  Added ability for revision to be a BASE URL for use with tags or COMMITTED or PREV */
+			if (vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
 				vcsRevision = vcsRevision.toUpperCase();
 			} else {
 				try {
@@ -3426,7 +3427,8 @@ public class VCSManagerImpl implements VCSManager {
 							// Get the resource type and convert any $VARIABLES
 							vcsRevision = CommonUtils.extractVariable(prefix, vcsResource.getRevision().trim(), propertyFile, true);
 							
-							if (vcsRevision.equalsIgnoreCase("HEAD")) {
+							/* mtinius 2016-04-01:  Added ability for revision to be a BASE URL for use with tags or COMMITTED or PREV */
+							if (vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
 								vcsRevision = vcsRevision.toUpperCase();
 							} else {
 								try {
