@@ -17,9 +17,10 @@ REM # Any support for this software by Cisco would be covered by paid consulting
 REM # 
 REM ############################################################################################################################
 REM #
-REM # Start New PDTool/PDToolStudio Environment Command Window
+REM # Start New PDTool/PDToolStudio Command Shell Window
 REM #
-REM # startEnvCMD.bat XX
+REM # envStart.cmd XX env.cmd
+REM #  param1=XX
 REM #    where XX specifies TWO hex digits for the color of the command line window.
 REM #    The default setting for this PDTool Environment Command window is: 17 
 REM #    This corresponds to Blue background and White foreground.
@@ -33,33 +34,40 @@ REM #      4 = Red         C = Light Red
 REM #      5 = Purple      D = Light Purple
 REM #      6 = Yellow      E = Light Yellow
 REM #      7 = White       F = Bright White
+REM #  param2=env.cmd
+REM #    The standard environment variable command file unless a different command file is provided.
+REM #    Additionally, the env.cmd file automatically invokes envCustom.cmd if it exists which allows the 
+REM #    customer to set their own variables.
 REM ############################################################################################################################
 set COLOR=%1
-if not defined COLOR set COLOR=17
-REM # Set the existing variables in order to get PDTOOL_HOME and various VCS_HOME settings.
-pushd %CD%
-call setVars.bat
-popd
-cls
-REM # Make sure PDTOO_HOME is set properly
-if not defined PDTOOL_HOME (
-   pushd %CD%
-   cd ..
-   set PDTOOL_HOME=%CD%
-   popd
+set ENV=%2
+set COLOR_DEFAULT=17
+set ENV_DEFAULT=env.cmd
+REM # Remove double quotes around arguments
+setlocal EnableDelayedExpansion
+	if defined COLOR set LCOLOR=!COLOR:"=!
+	if defined ENV   set LENV=!ENV:"=!
+endlocal & SET COLOR=%LCOLOR%& SET ENV=%LENV%
+REM # Validate COLOR
+if not defined COLOR (
+   set COLOR=%COLOR_DEFAULT%
+   goto VALIDATE
 )
-REM # Set VCS_HOME with any VCS home that is currently set
-set VCS_HOME=
-if defined TFS_HOME set VCS_HOME=%VCS_HOME%;%TFS_HOME%
-if defined SVN_HOME set VCS_HOME=%VCS_HOME%;%SVN_HOME%
-if defined GIT_HOME set VCS_HOME=%VCS_HOME%;%GIT_HOME%
-if defined P4_HOME set VCS_HOME=%VCS_HOME%;%P4_HOME%
-if defined CVS_HOME set VCS_HOME=%VCS_HOME%;%CVS_HOME%
+if "%COLOR%"==" " set COLOR=%COLOR_DEFAULT%
+REM # Validate ENV
+:VALIDATE
+if defined ENV goto VALIDATE_EXIST
+set ENV=%ENV_DEFAULT%
+:VALIDATE_EXIST
+if exist %ENV% goto MAIN
+   echo.####################################################################
+   echo.# ERROR: Command or batch file does not exist.  file=[%ENV%]
+   echo.####################################################################
+   goto END
+:MAIN
+
 REM # Open the new command shell with specified color.
-echo PDTOOL_HOME=%PDTOOL_HOME%
-echo VCS_HOME=%VCS_HOME%
-CMD /T:%COLOR% /K "SET PATH=%PDTOOL_HOME%\bin;%VCS_HOME%;%PATH%"
+if defined ENV CMD /T:%COLOR% /K "%ENV%"
+:END
 REM # Return to the original color
 COLOR
-set PDTOOL_HOME=
-set VCS_HOME=

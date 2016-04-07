@@ -20,18 +20,33 @@ REM #
 REM # Encrypt a PDTool or PDToolStudio file
 REM #
 REM # encrypt.bat filename
-REM #    Once "startEnvCMD.bat" has been run, this batch script can be run from any directory.
+REM #    Once "startEnv.cmd" has been run, this batch script can be run from any directory.
 REM ############################################################################################################################
+set FILENAME=%1
 set PWD=%CD%
-if not defined PDTOOL_HOME (
-   echo.PDTOOL_HOME is not defined properly.
-   echo.Execute "startEnvCMD.bat" to create a new environment.
+REM # Remove double quotes around arguments
+setlocal EnableDelayedExpansion
+	if defined FILENAME set LFILENAME=!FILENAME:"=!
+endlocal & SET FILENAME=%LFILENAME%
+if not defined FILENAME (
+   echo.USAGE: The filename was not provided.
    exit /B 1
 )
-if not exist %PDTOOL_HOME% (
-   echo.PDTOOL_HOME does not exist.  PDTOOL_HOME=%PDTOOL_HOME%
-   echo.Execute "startEnvCMD.bat" to create a new environment.
+if not exist %FILENAME% (
+   echo.USAGE: The filename=[%FILENAME%] does not exist.
    exit /B 1
 )
-cd %PDTOOL_HOME%\bin
+if not defined PDTOOL_BIN (
+   echo.PDTOOL_BIN is not defined properly.
+   echo.Execute "startEnv.cmd" to start a new command shell.
+   exit /B 1
+)
+if not exist %PDTOOL_BIN% (
+   echo.PDTOOL_BIN does not exist.  PDTOOL_BIN=%PDTOOL_BIN%
+   echo.Execute "startEnv.cmd" to start a new command shell.
+   exit /B 1
+)
+
+cd %PDTOOL_BIN%
 call ExecutePDToolStudio.bat -nopause -encrypt %PWD%\%1
+cd %PWD%
