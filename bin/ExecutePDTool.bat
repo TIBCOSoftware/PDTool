@@ -26,9 +26,9 @@ REM #            ExecutePDTool.bat -exec deploy-plan-file-path [-vcsuser usernam
 REM #
 REM #               arg1=-exec is used to execute a deploy plan file
 REM #	            arg2=orchestration property file path (full or relative path)
-REM #               arg3-4=[-vcsuser username] optional parameters
-REM #               arg5-6=[-vcspassword password] optional parameter
-REM #				arg7-8=[-config deploy.properties] optional parameter
+REM #               arg3-4=[-vcsuser username] optional parameter specifying the vcs username
+REM #               arg5-6=[-vcspassword password] optional parameter specifying the vcs password
+REM #				arg7-8=[-config deploy.properties] optional parameter specifying the deployment configuration property file
 REM #				arg9-10=[-release YYYYMMDD] optional parameter used to specify the release folder for the VCS
 REM #
 REM # Option 2 - Execute VCS Workspace initialization:
@@ -36,18 +36,20 @@ REM #
 REM #            ExecutePDTool.bat -vcsinit [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] 
 REM #
 REM #	            arg1=-vcsinit is used to initialize the vcs workspace and link it to the repository
-REM #               arg3-4=[-vcsuser username] optional parameters
-REM #               arg5-6=[-vcspassword password] optional parameter
-REM #				arg7-8=[-config deploy.properties] optional parameter
+REM #               arg3-4=[-vcsuser username] optional parameters specifying the vcs username
+REM #               arg5-6=[-vcspassword password] optional parameter specifying the vcs password
+REM #				arg7-8=[-config deploy.properties] optional parameter specifying the deployment configuration property file
 REM #				arg9-10=[-release YYYYMMDD] optional parameter used to specify the release folder for the VCS
 REM #
 REM # Option 3 - Execute property file encryption:
 REM #
-REM #            ExecutePDTool.bat -encrypt property-file-path [-config deploy.properties]
+REM #            ExecutePDTool.bat -encrypt property-file-path [-config deploy.properties] -bypass "string1,string2"
 REM #
 REM #	            arg1=-encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file
 REM #	            arg2=file path to deploy.properties or XML property file (full or relative path)
-REM #				arg3-4=[-config deploy.properties] optional parameter
+REM #				arg3-4=[-config deploy.properties] optional parameter  specifying the deployment configuration property file
+REM #				arg4-5=[-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
+REM #                                                  that are found within a variable or XML element designated for passwords.
 REM #
 REM # Option 4 - Execute an Ant build file:
 REM #
@@ -55,9 +57,9 @@ REM #            ExecutePDTool.bat -ant build-file-path [-vcsuser username] [-vc
 REM #
 REM #               arg1=-ant is used to execute an Ant build file
 REM #	            arg2=orchestration build file path (full or relative path)
-REM #               arg3-4=[-vcsuser username] optional parameter
-REM #               arg5-6=[-vcspassword password] optional parameter
-REM #				arg7-8=[-config deploy.properties] optional parameter
+REM #               arg3-4=[-vcsuser username] optional parameter specifying the vcs username
+REM #               arg5-6=[-vcspassword password] optional parameter specifying the vcs password
+REM #				arg7-8=[-config deploy.properties] optional parameter specifying the deployment configuration property file
 REM #				arg9-10=[-release YYYYMMDD] optional parameter used to specify the release folder for the VCS
 REM #
 REM # Editor: Set tab=4 in your text editor for this file to format properly
@@ -79,7 +81,7 @@ REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
 REM # CIS version [6.2, 7.0.0]
-set DEFAULT_CIS_VERSION=7.0.0
+set DEFAULT_CIS_VERSION=@version@
 REM # Script name
 set SCRIPT=ExecutePDTool
 REM # set the print function
@@ -88,6 +90,7 @@ REM # Initialize variables
 set SEP=::
 SET PDTOOL_CMD=
 SET PDTOOL_PROPERTY_FILE=
+SET PDTOOL_ENCRYPT_BYPASS_STRING=
 SET PDTOOL_VCS_USERNAME=
 SET PDTOOL_VCS_PASSWORD=
 SET PDTOOL_CONFIG_PROPERTY_FILE=
@@ -146,6 +149,7 @@ CALL:printablePassword "%PDTOOL_VCS_PASSWORD%" PR_VCS_PASSWORD
 call %writeOutput% "Command Line Arguments:"																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PDTOOL_PROPERTY_FILE%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%PDTOOL_ENCRYPT_BYPASS_STRING%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%PDTOOL_VCS_USERNAME%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CONFIG_PROPERTY_FILE=[%PDTOOL_CONFIG_PROPERTY_FILE%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -155,6 +159,7 @@ call %writeOutput% " "
 
 REM # Assign parameters
 if defined PDTOOL_PROPERTY_FILE         set PROPERTY_FILE=%PDTOOL_PROPERTY_FILE%
+if defined ENCRYPT_BYPASS_STRING        set ENCRYPT_BYPASS_STRING=%PDTOOL_ENCRYPT_BYPASS_STRING%
 if defined PDTOOL_VCS_USERNAME          set VCS_USERNAME=%PDTOOL_VCS_USERNAME%
 if defined PDTOOL_VCS_PASSWORD          set VCS_PASSWORD=%PDTOOL_VCS_PASSWORD%
 if defined PDTOOL_CONFIG_PROPERTY_FILE  set CONFIG_PROPERTY_FILE=%PDTOOL_CONFIG_PROPERTY_FILE%
@@ -190,18 +195,20 @@ REM #   internal variables with external ones.
 REM #   INTERNAL VAR                 --> EXTERNAL VAR
 REM #   ---------------------------      --------------------
 REM #   PDTOOL_PROPERTY_FILE         --> PROPERTY_FILE
+REM #   PDTOOL_ENCRYPT_BYPASS_STRING --> ENCRYPT_BYPASS_STRING
 REM #   PDTOOL_VCS_USERNAME          --> VCS_USERNAME
 REM #   PDTOOL_VCS_PASSWORD          --> VCS_PASSWORD
 REM #   PDTOOL_CONFIG_PROPERTY_FILE  --> CONFIG_PROPERTY_FILE
 REM #   PDTOOL_RELEASE_FOLDER        --> RELEASE_FOLDER
 REM #   DEFAULT_CIS_VERSION          --> CIS_VERSION
 REM #=====================================================================================
-call:resolveVariables "%PDTOOL_PROPERTY_FILE%" 		  "%PROPERTY_FILE%" 		PROPERTY_FILE
-call:resolveVariables "%PDTOOL_VCS_USERNAME%" 		  "%VCS_USERNAME%" 			VCS_USERNAME
-call:resolveVariables "%PDTOOL_VCS_PASSWORD%" 		  "%VCS_PASSWORD%" 			VCS_PASSWORD
-call:resolveVariables "%PDTOOL_CONFIG_PROPERTY_FILE%" "%CONFIG_PROPERTY_FILE%" 	CONFIG_PROPERTY_FILE
-call:resolveVariables "%PDTOOL_RELEASE_FOLDER%" 	  "%RELEASE_FOLDER%" 		RELEASE_FOLDER
-call:resolveVariables "%DEFAULT_CIS_VERSION%" 	  	  "%CIS_VERSION%" 			CIS_VERSION
+call:resolveVariables "%PDTOOL_PROPERTY_FILE%" 		   "%PROPERTY_FILE%" 		 PROPERTY_FILE
+call:resolveVariables "%PDTOOL_ENCRYPT_BYPASS_STRING%" "%ENCRYPT_BYPASS_STRING%" ENCRYPT_BYPASS_STRING
+call:resolveVariables "%PDTOOL_VCS_USERNAME%" 		   "%VCS_USERNAME%" 		 VCS_USERNAME
+call:resolveVariables "%PDTOOL_VCS_PASSWORD%" 		   "%VCS_PASSWORD%" 		 VCS_PASSWORD
+call:resolveVariables "%PDTOOL_CONFIG_PROPERTY_FILE%"  "%CONFIG_PROPERTY_FILE%"	 CONFIG_PROPERTY_FILE
+call:resolveVariables "%PDTOOL_RELEASE_FOLDER%" 	   "%RELEASE_FOLDER%" 		 RELEASE_FOLDER
+call:resolveVariables "%DEFAULT_CIS_VERSION%" 	  	   "%CIS_VERSION%" 			 CIS_VERSION
 
 REM # Print the parameters
 CALL:printablePassword "%VCS_PASSWORD%" PR_VCS_PASSWORD
@@ -211,6 +218,7 @@ call %writeOutput% "############################################################
 call %writeOutput% "Resolved Arguments:"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PROPERTY_FILE%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%ENCRYPT_BYPASS_STRING%]" 													"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%VCS_USERNAME%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CONFIG_PROPERTY_FILE=[%CONFIG_PROPERTY_FILE%]" 														"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -435,10 +443,10 @@ if NOT EXIST "%PROPERTY_FILE%" (
    goto USAGE 
 )
 REM #***********************************************
-REM # Invoke: ScriptUtil encryptPasswordsInFile "%PROPERTY_FILE%"
+REM # Invoke: ScriptUtil encryptPasswordsInFileBypass "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 REM #***********************************************
-set JAVA_ACTION=encryptPasswordsInFile
-set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
+set JAVA_ACTION=encryptPasswordsInFileBypass
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 set PRCOMMAND=%COMMAND%
 GOTO START_SCRIPT
 
@@ -669,6 +677,18 @@ set SCRIPT_DEBUG=%0
                 shift
                 GOTO:LOOPEND
             )
+    if "%ARG1%" == "-bypass" (
+				SET PDTOOL_CMD=%ARG1%
+                SET PDTOOL_ENCRYPT_BYPASS_STRING=%ARG2%
+				set PARSE_ERROR=1
+				set ARG=ENCRYPT_BYPASS_STRING
+				set ERRORMSG=Execution Failed::Missing parameter
+				if "%ARG2%" NEQ "" set PARSE_ERROR=0
+				if "%ARG2%" NEQ "" set ARG=
+				if "%ARG2%" NEQ "" set ERRORMSG=
+                shift
+                GOTO:LOOPEND
+            )
     if "%ARG1%" == "-vcsinit" (
                 SET PDTOOL_CMD=%ARG1%
                 GOTO:LOOPEND
@@ -790,9 +810,9 @@ GOTO:LOOP
 	call %writeOutput% " "
 	call %writeOutput% "               arg1::    -exec is used to execute a deploy plan file"
 	call %writeOutput% "               arg2::    orchestration property file path [full or relative path]"
-	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters"
-	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters"
-	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters specifying the vcs username"
+	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters specifying the vcs password"
+	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters specifying the deployment configuration property file"
 	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
 	call %writeOutput% "               arg10-11::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
@@ -803,20 +823,22 @@ GOTO:LOOP
 	call %writeOutput% "            Example: %SCRIPT%%ext% -vcsinit -vcsuser user -vcspassword password -config deploy.properties -release 20141201"
  	call %writeOutput% " "
 	call %writeOutput% "               arg1::   -vcsinit is used to initialize the vcs workspace and link it to the repository"
-	call %writeOutput% "               arg2::   [-vcsuser username] optional parameters"
-	call %writeOutput% "               arg3-4:: [-vcspassword password] optional parameters"
-	call %writeOutput% "               arg5-6:: [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg2::   [-vcsuser username] optional parameters specifying the vcs username"
+	call %writeOutput% "               arg3-4:: [-vcspassword password] optional parameters specifying the vcs password"
+	call %writeOutput% "               arg5-6:: [-config deploy.properties] optional parameters specifying the deployment configuration property file"
 	call %writeOutput% "               arg7-8:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 3 - Execute Encrypt Property File:"
 	call %writeOutput% " "
-	call %writeOutput% "            %SCRIPT%%ext% -encrypt property-file-path [-config deploy.properties]"
+	call %writeOutput% "            %SCRIPT%%ext% -encrypt property-file-path [-config deploy.properties] -bypass "string1,string2"
 	call %writeOutput% " "
-	call %writeOutput% "            Example: %SCRIPT%%ext% -encrypt ../resources/config/deploy.properties -config deploy.properties"
+	call %writeOutput% "            Example: %SCRIPT%%ext% -encrypt ../resources/config/deploy.properties -config deploy.properties -bypass string1"
  	call %writeOutput% " "
 	call %writeOutput% "               arg1::   -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	call %writeOutput% "               arg2::   file path to deploy.properties or XML property file [full or relative path]"
-	call %writeOutput% "               arg3-4:: [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg3-4:: [-config deploy.properties] optional parameters specifying the deployment configuration property file"
+	call %writeOutput% "               arg4-5:: [-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass"
+	call %writeOutput% "                                                  that are found within a variable or XML element designated for passwords."
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 4 - Execute an Ant build file:"
 	call %writeOutput% " "
@@ -826,9 +848,9 @@ GOTO:LOOP
 	call %writeOutput% " "
 	call %writeOutput% "               arg1::    -ant is used to execute an Ant build file"
 	call %writeOutput% "               arg2::    orchestration build file path (full or relative path)"
-	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters"
-	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters"
-	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters"
+	call %writeOutput% "               arg3-4::  [-vcsuser username] optional parameters specifying the vcs username"
+	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters specifying the vcs password"
+	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters specifying the deployment configuration property file"
 	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
 	call %writeOutput% "               arg10-11::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
