@@ -332,13 +332,22 @@ public class ScriptUtil {
 		return encryptedString;
 	}
 	
+	/**
+	 * Traverse through the input file and encrypt all passwords using 
+	 * Composite Encryption Manager and write file back with encrypted passwords
+	 * @param String inputFile - the path to the input file used to search for strings to encrypt based on CommonConstants.encryptPropertiesList
+	 */
+	public static void encryptPasswordsInFile(String filePath){
+		encryptPasswordsInFileBypass(filePath, null);
+	}
 	
 	/**
 	 * Traverse through the input file and encrypt all passwords using 
 	 * Composite Encryption Manager and write file back with encrypted passwords
-	 * @param xmlFilePath inputFile 
+	 * @param String inputFile - the path to the input file used to search for strings to encrypt based on CommonConstants.encryptPropertiesList
+	 * @param String bypassStr - a comma separated list of strings to bypass if found in one of the target variables or elements to encrypt.
 	 */
-	public static void encryptPasswordsInFile(String filePath){
+	public static void encryptPasswordsInFileBypass(String filePath, String bypassStr){
 		if(filePath == null || filePath.trim().length() ==0){
 			return;
 		}
@@ -347,88 +356,10 @@ public class ScriptUtil {
 		String ext=filePath.substring(dotpos+1,filePath.length());  
 
 		if(ext.equalsIgnoreCase("xml")){
-			XMLUtils.encryptOrDecryptPasswordsInInputFile(filePath,true);
+			XMLUtils.encryptOrDecryptPasswordsInInputFile(filePath, true, bypassStr);
 		}else{
-			encryptPasswordsInPropertyFile(filePath);
+			CommonUtils.encryptPasswordsInPropertyFile(filePath, bypassStr);
 		}
-	}
-
-	public static void encryptPasswordsInPropertyFile(String filePath) 
-	{
-		// List of tokens:
-		//  "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD"
-		StringTokenizer st = new StringTokenizer(CommonConstants.encryptPropertiesList, " ");
-
-		while (st.hasMoreTokens()) {
-			String token = st.nextToken();
-			List<String> passwordLinesList = getLinesWithStringsInFile(filePath,token+"=");
-
-			String fileContent = CommonUtils.getFileAsString(filePath);
-			
-			if(passwordLinesList != null && !passwordLinesList.isEmpty()){
-				for (Iterator<String> iterator = passwordLinesList.iterator(); iterator.hasNext();) {
-			
-					String passwordLine = (String) iterator.next();
-				    int passwordPos= passwordLine.lastIndexOf("=");
-					String unEncryptedPassword=passwordLine.substring(passwordPos+1,passwordLine.length());
-					
-					// Determine if the value is a variable with the format: $VAR or $VAR$ or %VAR%
-					boolean isVariable = false;
-					if (unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0) {
-						int len = unEncryptedPassword.length();
-						String chBeg = unEncryptedPassword.substring(0, 1);
-						String chEnd = unEncryptedPassword.substring(len-1, len);
-						if (chBeg.equals("%") && chEnd.equals("%")) {
-							isVariable = true;
-						} 
-						if (!isVariable && ((chBeg.equals("$") && chEnd.equals("$")) || chBeg.equals("$"))) {
-							isVariable = true;
-						} 
-					}
-
-					if(!isVariable && unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0 && !unEncryptedPassword.startsWith("Encrypted:")){
-						String newLine = passwordLine.replace(unEncryptedPassword, CommonUtils.encrypt(unEncryptedPassword));
-						fileContent = fileContent.replace(passwordLine, newLine);
-					 }
-		
-				}
-			 CommonUtils.createFileWithContent(filePath, fileContent);	
-			}
-		}
-	}
-	
-	/**
-	 * Find Lines Containing passed in match String from the passed in file
-	 * @param filePath file Path
-	 * @param findMe find String
-	 * @return List of Matching Strings
-	 */
-	public static List<String> getLinesWithStringsInFile(String filePath, String findMe) {
-		LineNumberReader lineReader = null;
-		List<String> passwordLineList = null;
-		try {
-			lineReader = new LineNumberReader(new FileReader(filePath));
-			String line = null;
-			passwordLineList = new ArrayList<String>();
-			while ((line = lineReader.readLine()) != null) {
-				if (line.contains(findMe)) {
-					passwordLineList.add(line);
-				}
-			}
-
-		} catch (FileNotFoundException ex) {
-			logger.error(ex.getMessage());
-		} catch (IOException ex) {
-			logger.error(ex.getMessage());
-		} finally {
-			try {
-				if (lineReader != null)
-					lineReader.close();
-			} catch (IOException ex) {
-				logger.error(ex.getMessage());
-			}
-		}
-		return passwordLineList;
 	}
 
 	
@@ -455,7 +386,8 @@ public class ScriptUtil {
 			Class<ScriptUtil> scriptUtilClass = ScriptUtil.class;
 			Method[] methods = scriptUtilClass.getMethods();
 			for (int i = 0; i < methods.length; i++) {
-				if(methods[i].getName().equals(args[0])){
+				String name = methods[i].getName();
+				if(name.equals(args[0])){
 					validMethod = true;
 					try {
 						String[] methodArgs = new String[args.length - 1];

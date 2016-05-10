@@ -20,6 +20,7 @@ package com.cisco.dvbu.ps.common.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -28,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,6 +47,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -58,11 +61,13 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
+import com.cisco.dvbu.ps.common.scriptutil.ScriptUtil;
 import com.cisco.dvbu.ps.deploytool.dao.ServerAttributeDAO;
 import com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl;
 import com.compositesw.common.security.CompositeSecurityException;
@@ -76,7 +81,8 @@ import com.compositesw.services.system.util.common.AttributeList;
 // -- CommonUtils to avoid confusion with Ant Utils 
 public class CommonUtils {
 	
-
+	private static Log logger = LogFactory.getLog(CommonUtils.class);
+   
 	public static HashMap<String, String> assembleArgs(String[] args) throws CompositeException {
 		
 		HashMap<String, String> retval = new HashMap<String, String>();
@@ -252,7 +258,34 @@ public class CommonUtils {
 		}
 		return stringBuilder.toString();
 	}
-   
+
+	public static byte[] getFileAsBinary(String file) throws CompositeException {
+  	
+		try {
+			File f = new File(file);
+			long fileSize = f.length();
+			if (fileSize > Integer.MAX_VALUE) {
+				throw new CompositeException("The file is too big to read.");
+			}
+		    byte [] buffer               = new byte[ (int) fileSize ];
+
+		    FileInputStream inputStream = new FileInputStream(file);
+		    ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		    int n = 0;
+		    while (-1 != (n = inputStream.read(buffer))) {
+		       output.write(buffer, 0, n);
+		    }
+		    inputStream.close();
+		    return buffer;
+		    
+		} catch (FileNotFoundException e) {
+			throw new CompositeException(e.getMessage(),e);
+		} catch (IOException e) {
+			throw new CompositeException(e.getMessage(),e);
+		}
+	}
+
     public static String getStackTraceAsString(Throwable throwable) {
         Writer stackTraceWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stackTraceWriter);
@@ -311,6 +344,138 @@ public class CommonUtils {
 		}
 		return exists;
 	}
+
+	public static void encryptPasswordsInPropertyFile(String filePath, String bypassStr) 
+	{
+		// List of tokens:
+		//  "VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD"
+		String passwordTokenList = CommonConstants.encryptPropertiesList;
+		StringTokenizer st = new StringTokenizer(passwordTokenList, " ");
+
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			List<String> passwordLinesList = getLinesWithStringsInFile(filePath,token+"=");
+
+			String fileContent = CommonUtils.getFileAsString(filePath);
+			
+			if(passwordLinesList != null && !passwordLinesList.isEmpty()){
+				for (Iterator<String> iterator = passwordLinesList.iterator(); iterator.hasNext();) 
+				{
+					String passwordLine = (String) iterator.next();
+				    int passwordPos= passwordLine.lastIndexOf("=");
+					String unEncryptedPassword=passwordLine.substring(passwordPos+1,passwordLine.length());
+					
+					// Determine if the value is a variable with the format: $VAR or $VAR$ or %VAR%
+					boolean isVariable = false;
+					if (unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0) {
+						int len = unEncryptedPassword.length();
+						String chBeg = unEncryptedPassword.substring(0, 1);
+						String chEnd = unEncryptedPassword.substring(len-1, len);
+						if (chBeg.equals("%") && chEnd.equals("%")) {
+							isVariable = true;
+						} 
+						if (!isVariable && ((chBeg.equals("$") && chEnd.equals("$")) || chBeg.equals("$"))) {
+							isVariable = true;
+						} 
+					}			
+										
+					if(!isVariable && unEncryptedPassword != null && unEncryptedPassword.trim().length() > 0 && !unEncryptedPassword.startsWith("Encrypted:"))
+					{
+						// If property value of the variable is another variable in the password token list then don't encrypt it or if it is the bypass list then don't encrypt it.
+						if (!CommonUtils.doBypassEncryption(unEncryptedPassword, bypassStr)) 
+						{
+							String newLine = passwordLine.replace(unEncryptedPassword, CommonUtils.encrypt(unEncryptedPassword));
+							fileContent = fileContent.replace(passwordLine, newLine);
+						}
+					 }
+				}
+			 CommonUtils.createFileWithContent(filePath, fileContent);	
+			}
+		}
+	}
+	
+	/**
+	 * Find Lines Containing passed in match String from the passed in file
+	 * @param filePath file Path
+	 * @param findMe find String
+	 * @return List of Matching Strings
+	 */
+	public static List<String> getLinesWithStringsInFile(String filePath, String findMe) {
+		LineNumberReader lineReader = null;
+		List<String> passwordLineList = null;
+		try {
+			lineReader = new LineNumberReader(new FileReader(filePath));
+			String line = null;
+			passwordLineList = new ArrayList<String>();
+			while ((line = lineReader.readLine()) != null) {
+				if (line.contains(findMe)) {
+					passwordLineList.add(line);
+				}
+			}
+
+		} catch (FileNotFoundException ex) {
+			logger.error(ex.getMessage());
+		} catch (IOException ex) {
+			logger.error(ex.getMessage());
+		} finally {
+			try {
+				if (lineReader != null)
+					lineReader.close();
+			} catch (IOException ex) {
+				logger.error(ex.getMessage());
+			}
+		}
+		return passwordLineList;
+	}
+
+	/**
+	 * doBypassEncryption - bypass encryption=true (do not encrypt) or bypass encryption=false (do encrypt)
+	 *   check to see if a password can be encrypted based on whether the password is in the bypass string
+	 *   or if it is already a variable in the encrypted properties password variable list.
+	 * @param propertyValue - the value of a property such as a password
+	 * @param bypassStr - a comma separated list of strings to bypass if found in one of the target variables or elements to encrypt.
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean doBypassEncryption(String propertyValue, String bypassStr) {
+		boolean bypassEncryption = false;
+
+		if (propertyValue != null && propertyValue.length() > 0) 
+		{
+			// If property value of the variable is another variable in the password token list then don't encrypt it
+			// First see if it is a possible variable and remove $ and % from beginning and end
+			int len = propertyValue.length();
+			String firstChr = propertyValue.substring(0, 1);
+			String lastChr = propertyValue.substring(len-1, len);
+			String newPropertyValue = propertyValue;
+			if (firstChr.equals("$") || firstChr.equals("%")) 
+			{
+				if (lastChr.equals("$") || lastChr.equals("%")) 
+				{
+					// Capture the property value between the variable designators
+					newPropertyValue = propertyValue.substring(1, len-1);
+				} else {
+					// Capture the property value after the first variable designator
+					newPropertyValue = propertyValue.substring(1);
+				}
+			}
+			// Check for existence in the password variable list: CommonConstants.encryptPropertiesList
+			if (existsEncryptPropertyList(newPropertyValue))
+				bypassEncryption = true;
+				
+			// If the property value of the variable is in the bypass list then don't encrypt it.
+			if (bypassStr != null && bypassStr.trim().length() > 0) 
+			{
+				StringTokenizer st = new StringTokenizer(bypassStr, ",");
+				while (st.hasMoreTokens()) {
+					String token2 = st.nextToken();
+					if (propertyValue.equals(token2))
+						bypassEncryption = true;
+				}
+			}
+		}
+		return bypassEncryption;
+	}
+	
 
 	// Test for file exists
 	public static boolean fileExists(String filePath) {
@@ -1491,6 +1656,7 @@ public class CommonUtils {
 		String jvmPropertVal = null;
 		String propFilePropertyVal = null;
 		String systemPropertyVal = null;
+		String propertyValueOrigin = null;
 		int jvmPos = 1;
 		int propFilePos = 2;
 		int systemPos = 3;
@@ -1534,7 +1700,7 @@ public class CommonUtils {
 			if (systemPos < 0)
 				throw new ApplicationException("Error parsing property file=["+propertyFile+"]  propertyOrderPrecedence="+propertyOrderPrecedence+"  The property \"propertyOrderPrecedence\" must contain \"SYSTEM\".");	
 		}
-		
+
 		try {	
 			// Get the JVM Property and if blank make it null
 			jvmPropertVal = System.getProperty(property);
@@ -1554,58 +1720,81 @@ public class CommonUtils {
 			if (jvmPos < propFilePos && propFilePos < systemPos) {			//jvmPos=1; propFilePos=2; systemPos=3;  (Default Behavior)
 				if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} else if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				} else if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				}
 			} 
 			else if (jvmPos < systemPos && systemPos < propFilePos) {  		//jvmPos=1; systemPos=2; propFilePos=3;	
 				if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} else if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				} else if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				}
 			}
 			else if (propFilePos < jvmPos && jvmPos < systemPos) {  		//propFilePos=1; jvmPos=2; systemPos=3;	
 				if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				} else if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} else if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				} 
 			}
 			else if (propFilePos < systemPos && systemPos < jvmPos) {  		//propFilePos=1; systemPos=2; jvmPos=3;	
 				if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				} else if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				} else if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} 				
 			}
 			else if (systemPos < jvmPos && jvmPos < propFilePos) {  		//systemPos=1; jvmPos=2; propFilePos=3;	
 				if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				} else if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} else if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				} 								
 			}
 			else if (systemPos < propFilePos && propFilePos < jvmPos) {  	//systemPos=1; propFilePos=2; jvmPos=3;	
 				if (systemPropertyVal != null) {
 					propertyVal = systemPropertyVal;
+					propertyValueOrigin = "SYSTEM";
 				} else if (propFilePropertyVal != null) {
 					propertyVal = propFilePropertyVal;
+					propertyValueOrigin = propertyFile;
 				} else if (jvmPropertVal != null) {
 					propertyVal = jvmPropertVal;
+					propertyValueOrigin = "JVM";
 				} 												
 			} else {
 				propertyVal = "";
+			}
+
+			if(logger.isDebugEnabled()){
+				logger.debug("CommonUtils.getFileOrSystemPropertyValue() : "+" propertyOrderPrecedence="+propertyOrderPrecedence+", propertyFile="+propertyFile+
+						", propertyValueOrigin="+propertyValueOrigin+", property="+property+", propertyVal="+propertyVal);
 			}
 
 			/* deprecated code
@@ -2342,6 +2531,28 @@ public class CommonUtils {
 	    return null;
 	}
 
+	/**
+	 * isExecOperation - Determine if command line argument -noop was set by checking the value of environment variable NO_OPERATION.
+	 * 
+	 * @return true|false,  true=execute the operation, false=do not execute the operation.
+	 */
+	public static boolean isExecOperation() 
+	{
+		// Assume normal operation is to execute the operation
+		boolean execOperation = true;
+		// Get the configuration property file set in the environment with a default of deploy.properties
+		String propertyFile = CommonUtils.getFileOrSystemPropertyValue(CommonConstants.propertyFile, "CONFIG_PROPERTY_FILE");
+		// Determine if there is an execute no operation in affect
+		String noopStr = CommonUtils.getFileOrSystemPropertyValue(propertyFile, "NO_OPERATION");
+		// If the command line option -noop (NO_OPERATION) flag was set then do not execute the operation.
+		if (noopStr != null && noopStr.equalsIgnoreCase("true"))
+			execOperation = false;
+		if(logger.isDebugEnabled()) {
+			logger.debug("CommonUtils.isExecOperation().  execOperation="+execOperation+"  noopStr="+noopStr+"  propertyFile="+propertyFile);
+		}
+		return execOperation;
+	}
+	
 	/**
 	 * For testing.
 	 * 

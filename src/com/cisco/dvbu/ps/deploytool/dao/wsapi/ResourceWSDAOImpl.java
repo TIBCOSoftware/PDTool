@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -138,99 +139,108 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 			Holder<String> resultId = new Holder<String>();
 			Holder<Long> requestId = new Holder<Long>();
 			 
+			// Set the command and action name
+			String command = "executeSql";
+			String actionName = "executeProcedure";
 
-			port.executeSql(procedureScript, true, true, 0, null, true, null, null, dataServiceName, completed, requestStatus, metadata, rowsAffected, result, resultId, requestId);
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{		
+				// Execute the published CIS procedure
+				port.executeSql(procedureScript, true, true, 0, null, true, null, null, dataServiceName, completed, requestStatus, metadata, rowsAffected, result, resultId, requestId);
 
-
-			if (!outputReturnVariables) {
-				logger.info("ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql().");
-			
-			} else {
-				String resultStatistics = "ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql(). ";
-
-				if (completed != null && logger.isDebugEnabled())
-					resultStatistics = resultStatistics + "completed="+completed.value.toString()+",   ";
-				if (requestStatus != null)
-					resultStatistics = resultStatistics + "requestStatus="+requestStatus.value.toString()+",   ";
-				if (rowsAffected != null)
-					resultStatistics = resultStatistics + "rowsAffected="+rowsAffected.value.toString()+",   ";
-				if (resultId != null && logger.isDebugEnabled())
-					resultStatistics = resultStatistics + "resultId="+resultId.value.toString()+",   ";
-				if (requestId != null && logger.isDebugEnabled())
-					resultStatistics = resultStatistics + "requestId="+requestId.value.toString()+",   ";
-				resultStatistics = resultStatistics.trim();
-				resultStatistics = resultStatistics.substring(0, resultStatistics.length()-1);
-				logger.info(resultStatistics);
+				if (!outputReturnVariables) {
+					logger.info("ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql().");
 				
-				resultStatistics = "Procedure output for variables: [";
-				// Extract metadata
-				String[] columnList = new String[0];
-				if (metadata != null) {
-					List<Column> columns = metadata.value.getColumn();
-					int size = columns.size();
-					columnList = new String[size];
-					int i = 0;
-					for (Column col : columns) {
-						columnList[i] = col.getName();
-						if (i > 0)
-							resultStatistics = resultStatistics + ", ";
-						resultStatistics = resultStatistics + col.getName();
-						i = i + 1;
+				} else {
+					String resultStatistics = "ResourceWSDAOImpl.executeProcedure(). Successfully executed: port.executeSql(). ";
+	
+					if (completed != null && logger.isDebugEnabled())
+						resultStatistics = resultStatistics + "completed="+completed.value.toString()+",   ";
+					if (requestStatus != null)
+						resultStatistics = resultStatistics + "requestStatus="+requestStatus.value.toString()+",   ";
+					if (rowsAffected != null)
+						resultStatistics = resultStatistics + "rowsAffected="+rowsAffected.value.toString()+",   ";
+					if (resultId != null && logger.isDebugEnabled())
+						resultStatistics = resultStatistics + "resultId="+resultId.value.toString()+",   ";
+					if (requestId != null && logger.isDebugEnabled())
+						resultStatistics = resultStatistics + "requestId="+requestId.value.toString()+",   ";
+					resultStatistics = resultStatistics.trim();
+					resultStatistics = resultStatistics.substring(0, resultStatistics.length()-1);
+					logger.info(resultStatistics);
+					
+					resultStatistics = "Procedure output for variables: [";
+					// Extract metadata
+					String[] columnList = new String[0];
+					if (metadata != null) {
+						List<Column> columns = metadata.value.getColumn();
+						int size = columns.size();
+						columnList = new String[size];
+						int i = 0;
+						for (Column col : columns) {
+							columnList[i] = col.getName();
+							if (i > 0)
+								resultStatistics = resultStatistics + ", ";
+							resultStatistics = resultStatistics + col.getName();
+							i = i + 1;
+						}
 					}
-				}
-				resultStatistics = resultStatistics + "]";
-				logger.info(resultStatistics);
-		
-				// Extract values
-				String[] values = new String[0];
-				if (result != null) {
-					TabularValue res = result.value;
-					if (res != null) {
-						List<ValueList> rows = res.getRows().getRow();
-						
-						if (rows != null) {
-							// Determine the size of the value array
-							int size = 0;
-							for (ValueList row : rows) {
-								for (Value val : row.getValue()) {
-									size++;
+					resultStatistics = resultStatistics + "]";
+					logger.info(resultStatistics);
+			
+					// Extract values
+					String[] values = new String[0];
+					if (result != null) {
+						TabularValue res = result.value;
+						if (res != null) {
+							List<ValueList> rows = res.getRows().getRow();
+							
+							if (rows != null) {
+								// Determine the size of the value array
+								int size = 0;
+								for (ValueList row : rows) {
+									for (Value val : row.getValue()) {
+										size++;
+									}
 								}
-							}
-							// Declare the size
-							values = new String[size];					
-							int i = 0;
-							for (ValueList row : rows) {
-								for (Value val : row.getValue()) {
-									if (val != null)
-										values[i++] = val.getValue();
-									else
-										values[i++] = null;
+								// Declare the size
+								values = new String[size];					
+								int i = 0;
+								for (ValueList row : rows) {
+									for (Value val : row.getValue()) {
+										if (val != null)
+											values[i++] = val.getValue();
+										else
+											values[i++] = null;
+									}
 								}
 							}
 						}
 					}
-				}
-				// Process the columns and values
-				if (columnList != null) {
-					int valuelen = 0;
-					String columname = null;
-					for (int i=0; i < columnList.length; i++) {
-						String val = null;
-						columname = columnList[i];
-						if (i < values.length) {
-							val = values[i];
-							valuelen = i + 1;
-						}
-						
-						logger.info(columname+'='+val);
-					}
-					if (valuelen < values.length) {
-						for (int i=valuelen; i < values.length; i++) {
-							String val = values[i];
+					// Process the columns and values
+					if (columnList != null) {
+						int valuelen = 0;
+						String columname = null;
+						for (int i=0; i < columnList.length; i++) {
+							String val = null;
+							columname = columnList[i];
+							if (i < values.length) {
+								val = values[i];
+								valuelen = i + 1;
+							}
+							
 							logger.info(columname+'='+val);
 						}
+						if (valuelen < values.length) {
+							for (int i=valuelen; i < values.length; i++) {
+								String val = values[i];
+								logger.info(columname+'='+val);
+							}
+						}
 					}
 				}
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 			}
 
 		} catch (ExecuteSqlSoapFault e) {
@@ -284,10 +294,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.deleteResource().  Invoking port.destroyResource(\""+resourcePath+"\", \""+resourceType+"\", true).");
 				}
 				
-				port.destroyResource(resourcePath, ResourceType.valueOf(resourceType), true);
+				// Set the command and action name
+				String command = "destroyResource";
+				String actionName = "deleteResource";
 
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.deleteResource().  Success: port.destroyResource().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.destroyResource(resourcePath, ResourceType.valueOf(resourceType), true);
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.deleteResource().  Success: port.destroyResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -326,10 +346,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.renameResource().  Invoking port.renameResource(\""+resourcePath+"\", \""+resourceType+"\", \""+newName+"\").");
 				}
 
-				port.renameResource(resourcePath, ResourceType.valueOf(resourceType), newName);
+				// Set the command and action name
+				String command = "renameResource";
+				String actionName = "renameResource";
 
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.renameResource().  Success: port.renameResource().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.renameResource(resourcePath, ResourceType.valueOf(resourceType), newName);
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.renameResource().  Success: port.renameResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -367,10 +397,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.copyResource().  Invoking port.copyResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", \""+copyMode+"\").");
 				}
 				
-				port.copyResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, CopyMode.valueOf(copyMode));
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.copyResource().  Success: port.copyResource().");
+				// Set the command and action name
+				String command = "copyResource";
+				String actionName = "copyResource";
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.copyResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, CopyMode.valueOf(copyMode));
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.copyResource().  Success: port.copyResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -408,10 +448,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.moveResource().  Invoking port.moveResource(\""+resourcePath+"\", \""+resourceType+"\", \""+targetContainerPath+"\", \""+newName+"\", true).");
 				}
 				
-				port.moveResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, true);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.moveResource().  Success: port.moveResource().");
+				// Set the command and action name
+				String command = "moveResource";
+				String actionName = "moveResource";
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.moveResource(resourcePath, ResourceType.valueOf(resourceType), targetContainerPath, newName, true);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.moveResource().  Success: port.moveResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -449,10 +499,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.lockResource().  Invoking port.lockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\").");
 				}
 				
-				port.lockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.lockResource().  Success: port.lockResource().");
+				// Set the command and action name
+				String command = "lockResource";
+				String actionName = "lockResource";
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.lockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.lockResource().  Success: port.lockResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -490,10 +550,20 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 					logger.debug("ResourceWSDAOImpl.unlockResource().  Invoking port.unlockResource(\""+resourcePath+"\", \""+resourceType+"\", \"FULL\", \""+comment+"\").");
 				}
 				
-				port.unlockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL, comment);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceWSDAOImpl.unlockResource().  Success: port.unlockResource().");
+				// Set the command and action name
+				String command = "lockResource";
+				String actionName = "lockResource";
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{		
+					port.unlockResource(resourcePath, ResourceType.valueOf(resourceType), DetailLevel.FULL, comment);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceWSDAOImpl.unlockResource().  Success: port.unlockResource().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			} else {
 				throw new ApplicationException("The resource "+resourcePath+" does not exist.");
@@ -916,11 +986,21 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 											String type = resource.getType().toString();
 											String subtype = resource.getSubtype().toString();
 											if (type.equalsIgnoreCase("CONTAINER") && (subtype.equalsIgnoreCase("FOLDER") || subtype.equalsIgnoreCase("FOLDER_CONTAINER")) ) {
-												// Create the resource path
-												port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
-												
-												if(logger.isInfoEnabled()){
-													logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+												// Set the command and action name
+												String command = "createResource";
+												String actionName = "createFolder";
+
+												// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+												if (CommonUtils.isExecOperation()) 
+												{		
+													// Create the resource path
+													port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
+													
+													if(logger.isInfoEnabled()){
+														logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+													}
+												} else {
+													logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 												}
 											} else {
 												throw new CompositeException("Cannot create a folder when the parent is not a folder for parentPath="+parentPath+" type="+type+" subtype="+subtype);
@@ -955,11 +1035,22 @@ public class ResourceWSDAOImpl implements ResourceDAO {
 							String type = resource.getType().toString();
 							String subtype = resource.getSubtype().toString();
 							if (type.equalsIgnoreCase("CONTAINER") && (subtype.equalsIgnoreCase("FOLDER") || subtype.equalsIgnoreCase("FOLDER_CONTAINER")) ) {
-								// Create the resource path
-								port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
-								
-								if(logger.isInfoEnabled()){
-									logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+
+								// Set the command and action name
+								String command = "createResource";
+								String actionName = "createFolder";
+
+								// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+								if (CommonUtils.isExecOperation()) 
+								{		
+									// Create the resource path
+									port.createResource(parentPath, name, DetailLevel.valueOf("FULL"), ResourceType.valueOf("CONTAINER"), ResourceSubType.valueOf("FOLDER_CONTAINER"), null, null, null, false);
+									
+									if(logger.isInfoEnabled()){
+										logger.info("Resource Folder Created "+resourcePath+" on server "+serverId);
+									}
+								} else {
+									logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 								}
 							} else {
 								throw new CompositeException("Cannot create a folder when the parent is not a folder for parentPath="+parentPath+" type="+type+" subtype="+subtype);

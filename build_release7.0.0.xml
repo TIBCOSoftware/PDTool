@@ -65,13 +65,15 @@
 	<property name="pdtoolstudio-installer-target" value="PDToolStudio${ver}_installer"/>
 	<property name="pdtool-target" value="${pdtool-installer-target}/installer_source/PDTool"/>
 	<property name="pdtoolstudio-target" value="${pdtoolstudio-installer-target}/installer_source/PDToolStudio"/>
-	
+
 	<!-- These environment variables are used to modify the windows batch file for the build environment vs. the release environment. -->
+	<!-- mtinius-20160502 - No longer relavent.  Testing to be done outside of build folder
 	<property name="BUILD_ENV_DEPLOY_CLASSPATH" value="%PROJECT_HOME%\dist\PDTool%CIS_VERSION%.jar;%PROJECT_HOME%\lib%CIS_VERSION%\*;%PROJECT_HOME%\libcommon\*"/>
 	<property name="BUILD_ENV_ENDORSED_DIR" value="%PROJECT_HOME%\lib%CIS_VERSION%\endorsed"/>
 	<property name="RELEASE_ENV_DEPLOY_CLASSPATH" value="%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\*"/>
 	<property name="RELEASE_ENV_ENDORSED_DIR" value="%PROJECT_HOME%\lib\endorsed"/>
-
+	-->
+	
 	<path id="project.class.path">
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
@@ -130,27 +132,30 @@
 		<!-- Create the release directory if it does not exist -->
 		<mkdir dir="${rel}"/>
 
-		<!-- Copy ExecutePDTool.bat into the /bin directory so that it can be used for testing. -->
+		<!-- mtinius-20160502 - No longer relavent.  Testing to be done outside of build folder
+		<!- - Copy ExecutePDTool.bat into the /bin directory so that it can be used for testing. - ->
 		<copy todir="${bin}">
 		    <fileset dir="${bin}/PDTool">
 		        <include name="ExecutePDTool.bat"/>
 		    </fileset>
 		</copy>
 		
-		<!-- Replace @version@ string -->
+		<!- - Replace @version@ string - ->
 		<replace
             file="${bin}/ExecutePDTool.bat"
             token="@version@"
             value="${ver}" />
-		<!-- Replace @DEPLOY_CLASSPATH@ and @ENDORSED_DIR@ string -->
+		<!- - Replace @DEPLOY_CLASSPATH@ string - ->
 		<replace
             file="${bin}/ExecutePDTool.bat"
             token="@DEPLOY_CLASSPATH@"
             value="${BUILD_ENV_DEPLOY_CLASSPATH}" />
+		<!- - Replace @ENDORSED_DIR@ string - ->
 		<replace
             file="${bin}/ExecutePDTool.bat"
             token="@ENDORSED_DIR@"
             value="${BUILD_ENV_ENDORSED_DIR}" />
+		-->
 
 		<!-- 
 		***************************************************************
@@ -195,8 +200,16 @@
 		        <include name="PDTool-*.bat"/>
 		        <include name="replaceText.bat"/>
 		        <include name="SetupPDTool.bat"/>
+		        <include name="cisVersion.template.bat"/>
 		    </fileset>
 		</copy>
+		<!-- Rename the cisVersion batch/shell script templates -->
+		<move file="${pdtool-installer-target}/installer/cisVersion.template.bat" tofile="${pdtool-installer-target}/installer/cisVersion.bat"/>
+		<!-- Replace @version@ string -->
+		<replace
+            file="${pdtool-installer-target}/installer/cisVersion.bat"
+            token="@version@"
+            value="${ver}" />
 
 		<!-- Copy the Automated Test Framework directory -->
 		<copy todir="${pdtool-target}/${atf}">
@@ -231,23 +244,39 @@
 		    </fileset>
 		</copy>
 
+		<!-- copy PDTool/bin directory -->
 		<copy todir="${pdtool-target}/bin">
 		    <fileset dir="${bin}/PDTool">
 		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
 		        <include name="*.sh"/>
 		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
+		<!-- copy PDTool/bin/envBin directory -->
+		<copy todir="${pdtool-target}/bin/envBin">
+		    <fileset dir="${bin}/PDTool/envBin">
+		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
+		        <include name="*.sh"/>
+		    </fileset>
+		</copy>
+
+		<!-- Rename the cisVersion batch/shell script templates -->
+		<move file="${pdtool-target}/bin/cisVersion.template.bat" tofile="${pdtool-target}/bin/cisVersion.bat"/>
+		<move file="${pdtool-target}/bin/cisVersion.template.sh"  tofile="${pdtool-target}/bin/cisVersion.sh"/>
 		<!-- Replace @version@ string -->
 		<replace
-            file="${pdtool-target}/bin/ExecutePDTool.bat"
+            file="${pdtool-target}/bin/cisVersion.bat"
             token="@version@"
             value="${ver}" />
 		<replace
-            file="${pdtool-target}/bin/ExecutePDTool.sh"
+            file="${pdtool-target}/bin/cisVersion.sh"
             token="@version@"
             value="${ver}" />
-		<!-- Replace @DEPLOY_CLASSPATH@ and @ENDORSED_DIR@ string -->
+
+		<!-- mtinius-20160502 - No longer relavent.  Testing to be done outside of build folder
+		<!- - Replace @DEPLOY_CLASSPATH@ and @ENDORSED_DIR@ string - ->
 		<replace
             file="${pdtool-target}/bin/ExecutePDTool.bat"
             token="@DEPLOY_CLASSPATH@"
@@ -256,8 +285,10 @@
             file="${pdtool-target}/bin/ExecutePDTool.bat"
             token="@ENDORSED_DIR@"
             value="${RELEASE_ENV_ENDORSED_DIR}" />
-
-			<copy todir="${pdtool-target}/dist">
+		-->
+		
+		<!-- Copy distribution file -->
+		<copy todir="${pdtool-target}/dist">
 		    <fileset dir="${dist}">
 		        <include name="*${ver}.jar"/>
 		    </fileset>
@@ -435,8 +466,16 @@
 		        <include name="PDToolStudio-*.bat"/>
 		        <include name="replaceText.bat"/>
 		        <include name="SetupPDTool.bat"/>
+		        <include name="cisVersion.template.bat"/>
 		    </fileset>
 		</copy>
+		<!-- Rename the cisVersion batch/shell script templates -->
+		<move file="${pdtoolstudio-installer-target}/installer/cisVersion.template.bat" tofile="${pdtoolstudio-installer-target}/installer/cisVersion.bat"/>
+		<!-- Replace @version@ string -->
+		<replace
+            file="${pdtoolstudio-installer-target}/installer/cisVersion.bat"
+            token="@version@"
+            value="${ver}" />
 
 		<!-- Copy the VCSClients directory -->
 		<copy todir="${pdtoolstudio-installer-target}/installer_source/VCSClients">
@@ -451,52 +490,76 @@
 		        <include name="PDToolStudio_release_notes.txt"/>
 		    </fileset>
 		</copy>
-		
+
+		<!-- Copy distribution file -->
 		<copy todir="${pdtoolstudio-target}/bin">
 		    <fileset dir="${bin}/PDToolStudio">
 		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
 		        <include name="*.sh"/>
 		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
+		<!-- copy PDToolStudio/bin/envBin directory -->
+		<copy todir="${pdtoolstudio-target}/bin/envBin">
+		    <fileset dir="${bin}/PDToolStudio/envBin">
+		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
+		        <include name="*.sh"/>
+		    </fileset>
+		</copy>
+
 		<copy todir="${pdtoolstudio-target}/bin_novars">
 		    <fileset dir="${bin}/PDToolStudio_bin_novars">
 		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
 		        <include name="*.sh"/>
 		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
-        <replace
-            file="${pdtoolstudio-target}/bin_novars/ExecutePDToolStudio_novars.bat"
+
+		<!-- Rename the cisVersion batch/shell script templates -->
+		<move file="${pdtoolstudio-target}/bin_novars/cisVersion.template.bat" tofile="${pdtoolstudio-target}/bin_novars/cisVersion.bat"/>
+		<!-- Replace @version@ string -->
+		<replace
+            file="${pdtoolstudio-target}/bin_novars/cisVersion.bat"
             token="@version@"
             value="${ver}" />
-        <replace
-            file="${pdtoolstudio-target}/bin_novars/checkin_novars.bat"
-            token="@version@"
-            value="${ver}" />
-        <replace
-            file="${pdtoolstudio-target}/bin_novars/checkout_novars.bat"
-            token="@version@"
-            value="${ver}" />
-        <replace
-            file="${pdtoolstudio-target}/bin_novars/forced_checkin_novars.bat"
-            token="@version@"
-            value="${ver}" />
-			<copy todir="${pdtoolstudio-target}/bin_host1">
+
+		<!-- Copy distribution file -->
+		<copy todir="${pdtoolstudio-target}/bin_host1">
 		    <fileset dir="${bin}/PDToolStudio_bin_host1">
 		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
 		        <include name="*.sh"/>
 		        <include name="*.properties"/>
+		    </fileset>
+		</copy>
+		<!-- copy PDToolStudio/bin_host1/envBin directory -->
+		<copy todir="${pdtoolstudio-target}/bin_host1/envBin">
+		    <fileset dir="${bin}/PDToolStudio_bin_host1/envBin">
+		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
+		        <include name="*.sh"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtoolstudio-target}/bin_host2">
 		    <fileset dir="${bin}/PDToolStudio_bin_host2">
 		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
 		        <include name="*.sh"/>
 		        <include name="*.properties"/>
 		    </fileset>
 		</copy>
-		
+		<!-- copy PDToolStudio/bin_host2/envBin directory -->
+		<copy todir="${pdtoolstudio-target}/bin_host2/envBin">
+		    <fileset dir="${bin}/PDToolStudio_bin_host2/envBin">
+		        <include name="*.bat"/>
+		        <include name="*.cmd"/>
+		        <include name="*.sh"/>
+		    </fileset>
+		</copy>
+
 		<copy todir="${pdtoolstudio-target}/dist">
 		    <fileset dir="${dist}">
 		        <include name="*${ver}.jar"/>

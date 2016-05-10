@@ -22,7 +22,7 @@
 	<archive>
 		<id>FullBackup</id>
 		<archiveMethod>CAR</archiveMethod>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/local_server_backup.car</archiveFileName>
+		<archiveFileName>$MODULE_HOME/test/local_server_backup.car</archiveFileName>
 		<overwrite>true</overwrite> 
 		<encrypt>false</encrypt>
 		<pkgName>Test backup-export operation</pkgName>
@@ -51,7 +51,7 @@
 	<archive>
 		<id>export01</id>
 		<archiveMethod>CAR</archiveMethod>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
 		<includeDependencies>false</includeDependencies>
 		<overwrite></overwrite> 
 		<resources>
@@ -151,7 +151,7 @@
 		<id>TestOptions</id>
 		<pkgName>Test package-export and package-import operations</pkgName>
 		<description>Test archive that contains resources from two folder in admin's My Home</description>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/TestCar.car</archiveFileName>
+		<archiveFileName>$MODULE_HOME/test/TestCar.car</archiveFileName>
 		<includeDependencies>false</includeDependencies>		
 		<overwrite>true</overwrite> 
 		<encrypt>false</encrypt>
@@ -185,7 +185,7 @@
 		<id>TestRestoreOptions</id>
 		<pkgName>Test backup-export/backup-import operations</pkgName>
 		<description>Test archive that contains full backup of a Composite server</description>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/TestFullCar.car</archiveFileName>
+		<archiveFileName>$MODULE_HOME/test/TestFullCar.car</archiveFileName>
 		<overwrite>true</overwrite> 
 		<encrypt>false</encrypt>
 		<resources>
@@ -205,7 +205,7 @@
 		<id>K12</id>
 		<pkgName>K12 datasource export/import</pkgName>
 		<description>Test archive that contains a single DS resource</description>
-		<archiveFileName>$PROJECT_HOME_PHYSICAL/resources/modules/test/K12.car</archiveFileName>
+		<archiveFileName>$MODULE_HOME/test/K12.car</archiveFileName>
 		<includeDependencies>false</includeDependencies>		
 		<overwrite>true</overwrite> 
 		<resources>

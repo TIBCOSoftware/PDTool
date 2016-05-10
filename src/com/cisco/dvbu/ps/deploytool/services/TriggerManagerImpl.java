@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBElement;
 
 
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
@@ -116,6 +117,11 @@ public class TriggerManagerImpl implements TriggerManager {
 	 */
 //	@Override
 	public void generateTriggersXML(String serverId, String startPath, String pathToTriggersXML, String pathToServersXML) throws CompositeException {
+
+		// Set the command and action name
+		String command = "generateTriggersXML";
+		String actionName = "CREATE_XML";
+
 		if(logger.isDebugEnabled()){
 			logger.debug("Entering TriggerManagerImpl.generateTriggersXML() with following params " + " serverId: " + serverId + ", pathToTriggersXML: " + pathToTriggersXML + ", pathToServersXML: " + pathToServersXML);
 		}
@@ -153,7 +159,14 @@ public class TriggerManagerImpl implements TriggerManager {
 				triggerModule.getTriggerList().getTrigger().add(triggerType);
 				populateTriggerAttributes(triggerResource, triggerType, loopCount, triggerModule.getScheduleList());
 			}
-			XMLUtils.createXMLFromModuleType(triggerModule, pathToTriggersXML);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				XMLUtils.createXMLFromModuleType(triggerModule, pathToTriggersXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 	}
 

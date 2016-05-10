@@ -18,11 +18,20 @@ REM ######################################################################
 
 Master Folder:
 
+-----------
+Testing
+-----------
+1. For testing, it is required to perform a build within Eclipse and copy the resulting release zip file to a separate path to configure and test.
+2. For simplicity of maintenance, the /bin directory batch files have been removed.
+
+-----------
+Build
+-----------
 /bin/PDTool - this is the master folder.  All edits should be done in this folder.
 
-When a build is performed on CisDeployTool project, it will automatically copy ExecutePDTool.bat
-    to the /bin directory for testing purposes.   If edits are made in /bin, they must be
-    copied to /bin/PDTool or the edits will be lost.
+Edits should be performed manually on the ExecutePDTool.template.bat and ExecutePDTool.template.sh because of the version variable that are replaced at build time.
+REM # CIS version [6.2, 7.0.0]
+set DEFAULT_CIS_VERSION=@version@
     
 The build automatically creates PDTool.zip distribution file which will contain the correct
     /bin folder with ExecutePDTool.bat, ExecutePDTool.sh and configureScripts.sh

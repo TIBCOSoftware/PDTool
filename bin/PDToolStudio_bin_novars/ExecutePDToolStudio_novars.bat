@@ -17,6 +17,7 @@ REM # This software is released AS-IS!. Support for this software is not covered
 REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 REM # 
 REM ############################################################################################################################
+REM #
 REM #=======================================================================================
 REM # Example Execution Statement:
 REM #
@@ -37,10 +38,12 @@ REM #               arg5:: [-vcsuser vcs-username] optional parameter
 REM #               arg6:: [-vcspassword vcs-password] optional parameter
 REM #
 REM # Option 3 - Execute VCS Workspace property file encryption:
-REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-file-path
+REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-file-path -bypass "string1,string2"
 REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
 REM #	            arg2:: -encrypt is used to encrypt the passwords in studio.properties or a Module XML property file
 REM #	            arg3:: file path to studio.properties or XML property file (full or relative path)
+REM #				arg4-5=[-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
+REM #                                                  that are found within a variable or XML element designated for passwords.
 REM #
 REM # Option 4 - Create Composite Studio Enable VCS:
 REM #
@@ -75,8 +78,8 @@ REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
 if not defined debug set debug=0
-REM # CIS version [6.2, 7.0.0]
-set CIS_VERSION=@version@
+REM # CIS version [6.2, 7.0.0] - set CIS_VERSION
+if exist cisVersion.bat call cisVersion.bat
 REM # Initialize variables
 set SCRIPT=ExecutePDToolStudio
 set SEP=::
@@ -99,6 +102,7 @@ SET PDTOOL_VCS_WORKSPACE_PATH_OVERRIDE=
 SET PDTOOL_CUSTOM_CIS_PATH_LIST=
 SET PDTOOL_VCS_CHECKIN_OPTIONS=
 SET PDTOOL_VCS_SCRIPT_BIN_FOLDER_OVERRIDE=
+SET PDTOOL_ENCRYPT_BYPASS_STRING=
 SET PR_VCS_PASSWORD=
 
 REM # The first parameter is the current execution path
@@ -171,8 +175,10 @@ GOTO USAGE
 REM # Print the parameters
 CALL:printablePassword "%PDTOOL_VCS_PASSWORD%" PR_VCS_PASSWORD
 call %writeOutput% "Command Line Arguments:"																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PDTOOL_PROPERTY_FILE%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%PDTOOL_ENCRYPT_BYPASS_STRING%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PAUSECMD=[%PDTOOL_PAUSECMD%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%PDTOOL_VCS_USERNAME%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -189,6 +195,7 @@ call %writeOutput% " "
 
 REM # Assign parameters
 if defined PDTOOL_PROPERTY_FILE						set PROPERTY_FILE=%PDTOOL_PROPERTY_FILE%
+if defined ENCRYPT_BYPASS_STRING					set ENCRYPT_BYPASS_STRING=%PDTOOL_ENCRYPT_BYPASS_STRING%
 if defined PDTOOL_PAUSECMD							set PAUSECMD=%PDTOOL_PAUSECMD%
 if defined PDTOOL_VCS_USERNAME						set VCS_USERNAME=%PDTOOL_VCS_USERNAME%
 if defined PDTOOL_VCS_PASSWORD						set VCS_PASSWORD=%PDTOOL_VCS_PASSWORD%
@@ -236,6 +243,7 @@ REM #   PDTOOL_VCS_PASSWORD          --> VCS_PASSWORD
 REM #   etc.
 REM #=====================================================================================
 call:resolveVariables "%PDTOOL_PROPERTY_FILE%" 		  			"%PROPERTY_FILE%" 					PROPERTY_FILE
+call:resolveVariables "%PDTOOL_ENCRYPT_BYPASS_STRING%" 		  	"%ENCRYPT_BYPASS_STRING%" 			ENCRYPT_BYPASS_STRING
 call:resolveVariables "%PDTOOL_VCS_USERNAME%" 		  			"%VCS_USERNAME%" 					VCS_USERNAME
 call:resolveVariables "%PDTOOL_VCS_PASSWORD%" 		  			"%VCS_PASSWORD%" 					VCS_PASSWORD
 call:resolveVariables "%PDTOOL_PAUSECMD%" 						"%PAUSECMD%" 						PAUSECMD
@@ -255,8 +263,10 @@ echo ###########################################################################
 echo %SCRIPT%: Command line resolved variables:
 echo ########################################################################################################################################
 call %writeOutput% "Resolved Arguments:"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PROPERTY_FILE%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%ENCRYPT_BYPASS_STRING%]" 													"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PAUSECMD=[%PAUSECMD%]" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%VCS_USERNAME%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -488,11 +498,11 @@ if NOT EXIST "%PROPERTY_FILE%" (
    goto USAGE 
 )
 REM #***********************************************
-REM # Invoke: DeployManagerUtil encryptPasswordsInFile "%PROPERTY_FILE%"
+REM # Invoke: DeployManagerUtil encryptPasswordsInFileBypass "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 REM #***********************************************
-set JAVA_ACTION=encryptPasswordsInFile
-set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
-set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
+set JAVA_ACTION=encryptPasswordsInFileBypass
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
+set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 GOTO START_SCRIPT
 
 :----------------
@@ -632,7 +642,7 @@ set blank=
 		GOTO:EOF
 	)
 :GET_PARAMS_CONT
-    set PARAMS=%PARAMS%%ARG1%%blank%
+    set PARAMS=%PARAMS%%TARG1%%blank%
     shift
 GOTO GET_PARAMS_LOOP
 GOTO:getParamsLoop
@@ -690,7 +700,7 @@ shift
             SET PDTOOL_PROPERTY_FILE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=PROPERTY_FILE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -705,7 +715,7 @@ shift
             SET PDTOOL_VCS_USERNAME=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_USERNAME
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -720,7 +730,7 @@ shift
             SET PDTOOL_VCS_PASSWORD=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_PASSWORD
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -743,7 +753,7 @@ shift
             SET PDTOOL_WINDOWS_LOGIN=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=WINDOWS_LOGIN
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -758,7 +768,7 @@ shift
             SET PDTOOL_USER=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=USER
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -773,7 +783,7 @@ shift
             SET PDTOOL_DOMAIN=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=DOMAIN
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -788,7 +798,7 @@ shift
             SET PDTOOL_HOST=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=HOST
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -803,7 +813,7 @@ shift
             SET PDTOOL_INCLUDE_RESOURCE_SECURITY=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=INCLUDE_RESOURCE_SECURITY
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -818,7 +828,7 @@ shift
             SET PDTOOL_VCS_WORKSPACE_PATH_OVERRIDE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_WORKSPACE_PATH_OVERRIDE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -841,7 +851,7 @@ shift
             SET PDTOOL_CUSTOM_CIS_PATH_LIST=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=CUSTOM_CIS_PATH_LIST
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -856,7 +866,7 @@ shift
             SET PDTOOL_VCS_CHECKIN_OPTIONS=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_CHECKIN_OPTIONS
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -871,15 +881,30 @@ shift
             SET PDTOOL_VCS_SCRIPT_BIN_FOLDER_OVERRIDE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_SCRIPT_BIN_FOLDER_OVERRIDE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
             shift
             GOTO:LOOPEND
 			
-	REM # Unknown paramter found
+	REM # Extract -bypass
 	:CONTINUE16
+     if "%ARG1%" == "-bypass" GOTO BYPASS
+ 	GOTO CONTINUE17
+	:BYPASS
+            SET PDTOOL_ENCRYPT_BYPASS_STRING=%ARG2%
+			set PARSE_ERROR=1
+			set ARG=ENCRYPT_BYPASS_STRING
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
+			if "%ARG2%" NEQ "" set PARSE_ERROR=0
+			if "%ARG2%" NEQ "" set ARG=
+			if "%ARG2%" NEQ "" set ERRORMSG=
+            shift
+            GOTO:LOOPEND
+
+	REM # Unknown paramter found
+	:CONTINUE17
 			set ARG=
  			set ERRORMSG=Execution Failed::Unknown parameter: %ARG1%
 			call:USAGE
@@ -907,7 +932,7 @@ GOTO:LOOP
 	call %writeOutput% " USAGE: %SCRIPT%%ext% [-nopause] [-vcsinit|-encrypt|-enablevcs|-vcsinitBaseFolders] [various-arguments]"
 	call %writeOutput% " "
 	if defined ARG call %writeOutput% " Argument [%ARG%] is missing or invalid."
-	call %writeOutput% " CMD: %SCRIPT%%ext% %PARAMS%"
+	call %writeOutput% " CMD: %SCRIPT%%ext% ""%PARAMS%"""
  	call %writeOutput% " "
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 1 - Execute VCS Workspace initialization:"
@@ -936,13 +961,15 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 3 - Execute Encrypt Property File:"
 	call %writeOutput% " "
-	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -encrypt config-property-file-path"
+	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -encrypt config-property-file-path -bypass ""string1,string2"""
 	call %writeOutput% " "
-	call %writeOutput% "            Example: %SCRIPT%%ext% -nopause -encrypt ../resources/config/deploy.properties"
+	call %writeOutput% "            Example: %SCRIPT%%ext% -nopause -encrypt ../resources/config/deploy.properties -bypass ""string1,string2"""
  	call %writeOutput% " "
 	call %writeOutput% "               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script."
 	call %writeOutput% "               arg2:: -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	call %writeOutput% "               arg3:: file path to deploy.properties or XML property file [full or relative path]"
+	call %writeOutput% "               arg4-5:: [-bypass ""string1,string2""] optional parameter specifying a quoted, comma-separated list of strings to bypass"
+	call %writeOutput% "                                                    that are found within a variable or XML element designated for passwords."
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 4 - Create Composite Studio Enable VCS:"
 	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -enablevcs -winlogin windows_user_login -user composite_login_user -domain composite_domain -host composite_host_server"

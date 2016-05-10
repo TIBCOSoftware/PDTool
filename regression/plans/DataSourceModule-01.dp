@@ -19,4 +19,4 @@
 # DataSource Module:
 # -----------------------------------------
 # Generate the list of Datasources
-PASS	TRUE	ExecuteAction   	generateDataSourcesXML 	$SERVERID /shared/test00		"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getDataSourceModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	generateDataSourcesXML 	$SERVERID /shared/test00		"$MODULE_HOME/generated/getDataSourceModule.xml" "$MODULE_HOME/servers.xml"

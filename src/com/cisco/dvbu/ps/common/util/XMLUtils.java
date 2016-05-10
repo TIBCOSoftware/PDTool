@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 
 import javax.xml.XMLConstants;
@@ -442,7 +443,7 @@ public class XMLUtils {
 
 
 	@SuppressWarnings("unchecked")
-	public static void encryptOrDecryptPasswordsInInputFile(String xmlFilePath,boolean encrypt) {
+	public static void encryptOrDecryptPasswordsInInputFile(String xmlFilePath, boolean encrypt, String bypassStr) {
 
 		String xmlString = CommonUtils.getFileAsString(xmlFilePath);
 		Element rootElement = getDocumentFromString(xmlString);
@@ -450,7 +451,7 @@ public class XMLUtils {
 		if(rootElement != null){
 			
 			List<Element> nodes = rootElement.getChildren();
-			processChildNodes(nodes,encrypt);
+			processChildNodes(nodes, encrypt, bypassStr);
 		
 			Document doc = rootElement.getDocument();
 		    XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
@@ -471,14 +472,12 @@ public class XMLUtils {
 				} catch (IOException e) {
 
 				}
-
 			}
-
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void processChildNodes(List<Element> childNodes,boolean encrypt){
+	private static void processChildNodes(List<Element> childNodes, boolean encrypt, String bypassStr){
 
 		boolean allowVariables = false;
 		// Look ahead to see how allowVariables is set in order to know how to encrypt the password field.
@@ -490,7 +489,7 @@ public class XMLUtils {
 				}
 
 			}else{
-				processChildNodes(element.getChildren(),encrypt);
+				processChildNodes(element.getChildren(), encrypt, bypassStr);
 			}
 		}
 
@@ -502,39 +501,45 @@ public class XMLUtils {
 				if( (CommonUtils.existsEncryptPropertyList(element.getName()) && element.getValue() != null)){
 					// encrypt the password if directed to and the allowVariables=true
 					if(encrypt && !allowVariables){
+						// Get the password value
 						String password = XMLUtils.convertXMLEscapeChar(element.getValue());
-						element.setText(CommonUtils.encrypt(password));
+						
+						// Encrypt the password value
+						if (!CommonUtils.doBypassEncryption(password, bypassStr))
+							element.setText(CommonUtils.encrypt(password));
 					}
 				}
 				// Look for PASSWORD_STRING
 				if(element.getValue() != null && CommonUtils.existsEncryptPropertyList(element.getValue())){
-					processChildNodesSiblings(childNodes, encrypt, allowVariables);
+					processChildNodesSiblings(childNodes, encrypt, allowVariables, bypassStr);
 				}
 
 			}else{
-				processChildNodes(element.getChildren(), encrypt);
+				processChildNodes(element.getChildren(), encrypt, bypassStr);
 			}
 		}
-
 	}
 
 	
-	private static void processChildNodesSiblings(List<Element> childNodes, boolean encrypt, boolean allowVariables){
+	@SuppressWarnings("unchecked")
+	private static void processChildNodesSiblings(List<Element> childNodes, boolean encrypt, boolean allowVariables, String bypassStr){
 		for (Element element : childNodes) {
 			if(element.getChildren() == null || element.getChildren().isEmpty()){
 				
 				if((element.getName().equalsIgnoreCase("value") || element.getName().equalsIgnoreCase("defaultValue") ) && element.getValue() != null){
 					if(encrypt && !allowVariables){
+						// Get the password value
 						String password = XMLUtils.convertXMLEscapeChar(element.getValue());
-						element.setText(CommonUtils.encrypt(password));
+						// Encrypt the password value
+						if (!CommonUtils.doBypassEncryption(password, bypassStr))
+							element.setText(CommonUtils.encrypt(password));
 					}
 				}
 			}
 		}
 
 	}
-
-
+	
 	private static String convertXMLEscapeChar(String str) {
 		/* 
 		 * direction

@@ -170,32 +170,50 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 				/*****************************************************
 				 * Invoke Method=updateResourcePrivileges
 				 *****************************************************/
+				String command = endpointMethodUpdatePrivs;
+				
 				if(logger.isDebugEnabled()) {
 					logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethodUpdatePrivs+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
 				}
-				// Invoke the web service method
-				String response1 = cisclient.sendRequest(endpointName, endpointMethodUpdatePrivs, requestXML);
-		
-				if(logger.isDebugEnabled()) {
-					// Format for XML pretty print
-					logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response1)));
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					// Invoke the web service method
+					String response1 = cisclient.sendRequest(endpointName, endpointMethodUpdatePrivs, requestXML);
+			
+					if(logger.isDebugEnabled()) {
+						// Format for XML pretty print
+						logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response1)));
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 				
 				/*****************************************************
 				 * Invoke Method=changeResourceOwner
 				 *****************************************************/
+				command = endpointMethodChangeOwner;
+						
 				if (privilegeModule.getResourcePrivilege().get(0).getResourceOwner() != null && 
 						privilegeModule.getResourcePrivilege().get(0).getResourceOwner().getResourceOwnerName() != null && 
 						privilegeModule.getResourcePrivilege().get(0).getResourceOwner().getResourceOwnerDomain() != null) {
 					if(logger.isDebugEnabled()) {
 						logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethodChangeOwner+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
 					}
-					// Invoke the web service method
-					String response2 = cisclient.sendRequest(endpointName, endpointMethodChangeOwner, requestXML);
-			
-					if(logger.isDebugEnabled()) {
-						// Format for XML pretty print
-						logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response2)));
+
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						// Invoke the web service method
+						String response2 = cisclient.sendRequest(endpointName, endpointMethodChangeOwner, requestXML);
+				
+						if(logger.isDebugEnabled()) {
+							// Format for XML pretty print
+							logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response2)));
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 				}
 			}		

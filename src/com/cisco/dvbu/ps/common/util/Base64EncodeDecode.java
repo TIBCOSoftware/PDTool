@@ -47,6 +47,15 @@ public class Base64EncodeDecode {
 	   return new String(encode(s.getBytes())); }
 
 	/**
+	* Encodes a byte array into Base64.
+	* No blanks or line breaks are inserted.
+	* @param in  An array containing the data bytes to be encoded.
+	* @return    A String containing the Base64 encoded data.
+	*/
+	public static String encodeString (byte[] in) {
+	   return new String(encode(in)); }
+
+	/**
 	* Encodes a byte array into Base 64 and breaks the output into lines of 76 characters.
 	* This method is compatible with sun.misc.BASE64Encoder.encodeBuffer(byte[]).
 	* @param in  An array containing the data bytes to be encoded.

@@ -23,7 +23,7 @@
   
 	<!-- SUBVERSION EXAMPLE -->
     <vcsConnection>
-      <id>svn01_win</id>
+      <id>svn01</id>
 	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
 			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
 			#     Subversion=svn
@@ -159,7 +159,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -181,13 +181,13 @@
 		-->
       <VCS_REPOSITORY_URL>$SVN_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-     <VCS_PROJECT_ROOT>$SVN_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
+     <VCS_PROJECT_ROOT>$SVN_VCS_PROJECT_ROOT$%RELEASE_FOLDER%</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
 		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
 		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+      <VCS_WORKSPACE_HOME>$SVN_VCS_WORKSPACE_HOME</VCS_WORKSPACE_HOME>
 	  <!--
 		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
 		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
@@ -200,7 +200,7 @@
 		-->
       <VCS_WORKSPACE_NAME>$SVN_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$SVN_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$SVN_VCS_TEMP_DIR</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -230,478 +230,14 @@
         <!--Element envVar is optional, maxOccurs=unbounded-->
         <envVar>
           <envName>SVN_EDITOR</envName>
-          <envValue>notepad</envValue>
+          <envValue>$VCS_EDITOR</envValue>
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
 	
- 	<!-- PERFORCE EXAMPLE -->
-    <vcsConnection>
-      <id>perforce01_win</id>
-	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
-			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
-			#     Subversion=svn
-			#     Perforce=p4
-			#     Concurrent Versions Systems=cvs
-			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
-		-->
-      <VCS_TYPE>p4</VCS_TYPE>
-	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
-      <VCS_BASE_TYPE>P4</VCS_BASE_TYPE>
-	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
-			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
-			#     Windows example: D:/dev/cvs/bin
-			#        UNIX example: /usr/bin
-		-->
-      <VCS_HOME>$P4_HOME</VCS_HOME>
-	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
-      <VCS_COMMAND>p4</VCS_COMMAND>
-	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
-      <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
-      <VCS_OPTIONS />
-
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Create new workspace equates to: 
-		#		TFS: tf workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
-		#		       e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
-		#		SVN: not applicable
-		#		 P4: not applicable
-		#		CVS: not applicable
-		-->
-	  <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
-	  
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Link workspace to VCS repository equates to: 
-		#		TFS: tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workfold -map -collection:http://hostname:8080/tfs/DefaultCollection $/Composite_62/cis_objects W:/wks/Composite_62/cis_objects -workspace:wks -noprompt /login:user,********
-		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#				-IGNORE_INIT_LINK - This option is used to ignore this step when users have READ-only access and will only be doing check-out from subversion and not check-in.	
-		#		 P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#		 P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
-		#		CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		-->
-      <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
-	  
-      <!--Element VCS_WORKSPACE_INIT_GET_OPTIONS is optional
-		# Workspace Initialization.  Get resources from VCS repository equates to: 
-		#		TFS: tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} {$VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		 P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		-->
-      <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-	  
- 	  <!--VCS Base Folder Initialization.  Add Options: 
-		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-		-->
-      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
-
-      <!--Element VCS_CHECKIN_OPTIONS is optional
-		# Resource Checkin. Checkin resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					Check out folder for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#					             Check in folder:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					  Check out file for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#								   Check in file:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#								   Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
-		-->
-      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
-	  
-      <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
-		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
-		-->
-      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
-	  
-      <!--Element VCS_CHECKOUT_OPTIONS is optional
-		# Resource Checkout. Checkout resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  tf.cmd get ${fullResourcePath} -version:${Revision} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  tf.cmd get ${fullResourcePath} -version:${Revision} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  current:  p4 sync ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync @${Revision} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		-->
-      <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
-
-      <!--Element VCS_CHECKOUT_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
-		-->
-      <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
-	  
-      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
-		# VCS Resource Import Options:
-		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
-		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
-	  
-      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
-		# VCS Resource Export Options:
-		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
-		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
-	  
-	  <!--
-		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
-		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
-		#            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
-		#            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
-		#            of the local workspace.
-		#     perforce   - The Repository URL is the host and port in perforce - 
-		#                  Command Format: [hostname:port]
-		#                         Example: myhost:1666
-		-->
-      <VCS_REPOSITORY_URL>$P4_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
-	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>$P4_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
-	  <!--
-		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-	  <!--
-		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-		#    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-		#       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-		#    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-		#       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-		-->
-      <VCS_WORKSPACE_NAME>$P4_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
-      <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$P4_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
- 	  <!--
-		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
-		#    Some VCS Servers, will ask to store the user and password locally for subsequent use.
-		-->
-     <VCS_USERNAME>$P4_VCS_USERNAME</VCS_USERNAME>
-	  <!--
-		# VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
-		#    If set in this file, execute the following command to encrypt the password:
-		#         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
-		#      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
-		-->
-      <VCS_PASSWORD>$P4_VCS_PASSWORD</VCS_PASSWORD>
-	  <!--
-	  # VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
-		#    CVS:
-		#    Perforce:    	No files to submit
-		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in,No arguments matched any files to add
-		-->
-      <VCS_IGNORE_MESSAGES>No files to submit</VCS_IGNORE_MESSAGES>
-	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
-      <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-      <!--Element vcsSpecificEnvVars is optional-->
-      <vcsSpecificEnvVars>
-        <!--Element envVar is optional, maxOccurs=unbounded-->
-        <envVar>
-          <envName>P4EDITOR</envName>
-          <envValue>notepad</envValue>
-        </envVar>
-        <envVar>
-          <envName>P4CLIENT</envName>
-          <envValue>$VCS_WORKSPACE_NAME</envValue>
-        </envVar>
-        <envVar>
-          <envName>P4PORT</envName>
-          <envValue>$VCS_REPOSITORY_URL</envValue>
-        </envVar>
-        <envVar>
-          <envName>P4USER</envName>
-          <envValue>$VCS_USERNAME</envValue>
-        </envVar>
-        <envVar>
-          <envName>P4PASSWD</envName>
-          <envValue>$VCS_PASSWORD</envValue>
-        </envVar>
-        <envVar>
-          <envName>P4DEL_LINK_OPTIONS</envName>
-          <envValue>-f</envValue>
-        </envVar>
-      </vcsSpecificEnvVars>
-    </vcsConnection>
-	
-	<!-- CVS EXAMPLE -->
-    <vcsConnection>
-      <id>cvs01_win</id>
-	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
-			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
-			#     Subversion=svn
-			#     Perforce=p4
-			#     Concurrent Versions Systems=cvs
-			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
-		-->
-      <VCS_TYPE>cvs</VCS_TYPE>
-	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
-      <VCS_BASE_TYPE>CVS</VCS_BASE_TYPE>
-	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
-			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
-			#     Windows example: D:/dev/cvs/bin
-			#        UNIX example: /usr/bin
-		-->
-      <VCS_HOME>$CVS_HOME</VCS_HOME>
-	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
-      <VCS_COMMAND>cvs</VCS_COMMAND>
-	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
-      <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
-      <VCS_OPTIONS />
-
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Create new workspace equates to: 
-		#		TFS: tf workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
-		#		       e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
-		#		SVN: not applicable
-		#		 P4: not applicable
-		#		CVS: not applicable
-		-->
-	  <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
-	  
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Link workspace to VCS repository equates to: 
-		#		TFS: tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workfold -map -collection:http://hostname:8080/tfs/DefaultCollection $/Composite_62/cis_objects W:/wks/Composite_62/cis_objects -workspace:wks -noprompt /login:user,********
-		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#				-IGNORE_INIT_LINK - This option is used to ignore this step when users have READ-only access and will only be doing check-out from subversion and not check-in.	
-		#		 P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#		 P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
-		#		CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		-->
-      <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
-	  
-      <!--Element VCS_WORKSPACE_INIT_GET_OPTIONS is optional
-		# Workspace Initialization.  Get resources from VCS repository equates to: 
-		#		TFS: tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} {$VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		 P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		-->
-      <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-
-	  <!--VCS Base Folder Initialization.  Add Options: 
-		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-		-->
-      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
-	  
-      <!--Element VCS_CHECKIN_OPTIONS is optional
-		# Resource Checkin. Checkin resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					Check out folder for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#					             Check in folder:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					  Check out file for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#								   Check in file:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#								   Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
-		-->
-      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
-	  
-      <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
-		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
-		-->
-      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
-	  
-      <!--Element VCS_CHECKOUT_OPTIONS is optional
-		# Resource Checkout. Checkout resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  tf.cmd get ${fullResourcePath} -version:${Revision} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  tf.cmd get ${fullResourcePath} -version:${Revision} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  current:  p4 sync ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync @${Revision} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		-->
-      <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
-
-      <!--Element VCS_CHECKOUT_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
-		-->
-      <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
-	  
-      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
-		# VCS Resource Import Options:
-		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
-		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
-	  
-      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
-		# VCS Resource Export Options:
-		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
-		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
-	  
-	  <!--
-		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
-		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
-		#            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
-		#            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
-		#            of the local workspace.
-		#     cvs        - Command Format: [:method:][[user][:password]@]hostname[:[port]]/repository_path
-		#                  1) Local access only with no host and port
-		#                         Example: :local:/home/cvs
-		#                  2) Remote access rules and examples:
-		#                      (1) There is no colon ":" following the port.
-		#                      (2) There is a colon ":" following the hostname if there is no port.
-		#                      (3) The repository folder path on the CVS server follows the port if present or hostname.
-		#                      (4) Username and Password are included in this URL therefore VCS_USERNAME and VCS_PASSWORD are ignored.
-		#                      Example: :pserver:user1:password@remotehost:2401/home/cvs
-		#                      Example: :pserver:user1:password@remotehost:/home/cvs
-		#                      Example: :pserver:user1@remotehost:/home/cvs
-		#                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
-		#                      Example: :pserver:<VCS_USERNAME>:<VCS_PASSWORD>@myhost:2401/home/cvs
-		-->
-		<VCS_REPOSITORY_URL>$CVS_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
-	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>$CVS_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
-	  <!--
-		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-	  <!--
-		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-		#    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-		#       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-		#    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-		#       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-		-->
-      <VCS_WORKSPACE_NAME>$CVS_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
-      <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$CVS_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
-	  <!--
-		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
-		#    Some VCS Servers, will ask to store the user and password locally for subsequent use.
-		-->
-     <VCS_USERNAME>$CVS_VCS_USERNAME</VCS_USERNAME>
-	  <!--
-		# VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
-		#    If set in this file, execute the following command to encrypt the password:
-		#         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
-		#      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
-		-->
-      <VCS_PASSWORD>$CVS_VCS_PASSWORD</VCS_PASSWORD>
-	  <!--
-	  # VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
-		#    CVS:
-		#    Perforce:    	No files to submit
-		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
-		-->
-      <VCS_IGNORE_MESSAGES />
-	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
-      <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-      <!--Element vcsSpecificEnvVars is optional-->
-      <vcsSpecificEnvVars>
-        <!--Element envVar is optional, maxOccurs=unbounded-->
-        <envVar>
-          <envName>CVSROOT</envName>
-          <envValue>$VCS_REPOSITORY_URL</envValue>
-        </envVar>
-        <envVar>
-          <envName>CVS_RSH</envName>
-          <envValue>ssh</envValue>
-        </envVar>
-      </vcsSpecificEnvVars>
-    </vcsConnection>
-
 	<!-- TEAM FOUNDATION SERVER (TFS) EXAMPLE -->
     <vcsConnection>
-      <id>tfs01_win</id>
+      <id>tfs01</id>
 	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
 			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
 			#     Subversion=svn
@@ -838,7 +374,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -860,13 +396,13 @@
 		-->
       <VCS_REPOSITORY_URL>$TFS_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>$TFS_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$TFS_VCS_PROJECT_ROOT$%RELEASE_FOLDER%</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
 		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
 		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+      <VCS_WORKSPACE_HOME>$TFS_VCS_WORKSPACE_HOME</VCS_WORKSPACE_HOME>
 	  <!--
 		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
 		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
@@ -879,7 +415,7 @@
 		-->
       <VCS_WORKSPACE_NAME>$TFS_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$TFS_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$TFS_VCS_TEMP_DIR</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -910,7 +446,7 @@
 		<!-- [Default-change if desired but must be in path (UNIX:vi, Windows: notepad) ] -->
         <envVar>
           <envName>TFS_EDITOR</envName>
-          <envValue>notepad</envValue>
+          <envValue>$VCS_EDITOR</envValue>
         </envVar>
 		<!-- Use an existing TFS workspace.  This will not create a separate workspace for 
 			 VCS integration. If this is true, CIS will only copy to/from the workspace and
@@ -925,10 +461,10 @@
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
-	
+
     <!-- GIT EXAMPLE -->
     <vcsConnection>
-      <id>git01_win</id>
+      <id>git01</id>
       <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, git]
             #   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
             #     Subversion=svn
@@ -1081,7 +617,7 @@
         #   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
         #   Consult the Archive Module documentation for more options.
         -->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
       
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
         # VCS Resource Export Options:
@@ -1115,26 +651,26 @@
         -->
       <VCS_REPOSITORY_URL>$GIT_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
       <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  git: The project folder.-->
-     <VCS_PROJECT_ROOT>$GIT_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
-      <!--
-        # VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-        #     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-        #     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-        -->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-      <!--
-        # VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-        #    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-        #    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-        #       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-        #    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-        #       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-        # VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-        # VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-        -->
+      <VCS_PROJECT_ROOT>$GIT_VCS_PROJECT_ROOT$%RELEASE_FOLDER%</VCS_PROJECT_ROOT>
+	  <!--
+		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
+		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
+		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
+		-->
+      <VCS_WORKSPACE_HOME>$GIT_VCS_WORKSPACE_HOME</VCS_WORKSPACE_HOME>
+	  <!--
+		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
+		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
+		#    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
+		#       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
+		#    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
+		#       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
+		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
+		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
+		-->
       <VCS_WORKSPACE_NAME>$GIT_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$GIT_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$GIT_VCS_TEMP_DIR</VCS_TEMP_DIR>
       <!--
         # VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
         #    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -1165,367 +701,14 @@
         <!--Element envVar is optional, maxOccurs=unbounded-->
         <envVar>
           <envName>GIT_EDITOR</envName>
-          <envValue>notepad</envValue>
-        </envVar>
-      </vcsSpecificEnvVars>
-    </vcsConnection>
-	
-	<!-- CLEARCASE EXAMPLE -->
-    <vcsConnection>
-      <id>clc01_win</id>
-	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, git, clc]
-			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
-			#     Subversion=svn
-			#     Perforce=p4
-			#     Concurrent Versions Systems=cvs
-			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
-			#     Git=git
-			#     Clearcase=clc
-		-->
-      <VCS_TYPE>clc</VCS_TYPE>
-	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, TFS, GIT, CLC]. Choose to coincide with VCS_TYPE. -->
-      <VCS_BASE_TYPE>CLC</VCS_BASE_TYPE>
-	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
-			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
-			#     Windows example: D:/dev/cvs/bin
-			#        UNIX example: /usr/bin
-		-->
-      <VCS_HOME>$CLC_HOME</VCS_HOME>
-	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd,git,cleartool] -->
-      <VCS_COMMAND>cleartool</VCS_COMMAND>
-	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
-      <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
-      <VCS_OPTIONS></VCS_OPTIONS>
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Create new workspace equates to: 
-		#		TFS: tf workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
-		#		       e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
-		#		SVN: not applicable
-		#		 P4: not applicable
-		#		CVS: not applicable
-        #       GIT: not applicable
-        #       CLC: not applicable
-		-->
-	  <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
-	  
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-		# Workspace Initialization.  Link workspace to VCS repository equates to: 
-		#		TFS: tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workfold -map -collection:http://hostname:8080/tfs/DefaultCollection $/Composite_62/cis_objects W:/wks/Composite_62/cis_objects -workspace:wks -noprompt /login:user,********
-		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#				-IGNORE_INIT_LINK - This option is used to ignore this step when users have READ-only access and will only be doing check-out from subversion and not check-in.		
-		#		 P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#		 P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
-		#		CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-        #       GIT: git clone -n ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} ${VCS_REPOSITORY_URL} .
-        #       CLC: cleartool mkview ${CLC_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} ${VCS_REPOSITORY_URL} .
-		-->
-      <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
-
-      <!--Element VCS_WORKSPACE_INIT_GET_OPTIONS is optional
-		# Workspace Initialization.  Get resources from VCS repository equates to: 
-		#		TFS: tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} {$VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		 P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-        #       GIT: git checkout ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS} ${VCS_PROJECT_ROOT}
-        #              use VCS_WORKSPACE_INIT_GET_OPTIONS to set the "tree-ish" value (the branch in most cases) to check out. will default to "master" if not set
-        #              e.g. /usr/local/bin/git checkout master cis_objects
-		#		CLC: cleartool co -ver "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${CLC_OPTIONS} ${CLC_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		-->
-      <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-
-	  <!--VCS Base Folder Initialization.  Add Options: 
-		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
-		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		 P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-		#		CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-        #       GIT: git add ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD} ${fullResourcePath}
-		#		CLC: mkelem ${fullResourcePath} ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-		-->
-      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
-	  
-      <!--Element VCS_CHECKIN_OPTIONS is optional
-		# Resource Checkin. Checkin resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					Check out folder for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#					             Check in folder:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					  Check out file for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#								   Check in file:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#								   Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-        #       GIT: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                Check in folder:  git commit -m "${Message}" ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                  Check in file:  git commit -m "${Message}" ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
-		#		CLC: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  cleartool ci ${fullResourcePath} -c "${Message}" ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  cleartool ci ${fullResourcePath} -c "${Message}" ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-		# Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
-		-->
-      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
-	  
-      <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
-		# For example, it may be required by TFS to have the -associate command present on the check-in command line.
-		-->
-      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
-	  
-      <!--Element VCS_CHECKOUT_OPTIONS is optional
-		# Resource Checkout. Checkout resources to VCS equates to:
-		#		TFS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  tf.cmd get ${fullResourcePath} -version:${Revision} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  tf.cmd get ${fullResourcePath} -version:${Revision} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		SVN: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		 P4: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  current:  p4 sync ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync @${Revision} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
-		#												   revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-        #       GIT: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${fullResourcePath}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${fullResourcePath}
-		#		CLC: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  cleartool co ${fullResourcePath} -ver ${Revision} ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  cleartool co ${fullResourcePath} -ver ${Revision} ${CLC_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-		-->
-      <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
-
-      <!--Element VCS_CHECKOUT_OPTIONS_REQUIRED is optional
-		# A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
-		-->
-      <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
-
-      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
-		# VCS Resource Import Options:
-		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
-		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
-	  
-      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
-		# VCS Resource Export Options:
-		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
-		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
-	  
-	  <!--
-		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
-		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
-		#            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
-		#            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
-		#            of the local workspace.
-		#     subversion - The base HTTP URL in subversion 
-		#                  Command Format: [http:////hostname.domain/svn/basename]
-		#                         Example: http:////http://myhost.domain.com/svn/sandbox
-		-->
-      <VCS_REPOSITORY_URL>$CLC_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
-	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-     <VCS_PROJECT_ROOT>$CLC_VCS_PROJECT_ROOT/$RELEASE_FOLDER</VCS_PROJECT_ROOT>
-	  <!--
-		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-	  <!--
-		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-		#    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-		#       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-		#    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-		#       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-		-->
-      <VCS_WORKSPACE_NAME>$CLC_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
-      <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$CLC_VCS_WORKSPACE_NAME_TEMP</VCS_TEMP_DIR>
-	  <!--
-		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
-		#    Some VCS Servers, will ask to store the user and password locally for subsequent use.
-		-->
-     <VCS_USERNAME>$CLC_VCS_USERNAME</VCS_USERNAME>
-	  <!--
-		# VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
-		#    If set in this file, execute the following command to encrypt the password:
-		#         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
-		#      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
-		-->
-      <VCS_PASSWORD>$CLC_VCS_PASSWORD</VCS_PASSWORD>
-	  <!--
-	  # VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
-		#    CVS:
-		#    Perforce:    	No files to submit
-		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
-		-->
-      <VCS_IGNORE_MESSAGES />
-	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
-      <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-      <!--Element vcsSpecificEnvVars is optional-->
-      <vcsSpecificEnvVars>
-        <!--Element envVar is optional, maxOccurs=unbounded-->
-        <envVar>
-          <envName>CLC_EDITOR</envName>
-          <envValue>notepad</envValue>
-        </envVar>
-      </vcsSpecificEnvVars>
-    </vcsConnection>
-	
-	<!-- SUBVERSION EXAMPLE -->
-    <vcsConnection>
-      <id>svn01_unix</id>
-	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
-			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
-			#     Subversion=svn
-			#     Perforce=p4
-			#     Concurrent Versions Systems=cvs
-			#     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
-		-->
-      <VCS_TYPE>svn</VCS_TYPE>
-	  <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
-      <VCS_BASE_TYPE>SVN</VCS_BASE_TYPE>
-	  <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
-			#     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
-			#     Windows example: D:/dev/cvs/bin
-			#        UNIX example: /usr/bin
-		-->
-      <VCS_HOME>/usr/bin</VCS_HOME>
-	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
-      <VCS_COMMAND>svn</VCS_COMMAND>
-	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
-      <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-	  <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
-      <VCS_OPTIONS>--non-interactive --no-auth-cache --trust-server-cert</VCS_OPTIONS>
-      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
-		# VCS Resource Import Options:
-		#   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
-		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
-	  
-      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
-		# VCS Resource Export Options:
-		#   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
-		#   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
-		#   Consult the Archive Module documentation for more options.
-		-->
-      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
-	  
-	  <!--
-		# VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
-		#     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
-		#            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
-		#            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
-		#            of the local workspace.
-		#     subversion - The base HTTP URL in subversion 
-		#                  Command Format: [http:////hostname.domain/svn/basename]
-		#                         Example: http:////http://myhost.domain.com/svn/sandbox
-		-->
-      <VCS_REPOSITORY_URL>http:////$SVN_VCS_HOST/svn/sandbox/PDTOOL/$CIS_VERSION</VCS_REPOSITORY_URL>
-	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-     <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
-	  <!--
-		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-	  <!--
-		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-		#    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-		#       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-		#    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-		#       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
-      <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
-	  <!--
-		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
-		#    Some VCS Servers, will ask to store the user and password locally for subsequent use.
-		-->
-     <VCS_USERNAME>$SVN_VCS_USERNAME</VCS_USERNAME>
-	  <!--
-		# VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
-		#    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
-		#    If set in this file, execute the following command to encrypt the password:
-		#         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
-		#      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
-		-->
-      <VCS_PASSWORD>$SVN_VCS_PASSWORD</VCS_PASSWORD>
-	  <!--
-	  # VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
-		#    CVS:
-		#    Perforce:    	No files to submit
-		#    Subversion: 
-		#    TFS: 			No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
-		-->
-      <VCS_IGNORE_MESSAGES />
-	  <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
-      <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-      <!--Element vcsSpecificEnvVars is optional-->
-      <vcsSpecificEnvVars>
-        <!--Element envVar is optional, maxOccurs=unbounded-->
-        <envVar>
-          <envName>SVN_EDITOR</envName>
-          <envValue>vi</envValue>
+          <envValue>$VCS_EDITOR</envValue>
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
 	
  	<!-- PERFORCE EXAMPLE -->
     <vcsConnection>
-      <id>perforce01_unix</id>
+      <id>perforce01</id>
 	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
 			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
 			#     Subversion=svn
@@ -1541,7 +724,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>/usr/bin</VCS_HOME>
+      <VCS_HOME>$P4_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>p4</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -1580,8 +763,8 @@
 		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-	  	  
-	  <!--VCS Base Folder Initialization.  Add Options: 
+	  
+ 	  <!--VCS Base Folder Initialization.  Add Options: 
 		#		TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
 		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
 		#		SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
@@ -1662,7 +845,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -1682,15 +865,15 @@
 		#                  Command Format: [hostname:port]
 		#                         Example: myhost:1666
 		-->
-      <VCS_REPOSITORY_URL>$P4_VCS_HOST:1666</VCS_REPOSITORY_URL>
+      <VCS_REPOSITORY_URL>$P4_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$P4_VCS_PROJECT_ROOT$%RELEASE_FOLDER%</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
 		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
 		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+      <VCS_WORKSPACE_HOME>$P4_VCS_WORKSPACE_HOME</VCS_WORKSPACE_HOME>
 	  <!--
 		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
 		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
@@ -1701,9 +884,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$P4_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$P4_VCS_TEMP_DIR</VCS_TEMP_DIR>
  	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -1733,7 +916,7 @@
         <!--Element envVar is optional, maxOccurs=unbounded-->
         <envVar>
           <envName>P4EDITOR</envName>
-          <envValue>vi</envValue>
+          <envValue>$VCS_EDITOR</envValue>
         </envVar>
         <envVar>
           <envName>P4CLIENT</envName>
@@ -1760,7 +943,7 @@
 	
 	<!-- CVS EXAMPLE -->
     <vcsConnection>
-      <id>cvs01_unix</id>
+      <id>cvs01</id>
 	  <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
 			#   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
 			#     Subversion=svn
@@ -1776,7 +959,7 @@
 			#     Windows example: D:/dev/cvs/bin
 			#        UNIX example: /usr/bin
 		-->
-      <VCS_HOME>/usr/bin</VCS_HOME>
+      <VCS_HOME>$CVS_HOME</VCS_HOME>
 	  <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
       <VCS_COMMAND>cvs</VCS_COMMAND>
 	  <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
@@ -1897,7 +1080,7 @@
 		#   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
 		#   Consult the Archive Module documentation for more options.
 		-->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
+      <VCS_CIS_IMPORT_OPTIONS></VCS_CIS_IMPORT_OPTIONS>
 	  
       <!--Element VCS_CIS_EXPORT_OPTIONS is optional
 		# VCS Resource Export Options:
@@ -1927,15 +1110,15 @@
 		#                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
 		#                      Example: :pserver:<VCS_USERNAME>:<VCS_PASSWORD>@myhost:2401/home/cvs
 		-->
-		<VCS_REPOSITORY_URL>:pserver:$CVS_VCS_USERNAME:$CVS_VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
+		<VCS_REPOSITORY_URL>$CVS_VCS_REPOSITORY_URL</VCS_REPOSITORY_URL>
 	  <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  subversion: The project name. perforce: The depot name.-->
-      <VCS_PROJECT_ROOT>Composite_$CIS_VERSION/cis_objects</VCS_PROJECT_ROOT>
+      <VCS_PROJECT_ROOT>$CVS_VCS_PROJECT_ROOT$%RELEASE_FOLDER%</VCS_PROJECT_ROOT>
 	  <!--
 		# VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
 		#     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
 		#     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
 		-->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
+      <VCS_WORKSPACE_HOME>$CVS_VCS_WORKSPACE_HOME</VCS_WORKSPACE_HOME>
 	  <!--
 		# VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
 		#    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
@@ -1946,9 +1129,9 @@
 		# VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
 		# VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
 		-->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$uw</VCS_WORKSPACE_NAME>
+      <VCS_WORKSPACE_NAME>$CVS_VCS_WORKSPACE_NAME</VCS_WORKSPACE_NAME>
       <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
+      <VCS_TEMP_DIR>$CVS_VCS_TEMP_DIR</VCS_TEMP_DIR>
 	  <!--
 		# VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
 		#    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
@@ -1986,256 +1169,12 @@
         </envVar>
       </vcsSpecificEnvVars>
     </vcsConnection>
-	
-    <!-- GIT EXAMPLE -->
-    <vcsConnection>
-      <id>git01_unix</id>
-      <!--# VCS_TYPE - The type of VCS being used [svn, p4, cvs, tfs2005, tfs2010, tfs2012, tfs2013, etc]
-            #   Note: This gets added to the end of the VCS_WORKSPACE_HOME folder for workspace clarification
-            #     Subversion=svn
-            #     Perforce=p4
-            #     Concurrent Versions Systems=cvs
-            #     Team Foundation Server=tfs2005 or [tfs2010, tfs2012, tfs2013]
-            #     Git=git
-        -->
-      <VCS_TYPE>git</VCS_TYPE>
-      <!--# VCS_BASE_TYPE - Recommended options=[SVN, CVS, P4, or TFS]. Choose to coincide with VCS_TYPE. -->
-      <VCS_BASE_TYPE>GIT</VCS_BASE_TYPE>
-      <!--# VCS_HOME - VCS Client Home directory where the VCS executable lives.  
-            #     Note: This could be a /bin directory.  It must be where the VCS_COMMAND is found.
-            #     Windows example: D:/dev/cvs/bin
-            #        UNIX example: /usr/bin
-        -->
-      <VCS_HOME>/usr/local/bin</VCS_HOME>
-      <!--# VCS_COMMAND - The actual command for the given VCS Type [svn,p4,cvs,tf.cmd] -->
-      <VCS_COMMAND>git</VCS_COMMAND>
-      <!--# VCS_FULL_COMMAND - [true|false] - Execute the VCS command with the full path (true) or the VCS command only (false).  When set to false, the VCS_COMMAND must be in the system path.-->
-      <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-      <!--# VCS options - options are specific to the VCS type being used and are included in the command line (not set as environment variables)-->
-      <VCS_OPTIONS></VCS_OPTIONS>
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-        # Workspace Initialization.  Create new workspace equates to: 
-        #       TFS: tf workspace -new -collection:${VCS_REPOSITORY_URL} ${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_NEW_OPTIONS}
-        #              e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
-        #       SVN: not applicable
-        #        P4: not applicable
-        #       CVS: not applicable
-        #       GIT: not applicable
-        -->
-      <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
-      
-      <!--Element VCS_WORKSPACE_INIT_LINK_OPTIONS is optional
-        # Workspace Initialization.  Link workspace to VCS repository equates to: 
-        #       TFS: tf.cmd workfold -map -collection:{VCS_REPOSITORY_URL} ${TFS_SERVER_URL} ${VCS_WORKSPACE_DIR}+"/"+${VCS_PROJECT_ROOT} -workspace:${VCS_WORKSPACE_NAME} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-        #              e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workfold -map -collection:http://hostname:8080/tfs/DefaultCollection $/Composite_62/cis_objects W:/wks/Composite_62/cis_objects -workspace:wks -noprompt /login:user,********
-		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-		#				-IGNORE_INIT_LINK - This option is used to ignore this step when users have READ-only access and will only be doing check-out from subversion and not check-in.		
-        #        P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-        #        P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
-        #       CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
-        #       GIT: git clone -n ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} ${VCS_REPOSITORY_URL} .
-        -->
-      <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
-      
-      <!--Element VCS_WORKSPACE_INIT_GET_OPTIONS is optional
-        # Workspace Initialization.  Get resources from VCS repository equates to: 
-        #       TFS: tf.cmd get -all -recursive ${TFS_SERVER_URL} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} {$VCS_WORKSPACE_INIT_GET_OPTIONS}
-        #              e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
-        #       SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-        #        P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-        #       CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-        #       GIT: git checkout ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS} ${VCS_PROJECT_ROOT}
-        #              use VCS_WORKSPACE_INIT_GET_OPTIONS to set the "tree-ish" value (the branch in most cases) to check out. will default to "master" if not set
-        #              e.g. /usr/local/bin/git checkout master cis_objects
-        -->
-      <VCS_WORKSPACE_INIT_GET_OPTIONS>master</VCS_WORKSPACE_INIT_GET_OPTIONS>
-
-      <!--VCS Base Folder Initialization.  Add Options: 
-        #       TFS: tf.cmd add ${fullResourcePath} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-        #              e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd add P:/TFSww/Composite_62/cis_objects/shared/test00  $/Composite_62/cis_objects -noprompt /login:user,********
-        #       SVN: svn add ${fullResourcePath} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD}
-        #        P4: p4 add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-        #       CVS: cvs add ${fullResourcePath} ${VCS_BASE_FOLDER_INIT_ADD}
-        #       GIT: git add ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD} ${fullResourcePath}
-        -->
-      <VCS_BASE_FOLDER_INIT_ADD></VCS_BASE_FOLDER_INIT_ADD>
-      
-      <!--Element VCS_CHECKIN_OPTIONS is optional
-        # Resource Checkin. Checkin resources to VCS equates to:
-        #       TFS: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                   Check out folder for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #                                Check in folder:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                     Check out file for editing:  tf.cmd checkout ${fullResourcePath} -lock:Checkout -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #                                  Check in file:  tf.cmd checkin ${fullResourcePath} -comment:@${filename} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-        #       SVN: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                Check in folder:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                  Check in file:  svn commit ${fullResourcePath} -m "${Message}" ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS}
-        #        P4: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                  Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-        #       CVS: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                  Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-        #       GIT: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                                Check in folder:  git commit -m "${Message}" ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                  Check in file:  git commit -m "${Message}" ${VCS_OPTIONS} ${VCS_CHECKIN_OPTIONS} ${fullResourcePath}
-        # Check-in options are specific to the commit part of the command.  For example, TFS might be -associate:1 which associates a work item with a submission.
-        -->
-      <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
-      
-      <!--Element VCS_CHECKIN_OPTIONS_REQUIRED is optional
-        # A comma separated list of base-level commands that are required for checkin.  VCS_CHECKIN_OPTIONS is validated against this list.  
-        # For example, it may be required by TFS to have the -associate command present on the check-in command line.
-        -->
-      <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
-      
-      <!--Element VCS_CHECKOUT_OPTIONS is optional
-        # Resource Checkout. Checkout resources to VCS equates to:
-        #       TFS: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  tf.cmd get ${fullResourcePath} -version:${Revision} -recursive -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  tf.cmd get ${fullResourcePath} -version:${Revision} -noprompt /login:${VCS_USERNAME},${VCS_PASSWORD} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #       SVN: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  svn update ${fullResourcePath} -r ${Revision} ${SVN_AUTH} ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS}
-        #        P4: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  current:  p4 sync ${VCS_CHECKOUT_OPTIONS}
-        #                                                  revision: p4 sync @${Revision} ${VCS_CHECKOUT_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
-        #                                                  revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
-        #       CVS: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-        #       GIT: 
-        #           Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-        #                               Check out folder:  git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${fullResourcePath}
-        #             File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-        #                                 Check out file:  git checkout ${VCS_OPTIONS} ${VCS_CHECKOUT_OPTIONS} ${fullResourcePath}
-        -->
-      <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>   
-
-      <!--Element VCS_CHECKOUT_OPTIONS_REQUIRED is optional
-        # A comma separated list of base-level commands that are required for checkout.  VCS_CHECKOUT_OPTIONS is validated against this list.
-        -->
-      <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
-
-      <!--Element VCS_CIS_IMPORT_OPTIONS is optional
-        # VCS Resource Import Options:
-        #   Occurs during a vcsCheckout when the temporary checkout.car file is imported into the target server.
-        #   The import is the final step in the process.  The backwards compatible option is to include access: -includeaccess 
-        #   Consult the Archive Module documentation for more options.
-        -->
-      <VCS_CIS_IMPORT_OPTIONS>-includeaccess</VCS_CIS_IMPORT_OPTIONS>
-      
-      <!--Element VCS_CIS_EXPORT_OPTIONS is optional
-        # VCS Resource Export Options:
-        #   Occurs during a vcsCheckin when the temporary checkout.car file is exported from the target server.
-        #   The export from the target is used to compare resources against the VCS repository.  The backwards compatible option is leave this option blank.
-        #   Consult the Archive Module documentation for more options.
-        -->
-      <VCS_CIS_EXPORT_OPTIONS></VCS_CIS_EXPORT_OPTIONS>
-      
-      <!--
-        # VCS_REPOSITORY_URL - This is the base URL to identify the VCS server.
-        #     Note:  The scripts use the combination of the VCS_REPOSITORY_URL and 
-        #            the VCS_PROJECT_ROOT to identify the baseline to check-in and checkout
-        #            in the VCS.  The VCS_PROJECT_ROOT also gets used in the folder structure
-        #            of the local workspace.
-        #     git - The base URL in Git. Git supports a number of protocols.
-        #                  1) Local access only with no host and port
-        #                         Example: /path/to/repo/
-        #                         Example: file:///path/to/repo/
-        #                  2) Remote access rules and examples:
-        #                         (1) Username and/or Password are included in this URL therefore VCS_USERNAME and VCS_PASSWORD are ignored. The git protocol does not use authentication.
-        #                         Example: ssh://user1@remotehost:22/path/to/repo.git/
-        #                         Example: git://remotehost:1234/path/to/repo.git/
-        #                         Example: http://user1:password@remotehost:80/path/to/repo.git/
-        #                         Example: https://user1:password@remotehost:443/path/to/repo.git/
-        #                         Example: ftp://user1:password@remotehost:21/path/to/repo.git/
-        #                         Example: ftps://user1:password@remotehost:990/path/to/repo.git/
-        #                         Example: rsync://user1:password@remotehost:873/path/to/repo.git/
-        #                  3) Use substitution variables to identify user and password.  These variables get replaced at runtime with values passed in.
-        #                         Example: http://<VCS_USERNAME>:<VCS_PASSWORD>@remotehost:80/path/to/repo.git/
-        -->
-      <VCS_REPOSITORY_URL>https://github.com/$VCS_GIT_USERNAME/$VCS_GIT_PROJECT.git</VCS_REPOSITORY_URL>
-      <!--# VCS_PROJECT_ROOT - This is root name of the project on the VCS Server.  git: The project folder.-->
-     <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
-      <!--
-        # VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
-        #     It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
-        #     The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
-        -->
-      <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-      <!--
-        # VCS_WORKSPACE_NAME:: The name of the workspace folder.  This is not a directory but simply a name. The shorter the better. 
-        #    If running PDTool on the same machine as PDToolStudio then the workspace names should be different.
-        #    Variables can be used to construct the name. Surround variables with 2 $ or 2 % signs when concatenating strings.
-        #       e.g. $VCS_TYPE$ww - $VCS_TYPE$ gets evaluated as a variable. "ww" is a string that gets concatentated. Result: svnww
-        #    For perforce, make sure all instances of PDToolStudio/PDTool use their own workspace name in the event that you have them installed in more than one place.
-        #       Suggestions:  Use w=windows: [$VCS_TYPE$ww].  Use u for UNIX: [$VCS_TYPE$uw].  Use s for studio: [$VCS_TYPE$sw].
-        # VCS_WORKSPACE_DIR::  VCS Workspace Dir is a combination of the VCS_WORKSPACE_HOME and a workspace directory name "VCS_WORKSPACE_NAME".  
-        # VCS_TEMP_DIR::       VCS Temp Dir is a combination of the VCS_WORKSPACE_HOME and a temp dir name such as $VCS_TYPE$t.
-        -->
-      <VCS_WORKSPACE_NAME>$VCS_BASE_TYPE$ww</VCS_WORKSPACE_NAME>
-      <VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-      <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/$VCS_BASE_TYPE$t</VCS_TEMP_DIR>
-      <!--
-        # VCS_USERNAME - (optional) This is the username for the user logging into the VCS Server.  
-        #    If VCS_USERNAME is not set, then the specific VCS Server type may prompt the user for a username and password each time.  
-        #    Some VCS Servers, will ask to store the user and password locally for subsequent use.
-        -->
-     <VCS_USERNAME>$GIT_VCS_USERNAME</VCS_USERNAME>
-      <!--
-        # VCS_PASSWORD - (optional) This is the password for the user logging into the VCS Server.  
-        #    If VCS_USERNAME is not set, VCS_PASSWORD is ignored.
-        #    If set in this file, execute the following command to encrypt the password:
-        #         Unix: ./ExecutePDTool.sh -encrypt ../resources/modules/VCSModule.xml
-        #      Windows: ExecutePDTool.bat -encrypt ../resources/modules/VCSModule.xml
-        -->
-      <VCS_PASSWORD>$GIT_VCS_PASSWORD</VCS_PASSWORD>
-      <!--
-      # VCS_IGNORE_MESSAGES - A comma separated list of messages for the VCS Module to ignore upon execution.
-        #    CVS:
-        #    Perforce:      No files to submit
-        #    Subversion: 
-        #    TFS:           No files checked in,could not be retrieved because a writable file by the same name exists,already has pending changes,because it already has a pending change that is not compatible,There are no remaining changes to check in
-        #    Git:           Could not switch to,did not match any file(s) known to git.,nothing to commit
-        -->
-      <VCS_IGNORE_MESSAGES>Could not switch to,did not match any file(s) known to git.,nothing to commit</VCS_IGNORE_MESSAGES>
-      <!--# VCS_MESSAGE_PREPEND - A static message that gets prepended onto all check-in or forced check-in messages-->
-      <VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-      <!--Element vcsSpecificEnvVars is optional-->
-      <vcsSpecificEnvVars>
-        <!--Element envVar is optional, maxOccurs=unbounded-->
-        <envVar>
-          <envName>GIT_EDITOR</envName>
-          <envValue>vi</envValue>
-        </envVar>
-      </vcsSpecificEnvVars>
-    </vcsConnection>
   </vcsConnections>
-  <!--Element vcsResources, maxOccurs=unbounded-->
-  
-  <!-- **********************************
+
+   <!-- **********************************
 	 REGRESSION CHECKIN/CHECKOUT TESTS 
 	 ************************************ -->
+   <!--Element vcsResources, maxOccurs=unbounded-->
   <vcsResource>
     <id>testDB</id>
     <resourcePath>/services/databases/TEST00</resourcePath>

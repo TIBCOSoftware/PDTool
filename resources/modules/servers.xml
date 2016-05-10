@@ -11,9 +11,9 @@
 <servers>
   <!-- CIS 7.0.1 Server -->
   <server>
-    <id>DEV1_9420http</id>
+    <id>DEV1_9400http</id>
     <hostname>localhost</hostname>
-    <port>9420</port>
+    <port>9400</port>
     <usage>DEV1</usage>
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
@@ -25,9 +25,9 @@
     <allowVariables>true</allowVariables>
   </server>
   <server>
-    <id>UAT1_9420http</id>
+    <id>UAT1_9400http</id>
     <hostname>localhost</hostname>
-    <port>9420</port>
+    <port>9400</port>
     <usage>UAT1</usage>
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
@@ -39,9 +39,9 @@
     <allowVariables>true</allowVariables>
   </server>
   <server>
-    <id>PROD1_9420http</id>
+    <id>PROD1_9400http</id>
     <hostname>localhost</hostname>
-    <port>9420</port>
+    <port>9400</port>
     <usage>PROD1</usage>
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>

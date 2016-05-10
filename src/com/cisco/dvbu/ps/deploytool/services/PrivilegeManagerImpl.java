@@ -508,6 +508,10 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 		
 		String prefix = "generatePrivilegesXML";
 		
+		// Set the command and action name
+		String command = "generatePrivilegesXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -845,7 +849,15 @@ public class PrivilegeManagerImpl implements PrivilegeManager{
 						privilegeModule.getResourcePrivilege().add(resourcePrivilege);
 					}
 				}
-				XMLUtils.createXMLFromModuleType(privilegeModule, pathToPrivilegeXML);
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					XMLUtils.createXMLFromModuleType(privilegeModule, pathToPrivilegeXML);
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
+
 /*
 				// Retrieve the Resource Privileges
 				privilegeEntries = getPrivilegeDAO().getResourcePrivileges(entries , privFilter, includeColumnPrivileges, serverId, pathToServersXML);

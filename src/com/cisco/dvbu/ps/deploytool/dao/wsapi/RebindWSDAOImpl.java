@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -60,6 +61,10 @@ public class RebindWSDAOImpl implements RebindDAO {
 //	@Override
 	public void rebindResource(String serverId, PathTypePair source, RebindRuleList rebinds, String pathToServersXML) throws CompositeException {
 
+		// Set the action name
+		String actionName = "REBIND";
+		String command = "rebindResources";
+		
 		// For debugging
 		if(logger.isDebugEnabled()) {
 			logger.debug("RebindWSDAOImpl.rebindResource(serverId, source[path,type], rebinds, pathToServersXML).  serverId=\"" + serverId+"\"  pathToServersXML=\""+pathToServersXML+"\"");
@@ -72,8 +77,7 @@ public class RebindWSDAOImpl implements RebindDAO {
 		// Construct the resource port based on target server name
 		ResourcePortType port = CisApiFactory.getResourcePort(targetServer);
 
-		try {
-
+		try {	
 			// Setup the list of path/type pairs to hold the single source
 			Entries entries = new Entries();
 			entries.getEntry().add(source);
@@ -108,10 +112,16 @@ public class RebindWSDAOImpl implements RebindDAO {
 				logger.debug("RebindWSDAOImpl.rebindResource().  Invoking port.rebindResources("+sourceText+", "+rebindText+").");
 			}
 
-			port.rebindResources(entries, rebinds);
-			
-			if(logger.isDebugEnabled()) {
-				logger.debug("RebindWSDAOImpl.rebindResource().  Success: port.rebindResources().");
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				port.rebindResources(entries, rebinds);
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("RebindWSDAOImpl.rebindResource().  Success: port.rebindResources().");
+				}
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 			}
 		} catch (RebindResourcesSoapFault e) {
 			CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), "rebindResource", "Rebind", source.getType().name(), targetServer),e.getFaultInfo());
@@ -145,6 +155,8 @@ public class RebindWSDAOImpl implements RebindDAO {
 			logger.debug("RebindWSDAOImpl.takeRebindFolderAction(serverId, pathToServersXML, actionName, resourcePath, detailLevel, procedureText, usedResourcePath, usedResourceType, isExplicitDesign, model, columns, parameters, annotation, attributes)."+
 					"  serverId=\"" + serverId + "\"  pathToServersXML=\"" + pathToServersXML + "\"");
 		}
+		String command = null;
+		
 		// read target server properties from server xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "RebindWSDAOImpl.takeRebindFolderAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -204,8 +216,11 @@ public class RebindWSDAOImpl implements RebindDAO {
 					}
 				}
 			}
+			
 			if(actionName.equalsIgnoreCase(RebindDAO.action.SQL_TABLE.name()))
 			{
+				command = "updateSqlTable";
+				
 				logger.info("updateSqlTable("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking port.updateSqlTable("+
@@ -221,14 +236,23 @@ public class RebindWSDAOImpl implements RebindDAO {
 					"\n             #attributes="+attrSize);
 				}
 				
-				port.updateSqlTable(resourcePath, detailLevel, procedureText, model, isExplicitDesign, columns, annotation, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateSqlTable().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateSqlTable(resourcePath, detailLevel, procedureText, model, isExplicitDesign, columns, annotation, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateSqlTable().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			
-			}else if(actionName.equalsIgnoreCase(RebindDAO.action.SQL_SCRIPT_PROCEDURE.name()))
+			}
+			else if(actionName.equalsIgnoreCase(RebindDAO.action.SQL_SCRIPT_PROCEDURE.name()))
 			{
+				command = "updateSqlScriptProcedure";
+				
 				logger.info("updateSqlScriptProcedure("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking port.updateSqlScriptProcedure("+
@@ -244,14 +268,23 @@ public class RebindWSDAOImpl implements RebindDAO {
 							"\n             #attributes="+attrSize);
 				}
 				
-				port.updateSqlScriptProcedure(resourcePath, detailLevel, procedureText, model, isExplicitDesign, parameters, annotation, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateSqlScriptProcedure().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateSqlScriptProcedure(resourcePath, detailLevel, procedureText, model, isExplicitDesign, parameters, annotation, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateSqlScriptProcedure().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 				
-			}else if(actionName.equalsIgnoreCase(RebindDAO.action.EXTERNAL_SQL_PROCEDURE.name()))
+			}
+			else if(actionName.equalsIgnoreCase(RebindDAO.action.EXTERNAL_SQL_PROCEDURE.name()))
 			{	
+				command = "updateExternalSqlProcedure";
+				
 				logger.info("updateExternalSqlProcedure("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking ort.updateExternalSqlProcedure("+
@@ -266,14 +299,23 @@ public class RebindWSDAOImpl implements RebindDAO {
 							"\n             #attributes="+attrSize);
 				}
 				
-				port.updateExternalSqlProcedure(resourcePath, detailLevel, procedureText, usedResourcePath, parameters, annotation, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateExternalSqlProcedure().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateExternalSqlProcedure(resourcePath, detailLevel, procedureText, usedResourcePath, parameters, annotation, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateExternalSqlProcedure().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 
-			}else if(actionName.equalsIgnoreCase(RebindDAO.action.BASIC_TRANSFORM_PROCEDURE.name()))
+			}
+			else if(actionName.equalsIgnoreCase(RebindDAO.action.BASIC_TRANSFORM_PROCEDURE.name()))
 			{	
+				command = "updateBasicTransformProcedure";
+				
 				logger.info("updateBasicTransformProcedure("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking port.updateBasicTransformProcedure("+
@@ -287,14 +329,23 @@ public class RebindWSDAOImpl implements RebindDAO {
 							"\n             #attributes="+attrSize);
 				}
 				
-				port.updateBasicTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, annotation, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateBasicTransformProcedure().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateBasicTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, annotation, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateBasicTransformProcedure().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 				
-			}else if(actionName.equalsIgnoreCase(RebindDAO.action.XSLT_TRANSFORM_PROCEDURE.name()))
+			}
+			else if(actionName.equalsIgnoreCase(RebindDAO.action.XSLT_TRANSFORM_PROCEDURE.name()))
 			{	
+				command = "updateXsltTransformProcedure";
+				
 				logger.info("updateXsltTransformProcedure("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking port.updateXsltTransformProcedure("+
@@ -312,14 +363,23 @@ public class RebindWSDAOImpl implements RebindDAO {
 							"\n             #attributes="+attrSize);
 				}
 				
-				port.updateXsltTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, procedureText, model, annotation, isExplicitDesign, parameters, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateXsltTransformProcedure().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateXsltTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, procedureText, model, annotation, isExplicitDesign, parameters, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateXsltTransformProcedure().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			
-			}else if(actionName.equalsIgnoreCase(RebindDAO.action.STREAM_TRANSFORM_PROCEDURE.name()))
+			}
+			else if(actionName.equalsIgnoreCase(RebindDAO.action.STREAM_TRANSFORM_PROCEDURE.name()))
 			{	
+				command = "updateStreamTransformProcedure";
+				
 				logger.info("updateStreamTransformProcedure("+resourcePath+")");
 				if(logger.isDebugEnabled()) {
 					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Invoking port.updateStreamTransformProcedure("+
@@ -336,10 +396,16 @@ public class RebindWSDAOImpl implements RebindDAO {
 							"\n             #attributes="+attrSize);
 				}
 				
-				port.updateStreamTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, model, isExplicitDesign, parameters, annotation, attributes);
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateStreamTransformProcedure().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateStreamTransformProcedure(resourcePath, detailLevel, usedResourcePath, resourceType, model, isExplicitDesign, parameters, annotation, attributes);
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("RebindWSDAOImpl.takeRebindFolderAction("+actionName+").  Success: port.updateStreamTransformProcedure().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			
 			} else {

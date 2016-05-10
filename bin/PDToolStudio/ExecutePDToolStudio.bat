@@ -41,6 +41,8 @@ REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-fil
 REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
 REM #	            arg2:: -encrypt is used to encrypt the passwords in studio.properties or a Module XML property file
 REM #	            arg3:: file path to studio.properties or XML property file (full or relative path)
+REM #				arg4-5:: [-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
+REM #                                                    that are found within a variable or XML element designated for passwords.
 REM #
 REM # Option 4 - Create Composite Studio Enable VCS:
 REM #
@@ -80,6 +82,9 @@ REM #
 REM #----------------------------------------------------------
 REM #*********** DO NOT MODIFY BELOW THIS LINE ****************
 REM #----------------------------------------------------------
+REM #
+REM # CIS version [6.2, 7.0.0] - set CIS_VERSION
+call ..\bin_novars\cisVersion.bat
 REM #
 REM #---------------------------------------------
 REM # Get the full path to setVars.bat

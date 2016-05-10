@@ -19,10 +19,13 @@ REM ############################################################################
 REM #
 REM # Encrypt a PDTool or PDToolStudio file
 REM #
-REM # encrypt.bat filename
+REM # encrypt.bat filename [-bypass "string1,string2]
 REM #    Once "startEnv.cmd" has been run, this batch script can be run from any directory.
 REM ############################################################################################################################
 set FILENAME=%1
+shift
+set P2=%1
+set P3=%2
 set PWD=%CD%
 REM # Remove double quotes around arguments
 setlocal EnableDelayedExpansion
@@ -48,5 +51,7 @@ if not exist %PDTOOL_BIN% (
 )
 
 cd %PDTOOL_BIN%
-call ExecutePDToolStudio.bat -nopause -encrypt %PWD%\%1
+echo.COMMAND: call ExecutePDTool.bat -encrypt %PWD%\%FILENAME% %P2% %P3%
+echo.
+call ExecutePDTool.bat -encrypt %PWD%\%FILENAME% %P2% %P3%
 cd %PWD%

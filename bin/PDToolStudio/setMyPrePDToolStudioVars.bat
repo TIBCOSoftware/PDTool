@@ -56,6 +56,8 @@ set PDTOOL_HOME=
 REM # Name of the configuration property file located in PDToolStudio7.0.0/resources/config
 REM #    e.g. Default=studio.properties or SVN=studio_SVN.properties or TFS=studio_TFS.properties
 set MY_CONFIG_PROPERTY_FILE=
+REM # The editor to use for VCS viewing if needed.  Windows=notepad and UNIX=vi
+set VCS_EDITOR=
 REM # Initialize the general VCS username - do not set this here.
 set VCS_USERNAME=
 REM # Initialize the general VCS password - do not set this here.

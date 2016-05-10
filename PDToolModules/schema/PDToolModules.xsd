@@ -830,6 +830,7 @@ This software is released AS-IS!. Support for this software is not covered by st
 					</xs:documentation>
 				</xs:annotation>
 		   </xs:element>
+		<xs:element name="keystore" minOccurs="0" maxOccurs="1" type="ns:DatasourceKeystoreType"/>
 			<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -876,7 +877,58 @@ This software is released AS-IS!. Support for this software is not covered by st
 				</xs:documentation>
 			</xs:annotation>
 	   </xs:element>
+		<xs:element name="keystore" minOccurs="0" maxOccurs="1" type="ns:DatasourceKeystoreType"/>
 		<xs:element name="genericAttribute" minOccurs="0" maxOccurs="unbounded" type="ns:AttributeDefType"/>
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DatasourceKeystoreType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Datasource Keystore Type: a container for keystore entries
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+			<xs:element name="keystoreAttributes" minOccurs="0" maxOccurs="unbounded" type="ns:DatasourceKeystoreAttributeType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						A list of keystore atribute entries. 
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DatasourceKeystoreAttributeType">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Datasource Keystore Attribute Type: provides the ability to import a certificate keystore [jks|pkcs12] into a datasource keystore attribute.
+			If the keystore attribute exists, then this information will replace the existing.
+			If the keystore attribute does not exist, then a new keystore attribute will be created.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:sequence>
+			<xs:element name="keystoreFilePath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The local file system path of the keystore file such as a .jks or a .pfx. 
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="keystoreType" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The keystore type such as [jks|pkcs12]. 
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="keystorePassword" type="xs:string">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The encrypted keystore password.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
 	</xs:sequence>
   </xs:complexType>
 

@@ -3,7 +3,7 @@ REM ############################################################################
 REM #
 REM # Cisco AS Assets PDTool Installation
 REM #
-REM # Execute: SetupPDTool.bat "[I_PDTOOL_INSTALL_TYPE]" "[I_PDTOOL_INSTALL_HOME]" "[I_JAVA_HOME]" "[I_PDTOOL_DESTINATION_HOME]" "[I_PDTOOL_DESTINATION_DIR]" "[I_CONFIGURE_VCS]" "[I_VCS_BASE_TYPE]" "[I_VCS_HOME]" "[I_VCS_REPOSITORY_URL]" "[I_VCS_PROJECT_ROOT]" "[I_RELEASE_FOLDER]" "[I_VCS_WORKSPACE_NAME]" "[I_VCS_USERNAME]" "[I_VCS_DOMAIN]" "[I_VCS_PASSWORD]" "[I_CIS_USERNAME]" "[I_CIS_DOMAIN]" "[I_CIS_PASSWORD]" "[I_CIS_HOSTNAME]" "[I_CONFIG_PROPERTY_FILE]" 
+REM # Execute: SetupPDTool.bat "[I_PDTOOL_INSTALL_TYPE]" "[I_PDTOOL_INSTALL_HOME]" "[I_JAVA_HOME]" "[I_PDTOOL_DESTINATION_HOME]" "[I_PDTOOL_DESTINATION_DIR]" "[I_CONFIGURE_VCS]" "[I_VCS_BASE_TYPE]" "[I_VCS_HOME]" "[I_VCS_REPOSITORY_URL]" "[I_VCS_PROJECT_ROOT]" "[I_RELEASE_FOLDER]" "[I_VCS_WORKSPACE_HOME]" "[I_VCS_WORKSPACE_NAME]" "[I_VCS_TEMP_DIR]" "[I_VCS_USERNAME]" "[I_VCS_DOMAIN]" "[I_VCS_PASSWORD]" "[I_CIS_USERNAME]" "[I_CIS_DOMAIN]" "[I_CIS_PASSWORD]" "[I_CIS_HOSTNAME]" "[I_CONFIG_PROPERTY_FILE]" "[I_VCS_EDITOR]" "[I_VALID_ENV_CONFIG_PAIRS]"
 REM # 
 REM # I_PDTOOL_INSTALL_TYPE - [PDTool or PDToolStudio]. Determine which installer type to use.
 REM # I_PDTOOL_INSTALL_HOME - The location of the PDTool installation scripts.
@@ -16,7 +16,9 @@ REM # I_VCS_HOME - The location of the VCS executable.
 REM # I_VCS_REPOSITORY_URL - The version control repository URL.
 REM # I_VCS_PROJECT_ROOT - The version control project root folder.
 REM # I_RELEASE_FOLDER - The name of the release folder under /Rel.  e.g. 20140605
+REM # I_VCS_WORKSPACE_HOME - Typically this is set to the PDTOOL_HOME variable but may be set to a different folder.  This is the parent folder to where the workspace name folder "I_VCS_WORKSPACE_NAME" is a child.
 REM # I_VCS_WORKSPACE_NAME - VCS Workspace name.  e.g. TFSww or SVNww. (Shorter the better as it counts towards total length limit of 259 for TFS only)
+REM # I_VCS_TEMP_DIR - Typically this is the set to the PDTOOL_HOME variable + I_VCS_WORKSPACE_NAME + t indicating temp
 REM # I_VCS_USERNAME - The Version Control user name.
 REM # I_VCS_DOMAIN - To be appended to the VCS_USERNAME as in user@domain or leave blank if not applicable. e.g. @CORP
 REM # I_VCS_PASSWORD - The version control password.
@@ -25,7 +27,9 @@ REM # I_CIS_DOMAIN -  CIS Domain used for connection by CIS_USERNAME
 REM # I_CIS_PASSWORD - CIS password.
 REM # I_CIS_HOSTNAME - CIS hostname used for PDToolStudio only.
 REM # I_CONFIG_PROPERTY_FILE - VCS Configuration property file used for connecting PDTool to CIS
-REM #
+REM # I_VCS_EDITOR - VCS default editor to use if required. Windows=notepad and UNIX=vi
+REM # I_VALID_ENV_CONFIG_PAIRS - The valid environment and configuration property file pairs provides the ability to use a short environment
+REM #                            name in place of the configuration property name when instructing PDTool on which environment to deploy to.
 REM ############################################################################################################################
 REM # (c) 2015 Cisco and/or its affiliates. All rights reserved.
 REM # 
@@ -51,6 +55,14 @@ CALL :InitVariables
 set SCRIPT_NAME=%0
 
 REM ############################################
+REM # Only display input if the first 
+REM #   variable contains a value.
+REM ############################################
+if exist cisVersion.bat call cisVersion.bat
+set I_BASE_CIS_VERSION=
+if defined DEFAULT_CIS_VERSION set I_BASE_CIS_VERSION=%DEFAULT_CIS_VERSION:~0,1%
+
+REM ############################################
 REM # Get command line input values
 REM ############################################
 set I_PDTOOL_INSTALL_TYPE=%1
@@ -67,7 +79,11 @@ set I_VCS_PROJECT_ROOT=%9
 shift
 set I_RELEASE_FOLDER=%9
 shift
+set I_VCS_WORKSPACE_HOME=%9
+shift
 set I_VCS_WORKSPACE_NAME=%9
+shift
+set I_VCS_TEMP_DIR=%9
 shift
 set I_VCS_USERNAME=%9
 shift
@@ -84,7 +100,12 @@ shift
 set I_CIS_HOSTNAME=%9
 shift
 set I_CONFIG_PROPERTY_FILE=%9
+shift
+set I_VCS_EDITOR=%9
+shift
+set I_VALID_ENV_CONFIG_PAIRS=%9
 
+if "%debug%"=="1" echo.I_VCS_WORKSPACE_HOME=      [%I_VCS_WORKSPACE_HOME%]
 
 REM ############################################
 REM # Remove double quotes
@@ -101,7 +122,9 @@ if defined I_VCS_HOME set I_VCS_HOME=!I_VCS_HOME:"=!
 if defined I_VCS_REPOSITORY_URL set I_VCS_REPOSITORY_URL=!I_VCS_REPOSITORY_URL:"=!
 if defined I_VCS_PROJECT_ROOT set I_VCS_PROJECT_ROOT=!I_VCS_PROJECT_ROOT:"=!
 if defined I_RELEASE_FOLDER set I_RELEASE_FOLDER=!I_RELEASE_FOLDER:"=!
+if defined I_VCS_WORKSPACE_HOME set I_VCS_WORKSPACE_HOME=!I_VCS_WORKSPACE_HOME:"=!
 if defined I_VCS_WORKSPACE_NAME set I_VCS_WORKSPACE_NAME=!I_VCS_WORKSPACE_NAME:"=!
+if defined I_VCS_TEMP_DIR set I_VCS_TEMP_DIR=!I_VCS_TEMP_DIR:"=!
 if defined I_VCS_USERNAME set I_VCS_USERNAME=!I_VCS_USERNAME:"=!
 if defined I_VCS_DOMAIN set I_VCS_DOMAIN=!I_VCS_DOMAIN:"=!
 if defined I_VCS_PASSWORD set I_VCS_PASSWORD=!I_VCS_PASSWORD:"=!
@@ -110,18 +133,44 @@ if defined I_CIS_DOMAIN set I_CIS_DOMAIN=!I_CIS_DOMAIN:"=!
 if defined I_CIS_PASSWORD set I_CIS_PASSWORD=!I_CIS_PASSWORD:"=!
 if defined I_CIS_HOSTNAME set I_CIS_HOSTNAME=!I_CIS_HOSTNAME:"=!
 if defined I_CONFIG_PROPERTY_FILE set I_CONFIG_PROPERTY_FILE=!I_CONFIG_PROPERTY_FILE:"=!
+if defined I_VCS_EDITOR set I_VCS_EDITOR=!I_VCS_EDITOR:"=!
+if defined I_VALID_ENV_CONFIG_PAIRS set I_VALID_ENV_CONFIG_PAIRS=!I_VALID_ENV_CONFIG_PAIRS:"=!
+
+if "%debug%"=="1" echo.I_VCS_WORKSPACE_HOME=      [%I_VCS_WORKSPACE_HOME%]
+
+REM ############################################
+REM # Check for single escaped variables and 
+REM #   escape with 2 % signs such as %%VAR1%%
+REM # Limitation: Only a single escaped variable
+REM #   is supported.  Multiple variables are not
+REM #   supported such as %VAR1%%VAR2%
+REM ############################################
+call:escStr %debug% I_JAVA_HOME I_JAVA_HOME
+call:escStr %debug% I_VALID_ENV_CONFIG_PAIRS I_VALID_ENV_CONFIG_PAIRS
+call:escStr %debug% I_VCS_BASE_TYPE I_VCS_BASE_TYPE
+call:escStr %debug% I_VCS_EDITOR I_VCS_EDITOR
+call:escStr %debug% I_VCS_HOME I_VCS_HOME
+call:escStr %debug% I_VCS_REPOSITORY_URL I_VCS_REPOSITORY_URL
+call:escStr %debug% I_VCS_PROJECT_ROOT I_VCS_PROJECT_ROOT
+call:escStr %debug% I_VCS_WORKSPACE_HOME I_VCS_WORKSPACE_HOME
+call:escStr %debug% I_VCS_WORKSPACE_NAME I_VCS_WORKSPACE_NAME
+call:escStr %debug% I_VCS_TEMP_DIR I_VCS_TEMP_DIR
+call:escStr %debug% I_VCS_USERNAME I_VCS_USERNAME
+call:escStr %debug% I_VCS_DOMAIN I_VCS_DOMAIN
+call:escStr %debug% I_CIS_USERNAME I_CIS_USERNAME
+call:escStr %debug% I_CIS_DOMAIN I_CIS_DOMAIN
 
 REM ############################################
 REM # Display banner
 REM ############################################
-set I_PDTOOL_INSTALL_TYPE_PAD="%I_PDTOOL_INSTALL_TYPE%"
-call :RPAD I_PDTOOL_INSTALL_TYPE_PAD 14
+set I_PDTOOL_INSTALL_TYPE_PAD="%I_PDTOOL_INSTALL_TYPE%%DEFAULT_CIS_VERSION%"
+call :RPAD I_PDTOOL_INSTALL_TYPE_PAD 20
 echo.----------------------------------------------------------------------
 echo.-----------                                                -----------
-echo.----------- Cisco Advanced Services %I_PDTOOL_INSTALL_TYPE_PAD%         -----------
+echo.----------- Cisco Advanced Services %I_PDTOOL_INSTALL_TYPE_PAD%   -----------
 echo.-----------           Promotion and Deployment Tool        -----------
 echo.-----------                                                -----------    
-echo.----------- Installation and Setup for %I_PDTOOL_INSTALL_TYPE_PAD%      -----------
+echo.----------- Installation and Setup for %I_PDTOOL_INSTALL_TYPE_PAD%-----------
 echo.----------------------------------------------------------------------
 echo.
 echo.----------------------------------------------------------------------
@@ -133,34 +182,40 @@ REM ############################################
 REM # Only display input if the first 
 REM #   variable contains a value.
 REM ############################################
+pause
 if "%I_PDTOOL_INSTALL_HOME%" == "" goto DISPLAY_CONTINUE
 	echo.--------------------------------------------------------------------------------------
 	echo.%SCRIPT_NAME% Input Variables Defined for %I_PDTOOL_INSTALL_TYPE%:
 	echo.--------------------------------------------------------------------------------------
-	echo.I_PDTOOL_INSTALL_TYPE=    %I_PDTOOL_INSTALL_TYPE%
-	echo.I_PDTOOL_INSTALL_HOME=    %I_PDTOOL_INSTALL_HOME%
-	echo.I_JAVA_HOME=              %I_JAVA_HOME%
-	echo.I_PDTOOL_DESTINATION_HOME=%I_PDTOOL_DESTINATION_HOME%
-	echo.I_PDTOOL_DESTINATION_DIR= %I_PDTOOL_DESTINATION_DIR%
-	echo.I_CONFIGURE_VCS=          %I_CONFIGURE_VCS%
-	echo.I_VCS_BASE_TYPE=          %I_VCS_BASE_TYPE%
-	echo.I_VCS_HOME=               %I_VCS_HOME%
-	echo.I_VCS_REPOSITORY_URL=     %I_VCS_REPOSITORY_URL%
-	echo.I_VCS_PROJECT_ROOT=       %I_VCS_PROJECT_ROOT%
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_RELEASE_FOLDER=         %I_RELEASE_FOLDER%
-	echo.I_VCS_WORKSPACE_NAME=     %I_VCS_WORKSPACE_NAME%
-	echo.I_VCS_USERNAME=           %I_VCS_USERNAME%
-	echo.I_VCS_DOMAIN=             %I_VCS_DOMAIN%
-	if not defined I_VCS_PASSWORD echo.I_VCS_PASSWORD=
-	if defined I_VCS_PASSWORD echo.I_VCS_PASSWORD=           ********
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_CIS_USERNAME=           %I_CIS_USERNAME%
-	echo.I_CIS_DOMAIN=             %I_CIS_DOMAIN%
+	echo.I_BASE_CIS_VERSION=        [%I_BASE_CIS_VERSION%]
+	echo.I_PDTOOL_INSTALL_TYPE=     [%I_PDTOOL_INSTALL_TYPE%]
+	echo.I_PDTOOL_INSTALL_HOME=     [%I_PDTOOL_INSTALL_HOME%]
+	echo.I_JAVA_HOME=               [%I_JAVA_HOME%]
+	echo.I_PDTOOL_DESTINATION_HOME= [%I_PDTOOL_DESTINATION_HOME%]
+	echo.I_PDTOOL_DESTINATION_DIR=  [%I_PDTOOL_DESTINATION_DIR%]
+	echo.I_CONFIGURE_VCS=           [%I_CONFIGURE_VCS%]
+	echo.I_VCS_BASE_TYPE=           [%I_VCS_BASE_TYPE%]
+	echo.I_VCS_HOME=                [%I_VCS_HOME%]
+	echo.I_VCS_REPOSITORY_URL=      [%I_VCS_REPOSITORY_URL%]
+	echo.I_VCS_PROJECT_ROOT=        [%I_VCS_PROJECT_ROOT%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_RELEASE_FOLDER=          [%I_RELEASE_FOLDER%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VCS_WORKSPACE_HOME=      [%I_VCS_WORKSPACE_HOME%]
+	echo.I_VCS_WORKSPACE_NAME=      [%I_VCS_WORKSPACE_NAME%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VCS_TEMP_DIR=            [%I_VCS_TEMP_DIR%]
+	echo.I_VCS_USERNAME=            [%I_VCS_USERNAME%]
+	echo.I_VCS_DOMAIN=              [%I_VCS_DOMAIN%]
+	if not defined I_VCS_PASSWORD echo.I_VCS_PASSWORD=            []
+	if defined I_VCS_PASSWORD echo.I_VCS_PASSWORD=            [********]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_CIS_USERNAME=            [%I_CIS_USERNAME%]
+	echo.I_CIS_DOMAIN=              [%I_CIS_DOMAIN%]
 	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" (
-		if not defined I_CIS_PASSWORD echo.I_CIS_PASSWORD=
-		if defined I_CIS_PASSWORD echo.I_CIS_PASSWORD=           ********
+		if not defined I_CIS_PASSWORD echo.I_CIS_PASSWORD=            []
+		if defined I_CIS_PASSWORD echo.I_CIS_PASSWORD=            [********]
 	)
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.I_CIS_HOSTNAME=           %I_CIS_HOSTNAME%
-	echo.I_CONFIG_PROPERTY_FILE=   %I_CONFIG_PROPERTY_FILE%
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.I_CIS_HOSTNAME=            [%I_CIS_HOSTNAME%]
+	echo.I_CONFIG_PROPERTY_FILE=    [%I_CONFIG_PROPERTY_FILE%]
+	echo.I_VCS_EDITOR=              [%I_VCS_EDITOR%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VALID_ENV_CONFIG_PAIRS=  [%I_VALID_ENV_CONFIG_PAIRS%]
 :DISPLAY_CONTINUE
 
 REM ############################################
@@ -415,6 +470,18 @@ if not defined I_RELEASE_FOLDER (
 :I_RELEASE_FOLDER_BYPASS
 
 REM #---------------------------------------
+REM # Input for I_VCS_EDITOR
+REM #---------------------------------------
+if not defined I_VCS_EDITOR (
+   echo.
+   echo.
+   echo.       I_VCS_EDITOR=[Default VCS Editor.  Windows: notepad and UNIX: vi]
+   echo.
+   set /P I_VCS_EDITOR=enter I_VCS_EDITOR [%DEF_VCS_EDITOR%]: 
+   if not defined I_VCS_EDITOR set I_VCS_EDITOR=%DEF_VCS_EDITOR%
+   goto VALIDATE_INPUT3
+)
+REM #---------------------------------------
 REM # Input for I_VCS_USERNAME
 REM #---------------------------------------
 if not defined I_VCS_USERNAME (
@@ -453,6 +520,26 @@ if defined I_VCS_PASSWORD GOTO NEXT_VALIDATION2
    goto VALIDATE_INPUT3
    
 :NEXT_VALIDATION2
+
+if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto I_VCS_WORKSPACE_HOME_BYPASS
+REM #---------------------------------------
+REM # Input for I_VCS_WORKSPACE_HOME
+REM #---------------------------------------
+if not defined I_VCS_WORKSPACE_HOME (
+   set DEF_VCS_WORKSPACE_HOME_RESULT=
+   call :resolveVariableDelayedExpansion %DEF_VCS_WORKSPACE_HOME% DEF_VCS_WORKSPACE_HOME_RESULT
+   echo.
+   echo.
+   echo.       I_VCS_WORKSPACE_HOME=[The VCS workspace name.  The workspace name is composed of %DEF_VCS_WORKSPACE_HOME%
+   echo.
+   set /P I_VCS_WORKSPACE_HOME=enter I_VCS_WORKSPACE_HOME [!DEF_VCS_WORKSPACE_HOME_RESULT!]: 
+   if not defined I_VCS_WORKSPACE_HOME set I_VCS_WORKSPACE_HOME=!DEF_VCS_WORKSPACE_HOME_RESULT!
+   rem echo I_VCS_WORKSPACE_HOME=%I_VCS_WORKSPACE_HOME%
+   set DEF_VCS_WORKSPACE_HOME_RESULT=
+   goto VALIDATE_INPUT3
+)
+:I_VCS_WORKSPACE_HOME_BYPASS
+
 REM #---------------------------------------
 REM # Input for I_VCS_WORKSPACE_NAME
 REM #---------------------------------------
@@ -469,6 +556,26 @@ if not defined I_VCS_WORKSPACE_NAME (
    set DEF_VCS_WORKSPACE_NAME_RESULT=
    goto VALIDATE_INPUT3
 )
+
+if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto I_VCS_TEMP_DIR_BYPASS
+REM #---------------------------------------
+REM # Input for I_VCS_TEMP_DIR
+REM #---------------------------------------
+if not defined I_VCS_TEMP_DIR (
+   set DEF_VCS_TEMP_DIR_RESULT=
+   call :resolveVariableDelayedExpansion %DEF_VCS_TEMP_DIR% DEF_VCS_TEMP_DIR_RESULT
+   echo.
+   echo.
+   echo.       I_VCS_TEMP_DIR=[The VCS workspace name.  The workspace name is composed of %DEF_VCS_TEMP_DIR%
+   echo.
+   set /P I_VCS_TEMP_DIR=enter I_VCS_TEMP_DIR [!DEF_VCS_TEMP_DIR_RESULT!]: 
+   if not defined I_VCS_TEMP_DIR set I_VCS_TEMP_DIR=!DEF_VCS_TEMP_DIR_RESULT!
+   rem echo I_VCS_TEMP_DIR=%I_VCS_TEMP_DIR%
+   set DEF_VCS_TEMP_DIR_RESULT=
+   goto VALIDATE_INPUT3
+)
+:I_VCS_TEMP_DIR_BYPASS
+
 :NEXT_VALIDATION3
 
 REM #---------------------------------------
@@ -538,12 +645,32 @@ if not defined I_CONFIG_PROPERTY_FILE (
    if not defined I_CONFIG_PROPERTY_FILE set I_CONFIG_PROPERTY_FILE=%DEF_CONFIG_PROPERTY_FILE%
    goto VALIDATE_INPUT3
 )
+if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto I_VALID_ENV_CONFIG_PAIRS_BYPASS
+REM #---------------------------------------
+REM # Input for I_VALID_ENV_CONFIG_PAIRS
+REM #---------------------------------------
+if not defined I_VALID_ENV_CONFIG_PAIRS (
+   echo.
+   echo.
+   echo.       I_VALID_ENV_CONFIG_PAIRS=[Default VCS Editor.  Windows: notepad and UNIX: vi]
+   echo.
+   set /P I_VALID_ENV_CONFIG_PAIRS=enter I_VALID_ENV_CONFIG_PAIRS [%DEF_VALID_ENV_CONFIG_PAIRS%]: 
+   if not defined I_VALID_ENV_CONFIG_PAIRS set I_VALID_ENV_CONFIG_PAIRS=%DEF_VALID_ENV_CONFIG_PAIRS%
+   goto VALIDATE_INPUT3
+)
+:I_VALID_ENV_CONFIG_PAIRS_BYPASS
+
 
 :BEGIN_SCRIPT
 REM ############################################
 REM # Make final assignments
 REM ############################################
 if not defined DEF_VCS_DOMAIN set I_VCS_DOMAIN=
+
+REM #=======================================
+REM # Remove ending / for VCS_REPOSITORY_URL
+REM #=======================================
+CALL:REMOVE_SEPARATOR "%I_VCS_REPOSITORY_URL%" "/" I_VCS_REPOSITORY_URL
 
 REM ############################################
 REM # Static variables - DO NOT CHANGE
@@ -557,6 +684,20 @@ for /F "usebackq delims==" %%I IN (`echo %I_PDTOOL_HOME%`) DO (
 )
 set I_PDTOOL_HOME_DRIVE_SHARE=%I_PDTOOL_HOME_DRIVE::=$%
 
+REM #=======================================
+REM # Convert VCS_USERNAME to lowercase
+REM #=======================================
+if "%debug%"=="1" (
+	echo.
+	echo.-------------------------------------------
+	echo.Convert usernames to lowercase
+	echo.-------------------------------------------
+)
+if defined I_WINDOWS_USER CALL :LCase I_WINDOWS_USER I_WINDOWS_USER
+if defined I_VCS_USERNAME CALL :LCase I_VCS_USERNAME I_VCS_USERNAME
+if defined I_VCS_DOMAIN   CALL :LCase I_VCS_DOMAIN   I_VCS_DOMAIN
+if defined I_CIS_USERNAME CALL :LCase I_CIS_USERNAME I_CIS_USERNAME
+
 REM ############################################
 REM # Display Variables
 REM ############################################
@@ -564,6 +705,7 @@ echo.
 echo.--------------------------------------------------------------------------------------
 echo.%SCRIPT_NAME% Variables Defined for %I_PDTOOL_INSTALL_TYPE%:
 echo.--------------------------------------------------------------------------------------
+    echo.I_BASE_CIS_VERSION=        [%I_BASE_CIS_VERSION%]
 	echo.I_PDTOOL_INSTALL_TYPE=     [%I_PDTOOL_INSTALL_TYPE%]
 	echo.I_PDTOOL_INSTALL_HOME=     [%I_PDTOOL_INSTALL_HOME%]
 	echo.I_PDTOOL_INSTALL_SCRIPTS=  [%I_PDTOOL_INSTALL_SCRIPTS%]
@@ -577,7 +719,10 @@ if "%I_CONFIGURE_VCS%"=="Y" (
 	echo.I_VCS_REPOSITORY_URL=      [%I_VCS_REPOSITORY_URL%]
 	echo.I_VCS_PROJECT_ROOT=        [%I_VCS_PROJECT_ROOT%]
 	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_RELEASE_FOLDER=          [%I_RELEASE_FOLDER%]
+	echo.I_VCS_EDITOR=              [%I_VCS_EDITOR%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VCS_WORKSPACE_HOME=      [%I_VCS_WORKSPACE_HOME%]
 	echo.I_VCS_WORKSPACE_NAME=      [%I_VCS_WORKSPACE_NAME%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VCS_TEMP_DIR=            [%I_VCS_TEMP_DIR%]
 	echo.I_VCS_USERNAME=            [%I_VCS_USERNAME%]
 	echo.I_VCS_DOMAIN=              [%I_VCS_DOMAIN%]
 	if not defined I_VCS_PASSWORD echo.I_VCS_PASSWORD=            []
@@ -591,6 +736,8 @@ if "%I_CONFIGURE_VCS%"=="Y" (
 	echo.I_CIS_DOMAIN=              [%I_CIS_DOMAIN%]
 	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.I_CIS_HOSTNAME=            [%I_CIS_HOSTNAME%]
 	echo.I_CONFIG_PROPERTY_FILE=    [%I_CONFIG_PROPERTY_FILE%]
+    if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.I_VALID_ENV_CONFIG_PAIRS=  [%I_VALID_ENV_CONFIG_PAIRS%]
+	
 	echo.
 	echo.Derived Variables Defined:
 	echo.I_WINDOWS_USER=            [%I_WINDOWS_USER%]
@@ -610,12 +757,12 @@ echo.Are the variables you entered correct^?
 echo.
 set /P I_VARS_DECISION=Enter I_VARS_DECISION [Y or N]: 
 if defined I_VARS_DECISION CALL :UCase I_VARS_DECISION I_VARS_DECISION
-if "%I_VARS_DECISION%" == "Y" goto CONTINUE_SCRIPT1
+if "%I_VARS_DECISION%" == "Y" goto CONTINUE_SCRIPT2
 REM # Initialize the variables
 CALL :InitVariables
 goto VALIDATE_INPUT1
 
-:CONTINUE_SCRIPT1
+:CONTINUE_SCRIPT2
 REM ############################################
 REM # Script Execution
 REM ############################################
@@ -625,8 +772,8 @@ echo.call SetupPDToolInstaller.bat
 echo.
 echo.--------------------------------------------------------------------------------------
 pushd
-rem call %I_PDTOOL_INSTALL_SCRIPTS%\SetupPDToolInstaller.bat "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%" "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_NAME%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%"
-call :SetupPDToolInstaller "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%"  "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_NAME%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%"
+rem call %I_PDTOOL_INSTALL_SCRIPTS%\SetupPDToolInstaller.bat "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%" "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_HOME%" "%I_VCS_WORKSPACE_NAME%" "%I_VCS_TEMP_DIR%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%" "%I_VCS_EDITOR%" "%I_VALID_ENV_CONFIG_PAIRS%" "%I_BASE_CIS_VERSION%"
+call :SetupPDToolInstaller                                   "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%" "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_HOME%" "%I_VCS_WORKSPACE_NAME%" "%I_VCS_TEMP_DIR%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%" "%I_VCS_EDITOR%" "%I_VALID_ENV_CONFIG_PAIRS%" "%I_BASE_CIS_VERSION%"
 set ERROR=%ERRORLEVEL%
 popd
 if %ERROR%==0 GOTO SUCCESS_EXIT_SCRIPT
@@ -685,7 +832,7 @@ REM ####################################################################
 :: Script to setup Cisco AS Assets PDTool.  This script is intended to operate from the C: drive.
 ::
 :: Invocation instructions:
-::    call :SetupPDToolInstaller "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%" "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_NAME%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%"
+::    call :SetupPDToolInstaller "%I_WINDOWS_USER%"  "%I_CIS_DOMAIN%" "%I_CIS_HOSTNAME%" "%I_CIS_USERNAME%" "%I_CIS_PASSWORD%" "%I_PDTOOL_SOURCE_FILES%"  "%I_PDTOOL_INSTALL_HOME%" "%I_PDTOOL_INSTALL_SCRIPTS%" "%I_PDTOOL_HOME%"  "%I_PDTOOL_WKS_HOME%" "%I_PDTOOL_DESTINATION_HOME%" "%I_VCS_BASE_TYPE%" "%I_VCS_HOME%" "%I_VCS_USERNAME%" "%I_VCS_DOMAIN%" "%I_VCS_PASSWORD%" "%I_VCS_REPOSITORY_URL%" "%I_VCS_PROJECT_ROOT%" "%I_VCS_WORKSPACE_HOME%" "%I_VCS_WORKSPACE_NAME%" "%I_VCS_TEMP_DIR%" "%I_RELEASE_FOLDER%" "%I_JAVA_HOME%" "%I_CONFIG_PROPERTY_FILE%" "%I_CONFIGURE_VCS%" "%I_VCS_EDITOR%" "%I_VALID_ENV_CONFIG_PAIRS%"
 :: Parameters:
 ::    I_WINDOWS_USER - windows user login
 ::    I_CIS_DOMAIN - CIS Domain.  This may be "composite" or an ldap domain name.
@@ -705,16 +852,23 @@ REM ####################################################################
 ::    I_VCS_PASSWORD - The version control password.
 ::    I_VCS_REPOSITORY_URL - The version control repository URL.
 ::    I_VCS_PROJECT_ROOT - The version control project root folder.
+::    I_VCS_WORKSPACE_HOME - Typically this is set to the PDTOOL_HOME variable but may be set to a different folder.  This is the parent folder to where the workspace name folder "I_VCS_WORKSPACE_NAME" is a child.
 ::    I_VCS_WORKSPACE_NAME - The name of the workspace folder.  Not a path, just the name. e.g. SVN.
-::    I_VCS_RELEASE_FOLDER - The name of the VCS release folder. e.g. 20140605i
+::    I_VCS_TEMP_DIR - Typically this is the set to the PDTOOL_HOME variable + I_VCS_WORKSPACE_NAME + t indicating temp
+::    I_RELEASE_FOLDER - The name of the VCS release folder. e.g. 20140605i
 ::    I_JAVA_HOME - The JRE Home used for executing java.
 ::    I_CONFIG_PROPERTY_FILE - The default configuration property file to use to execute PDTool deployment plans.
 ::    I_CONFIGURE_VCS - Y or N Informs the script whether to setup VCS or not.  If not then install the base PDTool configuration.
+::    I_VCS_EDITOR - Default VCS editor. Windows: notepad and UNIX: vi
+::    I_VALID_ENV_CONFIG_PAIRS - The valid environment and configuration property file pairs provides the ability to use a short environment
+::                               name in place of the configuration property name when instructing PDTool on which environment to deploy to.
+::    I_BASE_CIS_VERSION - Base CIS version PDTool is being installed for.  e.g. 6 or 7.  It is used to update \AutomatedTestFramework\regression\bin\setVars.bat: VALID_ENV_CONFIG_PAIRS_6 or VALID_ENV_CONFIG_PAIRS_7
 ::#####################################################################
 REM #
 REM # Define the static variables for PDTool and PDToolStudio
 if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" (
 	set MODIFY_SET_VARS=setVars.bat
+	set MODIFY_ATF_SET_VARS=setVars.bat
 	set PDTOOL_EXEC_SCRIPT=ExecutePDTool.bat
 	set MODIFY_SET_MY_PRE_VARS=setMyPrePDToolVars.bat
 	set MODIFY_SET_MY_POST_VARS=setMyPostPDToolVars.bat
@@ -778,12 +932,18 @@ set I_VCS_REPOSITORY_URL=%9
 REM # I_VCS_PROJECT_ROOT - The version control project root folder.
 shift
 set I_VCS_PROJECT_ROOT=%9
-REM # I_VCS_WORKSPACE_NAME - The name of the workspace folder.  Not a path, just the name. e.g. SVNCOEsw.
+REM # I_VCS_WORKSPACE_HOME - The workspace home path.  e.g. C:\Temp\wks
+shift
+set I_VCS_WORKSPACE_HOME=%9
+REM # I_VCS_WORKSPACE_NAME - The name of the workspace folder.  Not a path, just the name. e.g. SVN.
 shift
 set I_VCS_WORKSPACE_NAME=%9
-REM # I_VCS_RELEASE_FOLDER - The name of the VCS release folder. e.g. 20140605i 
+REM # I_VCS_TEMP_DIR - The workspace temporary path.  e.g. C:\Temp\wks\SVNt.
 shift
-set I_VCS_RELEASE_FOLDER=%9
+set I_VCS_TEMP_DIR=%9
+REM # I_RELEASE_FOLDER - The name of the VCS release folder. e.g. 20140605i 
+shift
+set I_RELEASE_FOLDER=%9
 REM # I_JAVA_HOME - The JRE Home used for executing java.
 shift
 set I_JAVA_HOME=%9
@@ -793,6 +953,15 @@ set I_CONFIG_PROPERTY_FILE=%9
 REM # I_CONFIGURE_VCS - Y or N Informs the script whether to setup VCS or not.  If not then install the base PDTool configuration.
 shift
 set I_CONFIGURE_VCS=%9
+shift
+set I_VCS_EDITOR=%9
+shift
+set I_VALID_ENV_CONFIG_PAIRS=%9
+shift
+set I_BASE_CIS_VERSION=%9
+
+
+REM #
 REM #=======================================
 REM # Remove double quotes
 REM #=======================================
@@ -803,44 +972,57 @@ if "%debug%"=="1" (
 	echo.-------------------------------------------
 )
 setlocal EnableDelayedExpansion
-if defined I_WINDOWS_USER 			 set I_WINDOWS_USER=!I_WINDOWS_USER:"=!
-if defined I_CIS_DOMAIN 			 set I_CIS_DOMAIN=!I_CIS_DOMAIN:"=!
-if defined I_CIS_HOSTNAME 			 set I_CIS_HOSTNAME=!I_CIS_HOSTNAME:"=!
-if defined I_CIS_USERNAME 			 set I_CIS_USERNAME=!I_CIS_USERNAME:"=!
-if defined I_CIS_PASSWORD 			 set I_CIS_PASSWORD=!I_CIS_PASSWORD:"=!
-if defined I_PDTOOL_SOURCE_FILES 	 set I_PDTOOL_SOURCE_FILES=!I_PDTOOL_SOURCE_FILES:"=!
-if defined I_PDTOOL_INSTALL_HOME 	 set I_PDTOOL_INSTALL_HOME=!I_PDTOOL_INSTALL_HOME:"=!
-if defined I_PDTOOL_INSTALL_SCRIPTS  set I_PDTOOL_INSTALL_SCRIPTS=!I_PDTOOL_INSTALL_SCRIPTS:"=!
-if defined I_PDTOOL_HOME 			 set I_PDTOOL_HOME=!I_PDTOOL_HOME:"=!
-if defined I_PDTOOL_WKS_HOME 		 set I_PDTOOL_WKS_HOME=!I_PDTOOL_WKS_HOME:"=!
-if defined I_PDTOOL_DESTINATION_HOME set I_PDTOOL_DESTINATION_HOME=!I_PDTOOL_DESTINATION_HOME:"=!
-if defined I_VCS_BASE_TYPE 			 set I_VCS_BASE_TYPE=!I_VCS_BASE_TYPE:"=!
-if defined I_VCS_USERNAME 			 set I_VCS_USERNAME=!I_VCS_USERNAME:"=!
-if defined I_VCS_DOMAIN 			 set I_VCS_DOMAIN=!I_VCS_DOMAIN:"=!
-if defined I_VCS_PASSWORD 			 set I_VCS_PASSWORD=!I_VCS_PASSWORD:"=!
-if defined I_VCS_REPOSITORY_URL 	 set I_VCS_REPOSITORY_URL=!I_VCS_REPOSITORY_URL:"=!
-if defined I_VCS_PROJECT_ROOT 		 set I_VCS_PROJECT_ROOT=!I_VCS_PROJECT_ROOT:"=!
-if defined I_VCS_WORKSPACE_NAME 	 set I_VCS_WORKSPACE_NAME=!I_VCS_WORKSPACE_NAME:"=!
-if defined I_VCS_RELEASE_FOLDER 	 set I_VCS_RELEASE_FOLDER=!I_VCS_RELEASE_FOLDER:"=!
-if defined I_JAVA_HOME 				 set I_JAVA_HOME=!I_JAVA_HOME:"=!
-if defined I_CONFIG_PROPERTY_FILE 	 set I_CONFIG_PROPERTY_FILE=!I_CONFIG_PROPERTY_FILE:"=!
-if defined I_CONFIGURE_VCS 			 set I_CONFIGURE_VCS=!I_CONFIGURE_VCS:"=!
+if defined I_WINDOWS_USER 			  set I_WINDOWS_USER=!I_WINDOWS_USER:"=!
+if defined I_CIS_DOMAIN 			  set I_CIS_DOMAIN=!I_CIS_DOMAIN:"=!
+if defined I_CIS_HOSTNAME 			  set I_CIS_HOSTNAME=!I_CIS_HOSTNAME:"=!
+if defined I_CIS_USERNAME 			  set I_CIS_USERNAME=!I_CIS_USERNAME:"=!
+if defined I_CIS_PASSWORD 			  set I_CIS_PASSWORD=!I_CIS_PASSWORD:"=!
+if defined I_PDTOOL_SOURCE_FILES 	  set I_PDTOOL_SOURCE_FILES=!I_PDTOOL_SOURCE_FILES:"=!
+if defined I_PDTOOL_INSTALL_HOME 	  set I_PDTOOL_INSTALL_HOME=!I_PDTOOL_INSTALL_HOME:"=!
+if defined I_PDTOOL_INSTALL_SCRIPTS   set I_PDTOOL_INSTALL_SCRIPTS=!I_PDTOOL_INSTALL_SCRIPTS:"=!
+if defined I_PDTOOL_HOME 			  set I_PDTOOL_HOME=!I_PDTOOL_HOME:"=!
+if defined I_PDTOOL_WKS_HOME 		  set I_PDTOOL_WKS_HOME=!I_PDTOOL_WKS_HOME:"=!
+if defined I_PDTOOL_DESTINATION_HOME  set I_PDTOOL_DESTINATION_HOME=!I_PDTOOL_DESTINATION_HOME:"=!
+if defined I_VCS_BASE_TYPE 			  set I_VCS_BASE_TYPE=!I_VCS_BASE_TYPE:"=!
+if defined I_VCS_HOME	 			  set I_VCS_HOME=!I_VCS_HOME:"=!
+if defined I_VCS_USERNAME 			  set I_VCS_USERNAME=!I_VCS_USERNAME:"=!
+if defined I_VCS_DOMAIN 			  set I_VCS_DOMAIN=!I_VCS_DOMAIN:"=!
+if defined I_VCS_PASSWORD 			  set I_VCS_PASSWORD=!I_VCS_PASSWORD:"=!
+if defined I_VCS_REPOSITORY_URL 	  set I_VCS_REPOSITORY_URL=!I_VCS_REPOSITORY_URL:"=!
+if defined I_VCS_PROJECT_ROOT 		  set I_VCS_PROJECT_ROOT=!I_VCS_PROJECT_ROOT:"=!
+if defined I_VCS_WORKSPACE_HOME 	  set I_VCS_WORKSPACE_HOME=!I_VCS_WORKSPACE_HOME:"=!
+if defined I_VCS_WORKSPACE_NAME 	  set I_VCS_WORKSPACE_NAME=!I_VCS_WORKSPACE_NAME:"=!
+if defined I_VCS_TEMP_DIR 	          set I_VCS_TEMP_DIR=!I_VCS_TEMP_DIR:"=!
+if defined I_RELEASE_FOLDER 	      set I_RELEASE_FOLDER=!I_RELEASE_FOLDER:"=!
+if defined I_JAVA_HOME 				  set I_JAVA_HOME=!I_JAVA_HOME:"=!
+if defined I_CONFIG_PROPERTY_FILE 	  set I_CONFIG_PROPERTY_FILE=!I_CONFIG_PROPERTY_FILE:"=!
+if defined I_CONFIGURE_VCS 			  set I_CONFIGURE_VCS=!I_CONFIGURE_VCS:"=!
+if defined I_VCS_EDITOR 			  set I_VCS_EDITOR=!I_VCS_EDITOR:"=!
+if defined I_VALID_ENV_CONFIG_PAIRS   set I_VALID_ENV_CONFIG_PAIRS=!I_VALID_ENV_CONFIG_PAIRS:"=!
+if defined I_BASE_CIS_VERSION         set I_BASE_CIS_VERSION=!I_BASE_CIS_VERSION:"=!
 
 
-REM #=======================================
-REM # Remove ending / for VCS_REPOSITORY_URL
-REM #=======================================
-IF NOT DEFINED I_VCS_REPOSITORY_URL GOTO INSTALLER_DISPLAY_INPUT
-  call:strLen I_VCS_REPOSITORY_URL LEN
-  SET _start=%LEN%
-  SET /a _start=_start-1
-  SET _len=1
-  CALL SET LAST_CHAR=%%I_VCS_REPOSITORY_URL:~%_start%,%_len%%%
-  SET _beg=0
-  SET _len=%_start%
-  IF "%LAST_CHAR%"=="/" CALL SET I_VCS_REPOSITORY_URL=%%I_VCS_REPOSITORY_URL:~%_beg%,%_len%%%
-
-:INSTALLER_DISPLAY_INPUT
+REM ############################################
+REM # Check for single escaped variables and 
+REM #   escape with 2 % signs such as %%VAR1%%
+REM # Limitation: Only a single escaped variable
+REM #   is supported.  Multiple variables are not
+REM #   supported such as %VAR1%%VAR2%
+REM ############################################
+call:escStr %debug% I_JAVA_HOME I_JAVA_HOME
+call:escStr %debug% I_VALID_ENV_CONFIG_PAIRS I_VALID_ENV_CONFIG_PAIRS
+call:escStr %debug% I_VCS_BASE_TYPE I_VCS_BASE_TYPE
+call:escStr %debug% I_VCS_EDITOR I_VCS_EDITOR
+call:escStr %debug% I_VCS_HOME I_VCS_HOME
+call:escStr %debug% I_VCS_REPOSITORY_URL I_VCS_REPOSITORY_URL
+call:escStr %debug% I_VCS_PROJECT_ROOT I_VCS_PROJECT_ROOT
+call:escStr %debug% I_VCS_WORKSPACE_HOME I_VCS_WORKSPACE_HOME
+call:escStr %debug% I_VCS_WORKSPACE_NAME I_VCS_WORKSPACE_NAME
+call:escStr %debug% I_VCS_TEMP_DIR I_VCS_TEMP_DIR
+call:escStr %debug% I_VCS_USERNAME I_VCS_USERNAME
+call:escStr %debug% I_VCS_DOMAIN I_VCS_DOMAIN
+call:escStr %debug% I_CIS_USERNAME I_CIS_USERNAME
+call:escStr %debug% I_CIS_DOMAIN I_CIS_DOMAIN
 
 REM #=======================================
 REM # Display input values
@@ -850,192 +1032,35 @@ if "%debug%"=="0" goto INSTALLER_NO_DISPLAY_INPUT1
 	echo.[DEBUG] -------------------------------------------------------------------------
 	echo.%SCRIPT_NAME_INSTALLER% :: Input values from command line
 	echo.[DEBUG] -------------------------------------------------------------------------
-	echo.[DEBUG] I_JAVA_HOME=              [%I_JAVA_HOME%]
-	echo.[DEBUG] I_PDTOOL_SOURCE_FILES=    [%I_PDTOOL_SOURCE_FILES%]
-	echo.[DEBUG] I_PDTOOL_INSTALL_HOME=    [%I_PDTOOL_INSTALL_HOME%]
-	echo.[DEBUG] I_PDTOOL_INSTALL_SCRIPTS= [%I_PDTOOL_INSTALL_SCRIPTS%]
-	echo.[DEBUG] I_PDTOOL_HOME=            [%I_PDTOOL_HOME%]
-	echo.[DEBUG] I_PDTOOL_WKS_HOME=        [%I_PDTOOL_WKS_HOME%]
-	echo.[DEBUG] I_PDTOOL_DESTINATION_HOME=[%I_PDTOOL_DESTINATION_HOME%]
-	echo.[DEBUG] I_WINDOWS_USER=           [%I_WINDOWS_USER%]
-	echo.[DEBUG] I_CIS_USERNAME=           [%I_CIS_USERNAME%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_CIS_PASSWORD=           [********]
-	echo.[DEBUG] I_CIS_DOMAIN=             [%I_CIS_DOMAIN%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.[DEBUG] I_CIS_HOSTNAME=           [%I_CIS_HOSTNAME%]
-	echo.[DEBUG] I_CONFIGURE_VCS=          [%I_CONFIGURE_VCS%]
-	echo.[DEBUG] I_VCS_BASE_TYPE=          [%I_VCS_BASE_TYPE%]
-	echo.[DEBUG] I_VCS_USERNAME=           [%I_VCS_USERNAME%]
-	echo.[DEBUG] I_VCS_DOMAIN=             [%I_VCS_DOMAIN%]
-	echo.[DEBUG] I_VCS_PASSWORD=           [********]
-	echo.[DEBUG] I_VCS_REPOSITORY_URL=     [%I_VCS_REPOSITORY_URL%]
-	echo.[DEBUG] I_VCS_PROJECT_ROOT=       [%I_VCS_PROJECT_ROOT%]
-	echo.[DEBUG] I_VCS_WORKSPACE_NAME=     [%I_VCS_WORKSPACE_NAME%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_VCS_RELEASE_FOLDER=     [%I_VCS_RELEASE_FOLDER%]
-	echo.[DEBUG] I_CONFIG_PROPERTY_FILE=   [%I_CONFIG_PROPERTY_FILE%]
+	echo.[DEBUG] I_JAVA_HOME=               [%I_JAVA_HOME%]
+	echo.[DEBUG] I_PDTOOL_SOURCE_FILES=     [%I_PDTOOL_SOURCE_FILES%]
+	echo.[DEBUG] I_PDTOOL_INSTALL_HOME=     [%I_PDTOOL_INSTALL_HOME%]
+	echo.[DEBUG] I_PDTOOL_INSTALL_SCRIPTS=  [%I_PDTOOL_INSTALL_SCRIPTS%]
+	echo.[DEBUG] I_PDTOOL_HOME=             [%I_PDTOOL_HOME%]
+	echo.[DEBUG] I_PDTOOL_WKS_HOME=         [%I_PDTOOL_WKS_HOME%]
+	echo.[DEBUG] I_PDTOOL_DESTINATION_HOME= [%I_PDTOOL_DESTINATION_HOME%]
+	echo.[DEBUG] I_WINDOWS_USER=            [%I_WINDOWS_USER%]
+	echo.[DEBUG] I_CIS_USERNAME=            [%I_CIS_USERNAME%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_CIS_PASSWORD=            [********]
+	echo.[DEBUG] I_CIS_DOMAIN=              [%I_CIS_DOMAIN%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.[DEBUG] I_CIS_HOSTNAME=            [%I_CIS_HOSTNAME%]
+	echo.[DEBUG] I_CONFIGURE_VCS=           [%I_CONFIGURE_VCS%]
+	echo.[DEBUG] I_VCS_BASE_TYPE=           [%I_VCS_BASE_TYPE%]
+	echo.[DEBUG] I_VCS_USERNAME=            [%I_VCS_USERNAME%]
+	echo.[DEBUG] I_VCS_DOMAIN=              [%I_VCS_DOMAIN%]
+	echo.[DEBUG] I_VCS_PASSWORD=            [********]
+	echo.[DEBUG] I_VCS_REPOSITORY_URL=      [%I_VCS_REPOSITORY_URL%]
+	echo.[DEBUG] I_VCS_PROJECT_ROOT=        [%I_VCS_PROJECT_ROOT%]
+	echo.[DEBUG] I_VCS_EDITOR=              [%I_VCS_EDITOR%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_VCS_WORKSPACE_HOME=      [%I_VCS_WORKSPACE_HOME%]
+	echo.[DEBUG] I_VCS_WORKSPACE_NAME=      [%I_VCS_WORKSPACE_NAME%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_VCS_TEMP_DIR=            [%I_VCS_TEMP_DIR%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_RELEASE_FOLDER=          [%I_RELEASE_FOLDER%]
+	echo.[DEBUG] I_CONFIG_PROPERTY_FILE=    [%I_CONFIG_PROPERTY_FILE%]
+	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_VALID_ENV_CONFIG_PAIRS=  [%I_VALID_ENV_CONFIG_PAIRS%]
+	echo.[DEBUG] I_BASE_CIS_VERSION=        [%I_BASE_CIS_VERSION%]
 	echo.
 :INSTALLER_NO_DISPLAY_INPUT1
-
-REM #=======================================
-REM # Validate Input
-REM #=======================================
-:INSTALLER_VALIDATE_INPUT
-IF NOT DEFINED I_CONFIGURE_VCS (
-   set /P I_CONFIGURE_VCS=enter I_CONFIGURE_VCS: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-if defined I_CONFIGURE_VCS CALL :UCase I_CONFIGURE_VCS I_CONFIGURE_VCS
-
-IF NOT DEFINED I_WINDOWS_USER (
-   set /P I_WINDOWS_USER=enter I_WINDOWS_USER: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_CIS_DOMAIN (
-   set /P I_CIS_DOMAIN=enter I_CIS_DOMAIN: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" goto INSTALL_I_CIS_HOSTNAME_BYPASS
-IF NOT DEFINED I_CIS_HOSTNAME (
-   set /P I_CIS_HOSTNAME=enter I_CIS_HOSTNAME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-:INSTALL_I_CIS_HOSTNAME_BYPASS
-
-if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALL_I_CIS_USERNAME_BYPASS
-IF NOT DEFINED I_CIS_USERNAME (
-   set /P I_CIS_USERNAME=enter I_CIS_USERNAME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-:INSTALL_I_CIS_USERNAME_BYPASS
-if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALL_I_CIS_PASSWORD_BYPASS
-IF NOT DEFINED I_CIS_PASSWORD (
-   set /P I_CIS_PASSWORD=enter I_CIS_PASSWORD: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-:INSTALL_I_CIS_PASSWORD_BYPASS
-IF NOT DEFINED I_PDTOOL_SOURCE_FILES (
-   set /P I_PDTOOL_SOURCE_FILES=enter I_PDTOOL_SOURCE_FILES: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_PDTOOL_INSTALL_HOME (
-   set /P I_PDTOOL_INSTALL_HOME=enter I_PDTOOL_INSTALL_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_PDTOOL_INSTALL_SCRIPTS (
-   set /P I_PDTOOL_INSTALL_SCRIPTS=enter I_PDTOOL_INSTALL_SCRIPTS: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_PDTOOL_HOME (
-   set /P I_PDTOOL_HOME=enter I_PDTOOL_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_PDTOOL_WKS_HOME (
-   set /P I_PDTOOL_WKS_HOME=enter I_PDTOOL_WKS_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_PDTOOL_DESTINATION_HOME (
-   set /P I_PDTOOL_DESTINATION_HOME=enter I_PDTOOL_DESTINATION_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_JAVA_HOME (
-   set /P I_JAVA_HOME=enter I_JAVA_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_CONFIG_PROPERTY_FILE (
-   set /P I_CONFIG_PROPERTY_FILE=enter I_CONFIG_PROPERTY_FILE: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF "%I_CONFIGURE_VCS%" == "N" GOTO INSTALLER_BEGIN_SCRIPT
-
-IF NOT DEFINED I_VCS_BASE_TYPE (
-   set /P I_VCS_BASE_TYPE=enter I_VCS_BASE_TYPE: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_VCS_HOME (
-   set /P I_VCS_HOME=enter I_VCS_HOME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_VCS_USERNAME (
-   set /P I_VCS_USERNAME=enter I_VCS_USERNAME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_VCS_DOMAIN (
-   set /P I_VCS_DOMAIN=enter I_VCS_DOMAIN: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF DEFINED I_VCS_PASSWORD GOTO INSTALLER_NEXT_VALIDATION
-   powershell -Command $pword = read-host "enter I_VCS_PASSWORD" -AsSecureString ; $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword) ; [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) > .tmp.txt & set /p I_VCS_PASSWORD=<.tmp.txt & del .tmp.txt
-   GOTO INSTALLER_VALIDATE_INPUT
-   
-:INSTALLER_NEXT_VALIDATION
-IF NOT DEFINED I_VCS_REPOSITORY_URL (
-   set /P I_VCS_REPOSITORY_URL=enter I_VCS_REPOSITORY_URL: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_VCS_PROJECT_ROOT (
-   set /P I_VCS_PROJECT_ROOT=enter I_VCS_PROJECT_ROOT: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-IF NOT DEFINED I_VCS_WORKSPACE_NAME (
-   set /P I_VCS_WORKSPACE_NAME=enter I_VCS_WORKSPACE_NAME: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALL_I_VCS_RELEASE_FOLDER_BYPASS
-IF NOT DEFINED I_VCS_RELEASE_FOLDER (
-   set /P I_VCS_RELEASE_FOLDER=enter I_VCS_RELEASE_FOLDER: 
-   GOTO INSTALLER_VALIDATE_INPUT
-)
-:INSTALL_I_VCS_RELEASE_FOLDER_BYPASS
-goto INSTALLER_BEGIN_SCRIPT
-:INSTALLER_ERROR
-
-exit /b 1
-
-:INSTALLER_BEGIN_SCRIPT
-REM #=======================================
-REM # Convert VCS_USERNAME to lowercase
-REM #=======================================
-if "%debug%"=="1" (
-	echo.
-	echo.-------------------------------------------
-	echo.Convert usernames to lowercase
-	echo.-------------------------------------------
-)
-if defined I_WINDOWS_USER CALL :LCase I_WINDOWS_USER I_WINDOWS_USER
-if defined I_VCS_USERNAME CALL :LCase I_VCS_USERNAME I_VCS_USERNAME
-if defined I_VCS_DOMAIN   CALL :LCase I_VCS_DOMAIN I_VCS_DOMAIN
-if defined I_CIS_USERNAME CALL :LCase I_CIS_USERNAME I_CIS_USERNAME
-
-REM #=======================================
-REM # Display input values
-REM #=======================================
-if "%debug%"=="0" goto INSTALLER_NO_DISPLAY_INPUT2
-	echo.
-	echo.[DEBUG] -------------------------------------------------------------------------
-	echo.[DEBUG] %SCRIPT_NAME_INSTALLER% :: Input values after removing double quotes
-	echo.[DEBUG] -------------------------------------------------------------------------
-	echo.[DEBUG] I_JAVA_HOME=              [%I_JAVA_HOME%]
-	echo.[DEBUG] I_PDTOOL_SOURCE_FILES=    [%I_PDTOOL_SOURCE_FILES%]
-	echo.[DEBUG] I_PDTOOL_INSTALL_HOME=    [%I_PDTOOL_INSTALL_HOME%]
-	echo.[DEBUG] I_PDTOOL_INSTALL_SCRIPTS= [%I_PDTOOL_INSTALL_SCRIPTS%]
-	echo.[DEBUG] I_PDTOOL_HOME=            [%I_PDTOOL_HOME%]
-	echo.[DEBUG] I_PDTOOL_WKS_HOME=        [%I_PDTOOL_WKS_HOME%]
-	echo.[DEBUG] I_PDTOOL_DESTINATION_HOME=[%I_PDTOOL_DESTINATION_HOME%]
-	echo.[DEBUG] I_WINDOWS_USER=           [%I_WINDOWS_USER%]
-	echo.[DEBUG] I_CIS_USERNAME=           [%I_CIS_USERNAME%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_CIS_PASSWORD=           [********]
-	echo.[DEBUG] I_CIS_DOMAIN=             [%I_CIS_DOMAIN%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" echo.[DEBUG] I_CIS_HOSTNAME=           [%I_CIS_HOSTNAME%]
-	echo.[DEBUG] I_CONFIGURE_VCS=          [%I_CONFIGURE_VCS%]
-	echo.[DEBUG] I_VCS_BASE_TYPE=          [%I_VCS_BASE_TYPE%]
-	echo.[DEBUG] I_VCS_USERNAME=           [%I_VCS_USERNAME%]
-	echo.[DEBUG] I_VCS_DOMAIN=             [%I_VCS_DOMAIN%]
-	echo.[DEBUG] I_VCS_PASSWORD=           [********]
-	echo.[DEBUG] I_VCS_REPOSITORY_URL=     [%I_VCS_REPOSITORY_URL%]
-	echo.[DEBUG] I_VCS_PROJECT_ROOT=       [%I_VCS_PROJECT_ROOT%]
-	echo.[DEBUG] I_VCS_WORKSPACE_NAME=     [%I_VCS_WORKSPACE_NAME%]
-	if "%I_PDTOOL_INSTALL_TYPE%"=="PDTool" echo.[DEBUG] I_VCS_RELEASE_FOLDER=     [%I_VCS_RELEASE_FOLDER%]
-	echo.[DEBUG] I_CONFIG_PROPERTY_FILE=   [%I_CONFIG_PROPERTY_FILE%]
-:INSTALLER_NO_DISPLAY_INPUT2
 
 
 REM ###############################
@@ -1282,20 +1307,25 @@ REM #
 REM # Backup I_PDTOOL_HOME\bin\setVars.bat
 REM #
 REM ####################################################################
-if not exist "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" goto INSTALLER_BACKUP1
+REM # Determine the backup file name
+set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
+call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP1
 	echo.
 	echo.
 	echo.################################################################################################
 	echo.#
-	echo.# EXECUTE: Backup %MODIFY_SET_VARS%
+	echo.# EXECUTE: Backup PDTOOL_HOME\bin\%MODIFY_SET_VARS%
 	echo.#
 	echo.#==============================================================================================
 	echo.#
-	echo.# COMMAND: copy /Y "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%.bak"
+	echo.# COMMAND: copy /Y "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%BACKUP_FILENAME%"
 	echo.#
 	echo.################################################################################################
 	echo.
-	copy /Y "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%.bak"
+	copy /Y "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%BACKUP_FILENAME%"
 	set ERROR=%ERRORLEVEL%
 	if %ERROR% NEQ 0 (
 	   echo.
@@ -1311,27 +1341,34 @@ if not exist "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" goto INSTALLER_BACKUP1
 	)
 	echo.
 	echo.
-	
-:INSTALLER_BACKUP1
+:INSTALLER_END_BACKUP1
+
 REM ####################################################################
 REM #
 REM # Backup I_PDTOOL_DESTINATION_HOME\setMyPrePDToolVars.bat
 REM #
 REM ####################################################################
-if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALLER_COPY_SOURCE
+REM # Determine the backup file name
+set  BACKUP_FILENAME_PRE=%MODIFY_SET_MY_PRE_VARS%.bak.1
+set BACKUP_FILENAME_POST=%MODIFY_SET_MY_POST_VARS%.bak.1
+call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_PRE_VARS%.bak"  BACKUP_FILENAME_PRE
+call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_POST_VARS%.bak" BACKUP_FILENAME_POST
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALLER_END_BACKUP2
 	echo.################################################################################################
 	echo.#
-	echo.# EXECUTE: Backup %MODIFY_SET_MY_PRE_VARS%
-	echo.# EXECUTE: Backup %MODIFY_SET_MY_POST_VARS%
+	echo.# EXECUTE: Backup PDTOOL_DESTINATION_HOME\%MODIFY_SET_MY_PRE_VARS%
+	echo.# EXECUTE: Backup PDTOOL_DESTINATION_HOME\%MODIFY_SET_MY_POST_VARS%
 	echo.#
 	echo.#==============================================================================================
 	echo.#
-	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%.bak"
-	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%.bak"
+	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_PRE%"
+	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_POST%"
 	echo.#
 	echo.################################################################################################
 	echo.
-	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%.bak"
+	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_PRE%"
 	set ERROR=%ERRORLEVEL%
 	if %ERROR% NEQ 0 (
 	   echo.
@@ -1345,7 +1382,7 @@ if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALL
 	   CALL :InitVariables
 	   exit /B 1
 	)
-	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%.bak"
+	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_POST%"
 	set ERROR=%ERRORLEVEL%
 	if %ERROR% NEQ 0 (
 	   echo.
@@ -1361,8 +1398,90 @@ if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALL
 	)
 	echo.
 	echo.
-	
-:INSTALLER_COPY_SOURCE
+:INSTALLER_END_BACKUP2
+
+REM ####################################################################
+REM #
+REM # Backup I_PDTOOL_HOME\AutomatedTestFramework\regression\bin\setVars.bat
+REM #
+REM ####################################################################
+REM # Determine the backup file name
+set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
+call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP3
+	echo.
+	echo.
+	echo.################################################################################################
+	echo.#
+	echo.# EXECUTE: Backup PDTOOL_HOME\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%
+	echo.#
+	echo.#==============================================================================================
+	echo.#
+	echo.# COMMAND: copy /Y "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%BACKUP_FILENAME%"
+	echo.#
+	echo.################################################################################################
+	echo.
+	copy /Y "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%BACKUP_FILENAME%"
+	set ERROR=%ERRORLEVEL%
+	if %ERROR% NEQ 0 (
+	   echo.
+	   echo.################################################################################################
+	   echo.# ERROR: PDTOOL INSTALLATION FAILED
+	   echo.#
+	   echo.# Copy %MODIFY_SET_VARS% - Command Failed with error=%ERROR%
+	   echo.#
+	   echo.################################################################################################
+	   popd
+	   CALL :InitVariables
+	   exit /B 1
+	)
+	echo.
+	echo.
+:INSTALLER_END_BACKUP3
+
+REM ####################################################################
+REM #
+REM # Backup I_PDTOOL_HOME\AutomatedTestFramework\migration\bin\setVars.bat
+REM #
+REM ####################################################################
+REM # Determine the backup file name
+set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
+call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP4
+	echo.
+	echo.
+	echo.################################################################################################
+	echo.#
+	echo.# EXECUTE: Backup PDTOOL_HOME\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%
+	echo.#
+	echo.#==============================================================================================
+	echo.#
+	echo.# COMMAND: copy /Y "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%BACKUP_FILENAME%"
+	echo.#
+	echo.################################################################################################
+	echo.
+	copy /Y "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%BACKUP_FILENAME%"
+	set ERROR=%ERRORLEVEL%
+	if %ERROR% NEQ 0 (
+	   echo.
+	   echo.################################################################################################
+	   echo.# ERROR: PDTOOL INSTALLATION FAILED
+	   echo.#
+	   echo.# Copy %MODIFY_SET_VARS% - Command Failed with error=%ERROR%
+	   echo.#
+	   echo.################################################################################################
+	   popd
+	   CALL :InitVariables
+	   exit /B 1
+	)
+	echo.
+	echo.
+:INSTALLER_END_BACKUP4
+
 echo.################################################################################################
 echo.#
 echo.# EXECUTE: Copy installer source directory "%INSTALLER_SOURCE_PDTOOL_DIR%" to "%I_PDTOOL_HOME%"
@@ -1484,7 +1603,7 @@ echo.
 echo.Replace "GEN_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set GEN_PRINT=" "set GEN_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set GEN_PRINT=" "set GEN_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set GEN_PRINT=" "set GEN_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1495,7 +1614,7 @@ echo.
 echo.Replace "MY_JAVA_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_JAVA_HOME=" "set MY_JAVA_HOME=%I_JAVA_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_JAVA_HOME=" "set MY_JAVA_HOME=%I_JAVA_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_JAVA_HOME=" "set MY_JAVA_HOME=%I_JAVA_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1506,7 +1625,7 @@ echo.
 echo.Replace "PDTOOL_SUBSTITUTE_DRIVE" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_SUBSTITUTE_DRIVE=" "set PDTOOL_SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_SUBSTITUTE_DRIVE=" "set PDTOOL_SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_SUBSTITUTE_DRIVE=" "set PDTOOL_SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1517,7 +1636,7 @@ echo.
 echo.Replace "PDTOOL_INSTALL_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_INSTALL_HOME=" "set PDTOOL_INSTALL_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_INSTALL_HOME=" "set PDTOOL_INSTALL_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_INSTALL_HOME=" "set PDTOOL_INSTALL_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1528,7 +1647,7 @@ echo.
 echo.Replace "PDTOOL_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_HOME=" "set PDTOOL_HOME=%I_PDTOOL_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_HOME=" "set PDTOOL_HOME=%I_PDTOOL_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_HOME=" "set PDTOOL_HOME=%I_PDTOOL_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1539,7 +1658,7 @@ echo.
 echo.Replace "MY_CONFIG_PROPERTY_FILE" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_CONFIG_PROPERTY_FILE=" "set MY_CONFIG_PROPERTY_FILE=%I_CONFIG_PROPERTY_FILE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_CONFIG_PROPERTY_FILE=" "set MY_CONFIG_PROPERTY_FILE=%I_CONFIG_PROPERTY_FILE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_CONFIG_PROPERTY_FILE=" "set MY_CONFIG_PROPERTY_FILE=%I_CONFIG_PROPERTY_FILE%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1550,7 +1669,7 @@ echo.
 echo.Replace "CIS_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PRINT=" "set CIS_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PRINT=" "set CIS_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PRINT=" "set CIS_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1562,7 +1681,7 @@ echo.
 echo.Replace "CIS_USERNAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_USERNAME=" "set CIS_USERNAME=%I_CIS_USERNAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_USERNAME=" "set CIS_USERNAME=%I_CIS_USERNAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_USERNAME=" "set CIS_USERNAME=%I_CIS_USERNAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 :INSTALLER_CIS_USERNAME_BYPASS
@@ -1575,7 +1694,7 @@ echo.
 echo.Replace "CIS_PASSWORD" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PASSWORD=" "set CIS_PASSWORD=********" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PASSWORD=" "set CIS_PASSWORD=%I_CIS_PASSWORD%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PASSWORD=" "set CIS_PASSWORD=%I_CIS_PASSWORD%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 :INSTALLER_CIS_PASSWORD_BYPASS
@@ -1588,7 +1707,7 @@ echo.
 echo.Replace "CIS_DOMAIN" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_DOMAIN=" "set CIS_DOMAIN=%I_CIS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_DOMAIN=" "set CIS_DOMAIN=%I_CIS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_DOMAIN=" "set CIS_DOMAIN=%I_CIS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 :INSTALLER_CIS_DOMAIN_BYPASS
@@ -1607,7 +1726,19 @@ if "%I_VCS_BASE_TYPE%"=="TFS" set TFS_HOME=%VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="GIT" set GIT_HOME=%VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="P4"  set P4_HOME=%VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="CVS" set CVS_HOME=%VCS_HOME%
-if "%I_VCS_BASE_TYPE%"=="" goto INSTALLER_MODIFY_SET_VARS
+if "%I_VCS_BASE_TYPE%"=="" (
+	REM #---------------------------------------
+	REM # Set NOVCS_VALID_ENV_CONFIG_PAIRS
+	REM #---------------------------------------
+	echo.
+	echo.Replace "NOVCS_VALID_ENV_CONFIG_PAIRS" in %MODIFY_SET_MY_PRE_VARS%
+	echo.
+	echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set NOVCS_VALID_ENV_CONFIG_PAIRS=" "set NOVCS_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+                  call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set NOVCS_VALID_ENV_CONFIG_PAIRS=" "set NOVCS_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+	set ERROR=%ERRORLEVEL%
+	if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+    goto INSTALLER_MODIFY_SET_VARS
+)
 
 REM #---------------------------------------
 REM # Set [SVN,TFS,GIT,P4,CVS]_PRINT
@@ -1616,7 +1747,7 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_PRINT=0" "set %I_VCS_BASE_TYPE%_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_PRINT=0" "set %I_VCS_BASE_TYPE%_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_PRINT=0" "set %I_VCS_BASE_TYPE%_PRINT=1" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1627,7 +1758,7 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_HOME=" "set %I_VCS_BASE_TYPE%_HOME=%I_VCS_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_HOME=" "set %I_VCS_BASE_TYPE%_HOME=%I_VCS_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_HOME=" "set %I_VCS_BASE_TYPE%_HOME=%I_VCS_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1638,7 +1769,7 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=%I_VCS_REPOSITORY_URL%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=%I_VCS_REPOSITORY_URL%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=%I_VCS_REPOSITORY_URL%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1649,8 +1780,21 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=%I_VCS_PROJECT_ROOT%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=%I_VCS_PROJECT_ROOT%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=%I_VCS_PROJECT_ROOT%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
+if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
+REM #---------------------------------------
+REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_WORKSPACE_HOME
+REM #---------------------------------------
+echo.
+echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME" in %MODIFY_SET_MY_PRE_VARS%
+echo.
+setlocal DisableDelayedExpansion
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=%I_VCS_WORKSPACE_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=%I_VCS_WORKSPACE_HOME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+set ERROR=%ERRORLEVEL%
+endlocal & SET ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1661,7 +1805,20 @@ echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 setlocal DisableDelayedExpansion
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=%I_VCS_WORKSPACE_NAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=%I_VCS_WORKSPACE_NAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=%I_VCS_WORKSPACE_NAME%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+set ERROR=%ERRORLEVEL%
+endlocal & SET ERROR=%ERROR%
+if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
+REM #---------------------------------------
+REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_TEMP_DIR
+REM #---------------------------------------
+echo.
+echo.Replace "%I_VCS_BASE_TYPE%_VCS_TEMP_DIR" in %MODIFY_SET_MY_PRE_VARS%
+echo.
+setlocal DisableDelayedExpansion
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=%I_VCS_TEMP_DIR%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=%I_VCS_TEMP_DIR%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 endlocal & SET ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
@@ -1676,7 +1833,7 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_USERNAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=%I_VCS_USERNAME%%I_VCS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=%I_VCS_USERNAME%%I_VCS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=%I_VCS_USERNAME%%I_VCS_DOMAIN%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1687,7 +1844,29 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PASSWORD" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=********" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=%I_VCS_PASSWORD%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=%I_VCS_PASSWORD%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+set ERROR=%ERRORLEVEL%
+if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
+REM #---------------------------------------
+REM # Set VCS_EDITOR
+REM #---------------------------------------
+echo.
+echo.Replace "VCS_EDITOR" in %MODIFY_SET_MY_PRE_VARS%
+echo.
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set VCS_EDITOR=" "set VCS_EDITOR=%I_VCS_EDITOR%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set VCS_EDITOR=" "set VCS_EDITOR=%I_VCS_EDITOR%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+set ERROR=%ERRORLEVEL%
+if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
+REM #---------------------------------------
+REM # Set [SVN,TFS,GIT,P4,CVS]_VALID_ENV_CONFIG_PAIRS
+REM #---------------------------------------
+echo.
+echo.Replace "%I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS" in %MODIFY_SET_MY_PRE_VARS%
+echo.
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
@@ -1712,7 +1891,7 @@ echo.
 echo.
 echo.################################################################################################
 echo.#
-echo.# EXECUTE: Replace text in %MODIFY_SET_VARS%
+echo.# EXECUTE: Replace text in \bin\%MODIFY_SET_VARS%
 echo.#
 echo.################################################################################################
 REM #---------------------------------------
@@ -1721,23 +1900,58 @@ REM #---------------------------------------
 echo.
 echo.Replace "MY_VARS_HOME" in %MODIFY_SET_VARS%
 echo.
-echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME=%I_PDTOOL_DESTINATION_HOME%" "set MY_VARS_HOME=" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%"
-call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME=" "set MY_VARS_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%"
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME=" "set MY_VARS_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME=" "set MY_VARS_HOME=%I_PDTOOL_DESTINATION_HOME%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%"
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR2
   
-GOTO INSTALLER_CONTINUE_SCRIPT
+GOTO INSTALLER_MODIFY_ATF_SET_VARS
 :INSTALLER_REPLACE_ERROR2
    echo.
    echo.################################################################################################
    echo.# ERROR: %I_PDTOOL_INSTALL_TYPE% INSTALLATION FAILED
    echo.#
-   echo.# replaceText %MODIFY_SET_VARS% - Command Failed with error=%ERROR%
+   echo.# replaceText \bin\%MODIFY_SET_VARS% - Command Failed with error=%ERROR%
    echo.#
    echo.################################################################################################
    popd
    CALL :InitVariables
    exit /B 1
+
+:INSTALLER_MODIFY_ATF_SET_VARS
+if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" goto INSTALLER_CONTINUE_SCRIPT
+echo.
+echo.
+echo.################################################################################################
+echo.#
+echo.# EXECUTE: Replace text in \AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%
+echo.#
+echo.################################################################################################
+REM #---------------------------------------
+REM # set the ATF setVars.bat - VALID_ENV_CONFIG_PAIRS_#
+REM #---------------------------------------
+set VAID_PAIR_NAME=VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%
+echo.
+echo.Replace "VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%" in %MODIFY_ATF_SET_VARS%
+echo.
+echo.COMMAND: call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%"
+              call %I_PDTOOL_INSTALL_SCRIPTS%\replaceText.bat 0 "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=%I_VALID_ENV_CONFIG_PAIRS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%"
+set ERROR=%ERRORLEVEL%
+if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR3
+GOTO INSTALLER_CONTINUE_SCRIPT
+
+:INSTALLER_REPLACE_ERROR3
+   echo.
+   echo.################################################################################################
+   echo.# ERROR: %I_PDTOOL_INSTALL_TYPE% INSTALLATION FAILED
+   echo.#
+   echo.# replaceText \AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS% - Command Failed with error=%ERROR%
+   echo.#
+   echo.################################################################################################
+   popd
+   CALL :InitVariables
+   exit /B 1
+
 
 :INSTALLER_CONTINUE_SCRIPT
 set PDTOOL_EXEC_OPTIONS=
@@ -1859,7 +2073,7 @@ if %ERROR% NEQ 0 (
    exit /B 1
 )
 
-if defined TFS_HOME (
+if not defined TFS_HOME goto SETUP_INITIALIZE_WORKSPACE
   echo.
   echo.
   echo.################################################################################################
@@ -1868,18 +2082,30 @@ if defined TFS_HOME (
   echo.#
   echo.#==============================================================================================
   echo.#
+  if not exist "%TFS_HOME%\tf.cmd" (
+     echo.
+     echo.# ERROR: %I_PDTOOL_INSTALL_TYPE% INSTALLATION FAILED
+     echo.#
+     echo.# %PDTOOL_EXEC_SCRIPT% - Command does not exist: 
+	 echo.#     "%TFS_HOME%\tf.cmd"
+     echo.#
+     echo.################################################################################################
+     CALL :InitVariables
+     exit /B 1
+  )
   echo.call "%TFS_HOME%\tf.cmd" eula /accept
   call "%TFS_HOME%\tf.cmd" eula /accept
   echo.#
   echo.################################################################################################
   echo.
-)
+
 
 REM ####################################################################
 REM #
 REM # PDTool Workspace Initialization
 REM #
 REM ####################################################################
+:SETUP_INITIALIZE_WORKSPACE
 if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALLER_PDTOOL_WORKSPACE_INIT_BYPASS
 echo.
 echo.
@@ -1891,7 +2117,7 @@ echo.#==========================================================================
 echo.#
 echo.# %I_PDTOOL_HOME_DRIVE%
 echo.# cd "%I_PDTOOL_HOME%\bin"
-echo.# COMMAND: call %PDTOOL_EXEC_SCRIPT% -exec ..\resources\plans\%INIT_DEPLOYMENT_PLAN% -release %I_VCS_RELEASE_FOLDER% -config %I_CONFIG_PROPERTY_FILE%
+echo.# COMMAND: call %PDTOOL_EXEC_SCRIPT% -exec ..\resources\plans\%INIT_DEPLOYMENT_PLAN% -release %I_RELEASE_FOLDER% -config %I_CONFIG_PROPERTY_FILE%
 echo.#
 echo.################################################################################################
 echo.
@@ -1914,7 +2140,7 @@ if not exist ..\resources\plans\%INIT_DEPLOYMENT_PLAN% (
 )
 
 REM Execute PDTool batch file
-call %PDTOOL_EXEC_SCRIPT% -exec ..\resources\plans\%INIT_DEPLOYMENT_PLAN% -release %I_VCS_RELEASE_FOLDER% -config %I_CONFIG_PROPERTY_FILE%
+call %PDTOOL_EXEC_SCRIPT% -exec ..\resources\plans\%INIT_DEPLOYMENT_PLAN% -release %I_RELEASE_FOLDER% -config %I_CONFIG_PROPERTY_FILE%
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 (
    echo.
@@ -2297,11 +2523,42 @@ GOTO:EOF
 
 
 :: --------------------------------------------------------------------
-:strLen string len -- returns the length of a 
+:escStr debug string string -- adds %% to escape a variable
+:: --------------------------------------------------------------------
+::# Description: call:escStr debug string string  
+::#  -- debug  [in] - 1=debug, 0=no debug
+::#  -- string [in]  - variable name containing the string being escaped
+::#  -- string [out] - variable to be used to return the escaped string
+::#####################################################################
+	set debug=%1
+(   
+	SETLOCAL ENABLEDELAYEDEXPANSION
+    set "str=!%~2!"
+	call :strLen str len
+	if "%debug%"=="1" echo.[DEBUG] %0: str=len=!len!   %2="!str!"
+	set /a len-=1
+	for /l %%a in (0,1,!len!) do if "!str:~%%a,1!"=="%%" (
+			if "%debug%"=="1" echo.[DEBUG] %0: char=!str:~%%a,1!%%
+			set str2=!str2!!str:~%%a,1!%%
+		) else (
+			if "%debug%"=="1" echo.[DEBUG] %0: char=!str:~%%a,1!
+			set str2=!str2!!str:~%%a,1!
+		)
+)
+( ENDLOCAL & REM RETURN VALUES
+    IF "%~3" NEQ "" SET %~3=%str2%
+	if "%debug%"=="1" echo.[DEBUG] %0: %3="%str2%"
+	if "%debug%"=="1" echo.
+)
+GOTO:EOF
+
+
+:: --------------------------------------------------------------------
+:strLen string len -- returns the length of a string
 :: --------------------------------------------------------------------
 ::# Description: call:strLen string len  
-::#                 -- string [in]  - variable name containing the string being measured for length
-::#                 -- len    [out] - variable to be used to return the string length
+::#  -- string [in]  - variable name containing the string being measured for length
+::#  -- len    [out] - variable to be used to return the string length
 ::#####################################################################
 (   SETLOCAL ENABLEDELAYEDEXPANSION
     set "str=A!%~1!"&rem keep the A up front to ensure we get the length and not the upper bound
@@ -2315,7 +2572,6 @@ GOTO:EOF
 ( ENDLOCAL & REM RETURN VALUES
     IF "%~2" NEQ "" SET /a %~2=%len%
 )
-ENDLOCAL
 GOTO:EOF
 
 
@@ -2323,7 +2579,7 @@ GOTO:EOF
 :LPAD string width padCharacter
 ::  -- pads to the left of a string with specified characters to the width specified
 ::=======================================================
-::  -- string [in,out] - time to be formatted, mutated
+::  -- string [in,out] - string to be left padded
 ::  -- width [in] - width of resulting string
 ::  -- character [in,opt] - character to pad with, default is space
 
@@ -2346,7 +2602,7 @@ GOTO:EOF
 :RPAD string width padCharacter
 ::  -- pads to the right of a string with specified characters to the width specified
 ::=======================================================
-::  -- string [in,out] - time to be formatted, mutated
+::  -- string [in,out] - string to be right padded
 ::  -- width [in] - width of resulting string
 ::  -- character [in,opt] - character to pad with, default is space
 
@@ -2367,11 +2623,11 @@ GOTO:EOF
 
 
 :: -------------------------------------------------------------
-:LTRIM
+:RTRIM
 :: -------------------------------------------------------------
 ::# Trim right
-::# Description: call:LTRIM instring outstring  
-::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
+::# Description: call:RTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
 ::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"
@@ -2382,17 +2638,78 @@ GOTO:EOF
 
 
 :: -------------------------------------------------------------
-:RTRIM
+:LTRIM
 :: -------------------------------------------------------------
 ::# Trim left
-::# Description: call:RTRIM instring outstring  
-::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
+::# Description: call:LTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
 ::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"
 for /f "tokens=* delims= " %%a in ("%str%") do set str=%%a
 rem echo."%str%"
 SET %2=%str%
+GOTO:EOF
+
+:: -------------------------------------------------------------
+:REMOVE_SEPARATOR
+:: -------------------------------------------------------------
+::# Remove ending / or \ for VCS_REPOSITORY_URL
+::# Description: call:REMOVE_SEPARATOR instr sep outstr  
+::#      -- instr  [in]  - the string value to be evaluated for an ending separator
+::#      -- sep    [in]  - the separator value such as / or \
+::#      -- outstr [out] - variable name containing the result string
+set instr=%1
+set sep=%2
+SETLOCAL ENABLEDELAYEDEXPANSION
+REM Remove double quotes around path
+set instr=!instr:"=!
+set sep=!sep:"=!
+ENDLOCAL &set instr=%instr%&set sep=%sep%
+IF NOT DEFINED sep set sep=/
+IF NOT DEFINED instr GOTO REMOVE_SEPARATOR_END
+
+  call:strLen instr LEN
+  SET _start=%LEN%
+  SET /a _start=_start-1
+  SET _len=1
+  CALL SET LAST_CHAR=%%instr:~%_start%,%_len%%%
+  SET _beg=0
+  SET _len=%_start%
+  IF "%LAST_CHAR%"=="%sep%" CALL SET instr=%%instr:~%_beg%,%_len%%%
+  
+:REMOVE_SEPARATOR_END
+  SET %3=%instr%
+GOTO:EOF
+
+
+REM #-------------------------------------------------------------
+:INCREMENT_BACKUP_FILE_NAME
+REM #-------------------------------------------------------------
+REM # Increment the backup file name
+REM # Description: call:INCREMENT_BACKUP_FILE_NAME indir inbackupfile outvariable  
+REM #      -- indir        [in]  - the directory in which to search for files
+REM #      -- inbackupfile [in]  - the string name of the backup file to look for. A .* is added to the end of the name.
+REM #      -- outvariable  [out] - the variable name in which to return the new backup file name
+set TARGET_DIR=%1
+set TARGET_FILE=%2
+set TARGET_EXT=0
+setlocal enabledelayedexpansion
+if defined TARGET_DIR set TARGET_DIR=!TARGET_DIR:"=!
+if defined TARGET_FILE set TARGET_FILE=!TARGET_FILE:"=!
+
+set TARGET_INCR_FILE=
+for /F %%a in ('dir /B !TARGET_DIR!\!TARGET_FILE!.*') do (
+	set TARGET_INCR_FILE=%%a
+	for %%i in (!TARGET_INCR_FILE!) do set TARGET_EXT=%%~xi
+	set TARGET_EXT=!TARGET_EXT:~1!
+	if debug==1 [DEBUG] echo INTERNAL: FILE=!TARGET_INCR_FILE!   EXT=!TARGET_EXT!
+)
+set /A TARGET_EXT=TARGET_EXT+1
+set TARGET_FILE=!TARGET_FILE!.%TARGET_EXT%
+if debug==1 echo [DEBUG] EXT=%TARGET_EXT%    TARGET_FILE=%TARGET_FILE%
+ENDLOCAL& set TARGET_FILE=%TARGET_FILE%
+set %3=%TARGET_FILE%
 GOTO:EOF
 
 
@@ -2414,11 +2731,13 @@ set I_VCS_HOME=
 set I_VCS_REPOSITORY_URL=
 set I_VCS_PROJECT_ROOT=
 set I_RELEASE_FOLDER=
+set I_VCS_WORKSPACE_HOME=
 set I_VCS_WORKSPACE_NAME=
+set I_VCS_TEMP_DIR=
 set I_VCS_USERNAME=
 set I_VCS_DOMAIN=
 set I_VCS_PASSWORD=
-set I_VCS_RELEASE_FOLDER=
+set I_RELEASE_FOLDER=
 set I_CIS_USERNAME=
 set I_CIS_DOMAIN=
 set I_CIS_PASSWORD=

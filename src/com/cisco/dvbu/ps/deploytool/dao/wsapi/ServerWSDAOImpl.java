@@ -21,9 +21,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
  
 
+
+
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -84,6 +87,7 @@ public class ServerWSDAOImpl implements ServerDAO {
 		String username = targetServer.getUser();
 		String password = targetServer.getPassword();
 		String domain = targetServer.getDomain();
+		String command = null;
 		
 		String userAtDomain = username + "@" + domain;
 		
@@ -121,8 +125,10 @@ public class ServerWSDAOImpl implements ServerDAO {
 			/*******************************
 			 *  START the Server
 			 *******************************/
-			if(actionName.equalsIgnoreCase(ServerDAO.action.START.name())) {
-				
+			if (actionName.equalsIgnoreCase(ServerDAO.action.START.name())) 
+			{	
+				command = "startServer";
+
 				if (STATUS_OPERATIONAL.equals(status)) {
 					logger.info("Server " + server + " is operational - there is no need to start it.");
 					return;
@@ -134,29 +140,38 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").startServer(server).");
 				}
 
-				// -- this is a blocking call
-				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).startServer(server);
-				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
-
-				if(logger.isDebugEnabled()) {
-					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					// -- this is a blocking call
+					MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).startServer(server);
+					
+					statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+					}
+					
+					status = statuses[statuses.length - 1].toUpperCase();	
+					
+					logger.info("Status of server " + server + " is now: " + status + ".");
+					
+					if (!STATUS_OPERATIONAL.equals(status))
+						throw new CompositeException("Server " + server + " was not started successfully. Status is: " + status + ".");
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
-				
-				status = statuses[statuses.length - 1].toUpperCase();	
-				
-				logger.info("Status of server " + server + " is now: " + status + ".");
-				
-				if (!STATUS_OPERATIONAL.equals(status))
-					throw new CompositeException("Server " + server + " was not started successfully. Status is: " + status + ".");
 				
 				return;
 
 				/*******************************
 				 *  STOP the Server
 				 *******************************/
-			} else if(actionName.equalsIgnoreCase(ServerDAO.action.STOP.name())) {
-				
+			} 
+			else if (actionName.equalsIgnoreCase(ServerDAO.action.STOP.name())) 
+			{
+				command = "stopServer";
+
 				pingServer(targetServer);
 
 				if (STATUS_STOPPED.equals(status)) {
@@ -170,27 +185,36 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").stopServer(server).");
 				}
 
-				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).stopServer(server);
-				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
-				
-				if(logger.isDebugEnabled()) {
-					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).stopServer(server);
+					
+					statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+					}
+	
+					status = statuses[statuses.length - 1].toUpperCase();	
+					
+					logger.info("Status of server " + server + " is now: " + status + ".");
+					
+					if (!STATUS_STOPPED.equals(status))
+						throw new CompositeException("Server " + server + " was not stopped successfully.");
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
-
-				status = statuses[statuses.length - 1].toUpperCase();	
-				
-				logger.info("Status of server " + server + " is now: " + status + ".");
-				
-				if (!STATUS_STOPPED.equals(status))
-					throw new CompositeException("Server " + server + " was not stopped successfully.");
 				
 				return;
 
 				/*******************************
 				 *  RESTART the Server
 				 *******************************/
-			} else if(actionName.equalsIgnoreCase(ServerDAO.action.RESTART.name())) {
+			} 
+			else if (actionName.equalsIgnoreCase(ServerDAO.action.RESTART.name())) 
+			{
+				command = "restartServer";
 				
 				pingServer(targetServer);
 
@@ -206,20 +230,26 @@ public class ServerWSDAOImpl implements ServerDAO {
 					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Invoking MonitorConnectionFactory.createConnection(\""+hostname+"\", \""+port+"\", \""+userAtDomain+"\", ********, \""+timeout+"\").restartServer(server).");
 				}
 
-				MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).restartServer(server);
-				
-				statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
-
-				if(logger.isDebugEnabled()) {
-					logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).restartServer(server);
+					
+					statuses = MonitorConnectionFactory.createConnection(hostname, port, userAtDomain, password, timeout).getServerStatus(new String[] {server});
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ServerWSDAOImpl.takeServerManagerAction(\""+actionName+"\").  Success: MonitorConnectionFactory.createConnection().getServerStatus().");
+					}
+	
+					status = statuses[statuses.length - 1].toUpperCase();	
+					
+					logger.info("Status of server " + server + " is now: " + status + ".");
+					
+					if (!STATUS_OPERATIONAL.equals(status))
+						throw new CompositeException("Server " + server + " was not restarted successfully. Status is: " + status + ".");
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
-
-				status = statuses[statuses.length - 1].toUpperCase();	
-				
-				logger.info("Status of server " + server + " is now: " + status + ".");
-				
-				if (!STATUS_OPERATIONAL.equals(status))
-					throw new CompositeException("Server " + server + " was not restarted successfully. Status is: " + status + ".");
 				
 				return;
 

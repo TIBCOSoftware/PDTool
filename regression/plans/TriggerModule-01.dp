@@ -18,4 +18,4 @@
 # -----------------------------------------
 # Trigger Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction	generateTriggersXML			$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getTriggerModule.xml"  "$MODULE_HOME/servers.xml"

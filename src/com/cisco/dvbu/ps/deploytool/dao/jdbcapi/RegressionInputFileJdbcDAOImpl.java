@@ -336,6 +336,10 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
 					"when trying to generate Regression input file.");
 		}
         
+		// Set the command and action name
+		String command = "generateInputFile";
+		String actionName = "CREATE_FILE";
+		
 		// Initialize start time and format
         Date startDate = new Date();
 
@@ -509,7 +513,15 @@ public class RegressionInputFileJdbcDAOImpl implements RegressionInputFileDAO
         // Write the pubtest input file to the file system.
         outString = new String(fileDescription + queriesStr + proceduresStr + wsStr);	// Built String
         String filePath =  CommonUtils.extractVariable(prefix, regressionConfig.getInputFilePath(), propertyFile, true);
-        CommonUtils.createFileWithContent(filePath, outString);
+        
+        
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			CommonUtils.createFileWithContent(filePath, outString);
+		} else {
+			logger.info("NO_OPERATION SET: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.");						
+		}
 
         // Print out timings
         String duration = CommonUtils.getElapsedTime(startDate);

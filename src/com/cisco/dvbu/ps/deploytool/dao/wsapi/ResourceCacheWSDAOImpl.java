@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -61,6 +62,7 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 					"  actionName=" + actionName + "  resourceCachePath=" + resourceCachePath +	"  resourceCacheType=" + resourceCacheType +
 					"  resourceCacheConfig:" + "  serverId=" + serverId + "  pathToServersXML=" + pathToServersXML + "  validateResourceExists=" + validateResourceExists);
 		}
+		String command = null;
 
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+")", logger);
@@ -72,8 +74,8 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 
 		try {
 			
-			if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.UPDATE.name())){
-
+			if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.UPDATE.name()))
+			{
 				if (validateResourceExists) {
 					// Make sure the resource exists before executing any actions
 					if (!DeployManagerUtil.getDeployManager().resourceExists(serverId, resourceCachePath, resourceCacheType, pathToServersXML)) {
@@ -162,11 +164,18 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 							"\n           detailLevel=\"FULL\","+
 							"\n           cacheConfig:"+cacheConfigText+").");
 				}
-				
-				port.updateResourceCacheConfig(resourceCachePath, ResourceType.valueOf(resourceCacheType), DetailLevel.FULL, cacheConfig);
-
-				if(logger.isDebugEnabled()) {
-					logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.updateResourceCacheConfig().");
+				command = "updateResourceCacheConfig";
+								
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					port.updateResourceCacheConfig(resourceCachePath, ResourceType.valueOf(resourceCacheType), DetailLevel.FULL, cacheConfig);
+	
+					if(logger.isDebugEnabled()) {
+						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.updateResourceCacheConfig().");
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 
 				/*
@@ -229,17 +238,26 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 				    Security: If the user does not have WRITE access on the last item in the path.
 				    Security: If the user does not have the ACCESS_TOOLS right.	
 				 */
-			}else if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.REFRESH.name())){
-		
+			}
+			else if (actionName.equalsIgnoreCase(ResourceCacheDAO.action.REFRESH.name()))
+			{
+				command = "refreshResourceCache";
+						
 				if (isCacheEnabled(resourceCachePath, resourceCacheType, serverId, pathToServersXML)) {
 					if(logger.isDebugEnabled()) {
 						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Invoking port.refreshResourceCache(\""+resourceCachePath+"\", \""+resourceCacheType+"\").");
 					}
 					
-					port.refreshResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
-	
-					if(logger.isDebugEnabled()) {
-						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.refreshResourceCache().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.refreshResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
+		
+						if(logger.isDebugEnabled()) {
+							logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.refreshResourceCache().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 				} 
 				/*
@@ -265,17 +283,26 @@ public class ResourceCacheWSDAOImpl implements ResourceCacheDAO {
 				    ServerError: If any problems with connecting to or retrieving data from the data
 				       source when refreshing.
 				*/
-			} else if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.CLEAR.name())){
+			} 
+			else if(actionName.equalsIgnoreCase(ResourceCacheDAO.action.CLEAR.name()))
+			{
+				command = "clearResourceCache";
 
 				if (isCacheEnabled(resourceCachePath, resourceCacheType, serverId, pathToServersXML)) {
 					if(logger.isDebugEnabled()) {
 						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Invoking port.clearResourceCache(\""+resourceCachePath+"\", \""+resourceCacheType+"\").");
 					}
 					
-					port.clearResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.clearResourceCache().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.clearResourceCache(resourceCachePath, ResourceType.valueOf(resourceCacheType));
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug("ResourceCacheWSDAOImpl.takeResourceCacheAction("+actionName+").  Success: port.clearResourceCache().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 				} 
 				/*

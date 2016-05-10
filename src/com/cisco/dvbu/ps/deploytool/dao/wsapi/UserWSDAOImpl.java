@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -62,6 +63,7 @@ public class UserWSDAOImpl implements UserDAO {
 			
 			logger.debug("UserWSDAOImpl.takeUserAction(actionName , userName, oldPassword, password, domainName, groupNames, explicitRights, annotation, serverId, pathToServersXML).  actionName="+actionName+"  userName="+userName+"  oldPassword=********"+"  password=********"+"  domainName="+domainName+"  #groupNames="+groupNamesSize+"  explicitRights="+explicitRights+"  annotation="+annotationStr+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
 		}
+		String command = null;
 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "UserWSDAOImpl.takeUserAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -70,21 +72,32 @@ public class UserWSDAOImpl implements UserDAO {
 		UserPortType port = CisApiFactory.getUserPort(targetServer);
 
 			try {
-				if(actionName.equalsIgnoreCase(UserDAO.action.CREATE.name()))
-					{
+				if (actionName.equalsIgnoreCase(UserDAO.action.CREATE.name()))
+				{
+					command = "createUser";
+
 					if(logger.isDebugEnabled()) {
 						String annotationStr = (annotation == null) ? null : "\""+annotation+"\"";
 						String explicitRightsStr = (explicitRights == null) ? null : "\""+explicitRights+"\"";
 						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Invoking port.createUser(\""+domainName+"\", \""+userName+"\", ********, "+explicitRightsStr+", "+annotationStr+").");
 					}
 
-					port.createUser(domainName, userName, password, explicitRights, annotation);
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.createUser().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.createUser(domainName, userName, password, explicitRights, annotation);
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.createUser().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-				}else if(actionName.equalsIgnoreCase(UserDAO.action.UPDATE.name()))
+				}
+				else if(actionName.equalsIgnoreCase(UserDAO.action.UPDATE.name()))
 				{
+					command = "updateUser";
+
 					if(logger.isDebugEnabled()) {
 						String annotationStr = (annotation == null) ? null : "\""+annotation+"\"";
 						String explicitRightsStr = (explicitRights == null) ? null : "\""+explicitRights+"\"";
@@ -99,23 +112,38 @@ public class UserWSDAOImpl implements UserDAO {
 						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Invoking port.updateUser(\""+domainName+"\", \""+userName+"\", ********, *********, \"GROUP_NAMES:["+groupList+"]\", "+explicitRightsStr+", "+annotationStr+").");
 					}
 					
-					port.updateUser(domainName, userName, oldPassword, password, groupNames, explicitRights, annotation);
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.updateUser().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.updateUser(domainName, userName, oldPassword, password, groupNames, explicitRights, annotation);
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.updateUser().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-				}else if(actionName.equalsIgnoreCase(UserDAO.action.DELETE.name()))
+				}
+				else if(actionName.equalsIgnoreCase(UserDAO.action.DELETE.name()))
 				{
+					command = "destroyUser";
+
 					if(logger.isDebugEnabled()) {
 						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Invoking port.destroyUser(\""+domainName+"\", \""+userName+"\").");
 					}
 					
-					port.destroyUser(domainName, userName);
-					
-					if(logger.isDebugEnabled()) {
-						logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.destroyUser().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.destroyUser(domainName, userName);
+						
+						if(logger.isDebugEnabled()) {
+							logger.debug("UserWSDAOImpl.takeUserAction(\""+actionName+"\").  Success: port.destroyUser().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-                } else {
+               } else {
                 	throw new ApplicationException("Error: actionName is null", null);
                 }
 			} catch (CreateUserSoapFault e) {

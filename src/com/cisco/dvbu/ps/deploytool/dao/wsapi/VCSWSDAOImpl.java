@@ -48,6 +48,7 @@ import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.ScriptExecutor;
+import com.cisco.dvbu.ps.common.util.XMLUtils;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
 import com.cisco.dvbu.ps.common.util.wsapi.WsApiHelperObjects;
@@ -91,11 +92,20 @@ public class VCSWSDAOImpl implements VCSDAO {
 	public void vcsImportCommand(String prefix, String arguments, String vcsIgnoreMessages, String propertyFile) throws CompositeException {
 
 		String identifier = "VCSWSDAOImpl.vcsImportCommand"; // some unique identifier that characterizes this invocation.
-			
+		String actionName = "IMPORT";
+		
 		try {				
 		    boolean preserveQuotes = false;
 		    boolean initArgsList = true;
 			List<String> argsList = new ArrayList<String>() ;
+			
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			//   If so then force a no operation to happen by performing a -printcontents for pkg_import
+			// mtinius-2016-04-14: commented out until a full analysis can be done.
+			//if (CommonUtils.isExecOperation() && !arguments.toLowerCase().contains("-printcontents")) 
+			//	arguments = arguments + " -printcontents";
+
+			// Parse the arguments
 			argsList = CommonUtils.parseArguments(argsList, initArgsList, arguments, preserveQuotes, propertyFile);
 			String[] args = argsList.toArray(new String[0]) ;
 			
@@ -131,8 +141,14 @@ public class VCSWSDAOImpl implements VCSDAO {
 				// Create a new security manager
 	            System.setSecurityManager(new NoExitSecurityManager());
 
-	            // Invoke the Composite native import command.
-	            ImportCommand.startCommand(null, null, args);
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{
+		            // Invoke the Composite native import command.
+		            ImportCommand.startCommand(null, null, args);
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
 	        }
 	        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 	        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(null, null, "+maskedargsList+")";
@@ -165,7 +181,8 @@ public class VCSWSDAOImpl implements VCSDAO {
 	public void vcsExportCommand(String prefix, String arguments, String vcsIgnoreMessages, String propertyFile) throws CompositeException {
 		
 		String identifier = "VCSWSDAOImpl.vcsExportCommand"; // some unique identifier that characterizes this invocation.
-
+		String actionName = "EXPORT";
+		
 		try {
 		    boolean preserveQuotes = false;
 		    boolean initArgsList = true;
@@ -205,8 +222,14 @@ public class VCSWSDAOImpl implements VCSDAO {
 				// Create a new security manager
 	            System.setSecurityManager(new NoExitSecurityManager());
 
-	            // Invoke the Composite native export command.
-	            ExportCommand.startCommand(null, null, args);
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{
+		            // Invoke the Composite native export command.
+		            ExportCommand.startCommand(null, null, args);
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
 	        }
 	        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 	        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(null, null, "+maskedargsList+")";
@@ -238,6 +261,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 	public void vcsDiffMergerCommand(String prefix, String arguments, String vcsIgnoreMessages, String propertyFile) throws CompositeException {
 
 		String identifier = "VCSWSDAOImpl.vcsDiffMergerCommand"; // some unique identifier that characterizes this invocation.
+		String actionName = "DIFF";
 
 		try {
 		    boolean preserveQuotes = false;
@@ -279,8 +303,14 @@ public class VCSWSDAOImpl implements VCSDAO {
 				// Create a new security manager
 	            System.setSecurityManager(new NoExitSecurityManager());
 
-	            // Invoke the Composite native DiffMerger command.
-	            DiffMerger.startCommand(null, null, args);
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{
+		            // Invoke the Composite native DiffMerger command.
+		            DiffMerger.startCommand(null, null, args);
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
 	        }
 	        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
 	        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(null, null, "+maskedargsList+")";
@@ -314,6 +344,8 @@ public class VCSWSDAOImpl implements VCSDAO {
 		
 		String identifier = "VCSWSDAOImpl.execCommandLineVCS"; // some unique identifier that characterizes this invocation.
 		StringBuilder stdout = new StringBuilder();
+		String actionName = "EXECVCS";
+		
 		// For debugging
 		if ( logger.isDebugEnabled() ) {
 			String[] argsString = args.toArray(new String[0]);
@@ -337,22 +369,29 @@ public class VCSWSDAOImpl implements VCSDAO {
 		}
 
 		try {
-			// Invoke the ScriptExecute command
-			ScriptExecutor se = new ScriptExecutor(execFromDir, args, envList);
-			int result = se.executeCommand(CommonUtils.getUniqueFilename("error", "txt"));
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{
+				// Invoke the ScriptExecute command
+				ScriptExecutor se = new ScriptExecutor(execFromDir, args, envList);
+				int result = se.executeCommand(CommonUtils.getUniqueFilename("error", "txt"));
 
-			if(result > 0){
-				StringBuilder stderr = se.getStandardErrorFromCommand();
-				if (resolveExecCommandLineError(prefix, stderr.toString(), vcsIgnoreMessages)) {
-					ApplicationException applicationException = new ApplicationException(CommonUtils.maskCommand(command)+" Execution Returned an Error="+stderr.toString());
-				    throw applicationException;					
+				if(result > 0){
+					StringBuilder stderr = se.getStandardErrorFromCommand();
+					if (resolveExecCommandLineError(prefix, stderr.toString(), vcsIgnoreMessages)) {
+						ApplicationException applicationException = new ApplicationException(CommonUtils.maskCommand(command)+" Execution Returned an Error="+stderr.toString());
+					    throw applicationException;					
+					}
+				}else{
+				    stdout = se.getStandardOutputFromCommand();
+				    if (logger.isDebugEnabled()) {
+				    	logger.debug(identifier+": "+prefix+CommonUtils.maskCommand(command)+" executed successfully");
+				    }
 				}
-			}else{
-			    stdout = se.getStandardOutputFromCommand();
-			    if (logger.isDebugEnabled()) {
-			    	logger.debug(identifier+": "+prefix+CommonUtils.maskCommand(command)+" executed successfully");
-			    }
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+CommonUtils.maskCommand(command)+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 			}
+
 		} catch (CompositeException e) {
 			throw new ApplicationException(e);
 		}
@@ -366,6 +405,10 @@ public class VCSWSDAOImpl implements VCSDAO {
 //	@Override
 	public void generateVCSXML(String serverId, String startPath, String pathToVCSXML, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateVCSXML";
+		String actionName = "CREATE_XML";
+
 		// Set the Module Action Objective for the VCS Module
 		System.setProperty("MODULE_ACTION_OBJECTIVE", startPath);
 
@@ -475,23 +518,28 @@ public class VCSWSDAOImpl implements VCSDAO {
 			
 			vcsModule.getVcsResource().add(vcsResource);
 		}
-		
-		JAXBContext jaxbContext;
-		Marshaller marshaller;
-		try {
-			jaxbContext = JAXBContext.newInstance("com.cisco.dvbu.ps.deploytool.modules");
-			marshaller = jaxbContext.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-					   new Boolean(true));
-			marshaller.marshal(vcsModule,
-					   new FileOutputStream(pathToVCSXML));
-			//System.out.println("Wrote file: " + pathToVCSXML);
-		} catch (JAXBException e) {
-			throw new ApplicationException("Error retrieving XML: " + e.getMessage());
-		} catch (FileNotFoundException e) {
-			throw new ApplicationException("Unable to create XML file: " + e.getMessage());
-		}
 
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			JAXBContext jaxbContext;
+			Marshaller marshaller;
+			try {
+				jaxbContext = JAXBContext.newInstance("com.cisco.dvbu.ps.deploytool.modules");
+				marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+						   new Boolean(true));
+				marshaller.marshal(vcsModule,
+						   new FileOutputStream(pathToVCSXML));
+				//System.out.println("Wrote file: " + pathToVCSXML);
+			} catch (JAXBException e) {
+				throw new ApplicationException("Error retrieving XML: " + e.getMessage());
+			} catch (FileNotFoundException e) {
+				throw new ApplicationException("Unable to create XML file: " + e.getMessage());
+			}
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+		}
 	}	
 	
 	// -- recurse to find all resources used by resource passed in

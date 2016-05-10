@@ -1,20 +1,25 @@
 @echo off
+REM ############################################################################################
+REM # NOTE: This script must be executed from the envBin directory for it to work properly.
+REM #       It is directory context sensative.
+REM ############################################################################################
+REM #
 REM ###########################################
 REM # Set STANDARD VARIABLES
 REM ###########################################
-REM # Set the existing variables in order to get VCS_HOME settings.
+REM # Save the current directory and invoke the PDTool variables to get the VCS variables.
 pushd %CD%
-call setVars.bat
-popd
-cls
-REM # Set PDTOOL_HOME and PDTOOL_BIN
-pushd %CD%
-REM # Dynamically get the current directory such as bin
-for %%a in (.) do set CURRDIR=%%~na
 cd ..
-set PDTOOL_HOME=%CD%
-set PDTOOL_BIN=%PDTOOL_HOME%\%CURRDIR%
+for /f "tokens=* delims= " %%I in ("%CD%") do set BINDIR=%%~nI
+call setVars.bat
+cls
 popd
+
+REM # Set popular default PDTool folder variables
+set PDTOOL_BIN=%PDTOOL_HOME%\%BINDIR%
+set PDTOOL_BIN_ENV=%PDTOOL_BIN%\envBin
+if not exist "%PDTOOL_BIN%" set PDTOOL_BIN=
+if not exist "%PDTOOL_BIN_ENV%" set PDTOOL_BIN_ENV=
 
 REM # Set VCS_HOME with any VCS home that is currently set
 set VCS_HOME=
@@ -28,6 +33,7 @@ if defined PDTOOL_BIN set PATH=%PDTOOL_BIN%;%PATH%
 echo.COMMAND: CMD /T:%COLOR% /K "%ENV%"
 echo.PDTOOL_HOME=%PDTOOL_HOME%
 echo.PDTOOL_BIN=%PDTOOL_BIN%
+echo.PDTOOL_BIN_ENV=%PDTOOL_BIN_ENV%
 echo.VCS_HOME=%VCS_HOME%
 echo.PATH=%PATH%
 echo.

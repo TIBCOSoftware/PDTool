@@ -127,14 +127,22 @@ public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 					logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
 				}
 				/*****************************************************
-				 * Invoke Method=getServerAttributes
+				 * Invoke Method=updateServerAttributes
 				 *****************************************************/
-				// Invoke the web service method
-				String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
-		
-				if(logger.isDebugEnabled()) {
-					// Format for XML pretty print
-					logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+				String command = endpointMethod;
+				
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					// Invoke the web service method
+					String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
+			
+					if(logger.isDebugEnabled()) {
+						// Format for XML pretty print
+						logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 				}
 			}		
 		} catch (AdapterException e) {

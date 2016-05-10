@@ -42,4 +42,4 @@
 #
 # param11=domainList - list of domains to generate privileges for [composite]
 #
-PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"
+PASS	TRUE	ExecuteAction	generatePrivilegesXML		$SERVERID "/shared/test00"	"$MODULE_HOME/generated/getPrivilegeModule1.xml" "$MODULE_HOME/servers.xml" "ALL" "GROUP NONSYSTEM PARENT" "composite"

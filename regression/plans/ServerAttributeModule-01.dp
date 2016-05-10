@@ -18,4 +18,4 @@
 # -----------------------------------------
 # ServerAttribure Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"
+PASS	TRUE	ExecuteAction	generateServerAttributesXML   			$SERVERID "/" 			"$MODULE_HOME/generated/getServerAttributeModule.xml" 			"$MODULE_HOME/servers.xml" "READ_WRITE"

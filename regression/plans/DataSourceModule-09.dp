@@ -19,4 +19,4 @@
 # DataSource Module:
 # -----------------------------------------
 # Generate the Datasource Types for Composite Server
-PASS	TRUE	ExecuteAction   	generateDataSourceTypes 			$SERVERID "$PROJECT_HOME_PHYSICAL/resources/modules/generated/generateDataSourceTypes.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	generateDataSourceTypes 			$SERVERID "$MODULE_HOME/generated/generateDataSourceTypes.xml" "$MODULE_HOME/servers.xml"

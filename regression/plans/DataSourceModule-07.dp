@@ -19,4 +19,4 @@
 # DataSource Module:
 # -----------------------------------------
 # Generate the list of Datasource Attribute Definitions for the data sources found at the staring path
-PASS	TRUE	ExecuteAction   	generateDataSourceAttributeDefs 	$SERVERID "/shared/test00" "$PROJECT_HOME_PHYSICAL/resources/modules/generated/generateDataSourceAttributeDefs.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	generateDataSourceAttributeDefs 	$SERVERID "/shared/test00" "$MODULE_HOME/generated/generateDataSourceAttributeDefs.xml" "$MODULE_HOME/servers.xml"

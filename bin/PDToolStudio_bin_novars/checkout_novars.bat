@@ -33,8 +33,8 @@ REM #------------------------------------------
 REM # Set constants
 REM #------------------------------------------
 if not defined debug set debug=0
-REM # CIS version [6.2, 7.0.0]
-set CIS_VERSION=@version@
+REM # CIS version [6.2, 7.0.0] - set CIS_VERSION
+if exist cisVersion.bat call cisVersion.bat
 REM # Initialize variables
 set SCRIPT=checkout_novars.bat
 set SEP=::
@@ -84,6 +84,7 @@ call %writeOutput% "--- PDToolStudio: Promotion and Deployment Tool Studio ---" 
 call %writeOutput% "---                                                    ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "--- Execution path: %CURRENT_EXEC_PATH%" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "--- CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "***** BEGIN COMMAND: %SCRIPT% *****" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% " " 
