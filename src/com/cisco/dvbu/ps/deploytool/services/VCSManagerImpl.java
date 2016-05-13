@@ -2011,8 +2011,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
 														   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2124,8 +2127,11 @@ public class VCSManagerImpl implements VCSManager {
 					// Physically remove and recreate the workspace from the machine
 					// ------------------------------------------------------------------
 
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2253,8 +2259,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2548,8 +2557,11 @@ public class VCSManagerImpl implements VCSManager {
 				        /*********************
 				         * PREPARE DIRECTORIES
 				         *********************/
-				        // Explicitly remove the workspace directory
-				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+				        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+						//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+						//                      and not the parent folders which may contain configuration folders for plans and modules.
+				        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 				        
 				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 				        if (!pdToolStudio) {
@@ -2827,8 +2839,11 @@ public class VCSManagerImpl implements VCSManager {
 							}
 						} // End: if (pdToolStudio && vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
 						
-				        // Explicitly remove the workspace directory
-				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+				        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+						//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+						//                      and not the parent folders which may contain configuration folders for plans and modules.
+				        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 				        
 				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 				        if (!pdToolStudio) {
@@ -2931,8 +2946,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -3133,8 +3151,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {

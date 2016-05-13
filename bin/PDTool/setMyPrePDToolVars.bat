@@ -36,11 +36,6 @@ REM # CREATE/MODIFY CUSTOM PRE-PROCESSING VARIABLES BELOW THIS POINT
 REM #=======================================================================================================
 REM #
 REM ################################
-REM # CUSTOM USER DEFINED VARIABLES
-REM ################################
-REM # if exist setCustomVars.bat call setCutomVars.bat
-REM #
-REM ################################
 REM # GENERAL GROUP ENVIRONMENT
 REM ################################
 REM # 0=Do not print this section, 1=Print this section
@@ -71,6 +66,11 @@ REM #               The combination of [vcs-type-char][env-type] makes it unique
 REM #    Configuration property file names found in PDTool\resources\config folder.
 REM #    It is up to the PDTool installer to modify these pairs to match your environment.
 set NOVCS_VALID_ENV_CONFIG_PAIRS=
+REM #
+REM ################################
+REM # CUSTOM USER DEFINED VARIABLES
+REM ################################
+REM # if exist "%PDTOOL_HOME%\bin\setCustomVars.bat" call "%PDTOOL_HOME%\bin\setCustomVars.bat"
 REM #
 REM ################################
 REM # CISCO SERVER VARIABLES

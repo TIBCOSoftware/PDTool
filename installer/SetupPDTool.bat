@@ -1300,6 +1300,8 @@ if defined PDTOOL_SUBSTITUTE_DRIVE (
 )
 echo.################################################################################################
 :INSTALLER_DISPLAY_WORKSPACE_BYPASS
+echo.
+echo.
 
 pushd
 REM ####################################################################
@@ -1309,12 +1311,10 @@ REM #
 REM ####################################################################
 REM # Determine the backup file name
 set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
-call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 
 REM # Perform the backup
 if not exist "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP1
-	echo.
-	echo.
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 	echo.################################################################################################
 	echo.#
 	echo.# EXECUTE: Backup PDTOOL_HOME\bin\%MODIFY_SET_VARS%
@@ -1349,26 +1349,22 @@ REM # Backup I_PDTOOL_DESTINATION_HOME\setMyPrePDToolVars.bat
 REM #
 REM ####################################################################
 REM # Determine the backup file name
-set  BACKUP_FILENAME_PRE=%MODIFY_SET_MY_PRE_VARS%.bak.1
-set BACKUP_FILENAME_POST=%MODIFY_SET_MY_POST_VARS%.bak.1
-call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_PRE_VARS%.bak"  BACKUP_FILENAME_PRE
-call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_POST_VARS%.bak" BACKUP_FILENAME_POST
+set  BACKUP_FILENAME=%MODIFY_SET_MY_PRE_VARS%.bak.1
 
 REM # Perform the backup
 if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALLER_END_BACKUP2
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_PRE_VARS%.bak"  BACKUP_FILENAME
 	echo.################################################################################################
 	echo.#
 	echo.# EXECUTE: Backup PDTOOL_DESTINATION_HOME\%MODIFY_SET_MY_PRE_VARS%
-	echo.# EXECUTE: Backup PDTOOL_DESTINATION_HOME\%MODIFY_SET_MY_POST_VARS%
 	echo.#
 	echo.#==============================================================================================
 	echo.#
-	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_PRE%"
-	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_POST%"
+	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME%"
 	echo.#
 	echo.################################################################################################
 	echo.
-	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_PRE%"
+	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME%"
 	set ERROR=%ERRORLEVEL%
 	if %ERROR% NEQ 0 (
 	   echo.
@@ -1382,7 +1378,32 @@ if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALL
 	   CALL :InitVariables
 	   exit /B 1
 	)
-	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME_POST%"
+	echo.
+	echo.
+:INSTALLER_END_BACKUP2
+
+REM ####################################################################
+REM #
+REM # Backup I_PDTOOL_DESTINATION_HOME\setMyPostPDToolVars.bat
+REM #
+REM ####################################################################
+REM # Determine the backup file name
+set BACKUP_FILENAME=%MODIFY_SET_MY_POST_VARS%.bak.1
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALLER_END_BACKUP3
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_DESTINATION_HOME%" "%MODIFY_SET_MY_POST_VARS%.bak" BACKUP_FILENAME
+	echo.################################################################################################
+	echo.#
+	echo.# EXECUTE: Backup PDTOOL_DESTINATION_HOME\%MODIFY_SET_MY_POST_VARS%
+	echo.#
+	echo.#==============================================================================================
+	echo.#
+	echo.# COMMAND: copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME%"
+	echo.#
+	echo.################################################################################################
+	echo.
+	copy /Y "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_POST_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%BACKUP_FILENAME%"
 	set ERROR=%ERRORLEVEL%
 	if %ERROR% NEQ 0 (
 	   echo.
@@ -1398,7 +1419,7 @@ if not exist "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" goto INSTALL
 	)
 	echo.
 	echo.
-:INSTALLER_END_BACKUP2
+:INSTALLER_END_BACKUP3
 
 REM ####################################################################
 REM #
@@ -1407,12 +1428,10 @@ REM #
 REM ####################################################################
 REM # Determine the backup file name
 set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
-call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 
 REM # Perform the backup
-if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP3
-	echo.
-	echo.
+if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP4
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 	echo.################################################################################################
 	echo.#
 	echo.# EXECUTE: Backup PDTOOL_HOME\AutomatedTestFramework\regression\bin\%MODIFY_SET_VARS%
@@ -1439,7 +1458,7 @@ if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_SET_
 	)
 	echo.
 	echo.
-:INSTALLER_END_BACKUP3
+:INSTALLER_END_BACKUP4
 
 REM ####################################################################
 REM #
@@ -1448,12 +1467,10 @@ REM #
 REM ####################################################################
 REM # Determine the backup file name
 set BACKUP_FILENAME=%MODIFY_SET_VARS%.bak.1
-call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 
 REM # Perform the backup
-if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP4
-	echo.
-	echo.
+if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%" goto INSTALLER_END_BACKUP5
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin" "%MODIFY_SET_VARS%.bak" BACKUP_FILENAME
 	echo.################################################################################################
 	echo.#
 	echo.# EXECUTE: Backup PDTOOL_HOME\AutomatedTestFramework\migration\bin\%MODIFY_SET_VARS%
@@ -1480,7 +1497,47 @@ if not exist "%I_PDTOOL_HOME%\AutomatedTestFramework\migration\bin\%MODIFY_SET_V
 	)
 	echo.
 	echo.
-:INSTALLER_END_BACKUP4
+:INSTALLER_END_BACKUP5
+
+REM ####################################################################
+REM #
+REM # Backup I_PDTOOL_HOME\resources\modules\servers.xml
+REM #
+REM ####################################################################
+REM # Determine the backup file name
+set SERVERS_XML=servers.xml
+set BACKUP_FILENAME=%SERVERS_XML%.bak.1
+
+REM # Perform the backup
+if not exist "%I_PDTOOL_HOME%\resources\modules\%SERVERS_XML%" goto INSTALLER_END_BACKUP6
+	call:INCREMENT_BACKUP_FILE_NAME "%I_PDTOOL_HOME%\resources\modules" "%SERVERS_XML%.bak" BACKUP_FILENAME
+	echo.################################################################################################
+	echo.#
+	echo.# EXECUTE: Backup PDTOOL_HOME\resources\modules\%SERVERS_XML%
+	echo.#
+	echo.#==============================================================================================
+	echo.#
+	echo.# COMMAND: copy /Y "%I_PDTOOL_HOME%\resources\modules\%SERVERS_XML%" "%I_PDTOOL_HOME%\resources\modules\%BACKUP_FILENAME%"
+	echo.#
+	echo.################################################################################################
+	echo.
+	copy /Y "%I_PDTOOL_HOME%\resources\modules\%SERVERS_XML%" "%I_PDTOOL_HOME%\resources\modules\%BACKUP_FILENAME%"
+	set ERROR=%ERRORLEVEL%
+	if %ERROR% NEQ 0 (
+	   echo.
+	   echo.################################################################################################
+	   echo.# ERROR: PDTOOL INSTALLATION FAILED
+	   echo.#
+	   echo.# Copy %SERVERS_XML% - Command Failed with error=%ERROR%
+	   echo.#
+	   echo.################################################################################################
+	   popd
+	   CALL :InitVariables
+	   exit /B 1
+	)
+	echo.
+	echo.
+:INSTALLER_END_BACKUP6
 
 echo.################################################################################################
 echo.#
@@ -2699,12 +2756,16 @@ if defined TARGET_DIR set TARGET_DIR=!TARGET_DIR:"=!
 if defined TARGET_FILE set TARGET_FILE=!TARGET_FILE:"=!
 
 set TARGET_INCR_FILE=
+REM # Check for at least 1 file to exist
+if not exist !TARGET_DIR!\!TARGET_FILE!.1 goto INCREMENT_EXT_NUM
+REM # Loop through the files to get the highest backup file number
 for /F %%a in ('dir /B !TARGET_DIR!\!TARGET_FILE!.*') do (
 	set TARGET_INCR_FILE=%%a
 	for %%i in (!TARGET_INCR_FILE!) do set TARGET_EXT=%%~xi
 	set TARGET_EXT=!TARGET_EXT:~1!
 	if debug==1 [DEBUG] echo INTERNAL: FILE=!TARGET_INCR_FILE!   EXT=!TARGET_EXT!
 )
+:INCREMENT_EXT_NUM
 set /A TARGET_EXT=TARGET_EXT+1
 set TARGET_FILE=!TARGET_FILE!.%TARGET_EXT%
 if debug==1 echo [DEBUG] EXT=%TARGET_EXT%    TARGET_FILE=%TARGET_FILE%
