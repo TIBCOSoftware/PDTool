@@ -267,7 +267,7 @@ REM # Save the current directory and invoke the PDTool variables to get the VCS 
 REM #    Setting PDTOOL_HOME and TFS_HOME and [SVN|TFS|GIT|CVS|P4]_VCS_PROJECT_ROOT
 REM #    [...]_VCS_PROJECT_ROOT is used to calculate the REL_VCS_WORKSPACE_HOME and REL_VCS_WORKSPACE_NAME
 pushd %CD%
-if not exist setVars.bat (
+if not exist "setVars.bat" (
    cls
    echo.%REL_BATCH_FILE_NAME%:: ERROR: Could not find setVars.bat.
    set ERROR=1
@@ -289,7 +289,7 @@ echo.%REL_BATCH_FILE_NAME%::
 echo.%REL_BATCH_FILE_NAME%:: -------------------------------------------------
 echo.%REL_BATCH_FILE_NAME%:: Execute PDTool %CIS_VERSION% Release Batch Interface
 echo.%REL_BATCH_FILE_NAME%::
-if not exist %PDTOOL_HOME% (
+if not exist "%PDTOOL_HOME%" (
    echo.%REL_BATCH_FILE_NAME%:: -------------------------------------------------
    echo.%REL_BATCH_FILE_NAME%::
    echo.%REL_BATCH_FILE_NAME%::-------------------------------------------------------------------------------------
@@ -555,7 +555,7 @@ if "%REL_VCS_WORKSPACE_DIR:~-1%"=="/" CALL:REMOVE_LAST_SEPARATOR "%REL_VCS_WORKS
 if "%debug%"=="1" echo [DEBUG] REL_VCS_WORKSPACE_DIR=%REL_VCS_WORKSPACE_DIR%
 
 REM # Extract the VCS_WORKSPACE_NAME from REL_VCS_WORKSPACE_DIR
-for %%a in (%REL_VCS_WORKSPACE_DIR%) do set REL_VCS_WORKSPACE_NAME=%%~na%%~xa
+for %%a in ("%REL_VCS_WORKSPACE_DIR%") do set REL_VCS_WORKSPACE_NAME=%%~na%%~xa
 if "%debug%"=="1" echo [DEBUG] REL_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
 
 REM # Extract the VCS_WORKSPACE_HOME from REL_VCS_WORKSPACE_DIR
@@ -652,7 +652,7 @@ REM #---------------------------------------------
 REM # Change directories to PDTool/bin
 REM #---------------------------------------------
 REM # Execute the Workspace initialization when the workspace folder does not exist
-cd %PDTOOL_HOME%\bin
+cd "%PDTOOL_HOME%\bin"
 
 REM #---------------------------------------------
 REM # Execute the TFS license acceptance
@@ -696,7 +696,7 @@ if %REL_INIT_WORKSPACE%==1 (
 )
 
 REM # Check to see if workspace already exists
-if exist %REL_VCS_WORKSPACE_SRC_DIR% (
+if exist "%REL_VCS_WORKSPACE_SRC_DIR%" (
 	echo.%REL_BATCH_FILE_NAME%::   Workspace has already been initalized.
 	echo.%REL_BATCH_FILE_NAME%::
 	goto CONTINUE_DEPLOYMENT2
@@ -707,8 +707,8 @@ REM # Initialize the workspace
 REM #---------------------------------------------
 :INITIALIZE_WORKSPACE
 REM # Execute the Workspace initialization when the workspace folder does not exist
-  if not exist %REL_VCS_WORKSPACE_SRC_DIR% echo.%REL_BATCH_FILE_NAME%::   Workspace does not exist.
-  if exist %REL_VCS_WORKSPACE_SRC_DIR% echo.%REL_BATCH_FILE_NAME%::   Workspace exists.
+  if not exist "%REL_VCS_WORKSPACE_SRC_DIR%" echo.%REL_BATCH_FILE_NAME%::   Workspace does not exist.
+  if     exist "%REL_VCS_WORKSPACE_SRC_DIR%" echo.%REL_BATCH_FILE_NAME%::   Workspace exists.
   if not defined REL_VCS_MODULE_NAME (
      echo.%REL_BATCH_FILE_NAME%::------------------------------------------------------------------------------
      echo.%REL_BATCH_FILE_NAME%:: Execution Failed: Error - REL_VCS_MODULE_NAME must be defined.

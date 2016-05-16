@@ -40,7 +40,7 @@ REM #       c) ExecutePDTool.bat -encrypt <path-to-file>\setMyPostPDToolStudioVa
 REM #=======================================================================================================
 REM # CREATE/MODIFY CUSTOM POST-PROCESSING VARIABLES BELOW THIS POINT
 REM #=======================================================================================================
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set GEN_PRINT=1
 REM #---------------------------------------------
 REM # Property Order Precedence
@@ -82,6 +82,8 @@ REM #==========================================================
 ::#---------------------------------------------
 set filename=%1
 set MSG=
+REM # Convert true to 1
+if "%GEN_PRINT%"=="true" set GEN_PRINT=1
 SETLOCAL ENABLEDELAYEDEXPANSION
 REM # LF must have 2 blank lines following it to create a line feed
 set LF=^
@@ -91,12 +93,12 @@ set MSG=!MSG!###################################################################
 set MSG=!MSG!%filename%: Setting post-processing custom variables!LF!
 set MSG=!MSG!########################################################################################################################################!LF!
 if "%GEN_PRINT%"=="1" (
-rem set MSG=!MSG!propertyOrderPrecedence  =%propertyOrderPrecedence%!LF!
+rem set MSG=!MSG!propertyOrderPrecedence  =!propertyOrderPrecedence!!LF!
 )
 echo.!MSG!
 REM # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.bat
 if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
-if exist %DEFAULT_LOG_PATH% echo.!MSG!>>%DEFAULT_LOG_PATH%
+if exist "%DEFAULT_LOG_PATH%" echo.!MSG!>>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUTEND
 ENDLOCAL
 GOTO:EOF

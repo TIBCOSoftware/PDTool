@@ -109,6 +109,9 @@ REM # Invoke the PDTool Setup script
 REM #######################################################
 REM # Set debug...1=print debug statements.  0=do not print debug statements
 set debug=0
+REM # Set debugReplaceText...1=print ParseLineReplaceText debug.  0=do not pring debug statements for ParseLineReplaceText.
+set debugReplaceText=0
+REM # Setup script name
 set PDTOOL_SETUP_SCRIPT=SetupPDTool.bat
 pushd .
 cd ..

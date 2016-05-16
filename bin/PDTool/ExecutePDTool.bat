@@ -138,7 +138,7 @@ set ERRORMSG=
 call :parse %*
 SET ERROR=%ERRORLEVEL%
 IF %ERROR% GTR 0 (
-	if defined PWD cd %PWD%
+	if defined PWD cd "%PWD%"
 	exit /B %ERROR% 
 )
 
@@ -180,12 +180,12 @@ if defined DEFAULT_CIS_VERSION       	set CIS_VERSION=%DEFAULT_CIS_VERSION%
 REM #=======================================
 REM # Invoke setVars.bat
 REM #=====================================================================================
-if exist %DEFAULT_SET_VARS_PATH% goto INVOKE_SET_VARS
+if exist "%DEFAULT_SET_VARS_PATH%" goto INVOKE_SET_VARS
 
   set ARG=DEFAULT_SET_VARS_PATH
   set ERRORMSG=Execution Failed::Path does not exist: %ARG1%
   call:USAGE
-  if defined PWD cd %PWD%
+  if defined PWD cd "%PWD%"
   exit /B 2
 			
 :INVOKE_SET_VARS
@@ -193,9 +193,9 @@ REM #---------------------------------------------
 REM # Set environment variables "setVars.bat"
 REM #---------------------------------------------
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %writeOutput% "Section: Invoking setVars.bat...%DEFAULT_SET_VARS_PATH%" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "Section: Invoking setVars.bat...[%DEFAULT_SET_VARS_PATH%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %DEFAULT_SET_VARS_PATH% 
+call "%DEFAULT_SET_VARS_PATH%"
 
 REM #
 REM #=======================================
@@ -252,11 +252,11 @@ if not defined CONFIG_PROPERTY_FILE goto RESOLVED_PDTOOL_CONFIG_PROPERTY_FILE
     call %writeOutput% "%SCRIPT%: Transform and Validate Config Property File:"
     call %writeOutput% "########################################################################################################################################"
 	set CONFIG_PROPERTY_FILE_ORIG=%CONFIG_PROPERTY_FILE%
-    call envBin\envConfig.cmd %CONFIG_PROPERTY_FILE%
+    call "envBin\envConfig.cmd" %CONFIG_PROPERTY_FILE%
     SET ERROR=%ERRORLEVEL%
     if %ERROR% GTR 0 (
 	   REM # Error occurred translating short name to the config property file name
-  	   if defined PWD cd %PWD%
+  	   if defined PWD cd "%PWD%"
        exit /b 1
 	)
 	set CONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_NAME%
@@ -298,33 +298,34 @@ REM #   event that "net use" does not work properly in a particular
 REM #   environment.
 REM #-----------------------------------------------------------
 if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
-	call %writeOutput% "Section: Substitute Drives" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Evaluate the substitute drive=%SUBSTITUTE_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "Section: Substitute Drives" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Evaluate the substitute drive=%SUBSTITUTE_DRIVE% path=[%PROJECT_HOME_PHYSICAL%]" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	REM 2014-12-04 mtinius - changed logic to only map the drive when necessary...not every time
 	if NOT EXIST %SUBSTITUTE_DRIVE% goto MAP_SUBSTITUTE_DRIVE
 	REM 2014-12-04 mtinius - changed logic to evaluate if current mapped drive utilizes the correct path
 	call :EVALUATE_SUBST_DRIVES %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
 
-	if "%drivePathFound%" == "true" (
-		call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		goto MAPSUCCESS
-	)
+	if "%drivePathFound%" == "false" goto MAP_SUBSTITUTE_DRIVE_ERROR
+	call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:[%PROJECT_HOME_PHYSICAL%]" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	goto MAPSUCCESS
+
 	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
-	call %writeOutput% "%PAD%The substitute drive=%SUBSTITUTE_DRIVE% is mapped to a different path.  There are two options:" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	if defined PWD cd %PWD%
+	:MAP_SUBSTITUTE_DRIVE_ERROR
+	call %writeOutput% "%PAD%The substitute drive=%SUBSTITUTE_DRIVE% is mapped to a different path.  There are two options:" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd "%PWD%"
     exit /b 1
 :MAP_SUBSTITUTE_DRIVE
-	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
     set ERROR=%ERRORLEVEL%
     if "%ERROR%" == "0" goto MAPSUCCESS
-	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	if defined PWD cd %PWD%
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]"									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd "%PWD%"
     exit /b 1
 
 REM #-----------------------------------------------------------
@@ -334,67 +335,69 @@ REM #   "subst" is temporary in that id does not survive reboots.
 REM #-----------------------------------------------------------
 :MAP_NETWORK_DRIVE_BEGIN
 if not defined NETWORK_DRIVE goto MAPSUCCESS
-	call %writeOutput% "Section: Network Drives" 																			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Evaluate the network drive=%NETWORK_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "Section: Network Drives" 																								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Evaluate the network drive=%NETWORK_DRIVE% path=[%PROJECT_HOME_PHYSICAL%]"											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	REM Only map the drive when necessary...not every time
-	if NOT EXIST %NETWORK_DRIVE% goto MAP_NETWORK_DRIVE
+	if NOT EXIST "%NETWORK_DRIVE%" goto MAP_NETWORK_DRIVE
 	REM Evaluate if current mapped drive utilizes the correct path
 	call :EVALUATE_NETWORK_DRIVES %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
 
-	if "%drivePathFound%" == "true" (
-		call %writeOutput% "%PAD%Network drive %NETWORK_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		goto MAPSUCCESS
-	)
+	if "%drivePathFound%" == "false" goto MAP_NETWORK_DRIVE_ERROR
+	call %writeOutput% "%PAD%Network drive %NETWORK_DRIVE% is already mapped to path: [%PROJECT_HOME_PHYSICAL%]" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	goto MAPSUCCESS
+
 	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
-	call %writeOutput% "%PAD%The network drive=%NETWORK_DRIVE% is mapped to a different path.  There are two options:" 		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	:MAP_NETWORK_DRIVE_ERROR
+	call %writeOutput% "%PAD%The network drive=%NETWORK_DRIVE% is mapped to a different path.  There are two options:" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd "%PWD%"
     exit /b 1
 :MAP_NETWORK_DRIVE
 	REM # Get the Drive letter for PROJECT_HOME_PHYSICAL
-	for /F "usebackq delims==" %%I IN (`echo %PROJECT_HOME_PHYSICAL%`) DO (
+	for /F "usebackq delims==" %%I IN (`echo "%PROJECT_HOME_PHYSICAL%"`) DO (
 		set PDTOOL_HOME_DRIVE=%%~dI
 		REM echo PDTOOL_HOME_DRIVE=%PDTOOL_HOME_DRIVE%
 	)
 	set PDTOOL_HOME_DRIVE_SHARE=%PDTOOL_HOME_DRIVE::=$%
 	if not exist "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" (
 		REM The share drive does not exist
-		call %writeOutput% "%PAD%The network share ^"\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%^" does not exist." 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%   Create the share drive=%PDTOOL_HOME_DRIVE_SHARE% for the installation drive=%PDTOOL_HOME_DRIVE% as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%   Command run as administrator: net share %PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%\" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		if defined PWD cd %PWD%
+		call %writeOutput% "%PAD%The network share [\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%] does not exist." 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Create the share drive=[%PDTOOL_HOME_DRIVE_SHARE%] for the installation drive=[%PDTOOL_HOME_DRIVE%] as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Command run as administrator: net share [%PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%]"	 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		if defined PWD cd "%PWD%"
 		exit /b 1
 	)
 	
 	call :REPLACE "%PDTOOL_HOME_DRIVE%" "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" "%PROJECT_HOME_PHYSICAL%" PROJECT_HOME_PHYSICAL_NEW
-	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-    net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES
+	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+    net use %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL_NEW%" /PERSISTENT:YES
     set ERROR=%ERRORLEVEL%
     if "%ERROR%" == "0" goto MAPSUCCESS
-	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	if defined PWD cd %PWD%
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" 				 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd "%PWD%"
     exit /b 1
 
-:MAPSUCCESS   
+:MAPSUCCESS
 
 
 REM #=======================================
 REM # Validate Paths exist
 REM #=======================================
 if NOT EXIST "%PROJECT_HOME%" (
-   call %writeOutput% "Execution Failed::PROJECT_HOME does not exist: %PROJECT_HOME%" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::PROJECT_HOME does not exist: [%PROJECT_HOME%]" 										"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
-   if defined PWD cd %PWD%
+   if defined PWD cd "%PWD%"
    exit /B 1
 )
 if NOT EXIST "%JAVA_HOME%" (
-   call %writeOutput% "Execution Failed::JAVA_HOME does not exist: %JAVA_HOME%" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::JAVA_HOME does not exist: [%JAVA_HOME%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
-   if defined PWD cd %PWD%
+   if defined PWD cd "%PWD%"
    exit /B 1
 )
 echo.
@@ -451,7 +454,7 @@ REM # Goto usage if PROPERTY_FILE is blank or does not exist
 set ARG=PROPERTY_FILE
 if not defined PROPERTY_FILE goto USAGE 
 if NOT EXIST "%PROPERTY_FILE%" (
-   call %writeOutput% "Execution Failed::Orchestration deploy plan file does not exist: %PROPERTY_FILE%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::Orchestration deploy plan file does not exist: [%PROPERTY_FILE%]" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    goto USAGE 
 )
 REM #***********************************************
@@ -496,7 +499,7 @@ REM # Goto usage if PROPERTY_FILE is blank or does not exist
 set ARG=PROPERTY_FILE
 if not defined PROPERTY_FILE goto USAGE 
 if NOT EXIST "%PROPERTY_FILE%" (
-   call %writeOutput% "Execution Failed::Property file does not exist: %PROPERTY_FILE%" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::Property file does not exist: [%PROPERTY_FILE%]" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    goto USAGE 
 )
 REM #***********************************************
@@ -525,7 +528,7 @@ REM # Goto usage if PROPERTY_FILE is blank or does not exist
 set ARG=PROPERTY_FILE
 if not defined PROPERTY_FILE goto USAGE 
 if NOT EXIST "%PROPERTY_FILE%" (
-   call %writeOutput% "Execution Failed::Ant deploy plan build file does not exist: %PROPERTY_FILE%" 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::Ant deploy plan build file does not exist: [%PROPERTY_FILE%]" 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    goto USAGE 
 )
 REM #=======================================
@@ -534,9 +537,9 @@ REM #=======================================
 REM # Ant ships with the CisDeployTool so the directory is an offset to the Project Home
 set ANT_HOME=%PROJECT_HOME%/ext/ant
 if NOT EXIST "%ANT_HOME%" (
-   call %writeOutput% "Execution Failed::ANT_HOME does not exist: %ANT_HOME%" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::ANT_HOME does not exist: [%ANT_HOME%]" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
-   if defined PWD cd %PWD%
+   if defined PWD cd "%PWD%"
    exit /B 1
 )
 REM # Set the Ant classpath and options
@@ -566,7 +569,7 @@ if not defined XML_FILE_SOURCE (
    goto XFORM_USAGE
 )
 if NOT EXIST "%XML_FILE_SOURCE%" (
-   call %writeOutput% "Execution Failed::XML source file does not exist: %XML_FILE_SOURCE%" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::XML source file does not exist: [%XML_FILE_SOURCE%]" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    goto XFORM_USAGE
 )
 REM # Goto usage if XSL_FILE_SOURCE is blank or does not exist
@@ -575,7 +578,7 @@ if not defined XSL_FILE_SOURCE (
    goto XFORM_USAGE 
 )
 if NOT EXIST "%XSL_FILE_SOURCE%" (
-   call %writeOutput% "Execution Failed::XSL style sheet file does not exist: %XSL_FILE_SOURCE%" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   call %writeOutput% "Execution Failed::XSL style sheet file does not exist: [%XSL_FILE_SOURCE%]" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    goto XFORM_USAGE
 )
 
@@ -592,7 +595,7 @@ GOTO START_SCRIPT
 	call %writeOutput% " "
 	call %writeOutput% "            Example: %SCRIPT%%ext% -xform test-doc.xml test-xform.xsl
    ENDLOCAL
-   if defined PWD cd %PWD%
+   if defined PWD cd "%PWD%"
    exit /B 1
 
 REM #--------------
@@ -619,7 +622,7 @@ if %ERROR% NEQ 0 (
    call %writeOutput% "Execution Failed::Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
    REM # If PWD defined then return to the previous working directory as set in the batch file that invokes ExecutePDTool
-   if defined PWD cd %PWD%
+   if defined PWD cd "%PWD%"
    exit /B %ERROR%
 )
 
@@ -627,11 +630,11 @@ REM #=======================================
 REM # Successful script completion
 REM #=======================================
 call %writeOutput% " "
-call %writeOutput% "-------------- SUCCESSFUL SCRIPT COMPLETION [%SCRIPT% %PDTOOL_CMD%] --------------" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "-------------- SUCCESSFUL SCRIPT COMPLETION [%SCRIPT% %PDTOOL_CMD%] --------------" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "End of script." 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 ENDLOCAL
 REM # If PWD defined then return to the previous working directory as set in the batch file that invokes ExecutePDTool
-if defined PWD cd %PWD%
+if defined PWD cd "%PWD%"
 exit /B 0
 
 
@@ -660,11 +663,9 @@ set blank=
 	endlocal & SET TARG1=%TARG1%& SET TARG2=%TARG2%
 	if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: ARG1=[%ARG1%]  Removed Quotes: VALUE=[%TARG1%]
 	if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: ARG2=[%ARG2%]  Removed Quotes: VALUE=[%TARG2%]
-	if "%TARG1%" == "" (
-	    if "%TARG2%" NEQ "" goto GET_PARAMS_CONT
-echo PARAMS=%PARAMS%
-		GOTO:EOF
-	)
+	if "%TARG1%" NEQ "" goto GET_PARAMS_CONT
+	if "%TARG2%" NEQ "" goto GET_PARAMS_CONT
+	GOTO:EOF
 :GET_PARAMS_CONT
     set PARAMS=%PARAMS%%TARG1%%blank%
     shift
@@ -701,7 +702,9 @@ set SCRIPT_DEBUG=%0
 	REM # Check for no more values and return from :parse.
 	if "%ARG1%" == "" GOTO:EOF
 
-    if "%ARG1%" == "-exec" (
+    if "%ARG1%" == "-exec" GOTO PARSE_EXEC
+	GOTO CONTINUE1
+	:PARSE_EXEC
 				set PDTOOL_CMD=%ARG1%
                 set PDTOOL_PROPERTY_FILE=%ARG2%
 				setlocal EnableDelayedExpansion
@@ -715,8 +718,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-ant" (
+    :CONTINUE1
+    if "%ARG1%" == "-ant" GOTO PARSE_ANT
+	GOTO CONTINUE2
+	:PARSE_ANT
  				set PDTOOL_CMD=%ARG1%
                 set PDTOOL_PROPERTY_FILE=%ARG2%
 				setlocal EnableDelayedExpansion
@@ -730,8 +735,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-encrypt" (
+    :CONTINUE2
+    if "%ARG1%" == "-encrypt" GOTO PARSE_ENCRYPT
+	GOTO CONTINUE3
+	:PARSE_ENCRYPT
 				set PDTOOL_CMD=%ARG1%
                 set PDTOOL_PROPERTY_FILE=%ARG2%
 				setlocal EnableDelayedExpansion
@@ -745,8 +752,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-bypass" (
+    :CONTINUE3
+    if "%ARG1%" == "-bypass" GOTO PARSE_BYPASS
+	GOTO CONTINUE4
+	:PARSE_BYPASS
                 set PDTOOL_ENCRYPT_BYPASS_STRING=%ARG2%
 				setlocal EnableDelayedExpansion
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_ENCRYPT_BYPASS_STRING=!PDTOOL_ENCRYPT_BYPASS_STRING!
@@ -759,15 +768,19 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-vcsinit" (
+    :CONTINUE4
+    if "%ARG1%" == "-vcsinit" GOTO PARSE_VCSINIT
+	GOTO CONTINUE5
+	:PARSE_VCSINIT
                 set PDTOOL_CMD=%ARG1%
 				setlocal EnableDelayedExpansion
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_CMD=!PDTOOL_CMD!
 				endlocal
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-vcsuser" (
+    :CONTINUE5
+    if "%ARG1%" == "-vcsuser" GOTO PARSE_VCSUSER
+	GOTO CONTINUE6
+	:PARSE_VCSUSER
                 set PDTOOL_VCS_USERNAME=%ARG2%
 				setlocal EnableDelayedExpansion
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_VCS_USERNAME=!PDTOOL_VCS_USERNAME!
@@ -780,8 +793,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-vcspassword" (
+    :CONTINUE6
+    if "%ARG1%" == "-vcspassword" GOTO PARSE_VCSPASSWORD
+	GOTO CONTINUE7
+	:PARSE_VCSPASSWORD
                 set PDTOOL_VCS_PASSWORD=%ARG2%
 				set PARSE_ERROR=1
 				set ARG=VCS_PASSWORD
@@ -791,8 +806,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-    if "%ARG1%" == "-config" (
+    :CONTINUE7
+    if "%ARG1%" == "-config" GOTO PARSE_CONFIG
+	GOTO CONTINUE8
+	:PARSE_CONFIG
                 set PDTOOL_CONFIG_PROPERTY_FILE=%ARG2%
 				setlocal EnableDelayedExpansion
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_CONFIG_PROPERTY_FILE=!PDTOOL_CONFIG_PROPERTY_FILE!
@@ -805,19 +822,14 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-
-    if "%ARG1%" == "-release" (
+    :CONTINUE8
+    if "%ARG1%" == "-release" GOTO PARSE_RELEASE
+	GOTO CONTINUE9
+	:PARSE_RELEASE
                 set PDTOOL_RELEASE_FOLDER=%ARG2%
 				setlocal EnableDelayedExpansion
-
-
-
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_RELEASE_FOLDER=!PDTOOL_RELEASE_FOLDER!
 				endlocal
-
-
-
 				set PARSE_ERROR=1
 				set ARG=RELEASE_FOLDER
 				set ERRORMSG=Execution Failed::Missing %ARG1% parameter
@@ -826,9 +838,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-		
-    if "%ARG1%" == "-ver" (
+    :CONTINUE9
+    if "%ARG1%" == "-ver" GOTO PARSE_VER
+	GOTO CONTINUE10
+	:PARSE_VER
                 set DEFAULT_CIS_VERSION=%ARG2%
 				setlocal EnableDelayedExpansion
 					if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: DEFAULT_CIS_VERSION=!DEFAULT_CIS_VERSION!
@@ -841,9 +854,10 @@ set SCRIPT_DEBUG=%0
 				if "%ARG2%" NEQ "" set ERRORMSG=
                 shift
                 GOTO:LOOPEND
-            )
-
-    if "%ARG1%" == "-xform" (
+    :CONTINUE10
+    if "%ARG1%" == "-xform" GOTO PARSE_XFORM
+	GOTO CONTINUE11
+	:PARSE_XFORM
 				set PDTOOL_CMD=%ARG1%
                 set XML_FILE_SOURCE=%ARG2%
                 set XSL_FILE_SOURCE=%ARG3%
@@ -865,16 +879,17 @@ set SCRIPT_DEBUG=%0
                 shift
 				shift
                 GOTO:LOOPEND
-            )
-
-    if "%ARG1%" == "-noop" (
-                set NO_OPERATION=true
+    :CONTINUE11
+    if "%ARG1%" == "-noop" GOTO PARSE_NOOP
+ 	GOTO CONTINUE12
+	:PARSE_NOOP
+               set NO_OPERATION=true
 				set PARSE_ERROR=0
 				set ARG=NO_OPERATION
                 shift
                 GOTO:LOOPEND
-            )
 			
+    :CONTINUE12
 	set ERRORMSG=Execution Failed::Unknown parameter: %ARG1%
     call:USAGE
     exit /B 2
@@ -967,28 +982,26 @@ REM #-------------------------------------------------------------
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " "
 	ENDLOCAL
-	if defined PWD cd %PWD%
+	if defined PWD cd "%PWD%"
 	exit /B 1
 
-REM #-------------------------------------------------------------
+:: -------------------------------------------------------------
 :writeOutput
-REM #-------------------------------------------------------------
-REM # Write output to the console window
-REM #
-REM # Example Execution Statement:
-REM # call :writeOutput "text to echo" "prefix text"
-REM #
-REM #	arg1="any text enclosed in double quotes"
-REM #	arg2="any text prefix enclosed in double quotes"
-REM #	Note:  if the text contains a double quote it must be escaped prior to invocation by 
-REM #          setting 2 double quotes.   "print "this" text" would become "print ""this"" text"
-REM #
-REM #   Use the following DOS command to achieve turning 1 double quote into 2 double quotes
-REM #    set TEXT=print "this" text
-REM #    call writeOutput "%TEXT:"=""%" "PrefixText"
-REM #       gets passed into like this:  print ""this"" text
-REM #           output looks like this:  print "this" text
-REM #----------------------------------------------------------
+:: -------------------------------------------------------------
+::# Example Execution Statement:
+::# call :writeOutput "text to echo" "prefix text"
+::#
+::#	arg1="any text enclosed in double quotes"
+::#	arg2="any text prefix enclosed in double quotes"
+::#	Note:  if the text contains a double quote it must be escaped prior to invocation by 
+::#          setting 2 double quotes.   "print "this" text" would become "print ""this"" text"
+::#
+::#   Use the following DOS command to achieve turning 1 double quote into 2 double quotes
+::#    set TEXT=print "this" text
+::#    call writeOutput "%TEXT:"=""%" "PrefixText"
+::#       gets passed into like this:  print ""this"" text
+::#           output looks like this:  print "this" text
+::#----------------------------------------------------------
 SETLOCAL EnableDelayedExpansion
 
 REM # Get the parameters
@@ -1010,33 +1023,33 @@ echo.!logprefix!!output!
 
 REM # Output to the default log file if the variable is defined
 if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
-if exist %DEFAULT_LOG_PATH% goto WRITEOUTPUT
+if exist "%DEFAULT_LOG_PATH%" goto WRITEOUTPUT
 REM # Create log directory and log file
 for /f "tokens=* delims= " %%I in ("%DEFAULT_LOG_PATH%") do set DEFAULT_LOG_DRIVE=%%~dI
 for /f "tokens=* delims= " %%I in ("%DEFAULT_LOG_PATH%") do set DEFAULT_LOG_DIR=%%~pI
 set DEFAULT_LOG_DIR=%DEFAULT_LOG_DRIVE%%DEFAULT_LOG_DIR%
-if not exist %DEFAULT_LOG_DIR% echo.mkdir %DEFAULT_LOG_DIR%
-if not exist %DEFAULT_LOG_DIR% mkdir %DEFAULT_LOG_DIR%
+if not exist "%DEFAULT_LOG_DIR%" echo.mkdir "%DEFAULT_LOG_DIR%"
+if not exist "%DEFAULT_LOG_DIR%" mkdir "%DEFAULT_LOG_DIR%"
 echo.Initialize log file: %DEFAULT_LOG_PATH%
-echo.>%DEFAULT_LOG_PATH%
+echo.>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUT
-if exist %DEFAULT_LOG_PATH% echo.!logprefix!!output!>>%DEFAULT_LOG_PATH%
+if exist "%DEFAULT_LOG_PATH%" echo.!logprefix!!output!>>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUTEND
 ENDLOCAL
 GOTO:EOF
 
 
-REM #-------------------------------------------------------------
+:: -------------------------------------------------------------
 :EVALUATE_SUBST_DRIVES
-REM #-------------------------------------------------------------
-REM # Evaluate the substitute drives
-REM #
-REM # Description: call:EVALUATE_SUBST_DRIVES substdrive substpath debug pathFound  
-REM #      -- substdrive [in]  - The drive letter such as P: that is to be used for a substitute drive
-REM #      -- substpath  [in]  - The path that is to be mapped to the substitute drive.
-REM #      -- debug      [in]  - 1=print debug, 0=do not pring debug
-REM #      -- pathFound  [out] - lower case "true" or "false" indicating whether the substitute drive and path combination was found in the substitute list.
-REM #
+:: -------------------------------------------------------------
+::# Evaluate the substitute drives
+::#
+::# Description: call:EVALUATE_SUBST_DRIVES substdrive substpath debug pathFound  
+::#      -- substdrive [in]  - The drive letter such as P: that is to be used for a substitute drive
+::#      -- substpath  [in]  - The path that is to be mapped to the substitute drive.
+::#      -- debug      [in]  - 1=print debug, 0=do not pring debug
+::#      -- pathFound  [out] - lower case "true" or "false" indicating whether the substitute drive and path combination was found in the substitute list.
+::#
 REM Get the input parameters
 set substdrive=%1
 set substpath=%2
@@ -1066,31 +1079,30 @@ for /f tokens^=*^ delims^=^ eol^= %%a in ('subst') do (
      if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
 	 set msg=
      if "!substpath!" NEQ "!spath!" set msg=%PAD%The substitute path does not match subst drive list. drive=!substdrive! path=[!spath!].
-	 if defined msg call %writeOutput% "!msg!" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	 if defined msg call %writeOutput% "!msg!" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	 if "!substpath!" EQU "!spath!" set pathfound=true
 	 if "!substpath!" NEQ "!spath!" set pathfound=false
-	 goto LOOP_END
+	 goto EVALUATE_SUBST_DRIVES_LOOP_END
    )
 )
-:LOOP_END
+:EVALUATE_SUBST_DRIVES_LOOP_END
 ENDLOCAL & SET _pathfound=%pathfound%
-
 if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
 set %4=%_pathfound%
 GOTO:EOF
 
 
-REM #-------------------------------------------------------------
+:: -------------------------------------------------------------
 :EVALUATE_NETWORK_DRIVES
-REM #-------------------------------------------------------------
-REM # Evaluate the network drives
-REM #
-REM # Description: call:EVALUATE_NETWORK_DRIVES substdrive substpath debug pathFound  
-REM #      -- substdrive [in]  - The drive letter such as P: that is to be used for a network drive
-REM #      -- substpath  [in]  - The path that is to be mapped to the network drive.
-REM #      -- debug      [in]  - 1=print debug, 0=do not pring debug
-REM #      -- pathFound  [out] - lower case "true" or "false" indicating whether the network drive and path combination was found in the network drive list.
-REM #
+:: -------------------------------------------------------------
+::# Evaluate the network drives
+::#
+::# Description: call:EVALUATE_NETWORK_DRIVES substdrive substpath debug pathFound  
+::#      -- substdrive [in]  - The drive letter such as P: that is to be used for a network drive
+::#      -- substpath  [in]  - The path that is to be mapped to the network drive.
+::#      -- debug      [in]  - 1=print debug, 0=do not pring debug
+::#      -- pathFound  [out] - lower case "true" or "false" indicating whether the network drive and path combination was found in the network drive list.
+::#
 REM Get the input parameters
 set substdrive=%1
 set substpath=%2
@@ -1111,39 +1123,52 @@ if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
 if %debug%==1 echo.[DEBUG] %0:driveletter=%driveletter%
 
 REM Iterate over the net use command
-for /F "tokens=2,3 skip=2" %%a IN ('net use') do (
-   set sdrive=%%a
-   set spath=%%b
-   if "!sdrive!"=="Local" set sdrive=
-   if "!sdrive!"=="Windows" set sdrive=
-   if "!sdrive!"=="command" set sdrive=
-   if "!sdrive!"=="are" set sdrive=
-   if "!sdrive!"=="connections" set sdrive=
-   if not defined sdrive set spath=
-   if !debug!==1 echo.[DEBUG] %0: sdrive=!sdrive!   path=!spath!
-
-   set outStr=
-   if defined spath call :REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath 
-   if !debug!==1 echo.[DEBUG] %0: spath=!spath!
-
-   REM The drive was found
-   if "!substdrive!" == "!sdrive!" (
-     if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
-     if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
-     if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
-                set msg=
-    if "!substpath!" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
-                rem if defined msg call %writeOutput% "!msg!"                                                                                                                                                                                                                                                                                                                               "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-                if "!substpath!" EQU "!spath!" set pathfound=true
-                if "!substpath!" NEQ "!spath!" set pathfound=false
-                goto LOOP_END
-   )
+for /F "tokens=2,3* skip=2" %%a IN ('net use') do (
+	set sdrive=%%a
+	set spath=%%b
+	set spathRemainder=%%c
+	call:RTRIM spath spath
+	call:RTRIM spathRemainder spathRemainder
+	if !debug!==1 echo.[DEBUG] %0: spathRemainder=[!spathRemainder!]
+	if "!spathRemainder!" NEQ "" set spath=!spath! !spathRemainder!
+	if "!sdrive!"=="Local" set sdrive=
+	if "!sdrive!"=="Windows" set sdrive=
+	if "!sdrive!"=="command" set sdrive=
+	if "!sdrive!"=="are" set sdrive=
+	if "!sdrive!"=="connections" set sdrive=
+	if not defined sdrive set spath=
+	if !debug!==1 echo.[DEBUG] %0: sdrive=[!sdrive!]  path=[!spath!]
+	set outStr=
+	if defined sdrive call :EVALUATE_NETWORK_DRIVES_LOGIC pathfound
+	if !debug!==1 echo.[DEBUG] %0:             pathfound=[!pathfound!]
+	if "!pathfound!"=="true" goto EVALUATE_NETWORK_DRIVES_LOOP_END
 )
-:LOOP_END
+:EVALUATE_NETWORK_DRIVES_LOOP_END
 ENDLOCAL & SET _pathfound=%pathfound%
 
 if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
 set %4=%_pathfound%
+GOTO:EOF
+
+:: --------------------------------------------------------------------
+:EVALUATE_NETWORK_DRIVES_LOGIC
+:: --------------------------------------------------------------------
+::# Sub-procedure to EVALUATE_NETWORK_DRIVES
+::#####################################################################
+	set pathfound=false
+	if !debug!==1 echo.[DEBUG] %0: network: drive=[!sdrive!]   path=[!spath!]
+	if !debug!==1 echo.[DEBUG] %0: call:REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath
+	call :REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath
+	if !debug!==1 echo.[DEBUG] %0: replaced network path=[!spath!]
+	if !debug!==1 echo.[DEBUG] %0:  Parameter: substpath=[%substpath%]
+	set msg=
+	if "%substpath%" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
+	if "%substpath%" EQU "!spath!" set pathfound=true
+	if "%substpath%" NEQ "!spath!" set pathfound=false
+
+:EVALUATE_NETWORK_DRIVES_LOOP_CONTINUE
+if !debug!==1 echo.[DEBUG] %0:             pathfound=[%pathfound%]
+set %1=%pathfound%
 GOTO:EOF
 
 
@@ -1264,13 +1289,14 @@ SET %4=%leftStr%
 SET %5=%rightStr%
 GOTO:EOF
 
-REM #-------------------------------------------------------------
-:LTRIM
-REM #-------------------------------------------------------------
-REM # Trim right
-REM # Description: call:LTRIM instring outstring  
-REM #      -- instring  [in]  - variable name containing the string to be trimmed on the left
-REM #      -- outstring [out] - variable name containing the result string
+
+:: -------------------------------------------------------------
+:RTRIM
+:: -------------------------------------------------------------
+::# Trim right
+::# Description: call:RTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
+::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"
 for /l %%a in (1,1,31) do if "!str:~-1!"==" " set str=!str:~0,-1!
@@ -1278,19 +1304,21 @@ rem echo."%str%"
 SET %2=%str%
 GOTO:EOF
 
-REM #-------------------------------------------------------------
-:RTRIM
-REM #-------------------------------------------------------------
-REM # Trim left
-REM # Description: call:RTRIM instring outstring  
-REM #      -- instring  [in]  - variable name containing the string to be trimmed on the right
-REM #      -- outstring [out] - variable name containing the result string
+
+:: -------------------------------------------------------------
+:LTRIM
+:: -------------------------------------------------------------
+::# Trim left
+::# Description: call:LTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
+::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"
 for /f "tokens=* delims= " %%a in ("%str%") do set str=%%a
 rem echo."%str%"
 SET %2=%str%
 GOTO:EOF
+
 
 REM #--------------------------------------------------------------------
 :strLen string len -- returns the length of a string
