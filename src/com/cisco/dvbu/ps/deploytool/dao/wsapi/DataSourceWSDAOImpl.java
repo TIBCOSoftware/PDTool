@@ -25,8 +25,10 @@ import javax.xml.ws.Holder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -61,6 +63,8 @@ import com.compositesw.services.system.util.common.AttributeList;
 import com.compositesw.services.system.util.common.DetailLevel;
 import com.compositesw.services.system.util.common.MessageEntry;
 import com.compositesw.services.system.util.common.Page;
+
+import cs.jdbc.driver.protocol.Logger;
 
 /*
  * port.introspectResourcesResult(taskId, block, page, DetailLevel.FULL, totalResults, completed, status);
@@ -154,9 +158,11 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 				attrSize = dataSourceAttributes.getAttribute().size();
 			logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(actionName , dataSourcePath, plan, runInBackgroundTransaction, reportDetail, dataSourceAttributes, serverId, pathToServersXML).  actionName="+actionName+"  dataSourcePath="+dataSourcePath+"  #plans="+planSize+"  runInBackgroundTransaction="+runInBackgroundTransaction+"  reportDetail="+reportDetail+"  #dataSourceAttributes="+attrSize+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
 		}
-		
-		ResourceList returnResList = null;
 
+		// Declare variables
+		ResourceList returnResList = null;
+		String command = null;
+		
 		// read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "DataSourceWSAOImpl.takeDataSourceAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
@@ -168,9 +174,13 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 		try {
 			// Make sure the resource exists before executing any actions
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, dataSourcePath, ResourceType.DATA_SOURCE.name(), pathToServersXML)) {
-				
+				/*********************************
+				 *  UPDATE datasource
+				 *********************************/
 				if(actionName.equalsIgnoreCase(DataSourceDAO.action.UPDATE.name()))
 				{
+					command = "updateDataSource";
+					
 					if(logger.isDebugEnabled()) {
 						int dsAttrSize = 0;
 						String dsAttrString = "";
@@ -188,37 +198,69 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.updateDataSource(\""+dataSourcePath+"\", \"FULL\", null, DS_ATTRIBUTES:[\""+dsAttrString+"]\").  #dataSourceAttributes="+dsAttrSize);
 					}
 					
-					returnResList = port.updateDataSource(dataSourcePath, DetailLevel.FULL, null, dataSourceAttributes);
-				
-					if(logger.isDebugEnabled()) {
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateDataSource().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) {					
+						returnResList = port.updateDataSource(dataSourcePath, DetailLevel.FULL, null, dataSourceAttributes);
+						
+						if(logger.isDebugEnabled()) {
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateDataSource().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.ENABLE.name()))
+				}
+				/*********************************
+				 *  ENABLE datasource
+				 *********************************/
+				else if(actionName.equalsIgnoreCase(DataSourceDAO.action.ENABLE.name()))
 				{
+					command = "updateResourceEnabled";
+					
 					if(logger.isDebugEnabled()) {
 						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.updateResourceEnabled(\""+dataSourcePath+"\", \"DATA_SOURCE\", \"FULL\", true).");
 					}
 					
-					returnResList = port.updateResourceEnabled(dataSourcePath, ResourceType.DATA_SOURCE, DetailLevel.FULL, true);			
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateResourceEnabled().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) {					
+						returnResList = port.updateResourceEnabled(dataSourcePath, ResourceType.DATA_SOURCE, DetailLevel.FULL, true);			
+						
+						if(logger.isDebugEnabled()) {
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.updateResourceEnabled().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.REINTROSPECT.name()))
+				}
+				/*********************************
+				 *  REINTROSPECT datasource
+				 *********************************/
+				else if(actionName.equalsIgnoreCase(DataSourceDAO.action.REINTROSPECT.name()))
 				{
+					command = "reintrospectDataSource";
+					
 					if(logger.isDebugEnabled()) {
 						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.reintrospectDataSource(\""+dataSourcePath+"\", true, null, null, null, null).");
 					}
 
-					// Errors were being thrown when attributes were present for dataSourceAttributes.  Setting to null.
-					//port.reintrospectDataSource(dataSourcePath, true, dataSourceAttributes, null, null, null);	
-					port.reintrospectDataSource(dataSourcePath, true, null, null, null, null);			
-	
-					if(logger.isDebugEnabled()) {
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.reintrospectDataSource().");
-					}
-				}else if(actionName.equalsIgnoreCase(DataSourceDAO.action.INTROSPECT.name())){
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) {					
+						// Errors were being thrown when attributes were present for dataSourceAttributes.  Setting to null.
+						//port.reintrospectDataSource(dataSourcePath, true, dataSourceAttributes, null, null, null);	
+						port.reintrospectDataSource(dataSourcePath, true, null, null, null, null);			
 
+						if(logger.isDebugEnabled()) {
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.reintrospectDataSource().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+					}
+				}
+				/*********************************
+				 *  INTROSPECT datasource
+				 *********************************/
+				else if(actionName.equalsIgnoreCase(DataSourceDAO.action.INTROSPECT.name())){
+					command = "introspectResourcesTask";
+					
 					Holder<String> taskId = new Holder<String>();
 					Holder<BigInteger> totalResults = new Holder<BigInteger>();
 					Holder<Boolean> completed = new Holder<Boolean>();
@@ -263,184 +305,193 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 						}
 						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesTask(\""+dataSourcePath+"\", \""+planString+"\", \""+runInBackgroundTransaction+"\", DS_ATTRIBUTES:[\""+dsAttrString+"]\", taskId, totalResults, completed).   #dataSourceAttributes="+dsAttrSize);
 					}
-					// Invoke the method to introspect and add, update or remove data source resources
-					port.introspectResourcesTask(dataSourcePath, plan, runInBackgroundTransaction, dataSourceAttributes, taskId, totalResults, completed);
-					if(logger.isDebugEnabled()) {
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesTask().");
-					}
 
-					Boolean block = true; // Make this a blocking call
-					Page page = new Page();
-			
-					Holder<IntrospectionStatus> status = new Holder<IntrospectionStatus>();
-					
-					if(logger.isDebugEnabled()) {
-						String simpleStatus = "";
-						if (status != null && status.value != null && status.value.getStatus() != null)
-							simpleStatus = status.value.getStatus().value();										
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesResult(\""+taskId.value.toString()+"\", \""+block.toString()+"\", page, \"FULL\", \""+totalResults.value.toString()+"\", \""+completed.value.toString()+"\", \""+simpleStatus+"\").");
-					}
-					// Since a blocking call is used, a single call to get results is all that is needed
-					port.introspectResourcesResult(taskId, block, page, DetailLevel.FULL, totalResults, completed, status);
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) {					
+						// Invoke the method to introspect and add, update or remove data source resources
+						port.introspectResourcesTask(dataSourcePath, plan, runInBackgroundTransaction, dataSourceAttributes, taskId, totalResults, completed);
 
-					if(logger.isDebugEnabled()) {
-						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesResult().");
-					}
+						if(logger.isDebugEnabled()) {
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesTask().");
+						}
 
-					boolean errorDetected = false;
-					String errorEntryPaths = "";
-					
-					// Check the status and print out the report
-					if (status != null && status.value != null && status.value.getStatus() != null) {
-						String simpleStatus = status.value.getStatus().value();										
-						// Print out a status report
-						logger.info("Introspection Report ("+reportDetail+"):");
-						logger.info("          Status="+simpleStatus);
-						logger.info("      Start Time="+status.value.getStartTime().toString());
-						logger.info("        End Time="+status.value.getEndTime().toString());
-						logger.info("           Added="+status.value.getAddedCount());
-						logger.info("         Removed="+status.value.getRemovedCount());
-						logger.info("         Updated="+status.value.getUpdatedCount());
-						logger.info("         Skipped="+status.value.getSkippedCount());
-						logger.info("       Completed="+status.value.getTotalCompletedCount());
-						logger.info("         Warning="+status.value.getWarningCount());
-						logger.info("          Errors="+status.value.getErrorCount());	
-						logger.info("");
-						if (status.value.getReport() != null) {	
-							List<IntrospectionChangeEntry> reportEntries = status.value.getReport().getEntry();
-							// Iterate over the report entries
-							for (IntrospectionChangeEntry reportEntry : reportEntries) {
-								// Print out the Resource and Status on 2 separate lines with a blank line separator following
+						Boolean block = true; // Make this a blocking call
+						Page page = new Page();
+				
+						Holder<IntrospectionStatus> status = new Holder<IntrospectionStatus>();
+						
+						if(logger.isDebugEnabled()) {
+							String simpleStatus = "";
+							if (status != null && status.value != null && status.value.getStatus() != null)
+								simpleStatus = status.value.getStatus().value();										
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesResult(\""+taskId.value.toString()+"\", \""+block.toString()+"\", page, \"FULL\", \""+totalResults.value.toString()+"\", \""+completed.value.toString()+"\", \""+simpleStatus+"\").");
+						}
+
+						// Since a blocking call is used, a single call to get results is all that is needed
+						port.introspectResourcesResult(taskId, block, page, DetailLevel.FULL, totalResults, completed, status);
+
+						if(logger.isDebugEnabled()) {
+							logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Success: port.introspectResourcesResult().");
+						}
+	
+						boolean errorDetected = false;
+						String errorEntryPaths = "";
+						
+						// Check the status and print out the report
+						if (status != null && status.value != null && status.value.getStatus() != null) {
+							String simpleStatus = status.value.getStatus().value();										
+							// Print out a status report
+							logger.info("Introspection Report ("+reportDetail+"):");
+							logger.info("          Status="+simpleStatus);
+							logger.info("      Start Time="+status.value.getStartTime().toString());
+							logger.info("        End Time="+status.value.getEndTime().toString());
+							logger.info("           Added="+status.value.getAddedCount());
+							logger.info("         Removed="+status.value.getRemovedCount());
+							logger.info("         Updated="+status.value.getUpdatedCount());
+							logger.info("         Skipped="+status.value.getSkippedCount());
+							logger.info("       Completed="+status.value.getTotalCompletedCount());
+							logger.info("         Warning="+status.value.getWarningCount());
+							logger.info("          Errors="+status.value.getErrorCount());	
+							logger.info("");
+							if (status.value.getReport() != null) {	
+								List<IntrospectionChangeEntry> reportEntries = status.value.getReport().getEntry();
+								// Iterate over the report entries
+								for (IntrospectionChangeEntry reportEntry : reportEntries) {
+									// Print out the Resource and Status on 2 separate lines with a blank line separator following
+									if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
+										logger.info("   RESOURCE:  Path="+reportEntry.getPath()+"   Type="+reportEntry.getType().value()+"   Subtype="+reportEntry.getSubtype().value());
+										logger.info("     STATUS:  Status="+reportEntry.getStatus().value()+"   Action="+reportEntry.getAction().value()+"   Duration="+reportEntry.getDurationMs());
+									}
+									// Print out the Resource and Status as a single line with no blank lines following
+									if (reportDetail.equals("SIMPLE_COMPRESSED")) {
+										logger.info("   RESOURCE:  Path="+reportEntry.getPath()+"   Type="+reportEntry.getType().value()+"   Subtype="+reportEntry.getSubtype().value()+
+													"   [STATUS]:  Status="+reportEntry.getStatus().value()+"   Action="+reportEntry.getAction().value()+"   Duration="+reportEntry.getDurationMs());
+									}
+									boolean entryErrorDetected = false;
+									if (reportEntry.getStatus().value().equalsIgnoreCase("ERROR")) {
+										errorDetected = true;
+										entryErrorDetected = true;
+										if (errorEntryPaths.length() > 0) 
+											errorEntryPaths = errorEntryPaths + ", ";
+										errorEntryPaths = errorEntryPaths + reportEntry.getPath();
+									}
+									if (entryErrorDetected || reportDetail.equals("FULL")) {
+										if (reportEntry.getMessages() != null) {
+											List<MessageEntry> messages = reportEntry.getMessages().getEntry();
+											for (MessageEntry message : messages) {
+												String severity = "";
+												String code = "";
+												String name = "";
+												String msg = "";
+												
+												if (message.getSeverity() != null && message.getSeverity().value().length() > 0)
+													severity = "  Severity="+message.getSeverity().value();
+												if (message.getCode() != null && message.getCode().length() > 0)
+													code = "   Code="+message.getCode();
+												if (message.getName() != null && message.getName().length() > 0)
+													name = "   Name="+message.getName();
+												if (message.getMessage() != null && message.getMessage().length() > 0)
+													msg = "   Message="+message.getMessage();
+												logger.info("   MESSAGES:"+severity+code+name+msg);
+												if (message.getDetail() != null)
+													logger.info("   MESSAGES:  Detail="+message.getDetail());		
+											}
+										}	
+									}
+									if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
+										logger.info("");
+									}
+								}
+							}
+							if (errorDetected) {
+								throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  Review the introspection report in the log for more details.  Introspection Entry Paths with errors="+errorEntryPaths);
+							}
+						} else {
+							// Since the status was null, then assume the server is 6.1 which contains a bug where the status has the wrong namespace.
+							// Based on the input of ADD_OR_UPDATE, ADD_OR_UPDATE_RECURSIVELY, or REMOVE, query the resources to determine if the operation was successful.
+	
+							// Print out a status report
+							logger.info("Introspection Report ("+reportDetail+"):");
+							logger.info("      Start Time="+status.value.getStartTime().toString());
+							logger.info("        End Time="+status.value.getEndTime().toString());
+							logger.info("           Added="+status.value.getAddedCount());
+							logger.info("         Removed="+status.value.getRemovedCount());
+							logger.info("         Updated="+status.value.getUpdatedCount());
+							logger.info("         Skipped="+status.value.getSkippedCount());
+							logger.info("       Completed="+status.value.getTotalCompletedCount());
+							logger.info("         Warning="+status.value.getWarningCount());
+							logger.info("          Errors="+status.value.getErrorCount());	
+							logger.info("");
+	
+							List<IntrospectionPlanEntry> planEntries = plan.getEntries().getEntry();
+							for (IntrospectionPlanEntry planEntry : planEntries) {
+								String planAction = planEntry.getAction().value().toString();
+								String resourcePath = dataSourcePath;
+								if (planEntry.getResourceId().getPath()!= null && planEntry.getResourceId().getPath().length() > 0)
+									resourcePath = resourcePath+"/"+planEntry.getResourceId().getPath();
+								String resourceType = null;
+								if (planEntry.getResourceId().getType() != null)
+									resourceType = planEntry.getResourceId().getType().toString();
+								String subtype = null;
+								if (planEntry.getResourceId().getSubtype() != null)
+									subtype = planEntry.getResourceId().getSubtype().toString();
+								String planStatus = "";
+								
+								// Print out the Resource and Status on 2 separate lines with a blank line separator following (this is the first line.)
 								if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
-									logger.info("   RESOURCE:  Path="+reportEntry.getPath()+"   Type="+reportEntry.getType().value()+"   Subtype="+reportEntry.getSubtype().value());
-									logger.info("     STATUS:  Status="+reportEntry.getStatus().value()+"   Action="+reportEntry.getAction().value()+"   Duration="+reportEntry.getDurationMs());
+									logger.info("   RESOURCE:  Path="+resourcePath+"   Type="+resourceType+"   Subtype="+subtype);
+								}
+								
+								//Determine if this plan entry exists
+								if (planAction.equalsIgnoreCase("ADD_OR_UPDATE")) {
+									boolean exists = getResourceDAO().resourceExists(serverId, resourcePath, resourceType, pathToServersXML);
+									if (!exists) {
+										throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The resource ["+resourcePath+"] does not exist for the requested plan entry action ["+planEntry.getAction().value().toString()+"].");									
+									}
+									planStatus = "SUCCESS";
+								}
+								//Just get the list of resources for the log. [there is no way to tell whether this was successful or not.]
+								else if (planAction.equalsIgnoreCase("ADD_OR_UPDATE_RECURSIVELY")) {
+									ResourceList resourceList = getResourceDAO().getResourcesFromPath(serverId, resourcePath, resourceType, null, "SIMPLE", pathToServersXML);
+									if (resourceList != null && resourceList.getResource().size() > 0) {
+										for (Resource resource : resourceList.getResource()) {
+											if (resource != null && reportDetail.equals("FULL")) {
+												logger.info("      CHILD RESOURCE:  Path="+resource.getPath()+"   Type="+resource.getType()+"   Subtype="+resource.getSubtype());
+											}
+										}
+									}
+									planStatus = "SUCCESS";
+								}
+								//Determine if this plan has been removed
+								else if (planAction.equalsIgnoreCase("REMOVE")) {
+									boolean exists = getResourceDAO().resourceExists(serverId, resourcePath, resourceType, pathToServersXML);
+									if (exists) {
+										throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The resource ["+resourcePath+"] was not removed for the requested plan entry action ["+planEntry.getAction().value().toString()+"].");									
+									}								
+									planStatus = "SUCCESS";
+								}
+								else {
+									throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The status field is null and the plan entry action ["+planEntry.getAction().value().toString()+"] is unknown.");
+								}
+								
+								// Print out the Resource and Status on 2 separate lines with a blank line separator following (this is the second line).
+								if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
+									logger.info("     STATUS:  Status="+planStatus+"   Action="+planAction);
 								}
 								// Print out the Resource and Status as a single line with no blank lines following
 								if (reportDetail.equals("SIMPLE_COMPRESSED")) {
-									logger.info("   RESOURCE:  Path="+reportEntry.getPath()+"   Type="+reportEntry.getType().value()+"   Subtype="+reportEntry.getSubtype().value()+
-												"   [STATUS]:  Status="+reportEntry.getStatus().value()+"   Action="+reportEntry.getAction().value()+"   Duration="+reportEntry.getDurationMs());
+									logger.info("   RESOURCE:  Path="+resourcePath+"   Type="+resourceType+"   Subtype="+subtype+"   [STATUS]:  Status="+planStatus+"   Action="+planAction);
 								}
-								boolean entryErrorDetected = false;
-								if (reportEntry.getStatus().value().equalsIgnoreCase("ERROR")) {
-									errorDetected = true;
-									entryErrorDetected = true;
-									if (errorEntryPaths.length() > 0) 
-										errorEntryPaths = errorEntryPaths + ", ";
-									errorEntryPaths = errorEntryPaths + reportEntry.getPath();
-								}
-								if (entryErrorDetected || reportDetail.equals("FULL")) {
-									if (reportEntry.getMessages() != null) {
-										List<MessageEntry> messages = reportEntry.getMessages().getEntry();
-										for (MessageEntry message : messages) {
-											String severity = "";
-											String code = "";
-											String name = "";
-											String msg = "";
-											
-											if (message.getSeverity() != null && message.getSeverity().value().length() > 0)
-												severity = "  Severity="+message.getSeverity().value();
-											if (message.getCode() != null && message.getCode().length() > 0)
-												code = "   Code="+message.getCode();
-											if (message.getName() != null && message.getName().length() > 0)
-												name = "   Name="+message.getName();
-											if (message.getMessage() != null && message.getMessage().length() > 0)
-												msg = "   Message="+message.getMessage();
-											logger.info("   MESSAGES:"+severity+code+name+msg);
-											if (message.getDetail() != null)
-												logger.info("   MESSAGES:  Detail="+message.getDetail());		
-										}
-									}	
-								}
+								// Print out a blank line when report detail is SIMPLE or FULL
 								if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
 									logger.info("");
 								}
 							}
-						}
-						if (errorDetected) {
-							throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  Review the introspection report in the log for more details.  Introspection Entry Paths with errors="+errorEntryPaths);
-						}
+						}	
 					} else {
-						// Since the status was null, then assume the server is 6.1 which contains a bug where the status has the wrong namespace.
-						// Based on the input of ADD_OR_UPDATE, ADD_OR_UPDATE_RECURSIVELY, or REMOVE, query the resources to determine if the operation was successful.
-
-						// Print out a status report
-						logger.info("Introspection Report ("+reportDetail+"):");
-						logger.info("      Start Time="+status.value.getStartTime().toString());
-						logger.info("        End Time="+status.value.getEndTime().toString());
-						logger.info("           Added="+status.value.getAddedCount());
-						logger.info("         Removed="+status.value.getRemovedCount());
-						logger.info("         Updated="+status.value.getUpdatedCount());
-						logger.info("         Skipped="+status.value.getSkippedCount());
-						logger.info("       Completed="+status.value.getTotalCompletedCount());
-						logger.info("         Warning="+status.value.getWarningCount());
-						logger.info("          Errors="+status.value.getErrorCount());	
-						logger.info("");
-
-						List<IntrospectionPlanEntry> planEntries = plan.getEntries().getEntry();
-						for (IntrospectionPlanEntry planEntry : planEntries) {
-							String planAction = planEntry.getAction().value().toString();
-							String resourcePath = dataSourcePath;
-							if (planEntry.getResourceId().getPath()!= null && planEntry.getResourceId().getPath().length() > 0)
-								resourcePath = resourcePath+"/"+planEntry.getResourceId().getPath();
-							String resourceType = null;
-							if (planEntry.getResourceId().getType() != null)
-								resourceType = planEntry.getResourceId().getType().toString();
-							String subtype = null;
-							if (planEntry.getResourceId().getSubtype() != null)
-								subtype = planEntry.getResourceId().getSubtype().toString();
-							String planStatus = "";
-							
-							// Print out the Resource and Status on 2 separate lines with a blank line separator following (this is the first line.)
-							if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
-								logger.info("   RESOURCE:  Path="+resourcePath+"   Type="+resourceType+"   Subtype="+subtype);
-							}
-							
-							//Determine if this plan entry exists
-							if (planAction.equalsIgnoreCase("ADD_OR_UPDATE")) {
-								boolean exists = getResourceDAO().resourceExists(serverId, resourcePath, resourceType, pathToServersXML);
-								if (!exists) {
-									throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The resource ["+resourcePath+"] does not exist for the requested plan entry action ["+planEntry.getAction().value().toString()+"].");									
-								}
-								planStatus = "SUCCESS";
-							}
-							//Just get the list of resources for the log. [there is no way to tell whether this was successful or not.]
-							else if (planAction.equalsIgnoreCase("ADD_OR_UPDATE_RECURSIVELY")) {
-								ResourceList resourceList = getResourceDAO().getResourcesFromPath(serverId, resourcePath, resourceType, null, "SIMPLE", pathToServersXML);
-								if (resourceList != null && resourceList.getResource().size() > 0) {
-									for (Resource resource : resourceList.getResource()) {
-										if (resource != null && reportDetail.equals("FULL")) {
-											logger.info("      CHILD RESOURCE:  Path="+resource.getPath()+"   Type="+resource.getType()+"   Subtype="+resource.getSubtype());
-										}
-									}
-								}
-								planStatus = "SUCCESS";
-							}
-							//Determine if this plan has been removed
-							else if (planAction.equalsIgnoreCase("REMOVE")) {
-								boolean exists = getResourceDAO().resourceExists(serverId, resourcePath, resourceType, pathToServersXML);
-								if (exists) {
-									throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The resource ["+resourcePath+"] was not removed for the requested plan entry action ["+planEntry.getAction().value().toString()+"].");									
-								}								
-								planStatus = "SUCCESS";
-							}
-							else {
-								throw new ApplicationException("Resource action="+DataSourceDAO.action.INTROSPECT.name()+" was not successful.  The status field is null and the plan entry action ["+planEntry.getAction().value().toString()+"] is unknown.");
-							}
-							
-							// Print out the Resource and Status on 2 separate lines with a blank line separator following (this is the second line).
-							if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
-								logger.info("     STATUS:  Status="+planStatus+"   Action="+planAction);
-							}
-							// Print out the Resource and Status as a single line with no blank lines following
-							if (reportDetail.equals("SIMPLE_COMPRESSED")) {
-								logger.info("   RESOURCE:  Path="+resourcePath+"   Type="+resourceType+"   Subtype="+subtype+"   [STATUS]:  Status="+planStatus+"   Action="+planAction);
-							}
-							// Print out a blank line when report detail is SIMPLE or FULL
-							if (reportDetail.equals("SIMPLE") || reportDetail.equals("FULL")) {
-								logger.info("");
-							}
-						}
-					}				}
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+					}
+				}
 				if(logger.isDebugEnabled() && returnResList != null)
 				{
 					logger.debug("DataSourceWSDAOImpl.takeDataSourceAction::returnResList.getResource().size()="+returnResList.getResource().size());

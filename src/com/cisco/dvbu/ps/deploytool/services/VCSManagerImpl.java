@@ -360,7 +360,8 @@ public class VCSManagerImpl implements VCSManager {
 			if (vcsRevision == null || vcsRevision.length() == 0) {
 				throw new ValidationException("VCS Revision is null or empty.");							
 			}
-			if (vcsRevision.equalsIgnoreCase("HEAD")) {
+			/* mtinius 2016-04-01:  Added ability for revision to be a BASE URL for use with tags or COMMITTED or PREV */
+			if (vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
 				vcsRevision = vcsRevision.toUpperCase();
 			} else {
 				try {
@@ -2010,8 +2011,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
 														   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2123,8 +2127,11 @@ public class VCSManagerImpl implements VCSManager {
 					// Physically remove and recreate the workspace from the machine
 					// ------------------------------------------------------------------
 
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2252,8 +2259,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2547,8 +2557,11 @@ public class VCSManagerImpl implements VCSManager {
 				        /*********************
 				         * PREPARE DIRECTORIES
 				         *********************/
-				        // Explicitly remove the workspace directory
-				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+				        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+						//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+						//                      and not the parent folders which may contain configuration folders for plans and modules.
+				        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 				        
 				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 				        if (!pdToolStudio) {
@@ -2826,8 +2839,11 @@ public class VCSManagerImpl implements VCSManager {
 							}
 						} // End: if (pdToolStudio && vcsStruct.getVcsUseExistingWorkdspace().equals("true")) {
 						
-				        // Explicitly remove the workspace directory
-				        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+				        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+				        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+						//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+						//                      and not the parent folders which may contain configuration folders for plans and modules.
+				        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 				        
 				        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 				        if (!pdToolStudio) {
@@ -2930,8 +2946,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -3132,8 +3151,11 @@ public class VCSManagerImpl implements VCSManager {
 				 **********************************************************/
 				if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
 						   
-			        // Explicitly remove the workspace directory
-			        removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+			        // Explicitly remove the workspace directory only and not the workspace name folder which is higher up in the directory path
+			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
+					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
+					//                      and not the parent folders which may contain configuration folders for plans and modules.
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -3426,7 +3448,8 @@ public class VCSManagerImpl implements VCSManager {
 							// Get the resource type and convert any $VARIABLES
 							vcsRevision = CommonUtils.extractVariable(prefix, vcsResource.getRevision().trim(), propertyFile, true);
 							
-							if (vcsRevision.equalsIgnoreCase("HEAD")) {
+							/* mtinius 2016-04-01:  Added ability for revision to be a BASE URL for use with tags or COMMITTED or PREV */
+							if (vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
 								vcsRevision = vcsRevision.toUpperCase();
 							} else {
 								try {
@@ -6595,6 +6618,8 @@ public class VCSManagerImpl implements VCSManager {
 		vcsV2Method = true;
 		boolean vcsConnectionFound = false;
 		String prefix = "setVCSConnectionProperties";
+		String propValue = null;
+		String oldProp = null;
 		
 		// validate incoming arguments
 		if(vcsConnectionId == null || vcsConnectionId.trim().length() ==0 || pathToVcsXML == null || pathToVcsXML.trim().length() ==0){
@@ -6604,6 +6629,9 @@ public class VCSManagerImpl implements VCSManager {
 		// Extract variables for the vcsConnectionId
 		vcsConnectionId = CommonUtils.extractVariable(prefix, vcsConnectionId, propertyFile, true);
 
+		if(logger.isDebugEnabled())
+			logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" vcsConnectionId: "+vcsConnectionId+", pathToVcsXML: "+pathToVcsXML+", propertyFile="+propertyFile);
+	
 		try {	
 			//using jaxb convert xml to corresponding java objects
 			VCSModule vcsModuleType = (VCSModule)XMLUtils.getModuleTypeFromXML(pathToVcsXML);
@@ -6636,113 +6664,215 @@ public class VCSManagerImpl implements VCSManager {
 							if (vcsType == null || vcsType.isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TYPE cannot be emtpy.");						
 							}
-							String oldProp = System.setProperty("VCS_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTYPE(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSTYPE(), propertyFile, true);
+							oldProp = System.setProperty("VCS_TYPE", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_TYPE: "+propValue);
 
 							// VCS_BASE_TYPE
 							String vcsBaseType = vcsConnection.getVCSBASETYPE();
 							if (vcsBaseType == null || vcsBaseType.isEmpty()) {
 								// If the VCS_BASE_TYPE does not exist then use the VCS_TYPE value.
-								System.setProperty("VCS_BASE_TYPE", vcsType);				
+								propValue = vcsType;
+								oldProp = System.setProperty("VCS_BASE_TYPE", propValue);				
 							} else {
-								oldProp = System.setProperty("VCS_BASE_TYPE", CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASETYPE(), propertyFile, true));
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASETYPE(), propertyFile, true);
+								oldProp = System.setProperty("VCS_BASE_TYPE", propValue);
 							}
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_BASE_TYPE: "+propValue);
 							
 							// VCS_HOME
 							if (vcsConnection.getVCSHOME() == null || vcsConnection.getVCSHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSHOME(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSHOME(), propertyFile, true);
+							oldProp = System.setProperty("VCS_HOME", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_HOME: "+propValue);
 
 							// VCS_COMMAND
 							if (vcsConnection.getVCSCOMMAND() == null || vcsConnection.getVCSCOMMAND().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_COMMAND cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_COMMAND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCOMMAND(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCOMMAND(), propertyFile, true);
+							oldProp = System.setProperty("VCS_COMMAND", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_COMMAND: "+propValue);
 
 							// VCS_EXEC_FULL_PATH
 							if (vcsConnection.getVCSEXECFULLPATH() == null || vcsConnection.getVCSEXECFULLPATH().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_EXEC_FULL_PATH cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", CommonUtils.extractVariable(prefix, vcsConnection.getVCSEXECFULLPATH(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSEXECFULLPATH(), propertyFile, true);
+							oldProp = System.setProperty("VCS_EXEC_FULL_PATH", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_EXEC_FULL_PATH: "+propValue);
 
 							// VCS_REPOSITORY_URL
 							if (vcsConnection.getVCSREPOSITORYURL() == null || vcsConnection.getVCSREPOSITORYURL().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_REPOSITORY_URL cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_REPOSITORY_URL", CommonUtils.extractVariable(prefix, vcsConnection.getVCSREPOSITORYURL(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSREPOSITORYURL(), propertyFile, true);
+							oldProp = System.setProperty("VCS_REPOSITORY_URL", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_REPOSITORY_URL: "+propValue);
 
 							// VCS_PROJECT_ROOT
 							if (vcsConnection.getVCSPROJECTROOT() == null || vcsConnection.getVCSPROJECTROOT().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_PROJECT_ROOT cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_PROJECT_ROOT", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPROJECTROOT(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSPROJECTROOT(), propertyFile, true);
+							oldProp = System.setProperty("VCS_PROJECT_ROOT", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_PROJECT_ROOT: "+propValue);
 
 							// VCS_WORKSPACE_HOME
 							if (vcsConnection.getVCSWORKSPACEHOME() == null || vcsConnection.getVCSWORKSPACEHOME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_HOME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_HOME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEHOME(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEHOME(), propertyFile, true);
+							oldProp = System.setProperty("VCS_WORKSPACE_HOME", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_HOME: "+propValue);
 
 							// VCS_WORKSPACE_NAME
 							if (vcsConnection.getVCSWORKSPACENAME() == null || vcsConnection.getVCSWORKSPACENAME().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_NAME cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_NAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACENAME(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACENAME(), propertyFile, true);
+							oldProp = System.setProperty("VCS_WORKSPACE_NAME", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_NAME: "+propValue);
 
 							// VCS_WORKSPACE_DIR
 							if (vcsConnection.getVCSWORKSPACEDIR() == null || vcsConnection.getVCSWORKSPACEDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_WORKSPACE_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_WORKSPACE_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEDIR(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEDIR(), propertyFile, true);
+							oldProp = System.setProperty("VCS_WORKSPACE_DIR", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_DIR: "+propValue);
 							
 							// VCS_TEMP_DIR
 							if (vcsConnection.getVCSTEMPDIR() == null || vcsConnection.getVCSTEMPDIR().isEmpty()) {
 								throw new ValidationException("VCSModule XML Connection="+vcsConnectionId+": VCS_TEMP_DIR cannot be emtpy.");						
 							}
-							oldProp = System.setProperty("VCS_TEMP_DIR", CommonUtils.extractVariable(prefix, vcsConnection.getVCSTEMPDIR(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSTEMPDIR(), propertyFile, true);
+							oldProp = System.setProperty("VCS_TEMP_DIR", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_TEMP_DIR: "+propValue);
 
 							// VCS_OPTIONS
-							oldProp = System.setProperty("VCS_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSOPTIONS(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSOPTIONS(), propertyFile, true);
+							oldProp = System.setProperty("VCS_OPTIONS", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_OPTIONS: "+propValue);
 
 							// VCS_WORKSPACE_INIT_NEW_OPTIONS
-							if (vcsConnection.getVCSWORKSPACEINITNEWOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITNEWOPTIONS(), propertyFile, true));
+							if (vcsConnection.getVCSWORKSPACEINITNEWOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITNEWOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_NEW_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_INIT_NEW_OPTIONS: "+propValue);
+							}
+							
 							// VCS_WORKSPACE_INIT_LINK_OPTIONS
-							if (vcsConnection.getVCSWORKSPACEINITLINKOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITLINKOPTIONS(), propertyFile, true));
+							if (vcsConnection.getVCSWORKSPACEINITLINKOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITLINKOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_LINK_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_INIT_LINK_OPTIONS: "+propValue);
+							}
+							
 							// VCS_WORKSPACE_INIT_GET_OPTIONS
-							if (vcsConnection.getVCSWORKSPACEINITGETOPTIONS() != null)
-								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITGETOPTIONS(), propertyFile, true));						
+							if (vcsConnection.getVCSWORKSPACEINITGETOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSWORKSPACEINITGETOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_WORKSPACE_INIT_GET_OPTIONS", propValue);						
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_WORKSPACE_INIT_GET_OPTIONS: "+propValue);
+							}
+							
 							// VCS_BASE_FOLDER_INIT_ADD
-							if (vcsConnection.getVCSBASEFOLDERINITADD() != null)
-								oldProp = System.setProperty("VCS_BASE_FOLDER_INIT_ADD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASEFOLDERINITADD(), propertyFile, true));
+							if (vcsConnection.getVCSBASEFOLDERINITADD() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSBASEFOLDERINITADD(), propertyFile, true);
+								oldProp = System.setProperty("VCS_BASE_FOLDER_INIT_ADD", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_BASE_FOLDER_INIT_ADD: "+propValue);
+							}
+							
 							// VCS_CHECKIN_OPTIONS
-							if (vcsConnection.getVCSCHECKINOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONS(), propertyFile, true));
+							if (vcsConnection.getVCSCHECKINOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CHECKIN_OPTIONS: "+propValue);
+							}
+							
 							// VCS_CHECKIN_OPTIONS_REQUIRED
-							if (vcsConnection.getVCSCHECKINOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONSREQUIRED(), propertyFile, true));
+							if (vcsConnection.getVCSCHECKINOPTIONSREQUIRED() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKINOPTIONSREQUIRED(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CHECKIN_OPTIONS_REQUIRED", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CHECKIN_OPTIONS_REQUIRED: "+propValue);
+							}
+							
 							// VCS_CHECKOUT_OPTIONS
-							if (vcsConnection.getVCSCHECKOUTOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONS(), propertyFile, true));
+							if (vcsConnection.getVCSCHECKOUTOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CHECKOUT_OPTIONS: "+propValue);
+							}
+							
 							// VCS_CHECKOUT_OPTIONS_REQUIRED
-							if (vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED() != null)
-								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED(), propertyFile, true));
+							if (vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCHECKOUTOPTIONSREQUIRED(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CHECKOUT_OPTIONS_REQUIRED", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CHECKOUT_OPTIONS_REQUIRED: "+propValue);
+							}
+							
 							// VCS_CIS_IMPORT_OPTIONS
-							if (vcsConnection.getVCSCISIMPORTOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CIS_IMPORT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISIMPORTOPTIONS(), propertyFile, true));
+							if (vcsConnection.getVCSCISIMPORTOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISIMPORTOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CIS_IMPORT_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CIS_IMPORT_OPTIONS: "+propValue);
+							}
+							
 							// VCS_CIS_EXPORT_OPTIONS
-							if (vcsConnection.getVCSCISEXPORTOPTIONS() != null)
-								oldProp = System.setProperty("VCS_CIS_EXPORT_OPTIONS", CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISEXPORTOPTIONS(), propertyFile, true));
-
+							if (vcsConnection.getVCSCISEXPORTOPTIONS() != null) {
+								propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSCISEXPORTOPTIONS(), propertyFile, true);
+								oldProp = System.setProperty("VCS_CIS_EXPORT_OPTIONS", propValue);
+								if(logger.isDebugEnabled())
+									logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_CIS_EXPORT_OPTIONS: "+propValue);
+							}
+							
 							// VCS_USERNAME
-							oldProp = System.setProperty("VCS_USERNAME", CommonUtils.extractVariable(prefix, vcsConnection.getVCSUSERNAME(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSUSERNAME(), propertyFile, true);
+							oldProp = System.setProperty("VCS_USERNAME", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_USERNAME: "+propValue);
+							
 							// VCS_PASSWORD
-							oldProp = System.setProperty("VCS_PASSWORD", CommonUtils.extractVariable(prefix, vcsConnection.getVCSPASSWORD(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSPASSWORD(), propertyFile, true);
+							oldProp = System.setProperty("VCS_PASSWORD", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_PASSWORD: "+propValue);
+
 							// VCS_IGNORE_MESSAGES
-							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", CommonUtils.extractVariable(prefix, vcsConnection.getVCSIGNOREMESSAGES(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSIGNOREMESSAGES(), propertyFile, true);
+							oldProp = System.setProperty("VCS_IGNORE_MESSAGES", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_IGNORE_MESSAGES: "+propValue);
+						
 							// VCS_MESSAGE_PREPEND
-							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", CommonUtils.extractVariable(prefix, vcsConnection.getVCSMESSAGEPREPEND(), propertyFile, true));
+							propValue = CommonUtils.extractVariable(prefix, vcsConnection.getVCSMESSAGEPREPEND(), propertyFile, true);
+							oldProp = System.setProperty("VCS_MESSAGE_PREPEND", propValue);
+							if(logger.isDebugEnabled())
+								logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" VCS_MESSAGE_PREPEND: "+propValue);
+
 							// VCS_MESSAGE_MANDATORY
 							/* 3-7-2012: may not need 		
 							//oldProp = System.setProperty("VCS_MESSAGE_MANDATORY", vcsConnection.getVCSMESSAGEMANDATORY());
@@ -6772,13 +6902,18 @@ public class VCSManagerImpl implements VCSManager {
 								if (envList.length() > 0) {
 								    if (vcsType.equalsIgnoreCase("P4")) {
 										oldProp = System.setProperty("P4_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" P4_ENV: "+envList);
 								    }
 								    if (vcsType.equalsIgnoreCase("CVS")) {
 										oldProp = System.setProperty("CVS_ENV", envList);
-								    	
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" CVS_ENV: "+envList);							    	
 								    }
 						    		if (vcsType.equalsIgnoreCase("SVN")) {
 										oldProp = System.setProperty("SVN_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" SVN_ENV: "+envList);
 						    		}
 						    		
 						    		if (vcsType.equalsIgnoreCase("TFS2005") || 
@@ -6788,18 +6923,26 @@ public class VCSManagerImpl implements VCSManager {
 						    		{
 						    			// set TFS_ENV
 										oldProp = System.setProperty("TFS_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" TFS_ENV: "+envList);
 						    		}
 						    		if (vcsType.equalsIgnoreCase("GIT")) {
 										oldProp = System.setProperty("GIT_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" GIT_ENV: "+envList);
 						    		}
 						    		if (vcsType.equalsIgnoreCase("CLC")) {
 										oldProp = System.setProperty("CLC_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" CLC_ENV: "+envList);
 						    		}
 						    		//--------------------------------------------------------------
 						    		// setVCSConnectionProperties: New VCS Type (new) specific settings
 						    		//--------------------------------------------------------------
 						    		if (vcsType.equalsIgnoreCase("ABC")) {
 										oldProp = System.setProperty("ABC_ENV", envList);
+										if(logger.isDebugEnabled())
+											logger.debug("VCSManagerImpl.setVCSConnectionProperties() : "+" ABC_ENV: "+envList);
 						    		}
 								}
 							}

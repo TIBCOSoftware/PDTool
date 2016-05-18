@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -59,6 +60,7 @@ public class GroupWSDAOImpl implements GroupDAO {
 		if(logger.isDebugEnabled()) {
 			logger.debug("GroupWSDAOImpl.takeGroupAction(actionName, groupName, groupDomain, userNames, privileges, serverId, pathToServersXML).  actionName="+actionName+"  groupName="+groupName+"  groupDomain="+groupDomain+"  userNames="+userNames+"  privileges="+privileges+"  serverId="+serverId+"  pathToServersXML="+pathToServersXML);
 		}
+		String command = null;
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "GroupWSDAOImpl.takeGroupAction("+actionName+")", logger);
 		// Ping the Server to make sure it is alive and the values are correct.
 		WsApiHelperObjects.pingServer(targetServer, true);
@@ -66,42 +68,72 @@ public class GroupWSDAOImpl implements GroupDAO {
 		UserPortType port = CisApiFactory.getUserPort(targetServer);
 
 			try {
-				if(actionName.equalsIgnoreCase(GroupDAO.action.CREATE.name())){
-
+				if (actionName.equalsIgnoreCase(GroupDAO.action.CREATE.name()))
+				{
+					command = "createGroup";
+					
 					if(logger.isDebugEnabled()) {
 						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.createGroup(\""+groupDomain+"\", \""+groupName+"\", \""+privileges+"\", null).");
 					}
 					
-					port.createGroup(groupDomain,groupName,privileges, null);
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.createGroup(groupDomain,groupName,privileges, null);
 					
-					if(logger.isDebugEnabled()) {
-						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.createGroup().");
+						if(logger.isDebugEnabled()) {
+							logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.createGroup().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 
-				}else if(actionName.equalsIgnoreCase(GroupDAO.action.UPDATE.name())){
-
+				}
+				else if(actionName.equalsIgnoreCase(GroupDAO.action.UPDATE.name()))
+				{
+					command = "updateGroup";
+					
 					if(logger.isDebugEnabled()) {
 						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.updateGroup(\""+groupDomain+"\", \""+groupName+"\", null, \""+privileges+"\", null).");
 					}
 					
-					port.updateGroup(groupDomain, groupName, null, privileges, null);
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.updateGroup().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.updateGroup(groupDomain, groupName, null, privileges, null);
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.updateGroup().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 
-				}else if(actionName.equalsIgnoreCase(GroupDAO.action.DELETE.name())){
+				}
+				else if(actionName.equalsIgnoreCase(GroupDAO.action.DELETE.name()))
+				{
+					command = "destroyGroup";
+					
 					if(logger.isDebugEnabled()) {
 						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.destroyGroup(\""+groupDomain+"\", \""+groupName+"\").");
 					}
 
-					port.destroyGroup(groupDomain, groupName);
-
-					if(logger.isDebugEnabled()) {
-						logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.destroyGroup().");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						port.destroyGroup(groupDomain, groupName);
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.destroyGroup().");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
-				}else if(actionName.equalsIgnoreCase(GroupDAO.action.ADDUSER.name())){
-
+				} 
+				else if(actionName.equalsIgnoreCase(GroupDAO.action.ADDUSER.name()))
+				{
+					command = "addUserToGroups";
+					
 					if(userNames!= null){
 						StringTokenizer st = new StringTokenizer(userNames, ",");
 						while (st.hasMoreTokens()){
@@ -121,17 +153,26 @@ public class GroupWSDAOImpl implements GroupDAO {
 									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.addUserToGroups(\""+groupDomain+"\", \""+userName.trim()+"\", MEMBER_LIST:[\""+mbrList+"\"]).");
 								}
 
-								port.addUserToGroups(groupDomain, userName.trim(), domainMemberReferenceList);
-
-								if(logger.isDebugEnabled()) {
-									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.addUserToGroups().");
+								// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+								if (CommonUtils.isExecOperation()) 
+								{					
+									port.addUserToGroups(groupDomain, userName.trim(), domainMemberReferenceList);
+	
+									if(logger.isDebugEnabled()) {
+										logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.addUserToGroups().");
+									}
+								} else {
+									logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 								}
 							}
 						}
 					}
 
-                }else if(actionName.equalsIgnoreCase(GroupDAO.action.REMOVEUSER.name())){
-
+                } 
+				else if(actionName.equalsIgnoreCase(GroupDAO.action.REMOVEUSER.name()))
+				{
+					command = "removeUserFromGroups";
+					
 					if(userNames!= null){
 						StringTokenizer st = new StringTokenizer(userNames, ",");
 						while (st.hasMoreTokens()){
@@ -152,10 +193,16 @@ public class GroupWSDAOImpl implements GroupDAO {
 									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Invoking port.removeUserFromGroups(\""+groupDomain+"\", \""+userName.trim()+"\", MEMBER_LIST:[\""+mbrList+"\"]).");
 								}
 
-								port.removeUserFromGroups(groupDomain, userName.trim(), domainMemberReferenceList);
-
-								if(logger.isDebugEnabled()) {
-									logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.removeUserFromGroups().");
+								// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+								if (CommonUtils.isExecOperation()) 
+								{					
+									port.removeUserFromGroups(groupDomain, userName.trim(), domainMemberReferenceList);
+	
+									if(logger.isDebugEnabled()) {
+										logger.debug("GroupWSDAOImpl.takeGroupAction("+actionName+").  Success: port.removeUserFromGroups().");
+									}
+								} else {
+									logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 								}
 							}
 						}

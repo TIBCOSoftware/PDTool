@@ -39,11 +39,13 @@
 #
 # Option 3 - Execute property file encryption:
 #
-#            ExecutePDTool.sh -encrypt property-file-path [-config deploy.properties]
+#            ExecutePDTool.sh -encrypt property-file-path [-config deploy.properties] [-bypass "string1,string2"]
 #
 #	            arg1=-encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file
 #	            arg2=file path to deploy.properties or XML property file (full or relative path)
 #				arg3-4=[-config deploy.properties] optional parameters"
+#				arg4-5=[-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
+#                                                  that are found within a variable or XML element designated for passwords.
 #
 # Option 4 - Execute an Ant build file:
 #
@@ -66,7 +68,12 @@
 # Set environment variables
 #---------------------------------------------
 # CIS version [6.2, 7.0.0]
-export CIS_VERSION=@version@
+if [ ! -f cisVersion.sh ]; then
+   echo "Cannot find cisVersion.sh environment variable file."
+   exit 1
+fi
+. ./cisVersion.sh
+
 # Initialize variables
 export RELEASE_FOLDER=""
 if [ ! -f setVars.sh ]; then
@@ -116,13 +123,15 @@ usage() {
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 3 - Execute Encrypt Property File:"
 	writeOutput  " "
-	writeOutput  "            ${SCRIPT}${ext} -encrypt property-file-path [-config deploy.properties]"
+	writeOutput  "            ${SCRIPT}${ext} -encrypt property-file-path [-config deploy.properties] [-bypass \"string1,string2\""
 	writeOutput  " "
 	writeOutput  "            Example: ${SCRIPT}${ext} -encrypt ../resources/config/deploy.properties -config deploy.properties"
  	writeOutput  " "
 	writeOutput  "               arg1::   -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	writeOutput  "               arg2::   file path to deploy.properties or XML property file [full or relative path]"
 	writeOutput  "               arg3-4:: [-config deploy.properties] optional parameters"
+	writeOutput "                arg4-5:: [-bypass \"string1,string2\"] optional parameter specifying a quoted, comma-separated list of strings to bypass"
+	writeOutput "                                                     that are found within a variable or XML element designated for passwords."
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 4 - Execute an Ant build file:"
 	writeOutput  " "
@@ -272,6 +281,15 @@ do
 		fi
 		shift
 		;;
+    -bypass)
+		export ENCRYPT_BYPASS_STRING="$2"
+		ARG="ENCRYPT_BYPASS_STRING"
+		#echo "ENCRYPT_BYPASS_STRING=$ENCRYPT_BYPASS_STRING"
+		if [ "$ENCRYPT_BYPASS_STRING" == "" ]; then
+			error="1"
+		fi
+		shift
+		;;
     -release)
 		export CMD="-release"
 		export RELEASE_FOLDER="$2"
@@ -412,10 +430,10 @@ if [ "${CMD}" == "-encrypt" ]; then
 		usage $ARG
 	fi
 	#***********************************************
-	# Invoke: ScriptUtil encryptPasswordsInFile "${PROPERTY_FILE}"
+	# Invoke: ScriptUtil encryptPasswordsInFileBypass "${PROPERTY_FILE}" "${ENCRYPT_BYPASS_STRING}"
 	#***********************************************
-	JAVA_ACTION="encryptPasswordsInFile"
-	  COMMAND="\"$JAVA_HOME/bin/java\" ${JAVA_OPT} -classpath \"${DEPLOY_CLASSPATH}\" ${CONFIG_ROOT} ${CONFIG_LOG4J} -Djava.endorsed.dirs=\"${ENDORSED_DIR}\" -DPROJECT_HOME=\"${PROJECT_HOME}\" -DPROJECT_HOME_PHYSICAL=\"${PROJECT_HOME_PHYSICAL}\" -DCONFIG_PROPERTY_FILE=${CONFIG_PROPERTY_FILE} ${DEPLOY_COMMON_UTIL} ${JAVA_ACTION} \"${PROPERTY_FILE}\""
+	JAVA_ACTION="encryptPasswordsInFileBypass"
+	  COMMAND="\"$JAVA_HOME/bin/java\" ${JAVA_OPT} -classpath \"${DEPLOY_CLASSPATH}\" ${CONFIG_ROOT} ${CONFIG_LOG4J} -Djava.endorsed.dirs=\"${ENDORSED_DIR}\" -DPROJECT_HOME=\"${PROJECT_HOME}\" -DPROJECT_HOME_PHYSICAL=\"${PROJECT_HOME_PHYSICAL}\" -DCONFIG_PROPERTY_FILE=${CONFIG_PROPERTY_FILE} ${DEPLOY_COMMON_UTIL} ${JAVA_ACTION} \"${PROPERTY_FILE}\" \"${ENCRYPT_BYPASS_STRING}\""
 	PRCOMMAND="${COMMAND}"
 fi
 

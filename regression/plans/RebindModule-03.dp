@@ -18,4 +18,4 @@
 # -----------------------------------------
 # Rebind Module:
 # -----------------------------------------
-PASS	FALSE	ExecuteAction   		generateRebindXML    		$SERVERID "/shared/test00/Rebind/RebindFolder/XSLTProcedures" 	"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getRebindModuleXSLT.xml" "$MODULE_HOME/servers.xml" 
+PASS	FALSE	ExecuteAction   		generateRebindXML    		$SERVERID "/shared/test00/Rebind/RebindFolder/XSLTProcedures" 	"$MODULE_HOME/generated/getRebindModuleXSLT.xml" "$MODULE_HOME/servers.xml" 

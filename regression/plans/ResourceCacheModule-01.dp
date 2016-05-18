@@ -18,4 +18,4 @@
 # -----------------------------------------
 # ResourceCache Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"
+PASS	TRUE	ExecuteAction	generateResourceCacheXML	$SERVERID "/shared/test00" 			"$MODULE_HOME/generated/getResourceCacheModule.xml" 	"$MODULE_HOME/servers.xml" "CONFIGURED,TABLE,PROCEDURE"

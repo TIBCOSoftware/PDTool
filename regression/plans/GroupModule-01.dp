@@ -18,4 +18,4 @@
 # -----------------------------------------
 # Group Module:
 # -----------------------------------------
-PASS	TRUE	ExecuteAction	generateGroupsXML		$SERVERID composite 		"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getGroupModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction	generateGroupsXML		$SERVERID composite 		"$MODULE_HOME/generated/getGroupModule.xml" "$MODULE_HOME/servers.xml"

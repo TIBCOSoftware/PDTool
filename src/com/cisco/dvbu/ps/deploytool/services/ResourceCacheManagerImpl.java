@@ -469,6 +469,10 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 //	@Override
 	public void generateResourceCacheXML(String serverId, String startPath, String pathToResourceCacheXML, String pathToServersXML, String options) throws CompositeException {
 
+		// Set the command and action name
+		String command = "generateResourceCacheXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -699,8 +703,14 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 			}
 		}
 
-		// Generate the XML file
-		XMLUtils.createXMLFromModuleType(resourceCacheModule, pathToResourceCacheXML);
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			// Generate the XML file
+			XMLUtils.createXMLFromModuleType(resourceCacheModule, pathToResourceCacheXML);
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+		}
 	}
 
 	/**

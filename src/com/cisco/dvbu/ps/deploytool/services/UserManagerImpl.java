@@ -374,6 +374,10 @@ public class UserManagerImpl implements UserManager {
 
 	public void generateUsersXML(String serverId, String domainName, String pathToUsersXML, String pathToServersXML) throws CompositeException {
 
+		// Set the command and action name
+		String command = "generateUsersXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -454,8 +458,15 @@ public class UserManagerImpl implements UserManager {
 				// Add the user node
 				userModule.getUser().add(u);
 			}
-			// Generate the XML file
-			XMLUtils.createXMLFromModuleType(userModule, pathToUsersXML);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Generate the XML file
+				XMLUtils.createXMLFromModuleType(userModule, pathToUsersXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		} catch (CompositeException e) {
 			logger.error("Error while parsing user xml" , e);
 			throw new ApplicationContextException(e.getMessage(), e);

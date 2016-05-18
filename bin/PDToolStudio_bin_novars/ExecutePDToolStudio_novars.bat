@@ -17,6 +17,7 @@ REM # This software is released AS-IS!. Support for this software is not covered
 REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
 REM # 
 REM ############################################################################################################################
+REM #
 REM #=======================================================================================
 REM # Example Execution Statement:
 REM #
@@ -37,10 +38,12 @@ REM #               arg5:: [-vcsuser vcs-username] optional parameter
 REM #               arg6:: [-vcspassword vcs-password] optional parameter
 REM #
 REM # Option 3 - Execute VCS Workspace property file encryption:
-REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-file-path
+REM #            ExecutePDToolStudio.bat [-nopause] -encrypt config-property-file-path -bypass "string1,string2"
 REM #               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script.
 REM #	            arg2:: -encrypt is used to encrypt the passwords in studio.properties or a Module XML property file
 REM #	            arg3:: file path to studio.properties or XML property file (full or relative path)
+REM #				arg4-5=[-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
+REM #                                                  that are found within a variable or XML element designated for passwords.
 REM #
 REM # Option 4 - Create Composite Studio Enable VCS:
 REM #
@@ -75,8 +78,8 @@ REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
 if not defined debug set debug=0
-REM # CIS version [6.2, 7.0.0]
-set CIS_VERSION=@version@
+REM # CIS version [6.2, 7.0.0] - set CIS_VERSION
+if exist cisVersion.bat call cisVersion.bat
 REM # Initialize variables
 set SCRIPT=ExecutePDToolStudio
 set SEP=::
@@ -99,6 +102,7 @@ SET PDTOOL_VCS_WORKSPACE_PATH_OVERRIDE=
 SET PDTOOL_CUSTOM_CIS_PATH_LIST=
 SET PDTOOL_VCS_CHECKIN_OPTIONS=
 SET PDTOOL_VCS_SCRIPT_BIN_FOLDER_OVERRIDE=
+SET PDTOOL_ENCRYPT_BYPASS_STRING=
 SET PR_VCS_PASSWORD=
 
 REM # The first parameter is the current execution path
@@ -125,7 +129,7 @@ call %writeOutput% "--- Cisco Advanced Services                            ---" 
 call %writeOutput% "--- PDToolStudio: Promotion and Deployment Tool Studio ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "---                                                    ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %writeOutput% "--- Execution path: %CURRENT_EXEC_PATH%" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "--- Execution path: [%CURRENT_EXEC_PATH%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "***** BEGIN COMMAND: %SCRIPT% *****" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% " " 
@@ -150,7 +154,10 @@ set ARG=
 set ERRORMSG=
 call :parse %*
 SET ERROR=%ERRORLEVEL%
-IF %ERROR% GTR 0 ( exit /B %ERROR% )
+IF %ERROR% GTR 0 ( 
+	if defined PWD cd %PWD%
+	exit /B %ERROR% 
+)
 
 REM # Set the default to perform a vcsinit if no parameters are specified
 if "%PDTOOL_CMD%" == "" set PDTOOL_CMD=-vcsinit
@@ -168,8 +175,10 @@ GOTO USAGE
 REM # Print the parameters
 CALL:printablePassword "%PDTOOL_VCS_PASSWORD%" PR_VCS_PASSWORD
 call %writeOutput% "Command Line Arguments:"																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PDTOOL_PROPERTY_FILE%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%PDTOOL_ENCRYPT_BYPASS_STRING%]" 												"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PAUSECMD=[%PDTOOL_PAUSECMD%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%PDTOOL_VCS_USERNAME%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -186,6 +195,7 @@ call %writeOutput% " "
 
 REM # Assign parameters
 if defined PDTOOL_PROPERTY_FILE						set PROPERTY_FILE=%PDTOOL_PROPERTY_FILE%
+if defined ENCRYPT_BYPASS_STRING					set ENCRYPT_BYPASS_STRING=%PDTOOL_ENCRYPT_BYPASS_STRING%
 if defined PDTOOL_PAUSECMD							set PAUSECMD=%PDTOOL_PAUSECMD%
 if defined PDTOOL_VCS_USERNAME						set VCS_USERNAME=%PDTOOL_VCS_USERNAME%
 if defined PDTOOL_VCS_PASSWORD						set VCS_PASSWORD=%PDTOOL_VCS_PASSWORD%
@@ -202,11 +212,12 @@ if defined PDTOOL_VCS_SCRIPT_BIN_FOLDER_OVERRIDE	set VCS_SCRIPT_BIN_FOLDER_OVERR
 REM #=======================================
 REM # Invoke setVars.bat
 REM #=====================================================================================
-if exist %DEFAULT_SET_VARS_PATH% goto INVOKE_SET_VARS
+if exist "%DEFAULT_SET_VARS_PATH%" goto INVOKE_SET_VARS
 
   set ARG=DEFAULT_SET_VARS_PATH
   set ERRORMSG=Execution Failed::Path does not exist: %DEFAULT_SET_VARS_PATH%
   call:USAGE
+  if defined PWD cd %PWD%
   exit /B 2
 			
 :INVOKE_SET_VARS
@@ -216,7 +227,7 @@ REM #---------------------------------------------
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "--- Invoking setVars.bat...%DEFAULT_SET_VARS_PATH%"														"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %DEFAULT_SET_VARS_PATH% 
+call "%DEFAULT_SET_VARS_PATH%"
 
 REM #=======================================
 REM # Variable Resolution
@@ -232,6 +243,7 @@ REM #   PDTOOL_VCS_PASSWORD          --> VCS_PASSWORD
 REM #   etc.
 REM #=====================================================================================
 call:resolveVariables "%PDTOOL_PROPERTY_FILE%" 		  			"%PROPERTY_FILE%" 					PROPERTY_FILE
+call:resolveVariables "%PDTOOL_ENCRYPT_BYPASS_STRING%" 		  	"%ENCRYPT_BYPASS_STRING%" 			ENCRYPT_BYPASS_STRING
 call:resolveVariables "%PDTOOL_VCS_USERNAME%" 		  			"%VCS_USERNAME%" 					VCS_USERNAME
 call:resolveVariables "%PDTOOL_VCS_PASSWORD%" 		  			"%VCS_PASSWORD%" 					VCS_PASSWORD
 call:resolveVariables "%PDTOOL_PAUSECMD%" 						"%PAUSECMD%" 						PAUSECMD
@@ -251,8 +263,10 @@ echo ###########################################################################
 echo %SCRIPT%: Command line resolved variables:
 echo ########################################################################################################################################
 call %writeOutput% "Resolved Arguments:"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CMD=[%PDTOOL_CMD%]"																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PROPERTY_FILE=[%PROPERTY_FILE%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   ENCRYPT_BYPASS_STRING=[%ENCRYPT_BYPASS_STRING%]" 													"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   PAUSECMD=[%PAUSECMD%]" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_USERNAME=[%VCS_USERNAME%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -282,31 +296,34 @@ REM #   event that "net use" does not work properly in a particular
 REM #   environment.
 REM #-----------------------------------------------------------
 if not defined SUBSTITUTE_DRIVE goto MAP_NETWORK_DRIVE_BEGIN
-	call %writeOutput% "Section: Substitute Drives" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Evaluate the substitute drive=%SUBSTITUTE_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "Section: Substitute Drives" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Evaluate the substitute drive=%SUBSTITUTE_DRIVE% path=[%PROJECT_HOME_PHYSICAL%]" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	REM 2014-12-04 mtinius - changed logic to only map the drive when necessary...not every time
 	if NOT EXIST %SUBSTITUTE_DRIVE% goto MAP_SUBSTITUTE_DRIVE
 	REM 2014-12-04 mtinius - changed logic to evaluate if current mapped drive utilizes the correct path
 	call :EVALUATE_SUBST_DRIVES %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
 
-	if "%drivePathFound%" == "true" (
-		call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		goto MAPSUCCESS
-	)
+	if "%drivePathFound%" == "false" goto MAP_SUBSTITUTE_DRIVE_ERROR
+	call %writeOutput% "%PAD%Substitute drive %SUBSTITUTE_DRIVE% is already mapped to path:[%PROJECT_HOME_PHYSICAL%]" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	goto MAPSUCCESS
+
 	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
-	call %writeOutput% "%PAD%The substitute drive=%SUBSTITUTE_DRIVE% is mapped to a different path.  There are two options:" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	:MAP_SUBSTITUTE_DRIVE_ERROR
+	call %writeOutput% "%PAD%The substitute drive=%SUBSTITUTE_DRIVE% is mapped to a different path.  There are two options:" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable SUBSTITUTE_DRIVE in setVars.bat." 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: subst /D %SUBSTITUTE_DRIVE%" 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 :MAP_SUBSTITUTE_DRIVE
-	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute substitute drive command:  subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     subst %SUBSTITUTE_DRIVE% "%PROJECT_HOME_PHYSICAL%"
     set ERROR=%ERRORLEVEL%
     if "%ERROR%" == "0" goto MAPSUCCESS
-	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% %PROJECT_HOME_PHYSICAL%"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: subst %SUBSTITUTE_DRIVE% [%PROJECT_HOME_PHYSICAL%]"									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
 REM #-----------------------------------------------------------
@@ -316,50 +333,54 @@ REM #   "subst" is temporary in that id does not survive reboots.
 REM #-----------------------------------------------------------
 :MAP_NETWORK_DRIVE_BEGIN
 if not defined NETWORK_DRIVE goto MAPSUCCESS
-	call %writeOutput% "Section: Network Drives" 																			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Evaluate the network drive=%NETWORK_DRIVE% path=%PROJECT_HOME_PHYSICAL%" 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "Section: Network Drives" 																								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Evaluate the network drive=%NETWORK_DRIVE% path=[%PROJECT_HOME_PHYSICAL%]"											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	REM Only map the drive when necessary...not every time
-	if NOT EXIST %NETWORK_DRIVE% goto MAP_NETWORK_DRIVE
+	if NOT EXIST "%NETWORK_DRIVE%" goto MAP_NETWORK_DRIVE
 	REM Evaluate if current mapped drive utilizes the correct path
 	call :EVALUATE_NETWORK_DRIVES %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL%" %debug% drivePathFound
 
-	if "%drivePathFound%" == "true" (
-		call %writeOutput% "%PAD%Network drive %NETWORK_DRIVE% is already mapped to path:%PROJECT_HOME_PHYSICAL%" 			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		goto MAPSUCCESS
-	)
+	if "%drivePathFound%" == "false" goto MAP_NETWORK_DRIVE_ERROR
+	call %writeOutput% "%PAD%Network drive %NETWORK_DRIVE% is already mapped to path: [%PROJECT_HOME_PHYSICAL%]" 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	goto MAPSUCCESS
+
 	REM The drive is already mapped to a different path so exit with an error and have the user unmap the drive manually
-	call %writeOutput% "%PAD%The network drive=%NETWORK_DRIVE% is mapped to a different path.  There are two options:" 		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	:MAP_NETWORK_DRIVE_ERROR
+	call %writeOutput% "%PAD%The network drive=%NETWORK_DRIVE% is mapped to a different path.  There are two options:" 							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 1: Change the drive letter designated by the variable NETWORK_DRIVE in setVars.bat." 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%  Option 2: Unmap the drive by executing this command manually: net use %NETWORK_DRIVE% /DELETE" 					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 :MAP_NETWORK_DRIVE
 	REM # Get the Drive letter for PROJECT_HOME_PHYSICAL
-	for /F "usebackq delims==" %%I IN (`echo %PROJECT_HOME_PHYSICAL%`) DO (
+	for /F "usebackq delims==" %%I IN (`echo "%PROJECT_HOME_PHYSICAL%"`) DO (
 		set PDTOOL_HOME_DRIVE=%%~dI
 		REM echo PDTOOL_HOME_DRIVE=%PDTOOL_HOME_DRIVE%
 	)
 	set PDTOOL_HOME_DRIVE_SHARE=%PDTOOL_HOME_DRIVE::=$%
 	if not exist "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" (
 		REM The share drive does not exist
-		call %writeOutput% "%PAD%The network share ^"\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%^" does not exist." 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%   Create the share drive=%PDTOOL_HOME_DRIVE_SHARE% for the installation drive=%PDTOOL_HOME_DRIVE% as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%   Command run as administrator: net share %PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%\" 	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-		call %writeOutput% "%PAD%Re-execute %0" 																				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%The network share [\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%] does not exist." 								"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Create the share drive=[%PDTOOL_HOME_DRIVE_SHARE%] for the installation drive=[%PDTOOL_HOME_DRIVE%] as administrator."%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%   Command run as administrator: net share [%PDTOOL_HOME_DRIVE_SHARE%=%PDTOOL_HOME_DRIVE%]"	 				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+		if defined PWD cd %PWD%
 		exit /b 1
 	)
 	
 	call :REPLACE "%PDTOOL_HOME_DRIVE%" "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" "%PROJECT_HOME_PHYSICAL%" PROJECT_HOME_PHYSICAL_NEW
-	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-    net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES
+	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+    net use %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL_NEW%" /PERSISTENT:YES
     set ERROR=%ERRORLEVEL%
     if "%ERROR%" == "0" goto MAPSUCCESS
-	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Re-execute %0" 																					"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" 				 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	if defined PWD cd %PWD%
     exit /b 1
 
-:MAPSUCCESS   
+:MAPSUCCESS
 
 
 REM #=======================================
@@ -368,11 +389,13 @@ REM #=======================================
 if NOT EXIST "%PROJECT_HOME%" (
    call %writeOutput% "Execution Failed::PROJECT_HOME does not exist: %PROJECT_HOME%" 										"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 if NOT EXIST "%JAVA_HOME%" (
    call %writeOutput% "Execution Failed::JAVA_HOME does not exist: %JAVA_HOME%" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B 1
 )
 call %writeOutput% " " 
@@ -477,11 +500,11 @@ if NOT EXIST "%PROPERTY_FILE%" (
    goto USAGE 
 )
 REM #***********************************************
-REM # Invoke: DeployManagerUtil encryptPasswordsInFile "%PROPERTY_FILE%"
+REM # Invoke: DeployManagerUtil encryptPasswordsInFileBypass "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 REM #***********************************************
-set JAVA_ACTION=encryptPasswordsInFile
-set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
-set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%"
+set JAVA_ACTION=encryptPasswordsInFileBypass
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
+set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 GOTO START_SCRIPT
 
 :----------------
@@ -497,31 +520,37 @@ REM # Validate parameters are present
 IF NOT DEFINED USERPROFILE (
   set ARG=USERPROFILE
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED WINDOWS_LOGIN (
   set ARG=winlogin
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED USER (
   set ARG=user
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED DOMAIN (
   set ARG=domain
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED HOST (
   set ARG=host
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED INCLUDE_RESOURCE_SECURITY (
   set ARG=includeResourceSecurity
   call :USAGE
+  if defined PWD cd %PWD%
   exit /B 1
 )
 IF NOT DEFINED VCS_WORKSPACE_PATH_OVERRIDE (
@@ -568,6 +597,7 @@ set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 (
    call %writeOutput% "Script %SCRIPT% Failed. Abnormal Script Termination. Exit code is: %ERROR%." 						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
    ENDLOCAL
+   if defined PWD cd %PWD%
    exit /B %ERROR%
 )
 
@@ -579,6 +609,7 @@ call %writeOutput% "-------------- SUCCESSFUL SCRIPT COMPLETION [%SCRIPT% %PDTOO
 call %writeOutput% "End of script." 																						"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 IF "%PAUSECMD%" == "true" pause
 ENDLOCAL
+if defined PWD cd %PWD%
 exit /B 0
 
 
@@ -613,7 +644,7 @@ set blank=
 		GOTO:EOF
 	)
 :GET_PARAMS_CONT
-    set PARAMS=%PARAMS%%ARG1%%blank%
+    set PARAMS=%PARAMS%%TARG1%%blank%
     shift
 GOTO GET_PARAMS_LOOP
 GOTO:getParamsLoop
@@ -671,7 +702,7 @@ shift
             SET PDTOOL_PROPERTY_FILE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=PROPERTY_FILE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -686,7 +717,7 @@ shift
             SET PDTOOL_VCS_USERNAME=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_USERNAME
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -701,7 +732,7 @@ shift
             SET PDTOOL_VCS_PASSWORD=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_PASSWORD
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -724,7 +755,7 @@ shift
             SET PDTOOL_WINDOWS_LOGIN=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=WINDOWS_LOGIN
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -739,7 +770,7 @@ shift
             SET PDTOOL_USER=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=USER
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -754,7 +785,7 @@ shift
             SET PDTOOL_DOMAIN=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=DOMAIN
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -769,7 +800,7 @@ shift
             SET PDTOOL_HOST=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=HOST
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -784,7 +815,7 @@ shift
             SET PDTOOL_INCLUDE_RESOURCE_SECURITY=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=INCLUDE_RESOURCE_SECURITY
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -799,7 +830,7 @@ shift
             SET PDTOOL_VCS_WORKSPACE_PATH_OVERRIDE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_WORKSPACE_PATH_OVERRIDE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -822,7 +853,7 @@ shift
             SET PDTOOL_CUSTOM_CIS_PATH_LIST=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=CUSTOM_CIS_PATH_LIST
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -837,7 +868,7 @@ shift
             SET PDTOOL_VCS_CHECKIN_OPTIONS=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_CHECKIN_OPTIONS
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
@@ -852,15 +883,30 @@ shift
             SET PDTOOL_VCS_SCRIPT_BIN_FOLDER_OVERRIDE=%ARG2%
 			set PARSE_ERROR=1
 			set ARG=VCS_SCRIPT_BIN_FOLDER_OVERRIDE
-			set ERRORMSG=Execution Failed::Missing parameter
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
 			if "%ARG2%" NEQ "" set PARSE_ERROR=0
 			if "%ARG2%" NEQ "" set ARG=
 			if "%ARG2%" NEQ "" set ERRORMSG=
             shift
             GOTO:LOOPEND
 			
-	REM # Unknown paramter found
+	REM # Extract -bypass
 	:CONTINUE16
+     if "%ARG1%" == "-bypass" GOTO BYPASS
+ 	GOTO CONTINUE17
+	:BYPASS
+            SET PDTOOL_ENCRYPT_BYPASS_STRING=%ARG2%
+			set PARSE_ERROR=1
+			set ARG=ENCRYPT_BYPASS_STRING
+			set ERRORMSG=Execution Failed::Missing %ARG1% parameter
+			if "%ARG2%" NEQ "" set PARSE_ERROR=0
+			if "%ARG2%" NEQ "" set ARG=
+			if "%ARG2%" NEQ "" set ERRORMSG=
+            shift
+            GOTO:LOOPEND
+
+	REM # Unknown paramter found
+	:CONTINUE17
 			set ARG=
  			set ERRORMSG=Execution Failed::Unknown parameter: %ARG1%
 			call:USAGE
@@ -888,7 +934,7 @@ GOTO:LOOP
 	call %writeOutput% " USAGE: %SCRIPT%%ext% [-nopause] [-vcsinit|-encrypt|-enablevcs|-vcsinitBaseFolders] [various-arguments]"
 	call %writeOutput% " "
 	if defined ARG call %writeOutput% " Argument [%ARG%] is missing or invalid."
-	call %writeOutput% " CMD: %SCRIPT%%ext% %PARAMS%"
+	call %writeOutput% " CMD: %SCRIPT%%ext% ""%PARAMS%"""
  	call %writeOutput% " "
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 1 - Execute VCS Workspace initialization:"
@@ -917,13 +963,15 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 3 - Execute Encrypt Property File:"
 	call %writeOutput% " "
-	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -encrypt config-property-file-path"
+	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -encrypt config-property-file-path -bypass ""string1,string2"""
 	call %writeOutput% " "
-	call %writeOutput% "            Example: %SCRIPT%%ext% -nopause -encrypt ../resources/config/deploy.properties"
+	call %writeOutput% "            Example: %SCRIPT%%ext% -nopause -encrypt ../resources/config/deploy.properties -bypass ""string1,string2"""
  	call %writeOutput% " "
 	call %writeOutput% "               arg1:: [-nopause] is an optional parameter used to execute the batch file without pausing at the end of the script."
 	call %writeOutput% "               arg2:: -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	call %writeOutput% "               arg3:: file path to deploy.properties or XML property file [full or relative path]"
+	call %writeOutput% "               arg4-5:: [-bypass ""string1,string2""] optional parameter specifying a quoted, comma-separated list of strings to bypass"
+	call %writeOutput% "                                                    that are found within a variable or XML element designated for passwords."
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " Option 4 - Create Composite Studio Enable VCS:"
 	call %writeOutput% "            %SCRIPT%%ext% [-nopause] -enablevcs -winlogin windows_user_login -user composite_login_user -domain composite_domain -host composite_host_server"
@@ -948,6 +996,7 @@ GOTO:LOOP
 	call %writeOutput% " -----------------------------------------------------------------------------------------------------"
 	call %writeOutput% " "
 	ENDLOCAL
+	if defined PWD cd %PWD%
 	exit /B 1
 
 :: -------------------------------------------------------------
@@ -988,17 +1037,17 @@ echo.!logprefix!!output!
 
 REM # Output to the default log file if the variable is defined
 if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
-if exist %DEFAULT_LOG_PATH% goto WRITEOUTPUT
+if exist "%DEFAULT_LOG_PATH%" goto WRITEOUTPUT
 REM # Create log directory and log file
 for /f "tokens=* delims= " %%I in ("%DEFAULT_LOG_PATH%") do set DEFAULT_LOG_DRIVE=%%~dI
 for /f "tokens=* delims= " %%I in ("%DEFAULT_LOG_PATH%") do set DEFAULT_LOG_DIR=%%~pI
 set DEFAULT_LOG_DIR=%DEFAULT_LOG_DRIVE%%DEFAULT_LOG_DIR%
-if not exist %DEFAULT_LOG_DIR% echo.mkdir %DEFAULT_LOG_DIR%
-if not exist %DEFAULT_LOG_DIR% mkdir %DEFAULT_LOG_DIR%
+if not exist "%DEFAULT_LOG_DIR%" echo.mkdir "%DEFAULT_LOG_DIR%"
+if not exist "%DEFAULT_LOG_DIR%" mkdir "%DEFAULT_LOG_DIR%"
 echo.Initialize log file: %DEFAULT_LOG_PATH%
-echo.>%DEFAULT_LOG_PATH%
+echo.>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUT
-if exist %DEFAULT_LOG_PATH% echo.!logprefix!!output!>>%DEFAULT_LOG_PATH%
+if exist "%DEFAULT_LOG_PATH%" echo.!logprefix!!output!>>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUTEND
 ENDLOCAL
 GOTO:EOF
@@ -1096,12 +1145,11 @@ for /f tokens^=*^ delims^=^ eol^= %%a in ('subst') do (
 	 if defined msg call %writeOutput% "!msg!" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	 if "!substpath!" EQU "!spath!" set pathfound=true
 	 if "!substpath!" NEQ "!spath!" set pathfound=false
-	 goto LOOP_END
+	 goto EVALUATE_SUBST_DRIVES_LOOP_END
    )
 )
-:LOOP_END
+:EVALUATE_SUBST_DRIVES_LOOP_END
 ENDLOCAL & SET _pathfound=%pathfound%
-
 if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
 set %4=%_pathfound%
 GOTO:EOF
@@ -1138,39 +1186,52 @@ if %debug%==1 echo.[DEBUG] %0:  substpath=%substpath%
 if %debug%==1 echo.[DEBUG] %0:driveletter=%driveletter%
 
 REM Iterate over the net use command
-for /F "tokens=2,3 skip=2" %%a IN ('net use') do (
-   set sdrive=%%a
-   set spath=%%b
-   if "!sdrive!"=="Local" set sdrive=
-   if "!sdrive!"=="Windows" set sdrive=
-   if "!sdrive!"=="command" set sdrive=
-   if "!sdrive!"=="are" set sdrive=
-   if "!sdrive!"=="connections" set sdrive=
-   if not defined sdrive set spath=
-   if !debug!==1 echo.[DEBUG] %0: sdrive=!sdrive!   path=!spath!
-
-   set outStr=
-   if defined spath call :REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath 
-   if !debug!==1 echo.[DEBUG] %0: spath=!spath!
-
-   REM The drive was found
-   if "!substdrive!" == "!sdrive!" (
-     if !debug!==1 echo.[DEBUG] %0: !substdrive! drive found.  
-     if !debug!==1 echo.[DEBUG] %0: subst cmd:      path=[!spath!]
-     if !debug!==1 echo.[DEBUG] %0: Parameter: substpath=[%substpath%]
-                set msg=
-    if "!substpath!" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
-                rem if defined msg call %writeOutput% "!msg!"                                                                                                                                                                                                                                                                                                                               "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-                if "!substpath!" EQU "!spath!" set pathfound=true
-                if "!substpath!" NEQ "!spath!" set pathfound=false
-                goto LOOP_END
-   )
+for /F "tokens=2,3* skip=2" %%a IN ('net use') do (
+	set sdrive=%%a
+	set spath=%%b
+	set spathRemainder=%%c
+	call:RTRIM spath spath
+	call:RTRIM spathRemainder spathRemainder
+	if !debug!==1 echo.[DEBUG] %0: spathRemainder=[!spathRemainder!]
+	if "!spathRemainder!" NEQ "" set spath=!spath! !spathRemainder!
+	if "!sdrive!"=="Local" set sdrive=
+	if "!sdrive!"=="Windows" set sdrive=
+	if "!sdrive!"=="command" set sdrive=
+	if "!sdrive!"=="are" set sdrive=
+	if "!sdrive!"=="connections" set sdrive=
+	if not defined sdrive set spath=
+	if !debug!==1 echo.[DEBUG] %0: sdrive=[!sdrive!]  path=[!spath!]
+	set outStr=
+	if defined sdrive call :EVALUATE_NETWORK_DRIVES_LOGIC pathfound
+	if !debug!==1 echo.[DEBUG] %0:             pathfound=[!pathfound!]
+	if "!pathfound!"=="true" goto EVALUATE_NETWORK_DRIVES_LOOP_END
 )
-:LOOP_END
+:EVALUATE_NETWORK_DRIVES_LOOP_END
 ENDLOCAL & SET _pathfound=%pathfound%
 
 if %debug%==1 echo.[DEBUG] %0: return parameter %4=%_pathfound%
 set %4=%_pathfound%
+GOTO:EOF
+
+:: --------------------------------------------------------------------
+:EVALUATE_NETWORK_DRIVES_LOGIC
+:: --------------------------------------------------------------------
+::# Sub-procedure to EVALUATE_NETWORK_DRIVES
+::#####################################################################
+	set pathfound=false
+	if !debug!==1 echo.[DEBUG] %0: network: drive=[!sdrive!]   path=[!spath!]
+	if !debug!==1 echo.[DEBUG] %0: call:REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath
+	call :REPLACE "\\%COMPUTER_NAME%\%driveletter%$" "%driveletter%:" "!spath!" spath
+	if !debug!==1 echo.[DEBUG] %0: replaced network path=[!spath!]
+	if !debug!==1 echo.[DEBUG] %0:  Parameter: substpath=[%substpath%]
+	set msg=
+	if "%substpath%" NEQ "!spath!" set msg=%PAD%The network path does not match subst drive list. drive=!substdrive! path=[!spath!].
+	if "%substpath%" EQU "!spath!" set pathfound=true
+	if "%substpath%" NEQ "!spath!" set pathfound=false
+
+:EVALUATE_NETWORK_DRIVES_LOOP_CONTINUE
+if !debug!==1 echo.[DEBUG] %0:             pathfound=[%pathfound%]
+set %1=%pathfound%
 GOTO:EOF
 
 
@@ -1245,11 +1306,11 @@ GOTO:EOF
 
 
 :: -------------------------------------------------------------
-:LTRIM
+:RTRIM
 :: -------------------------------------------------------------
 ::# Trim right
-::# Description: call:LTRIM instring outstring  
-::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
+::# Description: call:RTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
 ::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"
@@ -1260,11 +1321,11 @@ GOTO:EOF
 
 
 :: -------------------------------------------------------------
-:RTRIM
+:LTRIM
 :: -------------------------------------------------------------
 ::# Trim left
-::# Description: call:RTRIM instring outstring  
-::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
+::# Description: call:LTRIM instring outstring  
+::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
 ::#      -- outstring [out] - variable name containing the result string
 SET str=!%1!
 rem echo."%str%"

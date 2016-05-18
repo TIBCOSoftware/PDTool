@@ -487,5 +487,20 @@
 			</plan>
 		</introspectDataSource>
     </datasource>
+  <datasource>
+    <genericDataSource>
+      <id>ds11</id>
+      <resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
+      <!--Element keystore is optional-->
+      <keystore>
+        <!--Element keystoreAttributes is optional, maxOccurs=unbounded-->
+        <keystoreAttributes>
+          <keystoreFilePath>C:/Users/%USERNAME%/.compositesw/certificates/cis_datasource_keystore.jks</keystoreFilePath>
+          <keystoreType>jks</keystoreType>
+          <keystorePassword>changeit</keystorePassword>
+        </keystoreAttributes>
+      </keystore>
+    </genericDataSource>
+  </datasource>
 	
 </p1:DatasourceModule>

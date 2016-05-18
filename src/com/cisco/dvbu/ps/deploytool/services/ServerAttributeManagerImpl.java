@@ -331,7 +331,11 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 	 */
 //	@Override
 	public void generateServerAttributesXML(String serverId, String startPath, String pathToServerAttributeXML, String pathToServersXML, String pUpdateRule) throws CompositeException {
-		
+
+		// Set the command and action name
+		String command = "generateServerAttributesXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -383,8 +387,15 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 				serverAttributeList.get(i).setId(getTokenId(id));
 			}
 			
-			// Generate the XML file
-			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+			
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Generate the XML file
+				XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 	}
 
@@ -394,6 +405,10 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 //	@Override
 	public void generateServerAttributeDefinitionsXML(String serverId, String startPath, String pathToServerAttributeXML, String pathToServersXML, String pUpdateRule) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateServerAttributeDefinitionsXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -446,8 +461,15 @@ public class ServerAttributeManagerImpl implements ServerAttributeManager{
 				// Increment a number and concatenate to the token
 				serverAttributeDefList.get(i).setId(getTokenId(id));
 			}
-			// Generate the XML file
-			XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Generate the XML file
+				XMLUtils.createXMLFromModuleType(serverAttrModule, pathToServerAttributeXML);			
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 	}
 

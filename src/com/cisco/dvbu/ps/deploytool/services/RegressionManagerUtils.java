@@ -985,6 +985,10 @@ public class RegressionManagerUtils {
 	 */
 	public static String executeQuery(RegressionItem item, HashMap<String,Connection> cisConnections, String outputFile, String delimiter, String printOutputType) throws CompositeException
 	{
+		// Set the command and action name
+		String command = "executeQuery";
+		String actionName = "REGRESSION_TEST";
+
 		int rows = 0;
 		String result = null;
 		Connection conn = null;
@@ -993,97 +997,103 @@ public class RegressionManagerUtils {
     	start = System.currentTimeMillis();
     	long firstRowLatency = 0L;
 		    	
-		try
-		{
-		    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
-
-			String URL = null;
-			String userName = null;
-			if (conn.getMetaData() != null) {
-				if (conn.getMetaData().getURL() != null)
-					URL = conn.getMetaData().getURL();
-				if (conn.getMetaData().getUserName() != null)
-					userName = conn.getMetaData().getUserName();
-			}
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
-
-		    stmt = conn.createStatement();
-	        stmt.execute(item.input.replaceAll("\n", " "));
-			rs = stmt.getResultSet();
-	        ResultSetMetaData rsmd = rs.getMetaData();
-	        int columns = rsmd.getColumnCount();
-	        RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: number metadata columns="+columns, "");
-	
-// Get the column metadata	        
-            boolean addSep = false;
-            String content = "";
-            RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Get column metadata.", "");
-	        for (int i=0; i < columns; i++) {
-            	if (addSep) {
-            		content += delimiter;
-            	}
-            	if (rsmd.getColumnName(i+1) != null)
-            		content += rsmd.getColumnName(i+1).toString();
-            	else
-            		content += "";
-            	addSep = true;
-            }
-            if (outputFile != null)
-            	CommonUtils.appendContentToFile(outputFile, content);
-        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
-
-	        
-// Read the values
-        	boolean firstRow = true;
-        	RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Begin Query Loop.", "");
-	        while (rs.next())
-	        {
-                if (firstRow) {
-                	firstRowLatency = System.currentTimeMillis() - start;
-    	        	firstRow = false;
-    	        	RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Set first row latency time="+firstRowLatency, "");
-                }
-	            addSep = false;
-	            content = "";
-                for (int i=0; i<columns; i++) {
-                	if (addSep) {
-                		content += delimiter;
-                	}
-                	if (rs.getObject(i+1) != null)
-                		content += rs.getObject(i+1).toString();
-                	else
-                		content += "";
-                	addSep = true;
-                }
-                if (outputFile != null)
-                	CommonUtils.appendContentToFile(outputFile, content);
-            	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
-	           
-	            rows++;
-	        }        
-		} 
-		catch (SQLException e)
-		{
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Exception caught in RegressionManagerUtils.executeQuery:", "");
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", e.getMessage(), "");
-			throw new CompositeException("executeQuery(): " + e.getMessage());
-		}
-		
-		finally
-		{
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
 			try
 			{
-				if (rs != null)		{	rs.close();   }	 	
-				if (stmt != null) 	{   stmt.close(); }
-			}
+			    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
+	
+				String URL = null;
+				String userName = null;
+				if (conn.getMetaData() != null) {
+					if (conn.getMetaData().getURL() != null)
+						URL = conn.getMetaData().getURL();
+					if (conn.getMetaData().getUserName() != null)
+						userName = conn.getMetaData().getUserName();
+				}
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
+	
+			    stmt = conn.createStatement();
+		        stmt.execute(item.input.replaceAll("\n", " "));
+				rs = stmt.getResultSet();
+		        ResultSetMetaData rsmd = rs.getMetaData();
+		        int columns = rsmd.getColumnCount();
+		        RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: number metadata columns="+columns, "");
+		
+	// Get the column metadata	        
+	            boolean addSep = false;
+	            String content = "";
+	            RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Get column metadata.", "");
+		        for (int i=0; i < columns; i++) {
+	            	if (addSep) {
+	            		content += delimiter;
+	            	}
+	            	if (rsmd.getColumnName(i+1) != null)
+	            		content += rsmd.getColumnName(i+1).toString();
+	            	else
+	            		content += "";
+	            	addSep = true;
+	            }
+	            if (outputFile != null)
+	            	CommonUtils.appendContentToFile(outputFile, content);
+	        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
+	
+		        
+	// Read the values
+	        	boolean firstRow = true;
+	        	RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Begin Query Loop.", "");
+		        while (rs.next())
+		        {
+	                if (firstRow) {
+	                	firstRowLatency = System.currentTimeMillis() - start;
+	    	        	firstRow = false;
+	    	        	RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Set first row latency time="+firstRowLatency, "");
+	                }
+		            addSep = false;
+		            content = "";
+	                for (int i=0; i<columns; i++) {
+	                	if (addSep) {
+	                		content += delimiter;
+	                	}
+	                	if (rs.getObject(i+1) != null)
+	                		content += rs.getObject(i+1).toString();
+	                	else
+	                		content += "";
+	                	addSep = true;
+	                }
+	                if (outputFile != null)
+	                	CommonUtils.appendContentToFile(outputFile, content);
+	            	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
+		           
+		            rows++;
+		        }        
+			} 
 			catch (SQLException e)
 			{
-				rs = null; stmt = null;
-				throw new CompositeException("executeQuery(): unable to close ResultSet or Statement" + e.getMessage());
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: Exception caught in RegressionManagerUtils.executeQuery:", "");
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", e.getMessage(), "");
+				throw new CompositeException("executeQuery(): " + e.getMessage());
 			}
+			
+			finally
+			{
+				try
+				{
+					if (rs != null)		{	rs.close();   }	 	
+					if (stmt != null) 	{   stmt.close(); }
+				}
+				catch (SQLException e)
+				{
+					rs = null; stmt = null;
+					throw new CompositeException("executeQuery(): unable to close ResultSet or Statement" + e.getMessage());
+				}
+			}
+			RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeQuery()", "");
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 		}
-		RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeQuery()", "");
 		
 		// <rows>:<firstRowLatency>
 		result = ""+rows+":"+firstRowLatency;
@@ -1106,7 +1116,11 @@ public class RegressionManagerUtils {
 	 */
 	public static String executeProcedure(RegressionItem item, HashMap<String,Connection> cisConnections, String outputFile, String delimiter, String printOutputType) throws CompositeException
 	{
-        int rows = 0;
+		// Set the command and action name
+		String command = "executeProcedure";
+		String actionName = "REGRESSION_TEST";
+
+       int rows = 0;
         String result = null;
 		Connection conn = null;
 		CallableStatement stmt = null;  
@@ -1114,150 +1128,156 @@ public class RegressionManagerUtils {
     	start = System.currentTimeMillis();
     	long firstRowLatency = 0L;
 		
-		try
-		{
-		    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
-		    
-			String URL = null;
-			String userName = null;
-			if (conn.getMetaData() != null) {
-				if (conn.getMetaData().getURL() != null)
-					URL = conn.getMetaData().getURL();
-				if (conn.getMetaData().getUserName() != null)
-					userName = conn.getMetaData().getUserName();
-			}
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
-			RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
-
-		    String query = item.input.replaceAll("\n", " ");
-			// Convert a CALL statement into a SELECT * FROM statement
-			
-			// { CALL SCH1.LookupProduct( 3 ) } --> SCH1.LookupProduce( 3 )
-			if (query.toUpperCase().contains("CALL")) 
-			{
-				query = "SELECT * FROM " + RegressionManagerUtils.getProcedure(query);;
-			}
-			
-			// Prepare the query
-			stmt = (CallableStatement)conn.prepareCall(query);
-
-// Register output parameter types
-            for (int i=0; i<item.outTypes.length; i++)
-            {
-                if (!"-".equals(item.outTypes[i]))
-                {
-                    int jdbcType = -1;
-                    try
-                    {
-                        jdbcType = Types.class.getField(item.outTypes[i]).getInt(null);
-                    }
-                    catch (Exception e)
-                    {
-                    	RegressionManagerUtils.error(item.lineNum, item.outTypes[i], 
-                              "No such JDBC type in java.sql.Types");
-                    }
-                    stmt.registerOutParameter(i+1, jdbcType);
-                }
-            }
-            stmt.executeQuery();
-
-// Print scalars
-            ParameterMetaData pmd = stmt.getParameterMetaData();
-            int params = pmd.getParameterCount();
-            boolean addSep = false;
-            String content = "";
-            for (int i=0; i<params; i++)
-            {  
-               	if (addSep) {
-            		content += delimiter;
-            	}
-            	if (stmt.getObject(i+1) != null)
-            		content += stmt.getObject(i+1).toString();
-            	else
-            		content += "";
-            	addSep = true;
-            }
-            if (outputFile != null)
-            	CommonUtils.appendContentToFile(outputFile, content);
-        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
-
-// Get the result cursor and metadata cursor        
-            rs = stmt.getResultSet();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columns = rsmd.getColumnCount();
-            
-// Get the column metadata	                   
-            addSep = false;
-            content = "";
-	        for (int i=0; i < columns; i++) {
-            	if (addSep) {
-            		content += delimiter;
-            	}
-            	if (rsmd.getColumnName(i+1) != null)
-            		content += rsmd.getColumnName(i+1).toString();
-            	else
-            		content += "";
-            	addSep = true;
-            }
-            if (outputFile != null)
-            	CommonUtils.appendContentToFile(outputFile, content);
-        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
-
-// Print cursors
-        	boolean firstRow = true;
-            while (rs != null)
-            {
-// Read the values
-                while (rs.next())
-                {
-                    if (firstRow) {
-                    	firstRowLatency = System.currentTimeMillis() - start;
-        	        	firstRow = false;
-                    }
-                    addSep = false;
-                    content = "";
-                    for (int i=0; i<columns; i++) 
-                    {
-                       	if (addSep) {
-                    		content += delimiter;
-                    	}
-                    	if (rs.getObject(i+1) != null)
-                    		content += rs.getObject(i+1).toString();
-                    	else
-                    		content += "";
-                    	addSep = true;
-                    }
-                    if (outputFile != null)
-                    	CommonUtils.appendContentToFile(outputFile, content);
-                    RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
-                    rows++;
-                }
-                stmt.getMoreResults();
-                rs = stmt.getResultSet();
-            }
-        }
-		catch (SQLException e)
-		{
-			throw new CompositeException("executeProcedure(): " + e.getMessage());
-		}
-		catch (Exception e)
-		{
-			throw new CompositeException("executeProcedure(): " + e.getMessage());
-		}
-		finally
-		{
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
 			try
 			{
-				if (rs != null)		{	rs.close();   }	 	
-				if (stmt != null) 	{   stmt.close(); }
-			}
+			    conn = getJdbcConnection(item.database, cisConnections);  // don't need to check for null here.
+			    
+				String URL = null;
+				String userName = null;
+				if (conn.getMetaData() != null) {
+					if (conn.getMetaData().getURL() != null)
+						URL = conn.getMetaData().getURL();
+					if (conn.getMetaData().getUserName() != null)
+						userName = conn.getMetaData().getUserName();
+				}
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", "RegressionManagerUtils.executeQuery(item, cisConnections, outputFile, delimiter, printOutputType).  item.database="+item.database+"  cisConnections.URL="+URL+"  cisConnections.userName="+userName+"  outputFile="+outputFile+"  delimiter="+delimiter+"  printOutputType="+printOutputType, "");
+				RegressionManagerUtils.printOutputStr(printOutputType, "debug", "DEBUG: connection to DB successful", "");
+	
+			    String query = item.input.replaceAll("\n", " ");
+				// Convert a CALL statement into a SELECT * FROM statement
+				
+				// { CALL SCH1.LookupProduct( 3 ) } --> SCH1.LookupProduce( 3 )
+				if (query.toUpperCase().contains("CALL")) 
+				{
+					query = "SELECT * FROM " + RegressionManagerUtils.getProcedure(query);;
+				}
+				
+				// Prepare the query
+				stmt = (CallableStatement)conn.prepareCall(query);
+	
+	// Register output parameter types
+	            for (int i=0; i<item.outTypes.length; i++)
+	            {
+	                if (!"-".equals(item.outTypes[i]))
+	                {
+	                    int jdbcType = -1;
+	                    try
+	                    {
+	                        jdbcType = Types.class.getField(item.outTypes[i]).getInt(null);
+	                    }
+	                    catch (Exception e)
+	                    {
+	                    	RegressionManagerUtils.error(item.lineNum, item.outTypes[i], 
+	                              "No such JDBC type in java.sql.Types");
+	                    }
+	                    stmt.registerOutParameter(i+1, jdbcType);
+	                }
+	            }
+	            stmt.executeQuery();
+	
+	// Print scalars
+	            ParameterMetaData pmd = stmt.getParameterMetaData();
+	            int params = pmd.getParameterCount();
+	            boolean addSep = false;
+	            String content = "";
+	            for (int i=0; i<params; i++)
+	            {  
+	               	if (addSep) {
+	            		content += delimiter;
+	            	}
+	            	if (stmt.getObject(i+1) != null)
+	            		content += stmt.getObject(i+1).toString();
+	            	else
+	            		content += "";
+	            	addSep = true;
+	            }
+	            if (outputFile != null)
+	            	CommonUtils.appendContentToFile(outputFile, content);
+	        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
+	
+	// Get the result cursor and metadata cursor        
+	            rs = stmt.getResultSet();
+	            ResultSetMetaData rsmd = rs.getMetaData();
+	            int columns = rsmd.getColumnCount();
+	            
+	// Get the column metadata	                   
+	            addSep = false;
+	            content = "";
+		        for (int i=0; i < columns; i++) {
+	            	if (addSep) {
+	            		content += delimiter;
+	            	}
+	            	if (rsmd.getColumnName(i+1) != null)
+	            		content += rsmd.getColumnName(i+1).toString();
+	            	else
+	            		content += "";
+	            	addSep = true;
+	            }
+	            if (outputFile != null)
+	            	CommonUtils.appendContentToFile(outputFile, content);
+	        	RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
+	
+	// Print cursors
+	        	boolean firstRow = true;
+	            while (rs != null)
+	            {
+	// Read the values
+	                while (rs.next())
+	                {
+	                    if (firstRow) {
+	                    	firstRowLatency = System.currentTimeMillis() - start;
+	        	        	firstRow = false;
+	                    }
+	                    addSep = false;
+	                    content = "";
+	                    for (int i=0; i<columns; i++) 
+	                    {
+	                       	if (addSep) {
+	                    		content += delimiter;
+	                    	}
+	                    	if (rs.getObject(i+1) != null)
+	                    		content += rs.getObject(i+1).toString();
+	                    	else
+	                    		content += "";
+	                    	addSep = true;
+	                    }
+	                    if (outputFile != null)
+	                    	CommonUtils.appendContentToFile(outputFile, content);
+	                    RegressionManagerUtils.printOutputStr(printOutputType, "results", content, "");
+	                    rows++;
+	                }
+	                stmt.getMoreResults();
+	                rs = stmt.getResultSet();
+	            }
+	        }
 			catch (SQLException e)
 			{
-				rs = null; stmt = null;
-				throw new CompositeException("executeProcedure(): unable to close ResultSet or Statement" + e.getMessage());
+				throw new CompositeException("executeProcedure(): " + e.getMessage());
 			}
+			catch (Exception e)
+			{
+				throw new CompositeException("executeProcedure(): " + e.getMessage());
+			}
+			finally
+			{
+				try
+				{
+					if (rs != null)		{	rs.close();   }	 	
+					if (stmt != null) 	{   stmt.close(); }
+				}
+				catch (SQLException e)
+				{
+					rs = null; stmt = null;
+					throw new CompositeException("executeProcedure(): unable to close ResultSet or Statement" + e.getMessage());
+				}
+			}
+			RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeProcedure()", "");
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 		}
-		RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeProcedure()", "");
 		
 		// <rows>:<firstRowLatency>
 		result = ""+rows+":"+firstRowLatency;
@@ -1379,7 +1399,11 @@ public class RegressionManagerUtils {
 	 */
 	public static int executeWs(RegressionItem item, String outputFile, CompositeServer cisServerConfig, RegressionTestType regressionConfig, String delimiter, String printOutputType) throws CompositeException
 	{		  	
-// Check the input parameter values:
+		// Set the command and action name
+		String command = "executeWs";
+		String actionName = "REGRESSION_TEST";
+
+		// Check the input parameter values:
 		if (cisServerConfig == null || regressionConfig == null)
 		{
 			throw new CompositeException(
@@ -1397,75 +1421,82 @@ public class RegressionManagerUtils {
 		  // Execute the webservice
 		   try
 		   {
-		        boolean encrypt = item.encrypt;
-		        // Override the encrypt flag when useHttps is set from an overall PDTool over SSL (https) setting.
-		        if (useHttps && !encrypt) {
-		        	encrypt = true;
-		        	RegressionManagerUtils.printOutputStr(printOutputType, "summary", "The regression input file encrypt=false has been overridden by useHttps=true for path="+item.path, "");
-		        }
-		        
-			    String urlString = "http://"+host+":"+wsPort+item.path;
-		        if (encrypt) {
-		            urlString = "https://"+host+":"+(wsPort+2)+item.path;
-		        }
-	        	RegressionManagerUtils.printOutputStr(printOutputType, "summary", "urlString="+urlString, "");
-		        URL url = new URL(urlString);
-		        urlConn = url.openConnection();
-		        if (encrypt) {
-		            // disable hostname verification
-		            ((HttpsURLConnection) urlConn)
-		                    .setHostnameVerifier(new HostnameVerifier() {
-		                        public boolean verify(String urlHostName,
-		                                SSLSession session) {
-		                            return true;
-		                        }
-		                    });
-
-		        }
-		        // 2014-02-09 (mtinius) - added basic authorization to allow for connections with new users
-		        String credentials = cisServerConfig.getUser() + ":" + CommonUtils.decrypt(cisServerConfig.getPassword());
-		        String encoded = Base64EncodeDecode.encodeString(credentials);
-		        urlConn.setRequestProperty("Authorization", "Basic " + encoded);
-
-		        urlConn.setRequestProperty("SOAPAction", item.action); 
-		        urlConn.setRequestProperty("Content-Type", item.contentType);
-		        urlConn.setDoOutput(true);
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+			        boolean encrypt = item.encrypt;
+			        // Override the encrypt flag when useHttps is set from an overall PDTool over SSL (https) setting.
+			        if (useHttps && !encrypt) {
+			        	encrypt = true;
+			        	RegressionManagerUtils.printOutputStr(printOutputType, "summary", "The regression input file encrypt=false has been overridden by useHttps=true for path="+item.path, "");
+			        }
+			        
+				    String urlString = "http://"+host+":"+wsPort+item.path;
+			        if (encrypt) {
+			            urlString = "https://"+host+":"+(wsPort+2)+item.path;
+			        }
+		        	RegressionManagerUtils.printOutputStr(printOutputType, "summary", "urlString="+urlString, "");
+			        URL url = new URL(urlString);
+			        urlConn = url.openConnection();
+			        if (encrypt) {
+			            // disable hostname verification
+			            ((HttpsURLConnection) urlConn)
+			                    .setHostnameVerifier(new HostnameVerifier() {
+			                        public boolean verify(String urlHostName,
+			                                SSLSession session) {
+			                            return true;
+			                        }
+			                    });
 	
-		        wr = new OutputStreamWriter(urlConn.getOutputStream());
-		        wr.write(item.input);
-		        wr.flush();
+			        }
+			        // 2014-02-09 (mtinius) - added basic authorization to allow for connections with new users
+			        String credentials = cisServerConfig.getUser() + ":" + CommonUtils.decrypt(cisServerConfig.getPassword());
+			        String encoded = Base64EncodeDecode.encodeString(credentials);
+			        urlConn.setRequestProperty("Authorization", "Basic " + encoded);
+	
+			        urlConn.setRequestProperty("SOAPAction", item.action); 
+			        urlConn.setRequestProperty("Content-Type", item.contentType);
+			        urlConn.setDoOutput(true);
+		
+			        wr = new OutputStreamWriter(urlConn.getOutputStream());
+			        wr.write(item.input);
+			        wr.flush();
+	
+			        // Get the response
+			        rd = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+			        String line;
+			        StringBuffer buf = new StringBuffer();
+			        while ((line = rd.readLine()) != null)
+			        {
+			        	rows++;
+			            buf.append(line);
+		                if (outputFile != null)
+		                	CommonUtils.appendContentToFile(outputFile, line);
+			        }
+			        line = buf.toString();
+			        RegressionManagerUtils.printOutputStr(printOutputType, "results", line, "");
+			        if (line.indexOf("<fault") >= 0 || line.indexOf(":fault") >= 0)
+			        {
+			        	if (rd != null) { rd.close(); }
+			        	if (wr != null) { wr.close(); }
+			            throw new IllegalStateException("Fault encountered.");
+			        }
+			        if (line.trim().length() == 0)
+			        {
+			        	if (rd != null) { rd.close(); }
+			        	if (wr != null) { wr.close(); }
+			            throw new IllegalStateException("No response document.");
+			        }		   
+			        urlConn.getInputStream().close();
+	//		        urlConn.getOutputStream().flush();
+			        wr.close();
+			        rd.close();
+					RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeWs()", "");
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
 
-		        // Get the response
-		        rd = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-		        String line;
-		        StringBuffer buf = new StringBuffer();
-		        while ((line = rd.readLine()) != null)
-		        {
-		        	rows++;
-		            buf.append(line);
-	                if (outputFile != null)
-	                	CommonUtils.appendContentToFile(outputFile, line);
-		        }
-		        line = buf.toString();
-		        RegressionManagerUtils.printOutputStr(printOutputType, "results", line, "");
-		        if (line.indexOf("<fault") >= 0 || line.indexOf(":fault") >= 0)
-		        {
-		        	if (rd != null) { rd.close(); }
-		        	if (wr != null) { wr.close(); }
-		            throw new IllegalStateException("Fault encountered.");
-		        }
-		        if (line.trim().length() == 0)
-		        {
-		        	if (rd != null) { rd.close(); }
-		        	if (wr != null) { wr.close(); }
-		            throw new IllegalStateException("No response document.");
-		        }		   
-		        urlConn.getInputStream().close();
-//		        urlConn.getOutputStream().flush();
-		        wr.close();
-		        rd.close();
-				RegressionManagerUtils.printOutputStr(printOutputType, "results", "\nCompleted executeWs()", "");
-		        return rows;
+				return rows;
 		   } 
 		   catch (IOException e)
 		   { 
@@ -1501,8 +1532,7 @@ public class RegressionManagerUtils {
 					throw new CompositeException("executeWs(): unable to close BufferedReader (rd) and OutputStreamWriter (wr): " + e.getMessage());
 				}
 		   }
-	}
-   
+	}   
 	
 }
 

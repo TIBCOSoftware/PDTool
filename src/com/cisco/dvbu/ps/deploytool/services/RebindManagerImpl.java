@@ -101,6 +101,10 @@ public class RebindManagerImpl implements RebindManager {
 //	@Override
 	public void generateRebindXML(String serverId, String startPath, String pathToRebindXML, String pathToServersXML) throws CompositeException {
 
+		// Set the command and action name
+		String command = "generateRebindXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -177,7 +181,14 @@ public class RebindManagerImpl implements RebindManager {
 					}							
 				}
 			}
-			XMLUtils.createXMLFromModuleType(rebindModule, pathToRebindXML);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				XMLUtils.createXMLFromModuleType(rebindModule, pathToRebindXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 	}
 

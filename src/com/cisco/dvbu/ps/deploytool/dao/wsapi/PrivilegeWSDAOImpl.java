@@ -123,7 +123,9 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 		String methodName = "takePrivilegeAction";
 		// Set the web service endpoint and method
 		String endpointName = "resource";
-		String endpointMethod = "updateResourcePrivileges";
+		String endpointMethodUpdatePrivs = "updateResourcePrivileges";
+		String endpointMethodChangeOwner = "changeResourceOwner";
+
 
 		int privSize = 0;
 		String resourcePath = null;
@@ -165,18 +167,54 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 				// Setup the request
 				String requestXML = XMLUtils.getStringFromDocument(privilegeModule);
 	
-				if(logger.isDebugEnabled()) {
-					logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
-				}
 				/*****************************************************
 				 * Invoke Method=updateResourcePrivileges
 				 *****************************************************/
-				// Invoke the web service method
-				String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
-		
+				String command = endpointMethodUpdatePrivs;
+				
 				if(logger.isDebugEnabled()) {
-					// Format for XML pretty print
-					logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+					logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethodUpdatePrivs+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
+				}
+
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				if (CommonUtils.isExecOperation()) 
+				{					
+					// Invoke the web service method
+					String response1 = cisclient.sendRequest(endpointName, endpointMethodUpdatePrivs, requestXML);
+			
+					if(logger.isDebugEnabled()) {
+						// Format for XML pretty print
+						logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response1)));
+					}
+				} else {
+					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+				}
+				
+				/*****************************************************
+				 * Invoke Method=changeResourceOwner
+				 *****************************************************/
+				command = endpointMethodChangeOwner;
+						
+				if (privilegeModule.getResourcePrivilege().get(0).getResourceOwner() != null && 
+						privilegeModule.getResourcePrivilege().get(0).getResourceOwner().getResourceOwnerName() != null && 
+						privilegeModule.getResourcePrivilege().get(0).getResourceOwner().getResourceOwnerDomain() != null) {
+					if(logger.isDebugEnabled()) {
+						logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethodChangeOwner+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
+					}
+
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+						// Invoke the web service method
+						String response2 = cisclient.sendRequest(endpointName, endpointMethodChangeOwner, requestXML);
+				
+						if(logger.isDebugEnabled()) {
+							// Format for XML pretty print
+							logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response2)));
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+					}
 				}
 			}		
 		} catch (AdapterException e) {
@@ -223,7 +261,8 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 		String methodName = "getResourcePrivileges";
 		// Set the web service endpoint and method
 		String endpointName = "resource";
-		String endpointMethod = "getResourcePrivileges";
+		String endpointMethodGetPrivs = "getResourcePrivileges";
+		String endpointMethodGetResource = "getResource";
 
 		// For debugging
 		int privSize = 0;
@@ -282,12 +321,12 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 			requestXML = requestXML + 
 						"</getResourcePrivileges>";
 
-			if(logger.isDebugEnabled()) {
-				logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethod+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
-			}
 			/*****************************************************
 			 * Invoke Method=getResourcePrivileges
 			 *****************************************************/
+			if(logger.isDebugEnabled()) {
+				logger.debug(prefix+"."+methodName+"().  Invoking web service endpoint name="+endpointName+" and method="+endpointMethodGetPrivs+"  Request:\n" + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(requestXML))+"\n");
+			}
 			// Invoke the web service method
 			/* String requestXml = "<?xml version=\"1.0\"?> 
 			 * <p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" 
@@ -302,17 +341,17 @@ public class PrivilegeWSDAOImpl implements PrivilegeDAO {
 			  </resourcePrivilege>
 			</p1:PrivilegeModule>"
 			*/
-			String response = cisclient.sendRequest(endpointName, endpointMethod, requestXML);
+			String response1 = cisclient.sendRequest(endpointName, endpointMethodGetPrivs, requestXML);
 	
 			if(logger.isDebugEnabled()) {
 				// Format for XML pretty print
-				logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response)));
+				logger.debug(prefix+"."+methodName+"().  Response: " + XMLUtils.getPrettyXml(XMLUtils.getDocumentFromString(response1)));
 			}
 			
 			// Convert XML String to PrivilegeModule Object for easier processing
-			Object obj = XMLUtils.getJavaObjectFromXML(response);
+			Object obj = XMLUtils.getJavaObjectFromXML(response1);
 			PrivilegeModule retPrivilegeEntries = (PrivilegeModule) obj;
-						
+				
 			return retPrivilegeEntries;
 			
 		} catch (Exception e) {

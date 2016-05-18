@@ -89,7 +89,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		// Set the debug options
 		setDebug();
 		
-// Read target server properties from xml and build target server object based on target server name 
+		// Read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ArchiveWSDAOImpl.takeArchiveAction("+actionName+")", logger);
 //
 // DA@20120610 Comment unnecessary ping - if server is down the backup/restore command will fail as fast as ping
@@ -114,6 +114,18 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			if(actionName.equalsIgnoreCase(ArchiveDAO.action.IMPORT.name())) 
 			{
 // pkg_import
+				boolean archiveISNULL = false;
+				if (archive == null)
+					archiveISNULL = true;
+				if ( logger.isDebugEnabled() || debug3 ) {
+					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" archiveISNULL=[" + archiveISNULL+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
+				}
+				// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+				//   If so then force a no operation to happen by performing a -printcontents for pkg_import
+				if (!CommonUtils.isExecOperation() || (archive.isPrintcontents() != null && !archive.isPrintcontents())) 
+					archive.setPrintcontents(true);
+				
+				// Construct the variable input for pacakged import
 				List<String> parms = getPackageImportParameters(archive) ;
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
@@ -177,7 +189,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			}
 			else if(actionName.equalsIgnoreCase(ArchiveDAO.action.RESTORE.name())) 
 			{
-// backup_import
+// backup_import			
+				// Construct the variable input for backup import
 				List<String> parms = getBackupImportParameters(archive) ;
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
@@ -215,11 +228,17 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 						logger.debug(identifier+"().  Invoking RestoreCommand.startCommand(\".\", \".\", args).");
 					}
 					
-		            // Invoke the Composite native restore command.
-		            RestoreCommand.startCommand(".", ".", args) ;
-
-					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Successfully restored.");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{
+			            // Invoke the Composite native restore command.
+			            RestoreCommand.startCommand(".", ".", args) ;
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug(identifier+"().  Successfully restored.");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
@@ -280,11 +299,17 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 						logger.debug(identifier+"().  Invoking ExportCommand.startCommand(\".\", \".\", args).");
 					}
 
-					// Invoke the Composite native export command.
-		            ExportCommand.startCommand(".", ".", args);
-
-					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Successfully exported.");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{
+						// Invoke the Composite native export command.
+			            ExportCommand.startCommand(".", ".", args);
+	
+						if(logger.isDebugEnabled()) {
+							logger.debug(identifier+"().  Successfully exported.");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
@@ -345,10 +370,17 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 						logger.debug(identifier+"().  Invoking BackupCommand.startCommand(\".\", \".\", args).");
 					}
 
-		            // Invoke the Composite native backup command.
-		            BackupCommand.startCommand(".", ".", args);
-					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Successfully backed up.");
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{
+			            // Invoke the Composite native backup command.
+						BackupCommand.startCommand(".", ".", args);
+						
+						if(logger.isDebugEnabled()) {
+							logger.debug(identifier+"().  Successfully backed up.");
+						}
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {

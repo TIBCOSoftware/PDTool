@@ -614,14 +614,64 @@
 	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:ServerAttributeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		</p1:ServerAttributeModule>
+		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
 	</xsl:template>
 </xsl:stylesheet>
 					]]>
 				</body>
 			</response>
 		</callback>
-	
+
+		<callback name="changeResourceOwner" endpoint="resource">
+			<description>Change Resource Owner</description>
+			<soapaction>changeResourceOwner</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:resource="http://www.compositesw.com/services/system/admin/resource" xmlns:common="http://www.compositesw.com/services/system/util/common">
+	<xsl:template match="/">
+		<resource:changeResourceOwner xmlns:resource="http://www.compositesw.com/services/system/admin/resource" xmlns:common="http://www.compositesw.com/services/system/util/common">
+			<resource:path>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourcePath"/>
+			</resource:path>
+			<resource:type>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceType"/>
+			</resource:type>
+			<resource:detail>NONE</resource:detail>
+			<resource:newOwnerName>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerName"/>
+			</resource:newOwnerName>
+			<resource:newOwnerDomain>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerDomain"/>
+			</resource:newOwnerDomain>
+			<resource:recurse>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerRecurse"/>
+			</resource:recurse>
+		</resource:changeResourceOwner>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:resource="http://www.compositesw.com/services/system/admin/resource" 
+	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+		
 	</callbacks>
 </adapterconfiguration>

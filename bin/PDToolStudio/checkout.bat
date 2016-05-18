@@ -40,6 +40,9 @@ REM #----------------------------------------------------------
 REM #*********** DO NOT MODIFY BELOW THIS LINE ****************
 REM #----------------------------------------------------------
 REM #
+REM # CIS version [6.2, 7.0.0] - set CIS_VERSION
+call ..\bin_novars\cisVersion.bat
+REM #
 REM #---------------------------------------------
 REM # Get the full path to setVars.bat
 REM #---------------------------------------------

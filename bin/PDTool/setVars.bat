@@ -71,10 +71,8 @@ REM #
 REM # Set the PROJECT_HOME so that it points to the substituted path variable.  Use either the subtitute drive or network drive but not both.
 set PROJECT_HOME=
 if defined SUBSTITUTE_DRIVE set PROJECT_HOME=%SUBSTITUTE_DRIVE%
-if defined NETWORK_DRIVE set PROJECT_HOME=%NETWORK_DRIVE%
-if not defined PROJECT_HOME ( 
-  set PROJECT_HOME=%PDTOOL_HOME%
-)
+if defined NETWORK_DRIVE    set PROJECT_HOME=%NETWORK_DRIVE%
+if not defined PROJECT_HOME set PROJECT_HOME=%PDTOOL_HOME%
 REM #
 REM # Remember the PROJECT_HOME_PHYSICAL as it points to PROJECT_HOME full path 
 set PROJECT_HOME_PHYSICAL=%PDTOOL_HOME%
@@ -139,24 +137,24 @@ set LF=^
 set MSG=!MSG!########################################################################################################################################!LF!
 set MSG=!MSG!%filename%: Setting PDTool variables!LF!
 set MSG=!MSG!########################################################################################################################################!LF!
-set MSG=!MSG!MY_VARS_HOME               =%MY_VARS_HOME%!LF!
-set MSG=!MSG!MY_PRE_VARS_PATH           =%MY_PRE_VARS_PATH%!LF!
-set MSG=!MSG!MY_POST_VARS_PATH          =%MY_POST_VARS_PATH%!LF!
-set MSG=!MSG!JAVA_HOME                  =%JAVA_HOME%!LF!
-set MSG=!MSG!CONFIG_PROPERTY_FILE       =%CONFIG_PROPERTY_FILE%!LF!
-set MSG=!MSG!SUBSTITUTE_DRIVE           =%SUBSTITUTE_DRIVE%!LF!
-set MSG=!MSG!NETWORK_DRIVE              =%NETWORK_DRIVE%!LF!
-set MSG=!MSG!PROJECT_HOME               =%PROJECT_HOME%!LF!
-set MSG=!MSG!PROJECT_HOME_PHYSICAL      =%PROJECT_HOME_PHYSICAL%!LF!
-set MSG=!MSG!MIN_MEMORY                 =%MIN_MEMORY%!LF!
-set MSG=!MSG!MAX_MEMORY                 =%MAX_MEMORY%!LF!
-set MSG=!MSG!CERT_ARGS                  =%CERT_ARGS%!LF!
-set MSG=!MSG!HTTP_PROXY                 =%HTTP_PROXY%!LF!
-set MSG=!MSG!JAVA_OPT                   =%JAVA_OPT%!LF!
+set MSG=!MSG!MY_VARS_HOME               =!MY_VARS_HOME!!LF!
+set MSG=!MSG!MY_PRE_VARS_PATH           =!MY_PRE_VARS_PATH!!LF!
+set MSG=!MSG!MY_POST_VARS_PATH          =!MY_POST_VARS_PATH!!LF!
+set MSG=!MSG!JAVA_HOME                  =!JAVA_HOME!!LF!
+set MSG=!MSG!CONFIG_PROPERTY_FILE       =!CONFIG_PROPERTY_FILE!!LF!
+set MSG=!MSG!SUBSTITUTE_DRIVE           =!SUBSTITUTE_DRIVE!!LF!
+set MSG=!MSG!NETWORK_DRIVE              =!NETWORK_DRIVE!!LF!
+set MSG=!MSG!PROJECT_HOME               =!PROJECT_HOME!!LF!
+set MSG=!MSG!PROJECT_HOME_PHYSICAL      =!PROJECT_HOME_PHYSICAL!!LF!
+set MSG=!MSG!MIN_MEMORY                 =!MIN_MEMORY!!LF!
+set MSG=!MSG!MAX_MEMORY                 =!MAX_MEMORY!!LF!
+set MSG=!MSG!CERT_ARGS                  =!CERT_ARGS!!LF!
+set MSG=!MSG!HTTP_PROXY                 =!HTTP_PROXY!!LF!
+set MSG=!MSG!JAVA_OPT                   =!JAVA_OPT!!LF!
 echo.!MSG!
 REM # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.bat
 if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
-if exist %DEFAULT_LOG_PATH% echo.!MSG!>>%DEFAULT_LOG_PATH%
+if exist "%DEFAULT_LOG_PATH%" echo.!MSG!>>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUTEND
 ENDLOCAL
 GOTO:EOF

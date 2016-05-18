@@ -1,0 +1,9 @@
+# ----------------------------
+# vcs-initialize-release.dp
+# ----------------------------
+# Initialize the workspace using VCONN - this is generic for any VCS.  
+#   The VCS XML Module is set as a parameter so it can be customized by the PDTool deployer.
+#   This deployment plan is specifically used by ExecutePDToolRelease.bat
+#   The variable $REL_VCS_MODULE_NAME is set in ExecutePDToolRelease.bat
+#
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace2	$VCONN	"$MODULE_HOME/$REL_VCS_MODULE_NAME"

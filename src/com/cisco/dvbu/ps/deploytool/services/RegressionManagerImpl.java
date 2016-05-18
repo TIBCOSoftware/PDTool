@@ -454,6 +454,10 @@ public class RegressionManagerImpl implements RegressionManager
 	public void compareRegressionFiles(String serverId, String regressionIds, String pathToRegressionXML, String pathToServersXML)
 			throws CompositeException {
 				
+		// Set the command and action name
+		String command = "compareRegressionFiles";
+		String actionName = "CREATE_FILE";
+		
 		// Initialize prefix
 		String prefix = "compareRegressionFiles";
 		String processedIds = null;
@@ -589,13 +593,19 @@ public class RegressionManagerImpl implements RegressionManager
 			        	CommonUtils.rpad("File2", 			50, padChar) + logDelim +
 			        	"Message"+"\r\n";
 
-			        // Write out the header log entry -- if it does not exist the sub-directories will automatically be created.
-			        if (RegressionManagerUtils.checkBooleanConfigParam(logAppend)) {
-				        	CommonUtils.appendContentToFile(logFilePath, content);
-			         } else {
-			        	// create a new file
-			        	CommonUtils.createFileWithContent(logFilePath, content);
-			        }
+					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+					if (CommonUtils.isExecOperation()) 
+					{					
+				        // Write out the header log entry -- if it does not exist the sub-directories will automatically be created.
+				        if (RegressionManagerUtils.checkBooleanConfigParam(logAppend)) {
+					        	CommonUtils.appendContentToFile(logFilePath, content);
+				         } else {
+				        	// create a new file
+				        	CommonUtils.createFileWithContent(logFilePath, content);
+				        }
+					} else {
+						logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+					}
 				
 					// Get the list of published datasource resources
 			        RegressionItem[] items = RegressionManagerUtils.parseItems(inputFilePath);
@@ -975,6 +985,10 @@ ERROR  | ....
 		int totalFailureComparisons = 0;
         Date startDate = new Date();
 	
+		// Set the command and action name
+		String command = "compareLogs";
+		String actionName = "CREATE_FILE";
+
 		String currFile = null;
 		try {		
 			// Process file2 and place the key and duration in an ArrayList
@@ -1025,13 +1039,19 @@ ERROR  | ....
 	        	CommonUtils.rpad("Query1", 			70, padChar) + logDelim +
 	        	"Query2" + "\r\n";
 	
-	        // Write out the header log entry -- if it does not exist the sub-directories will automatically be created.
-	        if (logAppend) {
-		        	CommonUtils.appendContentToFile(logFilePath, content);
-	         } else {
-	        	// create a new file
-	        	CommonUtils.createFileWithContent(logFilePath, content);
-	        }
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Write out the header log entry -- if it does not exist the sub-directories will automatically be created.
+		        if (logAppend) {
+			        	CommonUtils.appendContentToFile(logFilePath, content);
+		         } else {
+		        	// create a new file
+		        	CommonUtils.createFileWithContent(logFilePath, content);
+		        }
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 
 	        // Process the lines for file1 to drive the comparison
 	        while (lines.size() > 0)
@@ -2569,144 +2589,162 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 	private void writeRegressionXMLFile(String prefix, RegressionModule regressionModule, String pathToTargetRegressionXML, 
 			boolean flattenSecurityUsersXML, boolean flattenSecurityQueryQueriesXML, boolean flattenSecurityQueryProceduresXML, boolean flattenSecurityQueryWebServicesXML, boolean flattenSecurityPlansXML) {
 
-	// Write the Regression Module XML back out to the target file.
-	XMLUtils.createXMLFromModuleType(regressionModule, pathToTargetRegressionXML);
+		// Set the command and action name
+		String command = "compareLogs";
+		String actionName = "CREATE_FILE";
+
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			// Write the Regression Module XML back out to the target file.
+			XMLUtils.createXMLFromModuleType(regressionModule, pathToTargetRegressionXML);
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+		}
+		
+		// Parse the XML file and flatten out the XML for Users and Plans so that they don't take up as much real-estate and are easier to view
+		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder queryBuilderWithSep = null;
+		StringBuilder queryBuilderNoSep = null;					
+		boolean processingUsers = false;
+		boolean processingQueries = false;
+		boolean processingQueryType = false;
+		boolean processingProcType = false;
+		boolean processingWSType = false;
+		boolean processingPlans = false;
+		String begUserNode = "<regressionSecurityUser>";
+		String endUserNode = "</regressionSecurityUser>";
+		String begQueryNode = "<regressionSecurityQuery>";
+		String endQueryNode = "</regressionSecurityQuery>";
+		String begPlanNode = "<regressionSecurityPlanTest>";
+		String endPlanNode = "</regressionSecurityPlanTest>";	
+		String queryTypeNode = "<queryType>";
+		int userTrimCount = 0;
+		int queryTrimCount = 0;
+		int planTrimCount = 0;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(pathToTargetRegressionXML));
+			String line = null;
+			String trimLine = null;
+			String ls = System.getProperty("line.separator");
+			while ((line = reader.readLine()) != null) 
+			{
+				// Begin node found for users: <regressionSecurityUser>
+				if (line.contains(begUserNode) && flattenSecurityUsersXML)
+					processingUsers = true;
+				// Count the number of lines (nodes) found for users
+				if (processingUsers)
+					++userTrimCount;
+				
+				// Begin node found for queries: <regressionSecurityQuery>
+				if (line.contains(begQueryNode) && (flattenSecurityQueryQueriesXML || flattenSecurityQueryProceduresXML || flattenSecurityQueryWebServicesXML)) {
+					processingQueries = true;
+					queryBuilderWithSep = new StringBuilder();
+					queryBuilderNoSep = new StringBuilder();
+				}
+				// Count the number of lines (nodes) found for queries
+				if (processingQueries) {
+					++queryTrimCount;										
+					//<queryType>QUERY</queryType>
+					if (flattenSecurityQueryQueriesXML && line.contains(queryTypeNode) && line.contains("QUERY")) {
+						processingQueryType = true;
+					}
+					//<queryType>PROCEDURE</queryType>
+					if (flattenSecurityQueryProceduresXML && line.contains(queryTypeNode) && line.contains("PROCEDURE")) {
+						processingProcType = true;
+					}
+					//<queryType>WEB_SERVICE</queryType>
+					if (flattenSecurityQueryWebServicesXML && line.contains(queryTypeNode) && line.contains("WEB_SERVICE")) {
+						processingWSType = true;
+					}
+				}
+				
+				// Begin node found for plans: <regressionSecurityPlanTest>
+				if (line.contains(begPlanNode) && flattenSecurityPlansXML)
+					processingPlans = true;
+				// Count the number of lines (nodes) found for plans
+				if (processingPlans)
+					++planTrimCount;
 	
-	// Parse the XML file and flatten out the XML for Users and Plans so that they don't take up as much real-estate and are easier to view
-	StringBuilder stringBuilder = new StringBuilder();
-	StringBuilder queryBuilderWithSep = null;
-	StringBuilder queryBuilderNoSep = null;					
-	boolean processingUsers = false;
-	boolean processingQueries = false;
-	boolean processingQueryType = false;
-	boolean processingProcType = false;
-	boolean processingWSType = false;
-	boolean processingPlans = false;
-	String begUserNode = "<regressionSecurityUser>";
-	String endUserNode = "</regressionSecurityUser>";
-	String begQueryNode = "<regressionSecurityQuery>";
-	String endQueryNode = "</regressionSecurityQuery>";
-	String begPlanNode = "<regressionSecurityPlanTest>";
-	String endPlanNode = "</regressionSecurityPlanTest>";	
-	String queryTypeNode = "<queryType>";
-	int userTrimCount = 0;
-	int queryTrimCount = 0;
-	int planTrimCount = 0;
-	try {
-		BufferedReader reader = new BufferedReader(new FileReader(pathToTargetRegressionXML));
-		String line = null;
-		String trimLine = null;
-		String ls = System.getProperty("line.separator");
-		while ((line = reader.readLine()) != null) 
-		{
-			// Begin node found for users: <regressionSecurityUser>
-			if (line.contains(begUserNode) && flattenSecurityUsersXML)
-				processingUsers = true;
-			// Count the number of lines (nodes) found for users
-			if (processingUsers)
-				++userTrimCount;
-			
-			// Begin node found for queries: <regressionSecurityQuery>
-			if (line.contains(begQueryNode) && (flattenSecurityQueryQueriesXML || flattenSecurityQueryProceduresXML || flattenSecurityQueryWebServicesXML)) {
-				processingQueries = true;
-				queryBuilderWithSep = new StringBuilder();
-				queryBuilderNoSep = new StringBuilder();
-			}
-			// Count the number of lines (nodes) found for queries
-			if (processingQueries) {
-				++queryTrimCount;										
-				//<queryType>QUERY</queryType>
-				if (flattenSecurityQueryQueriesXML && line.contains(queryTypeNode) && line.contains("QUERY")) {
-					processingQueryType = true;
+				// Trim the line so there are no spaces separating nodes
+				if (userTrimCount > 1 || planTrimCount > 1 || queryTrimCount > 1) {
+					trimLine = line.trim();
 				}
-				//<queryType>PROCEDURE</queryType>
-				if (flattenSecurityQueryProceduresXML && line.contains(queryTypeNode) && line.contains("PROCEDURE")) {
-					processingProcType = true;
-				}
-				//<queryType>WEB_SERVICE</queryType>
-				if (flattenSecurityQueryWebServicesXML && line.contains(queryTypeNode) && line.contains("WEB_SERVICE")) {
-					processingWSType = true;
-				}
-			}
-			
-			// Begin node found for plans: <regressionSecurityPlanTest>
-			if (line.contains(begPlanNode) && flattenSecurityPlansXML)
-				processingPlans = true;
-			// Count the number of lines (nodes) found for plans
-			if (processingPlans)
-				++planTrimCount;
-
-			// Trim the line so there are no spaces separating nodes
-			if (userTrimCount > 1 || planTrimCount > 1 || queryTrimCount > 1) {
-				trimLine = line.trim();
-			}
-
-			// Add the line to the buffer
-			if (processingQueries) {
-				queryBuilderWithSep.append(line);
-				if (trimLine != null)
-					queryBuilderNoSep.append(trimLine);
-				else
-					queryBuilderNoSep.append(line);
-			} else if (processingUsers || processingPlans) { 
-				if (userTrimCount > 1 || planTrimCount > 1) {
-					stringBuilder.append(trimLine);
+	
+				// Add the line to the buffer
+				if (processingQueries) {
+					queryBuilderWithSep.append(line);
+					if (trimLine != null)
+						queryBuilderNoSep.append(trimLine);
+					else
+						queryBuilderNoSep.append(line);
+				} else if (processingUsers || processingPlans) { 
+					if (userTrimCount > 1 || planTrimCount > 1) {
+						stringBuilder.append(trimLine);
+					} else{
+						stringBuilder.append(line);
+					}
 				} else{
 					stringBuilder.append(line);
 				}
-			} else{
-				stringBuilder.append(line);
-			}
-			
-			// End node found for users: <regressionSecurityUser>
-			if (line.contains(endUserNode) && flattenSecurityUsersXML) {
-				processingUsers = false;
-				userTrimCount = 0;
-				trimLine = null;
-			}
-			// End node found for queries: <regressionSecurityQuery>
-			if (line.contains(endQueryNode) && (flattenSecurityQueryQueriesXML || flattenSecurityQueryProceduresXML || flattenSecurityQueryWebServicesXML)) {
-				if (processingQueryType) {
-					stringBuilder.append(queryBuilderNoSep.toString());
-					processingQueryType = false;
+				
+				// End node found for users: <regressionSecurityUser>
+				if (line.contains(endUserNode) && flattenSecurityUsersXML) {
+					processingUsers = false;
+					userTrimCount = 0;
+					trimLine = null;
 				}
-				else if (processingProcType) {
-					stringBuilder.append(queryBuilderNoSep.toString());
-					processingProcType = false;
-				} 
-				else if (processingWSType) {
-					stringBuilder.append(queryBuilderNoSep.toString());
-					processingWSType = false;
-				} else {
-					stringBuilder.append(queryBuilderWithSep.toString());										
+				// End node found for queries: <regressionSecurityQuery>
+				if (line.contains(endQueryNode) && (flattenSecurityQueryQueriesXML || flattenSecurityQueryProceduresXML || flattenSecurityQueryWebServicesXML)) {
+					if (processingQueryType) {
+						stringBuilder.append(queryBuilderNoSep.toString());
+						processingQueryType = false;
+					}
+					else if (processingProcType) {
+						stringBuilder.append(queryBuilderNoSep.toString());
+						processingProcType = false;
+					} 
+					else if (processingWSType) {
+						stringBuilder.append(queryBuilderNoSep.toString());
+						processingWSType = false;
+					} else {
+						stringBuilder.append(queryBuilderWithSep.toString());										
+					}
+					processingQueries = false;	
+					queryTrimCount = 0;
+					queryBuilderWithSep = null;
+					queryBuilderNoSep = null;
+					trimLine = null;
 				}
-				processingQueries = false;	
-				queryTrimCount = 0;
-				queryBuilderWithSep = null;
-				queryBuilderNoSep = null;
-				trimLine = null;
+				// End node found for plans: <regressionSecurityPlanTest>
+				if (line.contains(endPlanNode) && flattenSecurityPlansXML) {
+					processingPlans = false;									
+					planTrimCount = 0;
+					trimLine = null;
+				}
+				// Only write out a line separator when both processingUsers=false and processingPlans=false and processingQueries=false
+				//   In other words, users, queries and plans are not being processed in this iteration so write out a line separator.
+				if (!processingUsers && !processingPlans && !processingQueries) {
+					stringBuilder.append(ls);
+				} else 	if (processingQueries) {
+					queryBuilderWithSep.append(ls);
+				}
 			}
-			// End node found for plans: <regressionSecurityPlanTest>
-			if (line.contains(endPlanNode) && flattenSecurityPlansXML) {
-				processingPlans = false;									
-				planTrimCount = 0;
-				trimLine = null;
-			}
-			// Only write out a line separator when both processingUsers=false and processingPlans=false and processingQueries=false
-			//   In other words, users, queries and plans are not being processed in this iteration so write out a line separator.
-			if (!processingUsers && !processingPlans && !processingQueries) {
-				stringBuilder.append(ls);
-			} else 	if (processingQueries) {
-				queryBuilderWithSep.append(ls);
-			}
+		} catch (FileNotFoundException e) {
+			throw new CompositeException(e.getMessage(),e);
+		} catch (IOException e) {
+			throw new CompositeException(e.getMessage(),e);
 		}
-	} catch (FileNotFoundException e) {
-		throw new CompositeException(e.getMessage(),e);
-	} catch (IOException e) {
-		throw new CompositeException(e.getMessage(),e);
+
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			// Write out the regression XML file
+			CommonUtils.createFileWithContent(pathToTargetRegressionXML, stringBuilder.toString());
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+		}
 	}
-	CommonUtils.createFileWithContent(pathToTargetRegressionXML, stringBuilder.toString());
-}
 	
 	/**
 	 * getQueryExecLog - Derive a query execution log object from a line extracted from the query execution log.

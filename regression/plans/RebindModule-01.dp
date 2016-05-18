@@ -18,4 +18,4 @@
 # -----------------------------------------
 # Rebind Module:
 # -----------------------------------------
-PASS	FALSE	ExecuteAction   		generateRebindXML    		$SERVERID "/shared/test00/Rebind/RebindFolder/Views" 			"$PROJECT_HOME_PHYSICAL/resources/modules/generated/getRebindModuleViews.xml" "$MODULE_HOME/servers.xml" 
+PASS	FALSE	ExecuteAction   		generateRebindXML    		$SERVERID "/shared/test00/Rebind/RebindFolder/Views" 			"$MODULE_HOME/generated/getRebindModuleViews.xml" "$MODULE_HOME/servers.xml" 

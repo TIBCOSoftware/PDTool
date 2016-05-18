@@ -25,12 +25,15 @@ import java.math.BigInteger;
 
 
 
+
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.cisco.dvbu.ps.common.exception.ApplicationException;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
+import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.CompositeLogger;
 import com.cisco.dvbu.ps.common.util.wsapi.CisApiFactory;
 import com.cisco.dvbu.ps.common.util.wsapi.CompositeServer;
@@ -145,6 +148,7 @@ public class TriggerWSDAOImpl implements TriggerDAO {
 			logger.debug("Entering TriggerWSDAOImpl.takeTriggerAction() with following params "+  "actionName: " + actionName + "conditionType: " + conditionType + " conditionAttributes: " + conditionAttributes + " serverId: "+serverId + ", pathToServersXML: " + pathToServersXML);
 		}
 		
+		String command = null;
 		ResourceList returnResList = null;
 		ResourceList resourceReturnList = null;
 		
@@ -163,54 +167,84 @@ public class TriggerWSDAOImpl implements TriggerDAO {
 			if (DeployManagerUtil.getDeployManager().resourceExists(serverId, triggerPath, ResourceType.TRIGGER.name(), pathToServersXML)) {
 				boolean triggerProcessed = false;
 				
-				if(actionName.equalsIgnoreCase(TriggerDAO.action.UPDATE.name())){
+				if (actionName.equalsIgnoreCase(TriggerDAO.action.UPDATE.name()))
+				{
+					command = "updateTrigger";
+					
 					if (isEnabled == null) {
 						if(logger.isDebugEnabled()) {
 							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Invoking port.updateTrigger(\""+triggerPath+"\", \"FULL\", null, \""+conditionType+"\", "+scheduleText+", conditionAttributes=["+conditionAttrText+"], \""+actionType+"\", actionAttributes=["+actionAttrText+"], "+maxEventsQueued+", "+annotationStr+", attributes).");
 						}
 
-						returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, null, conditionType, conditionSchedule, conditionAttributes, 
-								actionType, actionAttributes, maxEventsQueued, annotation, attributes);
-
-						if(logger.isDebugEnabled()) {
-							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+						// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+						if (CommonUtils.isExecOperation()) 
+						{					
+							returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, null, conditionType, conditionSchedule, conditionAttributes, 
+									actionType, actionAttributes, maxEventsQueued, annotation, attributes);
+	
+							if(logger.isDebugEnabled()) {
+								logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+							}
+						} else {
+							logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 						}
 					} else {
 						if(logger.isDebugEnabled()) {
 							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Invoking port.updateTrigger(\""+triggerPath+"\", \"FULL\", "+isEnabled+", \""+conditionType+"\", "+scheduleText+", conditionAttributes=["+conditionAttrText+"], \""+actionType+"\", actionAttributes=["+actionAttrText+"], "+maxEventsQueued+", "+annotationStr+", attributes).");
 						}
 						
-						returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, Boolean.valueOf(isEnabled), conditionType, conditionSchedule, conditionAttributes, 
-								actionType, actionAttributes, maxEventsQueued, annotation, attributes);				
-	
-						if(logger.isDebugEnabled()) {
-							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+						// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+						if (CommonUtils.isExecOperation()) 
+						{					
+							returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, Boolean.valueOf(isEnabled), conditionType, conditionSchedule, conditionAttributes, 
+									actionType, actionAttributes, maxEventsQueued, annotation, attributes);				
+		
+							if(logger.isDebugEnabled()) {
+								logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+							}
+						} else {
+							logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 						}
 					}
 					triggerProcessed = true;
 				}
 				
-				if(actionName.equalsIgnoreCase(TriggerDAO.action.ENABLE.name())) {
+				if (actionName.equalsIgnoreCase(TriggerDAO.action.ENABLE.name())) 
+				{
+					command = "updateTrigger";
+
 					logger.debug("Invoking trigger enable for trigger id: " + triggerId + " with enabled flag: " + isEnabled);
 					if (isEnabled == null) {
 						if(logger.isDebugEnabled()) {
 							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Invoking  port.updateTrigger(\""+triggerPath+"\", \"FULL\", null, null, null, null, null, null, null, null, null).");
 						}
 						
-						returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, null, null, null, null, null, null, null, null, null);
-
-						if(logger.isDebugEnabled()) {
-							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+						// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+						if (CommonUtils.isExecOperation()) 
+						{					
+							returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, null, null, null, null, null, null, null, null, null);
+	
+							if(logger.isDebugEnabled()) {
+								logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+							}
+						} else {
+							logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 						}
 					} else {
 						if(logger.isDebugEnabled()) {
 							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Invoking  port.updateTrigger(\""+triggerPath+"\", \"FULL\", "+isEnabled+", null, null, null, null, null, null, null, null).");
 						}
 						
-						returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, Boolean.valueOf(isEnabled), null, null, null, null, null, null, null, null);			
-
-						if(logger.isDebugEnabled()) {
-							logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+						// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+						if (CommonUtils.isExecOperation()) 
+						{					
+							returnResList = port.updateTrigger(triggerPath, DetailLevel.FULL, Boolean.valueOf(isEnabled), null, null, null, null, null, null, null, null);			
+	
+							if(logger.isDebugEnabled()) {
+								logger.debug("TriggerWSDAOImpl.takeTriggerAction(\""+actionName+"\").  Success: port.updateTrigger().");
+							}
+						} else {
+							logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 						}
 					}
 					triggerProcessed = true;

@@ -33,7 +33,8 @@ REM # Set the location of PDTool 6.2
 set PDTOOL_INSTALL_HOME_6=..\..\..\
 REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
 REM # These are the property file names configured in the PDTool6.2\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS_6=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+REM #  Example: DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+set VALID_ENV_CONFIG_PAIRS_6=
 REM Set the release folders to indicate which version is being tested
 REM   Release folder 1 is designated as the CIS instance current folder.  R1 designates it is a release 1 primary, current folder.
 REM   Release folder 2 is designated as the CIS instance previous folder.  R2 designates it is a release 2 secondary, previous folder.
@@ -52,7 +53,8 @@ REM # Set the location of PDTool 7.0
 set PDTOOL_INSTALL_HOME_7=..\..\..\
 REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
 REM # These are the property file names configured in the PDTool7.0.0\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS_7=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+REM #  Example: DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+set VALID_ENV_CONFIG_PAIRS_7=
 REM Set the release folders to indicate which version is being tested
 REM   Release folder 1 is designated as the CIS instance current folder.  R1 designates it is a release 1 primary, current folder.
 REM   Release folder 2 is designated as the CIS instance previous folder.  R2 designates it is a release 2 secondary, previous folder.

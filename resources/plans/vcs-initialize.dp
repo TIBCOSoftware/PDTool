@@ -55,4 +55,4 @@
 #
 # Initialize the workspace using VCONN - this is generic for either SVN or TFS
 #
-PASS	TRUE	ExecuteAction  	vcsInitWorkspace2			 	  $VCONN												"$MODULE_HOME/VCSModule.xml"
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace2	$VCONN	"$MODULE_HOME/VCSModule.xml"

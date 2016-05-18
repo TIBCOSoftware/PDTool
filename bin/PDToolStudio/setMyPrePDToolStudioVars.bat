@@ -42,7 +42,7 @@ REM #
 REM ################################
 REM # GENERAL GROUP ENVIRONMENT
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set GEN_PRINT=1
 REM # My Java Home
 set MY_JAVA_HOME=
@@ -56,6 +56,8 @@ set PDTOOL_HOME=
 REM # Name of the configuration property file located in PDToolStudio7.0.0/resources/config
 REM #    e.g. Default=studio.properties or SVN=studio_SVN.properties or TFS=studio_TFS.properties
 set MY_CONFIG_PROPERTY_FILE=
+REM # The editor to use for VCS viewing if needed.  Windows=notepad and UNIX=vi
+set VCS_EDITOR=
 REM # Initialize the general VCS username - do not set this here.
 set VCS_USERNAME=
 REM # Initialize the general VCS password - do not set this here.
@@ -64,7 +66,7 @@ REM #
 REM ################################
 REM # TFS VARIABLES
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set TFS_PRINT=0
 REM # The TFS Home folder where tf.cmd client exists
 set TFS_HOME=
@@ -88,7 +90,7 @@ REM #
 REM ################################
 REM # SVN VARIABLES
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set SVN_PRINT=0
 REM # The SVN Home folder where svn.exe client exists
 set SVN_HOME=
@@ -112,7 +114,7 @@ REM #
 REM ################################
 REM # GIT VARIABLES
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set GIT_PRINT=0
 REM # The GIT Home folder where svn.exe client exists
 set GIT_HOME=
@@ -136,7 +138,7 @@ REM #
 REM ################################
 REM # P4 VARIABLES
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set P4_PRINT=0
 REM # The Perforce Home folder where svn.exe client exists
 set P4_HOME=
@@ -160,7 +162,7 @@ REM #
 REM ################################
 REM # CVS VARIABLES
 REM ################################
-REM # 0=Do not print this section, 1=Print this section
+REM # 0=Do not print this section, 1 or true=Print this section
 set CVS_PRINT=0
 REM # The Perforce Home folder where svn.exe client exists
 set CVS_HOME=
@@ -212,6 +214,13 @@ REM #==========================================================
 set filename=%1
 set MSG=
 set PR_PASSWORD=
+REM # Convert true to 1
+if "%GEN_PRINT%"=="true" set GEN_PRINT=1
+if "%TFS_PRINT%"=="true" set TFS_PRINT=1
+if "%SVN_PRINT%"=="true" set SVN_PRINT=1
+if "%GIT_PRINT%"=="true" set GIT_PRINT=1
+if "%P4_PRINT%"=="true"  set P4_PRINT=1
+if "%CVS_PRINT%"=="true" set CVS_PRINT=1
 SETLOCAL ENABLEDELAYEDEXPANSION
 REM # LF must have 2 blank lines following it to create a line feed
 set LF=^
@@ -224,81 +233,81 @@ if "%GEN_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!GENERAL VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!MY_JAVA_HOME               =%MY_JAVA_HOME%!LF!
-set MSG=!MSG!PDTOOL_SUBSTITUTE_DRIVE    =%PDTOOL_SUBSTITUTE_DRIVE%!LF!
-set MSG=!MSG!PDTOOL_INSTALL_HOME        =%PDTOOL_INSTALL_HOME%!LF!
-set MSG=!MSG!PDTOOL_HOME                =%PDTOOL_HOME%!LF!
-set MSG=!MSG!MY_CONFIG_PROPERTY_FILE    =%MY_CONFIG_PROPERTY_FILE%!LF!
+set MSG=!MSG!MY_JAVA_HOME               =!MY_JAVA_HOME!!LF!
+set MSG=!MSG!PDTOOL_SUBSTITUTE_DRIVE    =!PDTOOL_SUBSTITUTE_DRIVE!!LF!
+set MSG=!MSG!PDTOOL_INSTALL_HOME        =!PDTOOL_INSTALL_HOME!!LF!
+set MSG=!MSG!PDTOOL_HOME                =!PDTOOL_HOME!!LF!
+set MSG=!MSG!MY_CONFIG_PROPERTY_FILE    =!MY_CONFIG_PROPERTY_FILE!!LF!
 )
 if "%TFS_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!TFS VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!TFS_HOME                   =%TFS_HOME%!LF!
-set MSG=!MSG!TFS_VCS_REPOSITORY_URL     =%TFS_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!TFS_VCS_PROJECT_ROOT       =%TFS_VCS_PROJECT_ROOT%!LF!
-set MSG=!MSG!TFS_VCS_USERNAME           =%TFS_VCS_USERNAME%!LF!
+set MSG=!MSG!TFS_HOME                   =!TFS_HOME!!LF!
+set MSG=!MSG!TFS_VCS_REPOSITORY_URL     =!TFS_VCS_REPOSITORY_URL!!LF!
+set MSG=!MSG!TFS_VCS_PROJECT_ROOT       =!TFS_VCS_PROJECT_ROOT!!LF!
+set MSG=!MSG!TFS_VCS_USERNAME           =!TFS_VCS_USERNAME!!LF!
 CALL:printablePassword "%TFS_VCS_PASSWORD%" PR_PASSWORD
 set MSG=!MSG!TFS_VCS_PASSWORD           =!PR_PASSWORD!!LF!
-set MSG=!MSG!TFS_VCS_WORKSPACE_NAME     =%TFS_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!TFS_VCS_WORKSPACE_NAME_TEMP=%TFS_VCS_WORKSPACE_NAME_TEMP%!LF!
+set MSG=!MSG!TFS_VCS_WORKSPACE_NAME     =!TFS_VCS_WORKSPACE_NAME!!LF!
+set MSG=!MSG!TFS_VCS_WORKSPACE_NAME_TEMP=!TFS_VCS_WORKSPACE_NAME_TEMP!!LF!
 )
 if "%SVN_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!SVN VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!SVN_HOME                   =%SVN_HOME%!LF!
-set MSG=!MSG!SVN_VCS_REPOSITORY_URL     =%SVN_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!SVN_VCS_PROJECT_ROOT       =%SVN_VCS_PROJECT_ROOT%!LF!
-set MSG=!MSG!SVN_VCS_USERNAME           =%SVN_VCS_USERNAME%!LF!
+set MSG=!MSG!SVN_HOME                   =!SVN_HOME!!LF!
+set MSG=!MSG!SVN_VCS_REPOSITORY_URL     =!SVN_VCS_REPOSITORY_URL!!LF!
+set MSG=!MSG!SVN_VCS_PROJECT_ROOT       =!SVN_VCS_PROJECT_ROOT!!LF!
+set MSG=!MSG!SVN_VCS_USERNAME           =!SVN_VCS_USERNAME!!LF!
 CALL:printablePassword "%SVN_VCS_PASSWORD%" PR_PASSWORD
 set MSG=!MSG!SVN_VCS_PASSWORD           =!PR_PASSWORD!!LF!
-set MSG=!MSG!SVN_VCS_WORKSPACE_NAME     =%SVN_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!SVN_VCS_WORKSPACE_NAME_TEMP=%SVN_VCS_WORKSPACE_NAME_TEMP%!LF!
+set MSG=!MSG!SVN_VCS_WORKSPACE_NAME     =!SVN_VCS_WORKSPACE_NAME!!LF!
+set MSG=!MSG!SVN_VCS_WORKSPACE_NAME_TEMP=!SVN_VCS_WORKSPACE_NAME_TEMP!!LF!
 )
 if "%GIT_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!GIT VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!GIT_HOME                   =%GIT_HOME%!LF!
-set MSG=!MSG!GIT_VCS_REPOSITORY_URL     =%GIT_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!GIT_VCS_PROJECT_ROOT       =%GIT_VCS_PROJECT_ROOT%!LF!
-set MSG=!MSG!GIT_VCS_USERNAME           =%GIT_VCS_USERNAME%!LF!
+set MSG=!MSG!GIT_HOME                   =!GIT_HOME!!LF!
+set MSG=!MSG!GIT_VCS_REPOSITORY_URL     =!GIT_VCS_REPOSITORY_URL!!LF!
+set MSG=!MSG!GIT_VCS_PROJECT_ROOT       =!GIT_VCS_PROJECT_ROOT!!LF!
+set MSG=!MSG!GIT_VCS_USERNAME           =!GIT_VCS_USERNAME!!LF!
 CALL:printablePassword "%GIT_VCS_PASSWORD%" PR_PASSWORD
 set MSG=!MSG!GIT_VCS_PASSWORD           =!PR_PASSWORD!!LF!
-set MSG=!MSG!GIT_VCS_WORKSPACE_NAME     =%GIT_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!GIT_VCS_WORKSPACE_NAME_TEMP=%GIT_VCS_WORKSPACE_NAME_TEMP%!LF!
+set MSG=!MSG!GIT_VCS_WORKSPACE_NAME     =!GIT_VCS_WORKSPACE_NAME!!LF!
+set MSG=!MSG!GIT_VCS_WORKSPACE_NAME_TEMP=!GIT_VCS_WORKSPACE_NAME_TEMP!!LF!
 )
 if "%P4_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!PERFORCE VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!P4_HOME                    =%P4_HOME%!LF!
-set MSG=!MSG!P4_VCS_REPOSITORY_URL      =%P4_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!P4_VCS_PROJECT_ROOT        =%P4_VCS_PROJECT_ROOT%!LF!
-set MSG=!MSG!P4_VCS_USERNAME            =%P4_VCS_USERNAME%!LF!
+set MSG=!MSG!P4_HOME                    =!P4_HOME!!LF!
+set MSG=!MSG!P4_VCS_REPOSITORY_URL      =!P4_VCS_REPOSITORY_URL!!LF!
+set MSG=!MSG!P4_VCS_PROJECT_ROOT        =!P4_VCS_PROJECT_ROOT!!LF!
+set MSG=!MSG!P4_VCS_USERNAME            =!P4_VCS_USERNAME!!LF!
 CALL:printablePassword "%P4_VCS_PASSWORD%" PR_PASSWORD
 set MSG=!MSG!P4_VCS_PASSWORD            =!PR_PASSWORD!!LF!
-set MSG=!MSG!P4_VCS_WORKSPACE_NAME      =%P4_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!P4_VCS_WORKSPACE_NAME_TEMP =%P4_VCS_WORKSPACE_NAME_TEMP%!LF!
+set MSG=!MSG!P4_VCS_WORKSPACE_NAME      =!P4_VCS_WORKSPACE_NAME!!LF!
+set MSG=!MSG!P4_VCS_WORKSPACE_NAME_TEMP =!P4_VCS_WORKSPACE_NAME_TEMP!!LF!
 )
 if "%CVS_PRINT%"=="1" (
 set MSG=!MSG!------------------!LF!
 set MSG=!MSG!CVS VARIABLES!LF!
 set MSG=!MSG!------------------!LF!
-set MSG=!MSG!CVS_HOME                   =%CVS_HOME%!LF!
-set MSG=!MSG!CVS_VCS_REPOSITORY_URL     =%CVS_VCS_REPOSITORY_URL%!LF!
-set MSG=!MSG!CVS_VCS_PROJECT_ROOT       =%CVS_VCS_PROJECT_ROOT%!LF!
-set MSG=!MSG!CVS_VCS_USERNAME           =%CVS_VCS_USERNAME%!LF!
+set MSG=!MSG!CVS_HOME                   =!CVS_HOME!!LF!
+set MSG=!MSG!CVS_VCS_REPOSITORY_URL     =!CVS_VCS_REPOSITORY_URL!!LF!
+set MSG=!MSG!CVS_VCS_PROJECT_ROOT       =!CVS_VCS_PROJECT_ROOT!!LF!
+set MSG=!MSG!CVS_VCS_USERNAME           =!CVS_VCS_USERNAME!!LF!
 CALL:printablePassword "%CVS_VCS_PASSWORD%" PR_PASSWORD
 set MSG=!MSG!CVS_VCS_PASSWORD           =!PR_PASSWORD!!LF!
-set MSG=!MSG!CVS_VCS_WORKSPACE_NAME     =%CVS_VCS_WORKSPACE_NAME%!LF!
-set MSG=!MSG!CVS_VCS_WORKSPACE_NAME_TEMP=%CVS_VCS_WORKSPACE_NAME_TEMP%!LF!
+set MSG=!MSG!CVS_VCS_WORKSPACE_NAME     =!CVS_VCS_WORKSPACE_NAME!!LF!
+set MSG=!MSG!CVS_VCS_WORKSPACE_NAME_TEMP=!CVS_VCS_WORKSPACE_NAME_TEMP!!LF!
 )
 echo.!MSG!
 REM # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.bat
 if not defined DEFAULT_LOG_PATH goto WRITEOUTPUTEND
-if exist %DEFAULT_LOG_PATH% echo.!MSG!>>%DEFAULT_LOG_PATH%
+if exist "%DEFAULT_LOG_PATH%" echo.!MSG!>>"%DEFAULT_LOG_PATH%"
 :WRITEOUTPUTEND
 ENDLOCAL
 GOTO:EOF

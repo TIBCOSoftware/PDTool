@@ -77,6 +77,10 @@ public class GroupManagerImpl implements GroupManager {
 
 	public void generateGroupsXML(String serverId, String domainName, String pathToGroupsXML, String pathToServersXML) throws CompositeException {
 
+		// Set the command and action name
+		String command = "generateGroupsXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -118,7 +122,14 @@ public class GroupManagerImpl implements GroupManager {
 				i ++;
 				groupModule.getGroup().add(groupType);
 			}
-			XMLUtils.createXMLFromModuleType(groupModule, pathToGroupsXML);
+			
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				XMLUtils.createXMLFromModuleType(groupModule, pathToGroupsXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 	}
 

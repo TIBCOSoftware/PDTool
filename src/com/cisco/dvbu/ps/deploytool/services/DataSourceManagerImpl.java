@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContextException;
 import com.cisco.dvbu.ps.common.CommonConstants;
 import com.cisco.dvbu.ps.common.exception.CompositeException;
 import com.cisco.dvbu.ps.common.exception.ValidationException;
+import com.cisco.dvbu.ps.common.util.Base64EncodeDecode;
 import com.cisco.dvbu.ps.common.util.CommonUtils;
 import com.cisco.dvbu.ps.common.util.PropertyManager;
 import com.cisco.dvbu.ps.common.util.XMLUtils;
@@ -48,6 +49,8 @@ import com.cisco.dvbu.ps.deploytool.modules.DataSourceTypeType;
 import com.cisco.dvbu.ps.deploytool.modules.DataSourceTypesType;
 import com.cisco.dvbu.ps.deploytool.modules.DatasourceModule;
 import com.cisco.dvbu.ps.deploytool.modules.GenericDataSourceType;
+import com.cisco.dvbu.ps.deploytool.modules.DatasourceKeystoreType;
+import com.cisco.dvbu.ps.deploytool.modules.DatasourceKeystoreAttributeType;
 import com.cisco.dvbu.ps.deploytool.modules.IntrospectDataSourcePlanEntryType;
 import com.cisco.dvbu.ps.deploytool.modules.ObjectFactory;
 import com.cisco.dvbu.ps.deploytool.modules.RelationalDataSourceType;
@@ -197,6 +200,9 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 						processedIds = processedIds + ",";
 					processedIds = processedIds + identifier;
 					
+					/*********************************
+					 *  Populate Datasource Attributes
+					 *********************************/
 					if (actionName.equals(DataSourceDAO.action.INTROSPECT.name())) {
 						dsAttributeList = populateAttributeList(datasource, serverId, pathToServersXML);					
 						plan = populateIntrospectionPlan(datasource, serverId, pathToServersXML);					
@@ -204,6 +210,9 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 					} else {
 						dsAttributeList = populateAttributeList(datasource, serverId, pathToServersXML);					
 					}
+					/*********************************
+					 *  takeDatasource
+					 *********************************/
 					ResourceList resourceList = getDataSourceDAO().takeDataSourceAction(actionName, dsResPath, plan, runInBackgroundTransaction, reportDetail, dsAttributeList, serverId, pathToServersXML);
 
 					if(resourceList != null){
@@ -316,6 +325,9 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 		// this data source.
 		AttributeList dsAttributeList = new AttributeList();
 		
+		/*********************************
+		 *  RELATIONAL datasource
+		 *********************************/
 		if (datasource.getRelationalDataSource() != null) {
 
 			// Get the datasource path and extract in variables in the path
@@ -323,10 +335,22 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 
 			//populate attributes from relational data source
 			populateAttributesFromRelationalDataSource(datasource,dsAttributeList);
+
+			// Create a generic keystore attribute type
+			boolean addedNewAttribute = false;
+			AttributeDefType attributeKeystore = new AttributeDefType();
+
+			//Get the keystore if it exists
+			DatasourceKeystoreType keystore = new DatasourceKeystoreType();
+			if (datasource.getRelationalDataSource().getKeystore() != null && datasource.getRelationalDataSource().getKeystore().getKeystoreAttributes().size() > 0) {
+				keystore = datasource.getRelationalDataSource().getKeystore();
+
+				// Populate a new generic attribute when a keystore is to be imported from the DatasourceModule.xml
+				attributeKeystore = createGenericAttributeKeystore(keystore, prefix, propertyFile);
+			}
 			
 			//populate attributes from generic attributes from relational data source
-			if(datasource.getRelationalDataSource().getGenericAttribute() != null){
-				
+			if (datasource.getRelationalDataSource().getGenericAttribute() != null) {
 
 				// Get the Resource definition for this data source path
 				DataSourceResource currentDataSource = (DataSourceResource) getResourceDAO().getResource(serverId, dsResPath, pathToServersXML);		
@@ -379,21 +403,56 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 							// WRITE_ON_CREATE is not allowed on updates - It will throw a null pointer exception.  This line is commented out:
 //							&& (attributeDef.getUpdateRule() == AttributeUpdateRule.READ_WRITE || attributeDef.getUpdateRule() == AttributeUpdateRule.WRITE_ON_CREATE)) 
 						&&	!PropertyManager.getInstance().containsPropertyValue(propertyFile, "DataSourceModule_NonUpdateableAttributes", attribute.getName())) {
-												
+							
+						// Check if the attribute is a keystore and this attribute is not a newly added attribute and there is a keystore entry to process/replace
+						if (!addedNewAttribute && keystore != null && attribute.getName().equalsIgnoreCase("keystore")) {
+							// Replace the existing attribute "keystore" with the one from the file system
+							attribute = attributeKeystore;
+							addedNewAttribute = true;
+						} 
+						
 						// Create the generic attribute structure from the DataSourceModule.xml
-						Attribute genericAttribute = populateGenericAttributeForUpdate(attribute, attributeDef, prefix, propertyFile);
+						Attribute genericAttribute = populateGenericAttributeForUpdate(attribute, attributeDef, prefix, propertyFile);						
 						if (genericAttribute != null) {
 							// Add the generic attribute to the data source object
 							dsAttributeList.getAttribute().add(genericAttribute);
 						}
 					}
 				}
+				if (!addedNewAttribute && keystore != null && keystore.getKeystoreAttributes().size() > 0) {
+					// Get the Attribute Definition and Update Rules for the specific DataSource type
+					AttributeDef attributeDef = getAttributeDef(attributeDefList, "keystore");
+
+					// Create the generic attribute structure from the DataSourceModule.xml
+					Attribute genericAttribute = populateGenericAttributeForUpdate(attributeKeystore, attributeDef, prefix, propertyFile);
+					if (genericAttribute != null) {
+						// Add the generic attribute to the data source object
+						dsAttributeList.getAttribute().add(genericAttribute);
+					}
+				}
 			}
-		} else if(datasource.getGenericDataSource() != null) {
+		} 
+		/*********************************
+		 *  GENERIC datasource
+		 *********************************/
+		else if (datasource.getGenericDataSource() != null) {
 
 			// Get the datasource path and extract in variables in the path
 			String dsResPath = CommonUtils.extractVariable(prefix, datasource.getGenericDataSource().getResourcePath(), propertyFile, true);
 
+			// Create a generic keystore attribute type
+			boolean addedNewAttribute = false;
+			AttributeDefType attributeKeystore = new AttributeDefType();
+
+			//Get the keystore if it exists
+			DatasourceKeystoreType keystore = new DatasourceKeystoreType();
+			if (datasource.getGenericDataSource().getKeystore() != null && datasource.getGenericDataSource().getKeystore().getKeystoreAttributes().size() > 0) {
+				keystore = datasource.getGenericDataSource().getKeystore();
+
+				// Populate a new generic attribute when a keystore is to be imported from the DatasourceModule.xml
+				attributeKeystore = createGenericAttributeKeystore(keystore, prefix, propertyFile);
+			}
+			
 			//populate attributes from generic attributes from generic data source
 			if (datasource.getGenericDataSource().getGenericAttribute() != null) {
 
@@ -450,16 +509,38 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 							
 						&& !PropertyManager.getInstance().containsPropertyValue(propertyFile, "DataSourceModule_NonUpdateableAttributes", attribute.getName())) {
 						
+						// Check if the attribute is a keystore and this attribute is not a newly added attribute and there is a keystore entry to process/replace
+						if (!addedNewAttribute && keystore != null && keystore.getKeystoreAttributes() != null && keystore.getKeystoreAttributes().size() > 0 && attribute.getName().equalsIgnoreCase("keystore")) {
+							// Replace the existing attribute "keystore" with the one from the file system
+							attribute = attributeKeystore;
+							addedNewAttribute = true;
+						} 
+
 						// Create the generic attribute structure from the DataSourceModule.xml
 						Attribute genericAttribute = populateGenericAttributeForUpdate(attribute, attributeDef, prefix, propertyFile);
-						if (genericAttribute != null) {
+						if (genericAttribute != null && genericAttribute.getName() != null) {
 							// Add the generic attribute to the data source object
 							dsAttributeList.getAttribute().add(genericAttribute);
 						}
 					}
 				}
+				if (!addedNewAttribute && keystore != null && keystore.getKeystoreAttributes() != null && keystore.getKeystoreAttributes().size() > 0) {
+					// Get the Attribute Definition and Update Rules for the specific DataSource type
+					AttributeDef attributeDef = getAttributeDef(attributeDefList, "keystore");
+
+					// Create the generic attribute structure from the DataSourceModule.xml
+					Attribute genericAttribute = populateGenericAttributeForUpdate(attributeKeystore, attributeDef, prefix, propertyFile);
+					if (genericAttribute != null) {
+						// Add the generic attribute to the data source object
+						dsAttributeList.getAttribute().add(genericAttribute);
+					}		
+				}
 			}
-		} else if(datasource.getIntrospectDataSource() != null) {
+		} 
+		/*********************************
+		 *  INTROSPECT datasource
+		 *********************************/
+		else if (datasource.getIntrospectDataSource() != null) {
 
 			// Get the datasource path and extract in variables in the path
 			String dsResPath = CommonUtils.extractVariable(prefix, datasource.getIntrospectDataSource().getResourcePath(), propertyFile, true);
@@ -777,6 +858,124 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 		}
 	}
 
+	// create a generic attribute specifically for a keystore based on reading a keystore file from the filesystem
+	private AttributeDefType createGenericAttributeKeystore(DatasourceKeystoreType keystore, String prefix, String propertyFile) {
+		/*
+		 *      <valueMap>
+                    <!--Element entry is optional, maxOccurs=unbounded-->
+                    <entry>
+                        <!--Element key is optional-->
+                        <key>
+                            <!--Element type is optional-->
+                            <type>UNKNOWN</type>
+                            <!--Element value is optional-->
+                            <value>string</value>
+                        </key>
+                        <!--Element value is optional-->
+                        <value>
+                            <!--Element type is optional-->
+                            <type>UNKNOWN</type>
+                            <!--Element value is optional-->
+                            <value>string</value>
+                        </value>
+                    </entry>
+				</valueMap>
+		 */
+		AttributeDefType genericAttribute = new AttributeDefType();
+	
+		// Initialize the genericAttribute object
+		genericAttribute = new AttributeDefType();
+		
+		// Set the attribute name "keystore"
+		genericAttribute.setName("keystore");
+		// keystore is of type MAP
+		genericAttribute.setType(AttributeTypeSimpleType.MAP);
+		
+		// Create the Value Map structure <common:valueMap>
+		ServerAttributeValueMap serverAttributeValueMap = new ServerAttributeValueMap();
+		for (DatasourceKeystoreAttributeType attr : keystore.getKeystoreAttributes()) {
+			
+			/***********************************
+			 * Set keystore type: jks or pkcs12
+			 ***********************************/
+			// Create the Value Map Entry: <common:entry>
+			ServerAttributeValueMapEntryType serverAttributeValueMapEntryType = new ServerAttributeValueMapEntryType();
+			
+			// Get the entry key: <common:key>
+			ServerAttributeValueMapEntryKeyType serverAttributeValueMapEntryKeyType = new ServerAttributeValueMapEntryKeyType();
+			serverAttributeValueMapEntryKeyType.setType(AttributeTypeSimpleType.STRING);
+			serverAttributeValueMapEntryKeyType.setValue("type");	
+			// Set the Value Map Entry Key
+			serverAttributeValueMapEntryType.setKey(serverAttributeValueMapEntryKeyType);
+			
+			// Get the entry value: <common:value>
+			ServerAttributeValueMapEntryValueType serverAttributeValueMapEntryValueType = new ServerAttributeValueMapEntryValueType();
+			serverAttributeValueMapEntryValueType.setType(AttributeTypeSimpleType.STRING);
+			serverAttributeValueMapEntryValueType.setValue(CommonUtils.extractVariable(prefix, attr.getKeystoreType(), propertyFile, false));	
+			// Set the Value Map Entry
+			serverAttributeValueMapEntryType.setValue(serverAttributeValueMapEntryValueType);
+
+			// Add the Value Map Entry to the Entry list
+			serverAttributeValueMap.getEntry().add(serverAttributeValueMapEntryType);
+			
+			/***********************************
+			 * Set keystore password
+			 ***********************************/
+			// Create the Value Map Entry: <common:entry>
+			serverAttributeValueMapEntryType = new ServerAttributeValueMapEntryType();
+			
+			// Get the entry key: <common:key>
+			serverAttributeValueMapEntryKeyType = new ServerAttributeValueMapEntryKeyType();
+			serverAttributeValueMapEntryKeyType.setType(AttributeTypeSimpleType.STRING);
+			serverAttributeValueMapEntryKeyType.setValue("password");
+			// Set the Value Map Entry Key
+			serverAttributeValueMapEntryType.setKey(serverAttributeValueMapEntryKeyType);
+			
+			// Get the entry value: <common:value>
+			serverAttributeValueMapEntryValueType = new ServerAttributeValueMapEntryValueType();
+			serverAttributeValueMapEntryValueType.setType(AttributeTypeSimpleType.STRING);
+			String password = CommonUtils.decrypt(CommonUtils.extractVariable(prefix, attr.getKeystorePassword(), propertyFile, false));
+			serverAttributeValueMapEntryValueType.setValue(CommonUtils.encrypt(password).replaceAll("Encrypted:", ""));	
+			// Set the Value Map Entry Value
+			serverAttributeValueMapEntryType.setValue(serverAttributeValueMapEntryValueType);
+
+			// Add the Value Map Entry to the Entry list
+			serverAttributeValueMap.getEntry().add(serverAttributeValueMapEntryType);
+
+			/***********************************
+			 * Set keystore byte array
+			 ***********************************/
+			// Create the Value Map Entry: <common:entry>
+			serverAttributeValueMapEntryType = new ServerAttributeValueMapEntryType();
+			
+			// Get the entry key: <common:key>
+			serverAttributeValueMapEntryKeyType = new ServerAttributeValueMapEntryKeyType();
+			serverAttributeValueMapEntryKeyType.setType(AttributeTypeSimpleType.STRING);
+			serverAttributeValueMapEntryKeyType.setValue("data");
+			// Set the Value Map Entry Key
+			serverAttributeValueMapEntryType.setKey(serverAttributeValueMapEntryKeyType);
+			
+			// Get the entry value: <common:value>
+			serverAttributeValueMapEntryValueType = new ServerAttributeValueMapEntryValueType();
+			serverAttributeValueMapEntryValueType.setType(AttributeTypeSimpleType.BYTE_ARRAY);
+			String filePath = CommonUtils.extractVariable(prefix, attr.getKeystoreFilePath(), propertyFile, false);
+			byte[] binaryBuffer = CommonUtils.getFileAsBinary(filePath);
+//			String encodedBuffer = Base64EncodeDecode.encodeString(binaryBuffer);
+			String encodedBuffer = Base64EncodeDecode.encodeLines(binaryBuffer);
+			serverAttributeValueMapEntryValueType.setValue(encodedBuffer);	
+			// Set the Value Map Entry Value
+			serverAttributeValueMapEntryType.setValue(serverAttributeValueMapEntryValueType);
+
+			// Add the Value Map Entry to the Entry list
+			serverAttributeValueMap.getEntry().add(serverAttributeValueMapEntryType);
+		}
+		// Add then Value Map to the Attribute Value
+		genericAttribute.setValueMap(serverAttributeValueMap);
+		
+		return genericAttribute;
+	}
+	
+	
 	/*************************************************************************************
 	 * populateIntrospectionPlan()
 	 * 
@@ -1068,6 +1267,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 //	@Override
 	public void generateDataSourcesXML(String serverId, String startPath, String pathToDataSourceXML, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateDataSourcesXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -1094,7 +1297,14 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 				populateNameAndPathAttributes(++seqId, dsResource,dataSourceChoiceType);
 				populateAttributes(dsResource,dataSourceChoiceType, serverId, pathToServersXML);
 			}
-			XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceXML);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 			
 	}
@@ -1469,6 +1679,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 //	@Override
 	public void generateDataSourceAttributeDefs(String serverId, String startPath, String pathToDataSourceAttrDefs, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateDataSourceAttributeDefs";
+		String actionName = "CREATE_XML";
+		
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -1557,8 +1771,15 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 					dataSourceChoiceType.setAttributeDefsDataSource(attributeDefsDataSourceType);
 				}
 			}
-			// Create the Attribute Defintion List file
-			XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceAttrDefs);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Create the Attribute Defintion List file
+				XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceAttrDefs);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}	
 	}
 
@@ -1574,6 +1795,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 //	@Override
 	public void generateDataSourceAttributeDefsByDataSourceType(String serverId, String dataSourceType, String pathToDataSourceAttrDefs, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateDataSourceAttributeDefsByDataSourceType";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -1650,8 +1875,14 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 		// Set the attribute definitions for the attribute defnition data source
 		dataSourceChoiceType.setAttributeDefsDataSource(attributeDefsDataSourceType);
 
-		// Create the Attribute Defintion List file
-		XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceAttrDefs);
+		// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+		if (CommonUtils.isExecOperation()) 
+		{					
+			// Create the Attribute Defintion List file
+			XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceAttrDefs);
+		} else {
+			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+		}
 	}
 
 	
@@ -1667,6 +1898,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 //	@Override
 	public void generateDataSourceTypes(String serverId, String pathToDataSourceTypesXML, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateDataSourceTypes";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -1720,8 +1955,14 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 
 			dataSourceChoiceType.setDataSourceTypesDataSource(dataSourceTypesType);
 
-			// Create the Data Source Types List file
-			XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceTypesXML);
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				// Create the Data Source Types List file
+				XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceTypesXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}			
 	}
 	
@@ -1738,6 +1979,10 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 //	@Override
 	public void generateDataSourcesResourceListXML(String serverId, String startPath, String pathToDataSourceResourceListXML, String pathToServersXML) throws CompositeException {
 		
+		// Set the command and action name
+		String command = "generateDataSourcesResourceListXML";
+		String actionName = "CREATE_XML";
+
 		// Validate whether the files exist or not
 		if (!CommonUtils.fileExists(pathToServersXML)) {
 			throw new CompositeException("File ["+pathToServersXML+"] does not exist.");
@@ -1788,7 +2033,14 @@ public class DataSourceManagerImpl<IntrospectDataSourcePlanEntries> implements D
 					dataSourceModule.getDatasource().add(childDataSourceChoiceType);
 				}
 			}
-			XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceResourceListXML);
+
+			// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
+			if (CommonUtils.isExecOperation()) 
+			{					
+				XMLUtils.createXMLFromModuleType(dataSourceModule, pathToDataSourceResourceListXML);
+			} else {
+				logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
+			}
 		}
 			
 	}
