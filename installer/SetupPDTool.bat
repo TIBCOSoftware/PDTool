@@ -136,49 +136,6 @@ if defined I_VCS_EDITOR set I_VCS_EDITOR=!I_VCS_EDITOR:"=!
 if defined I_VALID_ENV_CONFIG_PAIRS set I_VALID_ENV_CONFIG_PAIRS=!I_VALID_ENV_CONFIG_PAIRS:"=!
 
 REM ############################################
-REM # Check for single escaped variables and 
-REM #   escape with 2 % signs such as %%VAR1%%
-REM # Limitation: Only a single escaped variable
-REM #   is supported.  Multiple variables are not
-REM #   supported such as %VAR1%%VAR2%
-REM ############################################
-REM # mtinius 2016-05-16: Logic not needed but left in.
-REM # call:escStr %debug% I_JAVA_HOME I_JAVA_HOME
-REM # call:escStr %debug% I_VCS_BASE_TYPE I_VCS_BASE_TYPE
-REM # call:escStr %debug% I_VCS_HOME I_VCS_HOME
-REM # call:escStr %debug% I_VCS_REPOSITORY_URL I_VCS_REPOSITORY_URL
-REM # call:escStr %debug% I_VCS_PROJECT_ROOT I_VCS_PROJECT_ROOT
-REM # call:escStr %debug% I_VCS_WORKSPACE_HOME I_VCS_WORKSPACE_HOME
-REM # call:escStr %debug% I_VCS_WORKSPACE_NAME I_VCS_WORKSPACE_NAME
-REM # call:escStr %debug% I_VCS_TEMP_DIR I_VCS_TEMP_DIR
-REM # call:escStr %debug% I_VCS_USERNAME I_VCS_USERNAME
-REM # call:escStr %debug% I_VCS_DOMAIN I_VCS_DOMAIN
-REM # call:escStr %debug% I_CIS_USERNAME I_CIS_USERNAME
-REM # call:escStr %debug% I_CIS_DOMAIN I_CIS_DOMAIN
-REM # call:escStr %debug% I_VCS_EDITOR I_VCS_EDITOR
-REM # call:escStr %debug% I_VALID_ENV_CONFIG_PAIRS I_VALID_ENV_CONFIG_PAIRS
-
-REM ############################################
-REM # Remove double quotes
-REM ############################################
-setlocal enabledelayedexpansion
-if defined I_JAVA_HOME set I_JAVA_HOME=!I_JAVA_HOME:"=!
-if defined I_VCS_BASE_TYPE set I_VCS_BASE_TYPE=!I_VCS_BASE_TYPE:"=!
-if defined I_VCS_HOME set I_VCS_HOME=!I_VCS_HOME:"=!
-if defined I_VCS_REPOSITORY_URL set I_VCS_REPOSITORY_URL=!I_VCS_REPOSITORY_URL:"=!
-if defined I_VCS_PROJECT_ROOT set I_VCS_PROJECT_ROOT=!I_VCS_PROJECT_ROOT:"=!
-if defined I_VCS_WORKSPACE_HOME set I_VCS_WORKSPACE_HOME=!I_VCS_WORKSPACE_HOME:"=!
-if defined I_VCS_WORKSPACE_NAME set I_VCS_WORKSPACE_NAME=!I_VCS_WORKSPACE_NAME:"=!
-if defined I_VCS_TEMP_DIR set I_VCS_TEMP_DIR=!I_VCS_TEMP_DIR:"=!
-if defined I_VCS_USERNAME set I_VCS_USERNAME=!I_VCS_USERNAME:"=!
-if defined I_VCS_DOMAIN set I_VCS_DOMAIN=!I_VCS_DOMAIN:"=!
-if defined I_VCS_PASSWORD set I_VCS_PASSWORD=!I_VCS_PASSWORD:"=!
-if defined I_CIS_USERNAME set I_CIS_USERNAME=!I_CIS_USERNAME:"=!
-if defined I_CIS_DOMAIN set I_CIS_DOMAIN=!I_CIS_DOMAIN:"=!
-if defined I_VCS_EDITOR set I_VCS_EDITOR=!I_VCS_EDITOR:"=!
-if defined I_VALID_ENV_CONFIG_PAIRS set I_VALID_ENV_CONFIG_PAIRS=!I_VALID_ENV_CONFIG_PAIRS:"=!
-
-REM ############################################
 REM # Display banner
 REM ############################################
 set I_PDTOOL_INSTALL_TYPE_PAD="%I_PDTOOL_INSTALL_TYPE%%DEFAULT_CIS_VERSION%"
@@ -1491,10 +1448,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "GEN_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set GEN_PRINT=true
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set GEN_PRINT=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set GEN_PRINT=" 
+set    I_FIND_TEXT=set GEN_PRINT=
+set I_REPLACE_TEXT=set GEN_PRINT=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=true
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1503,22 +1464,27 @@ REM #---------------------------------------
 echo.
 echo.Replace "MY_JAVA_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set MY_JAVA_HOME=%I_JAVA_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_JAVA_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_JAVA_HOME="
+set    I_FIND_TEXT=set MY_JAVA_HOME=
+set I_REPLACE_TEXT=set MY_JAVA_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_JAVA_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
-REM #---------------------------------------
-REM # set PDTOOL_SUBSTITUTE_DRIVE
-REM #---------------------------------------
 echo.
 echo.Replace "PDTOOL_SUBSTITUTE_DRIVE" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set PDTOOL_SUBSTITUTE_DRIVE=%PDTOOL_SUBSTITUTE_DRIVE%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_SUBSTITUTE_DRIVE=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_SUBSTITUTE_DRIVE="
+set    I_FIND_TEXT=set PDTOOL_SUBSTITUTE_DRIVE=
+set I_REPLACE_TEXT=set PDTOOL_SUBSTITUTE_DRIVE=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!PDTOOL_SUBSTITUTE_DRIVE!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1527,10 +1493,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "PDTOOL_INSTALL_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set PDTOOL_INSTALL_HOME=%I_PDTOOL_DESTINATION_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_INSTALL_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_INSTALL_HOME="
+set    I_FIND_TEXT=set PDTOOL_INSTALL_HOME=
+set I_REPLACE_TEXT=set PDTOOL_INSTALL_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_PDTOOL_DESTINATION_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1539,10 +1509,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "PDTOOL_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set PDTOOL_HOME=%I_PDTOOL_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set PDTOOL_HOME="
+set    I_FIND_TEXT=set PDTOOL_HOME=
+set I_REPLACE_TEXT=set PDTOOL_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_PDTOOL_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1551,10 +1525,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "MY_CONFIG_PROPERTY_FILE" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set MY_CONFIG_PROPERTY_FILE=%I_CONFIG_PROPERTY_FILE%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_CONFIG_PROPERTY_FILE=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set MY_CONFIG_PROPERTY_FILE="
+set    I_FIND_TEXT=set MY_CONFIG_PROPERTY_FILE=
+set I_REPLACE_TEXT=set MY_CONFIG_PROPERTY_FILE=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_CONFIG_PROPERTY_FILE!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1563,10 +1541,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "CIS_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set CIS_PRINT=true
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PRINT=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PRINT=" 
+set    I_FIND_TEXT=set CIS_PRINT=
+set I_REPLACE_TEXT=set CIS_PRINT=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=true
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1576,11 +1558,16 @@ if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALLER_CIS_USERNAME_BYPASS
 echo.
 echo.Replace "CIS_USERNAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set CIS_USERNAME=%I_CIS_USERNAME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_USERNAME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_USERNAME="
+set    I_FIND_TEXT=set CIS_USERNAME=
+set I_REPLACE_TEXT=set CIS_USERNAME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_CIS_USERNAME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
 :INSTALLER_CIS_USERNAME_BYPASS
 
 REM #---------------------------------------
@@ -1590,11 +1577,14 @@ if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALLER_CIS_PASSWORD_BYPASS
 echo.
 echo.Replace "CIS_PASSWORD" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set    I_REPLACE_TEXT=set CIS_PASSWORD=%I_CIS_PASSWORD%
-set I_REPLACE_TEXT_PR=set CIS_PASSWORD=%I_PR_CIS_PASSWORD%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PASSWORD=" "%I_REPLACE_TEXT_PR%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_PASSWORD="
+set    I_FIND_TEXT=set CIS_PASSWORD=
+set I_REPLACE_TEXT=set CIS_PASSWORD=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_CIS_PASSWORD!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_PR_CIS_PASSWORD!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 :INSTALLER_CIS_PASSWORD_BYPASS
 
@@ -1605,11 +1595,16 @@ if "%I_PDTOOL_INSTALL_TYPE%"=="PDToolStudio" goto INSTALLER_CIS_DOMAIN_BYPASS
 echo.
 echo.Replace "CIS_DOMAIN" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set CIS_DOMAIN=%I_CIS_DOMAIN%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_DOMAIN=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set CIS_DOMAIN="
+set    I_FIND_TEXT=set CIS_DOMAIN=
+set I_REPLACE_TEXT=set CIS_DOMAIN=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_CIS_DOMAIN!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
+
 :INSTALLER_CIS_DOMAIN_BYPASS
 
 REM #---------------------------------------
@@ -1632,10 +1627,14 @@ if "%I_VCS_BASE_TYPE%"=="" (
 	echo.
 	echo.Replace "NOVCS_VALID_ENV_CONFIG_PAIRS" in %MODIFY_SET_MY_PRE_VARS%
 	echo.
-	set I_REPLACE_TEXT=set NOVCS_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%
-	echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set NOVCS_VALID_ENV_CONFIG_PAIRS=" "%I_REPLACE_TEXT%"
-				  CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set NOVCS_VALID_ENV_CONFIG_PAIRS="
+	set    I_FIND_TEXT=set NOVCS_VALID_ENV_CONFIG_PAIRS=
+	set I_REPLACE_TEXT=set NOVCS_VALID_ENV_CONFIG_PAIRS=
+	setlocal enabledelayedexpansion
+	set I_REPLACE_VALUE=!I_VALID_ENV_CONFIG_PAIRS!
+	echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+				  CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 	set ERROR=%ERRORLEVEL%
+	endlocal& set ERROR=%ERROR%
 	if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
     goto INSTALLER_MODIFY_SET_VARS
 )
@@ -1647,10 +1646,14 @@ echo.
 echo.Replace "%I_VCS_BASE_TYPE%_PRINT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 REM # Check for %I_VCS_BASE_TYPE%_PRINT=0
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_PRINT=true
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_PRINT=0" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_PRINT=0"
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_PRINT=0
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_PRINT=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=true
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1659,10 +1662,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_HOME=%I_VCS_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_HOME="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_HOME=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1671,10 +1678,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=%I_VCS_REPOSITORY_URL%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_REPOSITORY_URL!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1683,10 +1694,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=%I_VCS_PROJECT_ROOT%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_PROJECT_ROOT!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1695,10 +1710,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=%I_VCS_WORKSPACE_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=" 
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_WORKSPACE_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1707,10 +1726,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=%I_VCS_WORKSPACE_NAME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_WORKSPACE_NAME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1719,10 +1742,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_TEMP_DIR" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=%I_VCS_TEMP_DIR%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_TEMP_DIR!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1736,10 +1763,14 @@ ENDLOCAL& set I_VCS_DOMAIN=%I_VCS_DOMAIN%
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_USERNAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_USERNAME=%I_VCS_USERNAME%%I_VCS_DOMAIN%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_USERNAME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_USERNAME="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_USERNAME=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_USERNAME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_USERNAME!!I_VCS_DOMAIN!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1748,11 +1779,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PASSWORD" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set    I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_PASSWORD=%I_VCS_PASSWORD%
-set I_REPLACE_TEXT_PR=set %I_VCS_BASE_TYPE%_VCS_PASSWORD=%I_PR_VCS_PASSWORD%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD=" "%I_REPLACE_TEXT_PR%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VCS_PASSWORD="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_PASSWORD=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_PASSWORD=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_PASSWORD!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_PR_VCS_PASSWORD!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1761,10 +1795,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "VCS_EDITOR" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set VCS_EDITOR=%VCS_EDITOR%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set VCS_EDITOR=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set VCS_EDITOR="
+set    I_FIND_TEXT=set VCS_EDITOR=
+set I_REPLACE_TEXT=set VCS_EDITOR=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VCS_EDITOR!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1773,10 +1811,14 @@ REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS" in %MODIFY_SET_MY_PRE_VARS%
 echo.
-set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=%I_VALID_ENV_CONFIG_PAIRS%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS="
+set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=
+set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VALID_ENV_CONFIG_PAIRS!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
@@ -1807,13 +1849,18 @@ REM #---------------------------------------
 echo.
 echo.Replace "MY_VARS_HOME" in %MODIFY_SET_VARS%
 echo.
-set I_REPLACE_TEXT=set MY_VARS_HOME=%I_PDTOOL_DESTINATION_HOME%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "set MY_VARS_HOME="
+set    I_FIND_TEXT=set MY_VARS_HOME=
+set I_REPLACE_TEXT=set MY_VARS_HOME=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_PDTOOL_DESTINATION_HOME!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_PDTOOL_HOME%\bin\%MODIFY_SET_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR2
-  
+
 GOTO INSTALLER_MODIFY_ATF_SET_VARS
+
 :INSTALLER_REPLACE_ERROR2
    echo.
    echo.################################################################################################
@@ -1840,11 +1887,16 @@ set VAID_PAIR_NAME=VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%
 echo.
 echo.Replace "VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%" in %MODIFY_ATF_SET_VARS%
 echo.
-set I_REPLACE_TEXT=set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=%I_VALID_ENV_CONFIG_PAIRS%
-echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=" "%I_REPLACE_TEXT%"
-              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%="
+set    I_FIND_TEXT=set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=
+set I_REPLACE_TEXT=set VALID_ENV_CONFIG_PAIRS_%I_BASE_CIS_VERSION%=
+setlocal enabledelayedexpansion
+set I_REPLACE_VALUE=!I_VALID_ENV_CONFIG_PAIRS!
+echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
+              CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_PDTOOL_HOME%\AutomatedTestFramework\regression\bin\%MODIFY_ATF_SET_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
+endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR3
+
 GOTO INSTALLER_CONTINUE_SCRIPT
 
 :INSTALLER_REPLACE_ERROR3
@@ -2149,10 +2201,10 @@ REM # Functions
 REM #
 REM ####################################################################
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :LCase
 :UCase
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Converts to upper/lower case variable contents
 ::# Syntax: CALL :UCase _VAR1 _VAR2
 ::# Syntax: CALL :LCase _VAR1 _VAR2
@@ -2169,12 +2221,12 @@ FOR %%Z IN (%_Abet%) DO SET _Lib_UCase_Tmp=!_Lib_UCase_Tmp:%%Z=%%Z!
 SET %2=%_Lib_UCase_Tmp%
 GOTO:EOF
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :resolveVariableDelayedExpansion
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Resolve delayed variable expansion for variables containing double percent signs around the variable
 ::# call:resolveVariableDelayedExpansion %VAR% result
-:::#####################################################################
+::#####################################################################
 SETLOCAL ENABLEDELAYEDEXPANSION
 set VAR=%1
 rem echo resolveVariableDelayedExpansion.VAR=!VAR!
@@ -2185,14 +2237,9 @@ set %2=%result%
 GOTO:EOF
 
 
-REM #-----------------------------------------------------------
-REM # This section creates a substitute drive using "net use"
-REM # The advantage over "subst" is that this is permanent while
-REM #   "subst" is temporary in that id does not survive reboots.
-REM #-----------------------------------------------------------
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :MapNetworkDrive
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# This section creates a substitute drive using "net use"
 ::# The advantage over "subst" is that this is permanent while
 ::#   "subst" is temporary in that id does not survive reboots. 
@@ -2294,7 +2341,7 @@ if "%debug%"=="1" echo.[DEBUG] replace: oldStr=!oldStr!
 if "%debug%"=="1" echo.[DEBUG] replace: newStr=!newStr!
 if "%debug%"=="1" echo.[DEBUG] replace: searchStr=!searchStr!
 
-:: Replace old string with new string within search string
+REM # Replace old string with new string within search string
 if "!oldStr!"=="" findstr "^::" "%~f0"&GOTO:EOF
    for /f "tokens=1,* delims=]" %%A in ('"echo.%searchStr%|find /n /v """') do (
    set "line=%%B"
@@ -2309,9 +2356,9 @@ set %4=%outvar%
 GOTO:EOF
 
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :FindAvailableDrive
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Find the next available drive letter for SUBST to use
 ::# Syntax CALL :FindAvailableDrive PDTOOL_SUBSTITUTE_DRIVE
 ::#####################################################################
@@ -2329,7 +2376,7 @@ echo.# EXECUTE:  Find the next available drive letter for SUBST or NET USE to us
 echo.#
 echo.#==============================================================================================
 echo.#
-:: Find all of the network drives in use
+REM # Find all of the network drives in use
 for /F "tokens=2 skip=2" %%d IN ('net use') do (
    set drive=%%d
 rem echo drive=!drive!
@@ -2342,9 +2389,9 @@ rem echo drive=!drive!
 )
 echo.# NetworkDrivesInUse=!NetworkDrivesInUse!
 echo.#
-:: Find all  of the local drives in use and cross-reference with network drives
-::   to come up with the list of available drives.
-::   Start the availalbe list with I:
+REM # Find all  of the local drives in use and cross-reference with network drives
+REM #  to come up with the list of available drives.
+REM #  Start the availalbe list with I:
 set AvailableDrives=
 set LocalNetworkDrivesInUse=
 REM # Loop through the list of drives to find an available drive
@@ -2365,7 +2412,7 @@ echo.# LocalNetworkDrivesInUse=%LocalNetworkDrivesInUse%
 echo.#
 echo.# AvailableDrives=%AvailableDrives% 
 echo.#
-:: Use the first available drive from the available list.
+REM # Use the first available drive from the available list.
 set _PDTOOL_SUBSTITUTE_DRIVE=
 for %%a in (!AvailableDrives!) do (
    if not defined _PDTOOL_SUBSTITUTE_DRIVE set _PDTOOL_SUBSTITUTE_DRIVE=%%a
@@ -2379,9 +2426,9 @@ SET %2=%_PDTOOL_SUBSTITUTE_DRIVE%
 GOTO:EOF
 
 
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 :EVALUATE_NETWORK_DRIVES
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 ::# Evaluate the network drives
 ::#
 ::# Description: call:EVALUATE_NETWORK_DRIVES homeDrive homeDriveShare destDrive destPath debug pathFound  
@@ -2440,9 +2487,9 @@ if "%debug%"=="1" echo.[DEBUG] %0: return parameter [%6=%pathfound%]
 set %6=%pathfound%
 GOTO:EOF
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :EVALUATE_NETWORK_DRIVES_LOGIC
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Sub-procedure to EVALUATE_NETWORK_DRIVES
 ::#####################################################################
 	set pathfound=false
@@ -2467,10 +2514,12 @@ set %1=%pathfound%
 GOTO:EOF
 
 
-:: --------------------------------------------------------------------
-:escStr debug string string -- adds %% to escape a variable
-:: --------------------------------------------------------------------
-::# Description: call:escStr debug string string  
+::#--------------------------------------------------------------------
+:escStr
+::#--------------------------------------------------------------------
+::# Adds %% to a string to escape a variable
+::# Description: call:escStr debug string string
+::#  e.g. call:escStr %debug% I_JAVA_HOME I_JAVA_HOME
 ::#  -- debug  [in] - 1=debug, 0=no debug
 ::#  -- string [in]  - variable name containing the string being escaped
 ::#  -- string [out] - variable to be used to return the escaped string
@@ -2498,9 +2547,9 @@ GOTO:EOF
 GOTO:EOF
 
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :strLen string len -- returns the length of a string
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Description: call:strLen string len  
 ::#  -- string [in]  - variable name containing the string being measured for length
 ::#  -- len    [out] - variable to be used to return the string length
@@ -2520,14 +2569,14 @@ GOTO:EOF
 GOTO:EOF
 
 
-::=======================================================
+::#--------------------------------------------------------------------
 :LPAD string width padCharacter
-::  -- pads to the left of a string with specified characters to the width specified
-::=======================================================
-::  -- string [in,out] - string to be left padded
-::  -- width [in] - width of resulting string
-::  -- character [in,opt] - character to pad with, default is space
-
+::#--------------------------------------------------------------------
+::# -- pads to the left of a string with specified characters to the width specified
+::# -- string [in,out] - string to be left padded
+::# -- width [in] - width of resulting string
+::# -- character [in,opt] - character to pad with, default is space
+::#####################################################################
 SETLOCAL ENABLEDELAYEDEXPANSION
 call set inStr=%%%~1%%
 set width=%2
@@ -2543,14 +2592,14 @@ for /l %%i in (0,1,%width%) do (
 GOTO:EOF
 
 
-::=======================================================
+::#--------------------------------------------------------------------
 :RPAD string width padCharacter
-::  -- pads to the right of a string with specified characters to the width specified
-::=======================================================
-::  -- string [in,out] - string to be right padded
-::  -- width [in] - width of resulting string
-::  -- character [in,opt] - character to pad with, default is space
-
+::#--------------------------------------------------------------------
+::# -- pads to the right of a string with specified characters to the width specified
+::# -- string [in,out] - string to be right padded
+::# -- width [in] - width of resulting string
+::# -- character [in,opt] - character to pad with, default is space
+::#####################################################################
 SETLOCAL ENABLEDELAYEDEXPANSION
 call set inStr=%%%~1%%
 set width=%2
@@ -2567,13 +2616,14 @@ for /l %%i in (0,1,%width%) do (
 GOTO:EOF
 
 
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 :RTRIM
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 ::# Trim right
 ::# Description: call:RTRIM instring outstring  
 ::#      -- instring  [in]  - variable name containing the string to be trimmed on the right
 ::#      -- outstring [out] - variable name containing the result string
+::#####################################################################
 SET str=!%1!
 rem echo."%str%"
 for /l %%a in (1,1,31) do if "!str:~-1!"==" " set str=!str:~0,-1!
@@ -2582,13 +2632,14 @@ SET %2=%str%
 GOTO:EOF
 
 
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 :LTRIM
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 ::# Trim left
 ::# Description: call:LTRIM instring outstring  
 ::#      -- instring  [in]  - variable name containing the string to be trimmed on the left
 ::#      -- outstring [out] - variable name containing the result string
+::#####################################################################
 SET str=!%1!
 rem echo."%str%"
 for /f "tokens=* delims= " %%a in ("%str%") do set str=%%a
@@ -2596,14 +2647,15 @@ rem echo."%str%"
 SET %2=%str%
 GOTO:EOF
 
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 :REMOVE_SEPARATOR
-:: -------------------------------------------------------------
+::#-------------------------------------------------------------
 ::# Remove ending / or \ for VCS_REPOSITORY_URL
 ::# Description: call:REMOVE_SEPARATOR instr sep outstr  
 ::#      -- instr  [in]  - the string value to be evaluated for an ending separator
 ::#      -- sep    [in]  - the separator value such as / or \
 ::#      -- outstr [out] - variable name containing the result string
+::#####################################################################
 set instr=%1
 set sep=%2
 SETLOCAL ENABLEDELAYEDEXPANSION
@@ -2628,14 +2680,15 @@ IF NOT DEFINED instr GOTO REMOVE_SEPARATOR_END
 GOTO:EOF
 
 
-REM #-------------------------------------------------------------
+::#--------------------------------------------------------------------
 :INCREMENT_BACKUP_FILE_NAME
-REM #-------------------------------------------------------------
-REM # Increment the backup file name
-REM # Description: call:INCREMENT_BACKUP_FILE_NAME indir inbackupfile outvariable  
-REM #      -- indir        [in]  - the directory in which to search for files
-REM #      -- inbackupfile [in]  - the string name of the backup file to look for. A .* is added to the end of the name.
-REM #      -- outvariable  [out] - the variable name in which to return the new backup file name
+::#--------------------------------------------------------------------
+::# Increment the backup file name
+::# Description: call:INCREMENT_BACKUP_FILE_NAME indir inbackupfile outvariable  
+::#      -- indir        [in]  - the directory in which to search for files
+::#      -- inbackupfile [in]  - the string name of the backup file to look for. A .* is added to the end of the name.
+::#      -- outvariable  [out] - the variable name in which to return the new backup file name
+::#####################################################################
 set TARGET_DIR=%1
 set TARGET_FILE=%2
 set TARGET_EXT=0
@@ -2662,18 +2715,20 @@ set %3=%TARGET_FILE%
 GOTO:EOF
 
 
-REM #-------------------------------------------------------------
+::#--------------------------------------------------------------------
 :ParseLineReplaceText
-REM #-------------------------------------------------------------
-REM # Increment the backup file name
-REM # Description: call:ParseLineReplaceText debug I_REPLACE_INPUT_FILE I_REPLACE_FIND_THIS I_REPLACE_OUTPUT_FILE
-REM #      -- debugParse             [in] - debug flag. 1=debug, 0=no debug
-REM #      -- I_REPLACE_INPUT_FILE   [in] - the input file path string
-REM #      -- I_REPLACE_FIND_THIS    [in] - the string to search for
-REM #      -- I_REPLACE_OUTPUT_FILE  [in] - the output file path string
-REM #      -- I_REPLACE_TEXT         [environment variable] - the string to replace which is set prior to invoking this function.
-REM #                                This is necessary to retain the original value which may contain values such as "!$%" which
-REM #                                get resolved by the command interpreter and thus the values are lost.
+::#--------------------------------------------------------------------
+::# Parse the input file and search for the
+::# Description: call:ParseLineReplaceText debug I_REPLACE_INPUT_FILE I_REPLACE_FIND_THIS I_REPLACE_OUTPUT_FILE
+::#      -- debugParse             [in] - debug flag. 1=debug, 0=no debug
+::#      -- I_REPLACE_INPUT_FILE   [in] - the input file path string
+::#      -- I_REPLACE_FIND_THIS    [in] - the string to search for
+::#      -- I_REPLACE_OUTPUT_FILE  [in] - the output file path string
+::#      -- !I_REPLACE_TEXT!!I_REPLACE_VALUE! 
+::#               [environment variable] - the string to replace which is set prior to invoking this function.
+::#                This is necessary to retain the original value which may contain values such as "!$%" which
+::#                get resolved by the command interpreter and thus the values are lost.
+::#####################################################################
 REM #=======================================
 REM # Assign input variables
 REM #=======================================
@@ -2742,26 +2797,25 @@ for /F "usebackq tokens=* delims=" %%a in ("%I_REPLACE_INPUT_FILE%.tmp") DO (
 if exist "%I_REPLACE_INPUT_FILE%.tmp" del "%I_REPLACE_INPUT_FILE%.tmp"
 GOTO:EOF
 
+::#--------------------------------------------------------------------
 :ParseLineLoopWriteReplaceLine
-setlocal ENABLEEXTENSIONS DISABLEDELAYEDEXPANSION
+::#--------------------------------------------------------------------
 set debugParse=%1
 set Counter=%2
 set I_REPLACE_OUTPUT_FILE=%3
-setlocal enabledelayedexpansion
-if defined line  set I_REPLACE_OUTPUT_FILE=!I_REPLACE_OUTPUT_FILE:"=!
-endlocal& set I_REPLACE_OUTPUT_FILE=%I_REPLACE_OUTPUT_FILE%
-if %debugParse%==1 echo.[DEBUG %Counter%]   I_REPLACE_TEXT=%I_REPLACE_TEXT% 
+if %debugParse%==2 set debugParse=1
+if defined I_REPLACE_OUTPUT_FILE  set I_REPLACE_OUTPUT_FILE=!I_REPLACE_OUTPUT_FILE:"=!
+if %debugParse%==1 echo.[DEBUG %Counter%]   I_REPLACE_TEXT=%I_REPLACE_TEXT%!I_REPLACE_VALUE!
 if %debugParse%==1 echo.[DEBUG %Counter%]   I_REPLACE_OUTPUT_FILE=%I_REPLACE_OUTPUT_FILE% 
 if %debugParse%==1 echo.
-if %Counter% equ 1 echo.%I_REPLACE_TEXT%>"%I_REPLACE_OUTPUT_FILE%"
-if %Counter% gtr 1 echo.%I_REPLACE_TEXT%>>"%I_REPLACE_OUTPUT_FILE%"
-endlocal
+if %Counter% equ 1 echo.%I_REPLACE_TEXT%!I_REPLACE_VALUE!>"%I_REPLACE_OUTPUT_FILE%"
+if %Counter% gtr 1 echo.%I_REPLACE_TEXT%!I_REPLACE_VALUE!>>"%I_REPLACE_OUTPUT_FILE%"
 GOTO:EOF
 
 
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 :InitVariables
-:: --------------------------------------------------------------------
+::#--------------------------------------------------------------------
 ::# Initialize the variables
 ::#####################################################################
 set I_PDTOOL_SOURCE_FILES=
@@ -2801,4 +2855,11 @@ set MODIFY_SET_MY_PRE_VARS=
 set MODIFY_SET_MY_POST_VARS=
 set INSTALLER_SOURCE_PDTOOL_DIR=
 set INSTALLER_SOURCE_VCSCLIENTS_DIR=
+set I_REPLACE_TEXT=
+set I_REPLACE_VALUE=
+set I_REPLACE_INPUT_FILE=
+set I_REPLACE_OUTPUT_FILE=
+set I_REPLACE_FIND_THIS=
+set debug=
+set debugParse=
 GOTO:EOF
