@@ -31,13 +31,13 @@ import com.compositesw.services.system.util.common.OperationStatus;
  */
 @WebService(name = "userPortType", targetNamespace = "http://www.compositesw.com/services/system/admin")
 @XmlSeeAlso({
+    com.compositesw.services.system.admin.server.ObjectFactory.class,
+    com.compositesw.services.system.admin.resource.ObjectFactory.class,
     com.compositesw.services.system.admin.archive.ObjectFactory.class,
+    com.compositesw.services.system.admin.execute.ObjectFactory.class,
     com.compositesw.services.system.util.common.ObjectFactory.class,
     com.compositesw.services.system.util.security.ObjectFactory.class,
-    com.compositesw.services.system.admin.resource.ObjectFactory.class,
-    com.compositesw.services.system.admin.user.ObjectFactory.class,
-    com.compositesw.services.system.admin.server.ObjectFactory.class,
-    com.compositesw.services.system.admin.execute.ObjectFactory.class
+    com.compositesw.services.system.admin.user.ObjectFactory.class
 })
 public interface UserPortType {
 
@@ -45,8 +45,8 @@ public interface UserPortType {
     /**
      * 
      * @param groupNames
-     * @param userName
      * @param domainName
+     * @param userName
      * @throws AddUserToGroupsSoapFault
      */
     @WebMethod(action = "addUserToGroups")
@@ -65,8 +65,8 @@ public interface UserPortType {
     /**
      * 
      * @param groupName
-     * @param userNames
      * @param domainName
+     * @param userNames
      * @throws AddUsersToGroupSoapFault
      */
     @WebMethod(action = "addUsersToGroup")
@@ -102,8 +102,8 @@ public interface UserPortType {
     /**
      * 
      * @param annotation
-     * @param domainType
      * @param isBlocking
+     * @param domainType
      * @param domainName
      * @param attributes
      * @return
@@ -132,8 +132,8 @@ public interface UserPortType {
      * 
      * @param annotation
      * @param groupName
-     * @param domainName
      * @param explicitRights
+     * @param domainName
      * @throws CreateGroupSoapFault
      */
     @WebMethod(action = "createGroup")
@@ -154,10 +154,10 @@ public interface UserPortType {
     /**
      * 
      * @param annotation
-     * @param userName
-     * @param domainName
-     * @param explicitRights
      * @param password
+     * @param explicitRights
+     * @param domainName
+     * @param userName
      * @throws CreateUserSoapFault
      */
     @WebMethod(action = "createUser")
@@ -210,8 +210,8 @@ public interface UserPortType {
 
     /**
      * 
-     * @param userName
      * @param domainName
+     * @param userName
      * @throws DestroyUserSoapFault
      */
     @WebMethod(action = "destroyUser")
@@ -227,8 +227,8 @@ public interface UserPortType {
 
     /**
      * 
-     * @param scope
      * @param domainName
+     * @param scope
      * @return
      *     returns com.compositesw.services.system.admin.user.GroupList
      * @throws GetDomainGroupsSoapFault
@@ -278,8 +278,8 @@ public interface UserPortType {
 
     /**
      * 
-     * @param scope
      * @param domainName
+     * @param scope
      * @return
      *     returns com.compositesw.services.system.admin.user.UserList
      * @throws GetDomainUsersSoapFault
@@ -335,8 +335,8 @@ public interface UserPortType {
 
     /**
      * 
-     * @param userName
      * @param domainName
+     * @param userName
      * @return
      *     returns com.compositesw.services.system.admin.user.GroupList
      * @throws GetGroupsByUserSoapFault
@@ -410,8 +410,8 @@ public interface UserPortType {
     /**
      * 
      * @param groupNames
-     * @param userName
      * @param domainName
+     * @param userName
      * @throws RemoveUserFromGroupsSoapFault
      */
     @WebMethod(action = "removeUserFromGroups")
@@ -430,8 +430,8 @@ public interface UserPortType {
     /**
      * 
      * @param groupName
-     * @param userNames
      * @param domainName
+     * @param userNames
      * @throws RemoveUsersFromGroupSoapFault
      */
     @WebMethod(action = "removeUsersFromGroup")
@@ -471,9 +471,9 @@ public interface UserPortType {
      * 
      * @param annotation
      * @param groupName
-     * @param userNames
-     * @param domainName
      * @param explicitRights
+     * @param domainName
+     * @param userNames
      * @throws UpdateGroupSoapFault
      */
     @WebMethod(action = "updateGroup")
@@ -495,13 +495,13 @@ public interface UserPortType {
 
     /**
      * 
-     * @param annotation
      * @param groupNames
-     * @param userName
-     * @param domainName
-     * @param oldPassword
-     * @param explicitRights
+     * @param annotation
      * @param password
+     * @param explicitRights
+     * @param oldPassword
+     * @param domainName
+     * @param userName
      * @throws UpdateUserSoapFault
      */
     @WebMethod(action = "updateUser")
@@ -527,8 +527,8 @@ public interface UserPortType {
 
     /**
      * 
-     * @param userName
      * @param lockUser
+     * @param userName
      * @return
      *     returns java.lang.String
      * @throws UpdateUserLockStateSoapFault

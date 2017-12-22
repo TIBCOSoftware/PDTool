@@ -24,8 +24,8 @@ public class GetIntrospectedResourceIdsTaskSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public GetIntrospectedResourceIdsTaskSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class GetIntrospectedResourceIdsTaskSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public GetIntrospectedResourceIdsTaskSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

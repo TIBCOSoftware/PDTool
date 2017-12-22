@@ -62,21 +62,21 @@ import com.compositesw.services.system.util.common.Page;
  */
 @WebService(name = "resourcePortType", targetNamespace = "http://www.compositesw.com/services/system/admin")
 @XmlSeeAlso({
+    com.compositesw.services.system.admin.server.ObjectFactory.class,
+    com.compositesw.services.system.admin.resource.ObjectFactory.class,
     com.compositesw.services.system.admin.archive.ObjectFactory.class,
+    com.compositesw.services.system.admin.execute.ObjectFactory.class,
     com.compositesw.services.system.util.common.ObjectFactory.class,
     com.compositesw.services.system.util.security.ObjectFactory.class,
-    com.compositesw.services.system.admin.resource.ObjectFactory.class,
-    com.compositesw.services.system.admin.user.ObjectFactory.class,
-    com.compositesw.services.system.admin.server.ObjectFactory.class,
-    com.compositesw.services.system.admin.execute.ObjectFactory.class
+    com.compositesw.services.system.admin.user.ObjectFactory.class
 })
 public interface ResourcePortType {
 
 
     /**
      * 
-     * @param status
      * @param reintrospectId
+     * @param status
      * @param reintrospectReport
      * @throws CancelDataSourceReintrospectSoapFault
      */
@@ -112,13 +112,13 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
-     * @param currentOwnerDomain
      * @param path
-     * @param newOwnerDomain
      * @param newOwnerName
-     * @param type
+     * @param newOwnerDomain
      * @param recurse
+     * @param currentOwnerDomain
+     * @param detail
+     * @param type
      * @param currentOwnerName
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -198,11 +198,11 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param copyMode
-     * @param targetContainerPath
      * @param path
      * @param newName
      * @param type
+     * @param copyMode
+     * @param targetContainerPath
      * @throws CopyResourceSoapFault
      */
     @WebMethod(action = "copyResource")
@@ -224,9 +224,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param updateRecursively
-     * @param copyPrivilegeEntries
      * @param mode
+     * @param copyPrivilegeEntries
+     * @param updateRecursively
      * @throws CopyResourcePrivilegesSoapFault
      */
     @WebMethod(action = "copyResourcePrivileges")
@@ -244,9 +244,9 @@ public interface ResourcePortType {
 
     /**
      * 
+     * @param entries
      * @param copyMode
      * @param targetContainerPath
-     * @param entries
      * @throws CopyResourcesSoapFault
      */
     @WebMethod(action = "copyResources")
@@ -264,8 +264,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param connector
+     * @param detail
      * @throws CreateConnectorSoapFault
      */
     @WebMethod(action = "createConnector")
@@ -299,10 +299,10 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param name
      * @param path
+     * @param name
      * @param attributes
+     * @param detail
      * @param dataSourceType
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -331,11 +331,11 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param targetPath
-     * @param detail
-     * @param name
      * @param path
+     * @param name
+     * @param targetPath
      * @param targetType
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws CreateLinkSoapFault
@@ -362,12 +362,12 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
-     * @param copyAnnotations
-     * @param targetContainerPath
      * @param path
      * @param createMode
+     * @param copyAnnotations
+     * @param detail
      * @param type
+     * @param targetContainerPath
      * @param includeRoot
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -398,13 +398,13 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param includeOwnership
-     * @param subtype
-     * @param name
-     * @param resourceBundle
-     * @param resource
      * @param path
+     * @param includeOwnership
+     * @param resourceBundle
+     * @param subtype
+     * @param resource
+     * @param name
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -515,8 +515,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws GetAllResourcesByPathSoapFault
@@ -535,8 +535,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -578,8 +578,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -601,8 +601,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param name
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ConnectorList
      * @throws GetConnectorGroupSoapFault
@@ -669,10 +669,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param dsPath
-     * @param detail
      * @param path
      * @param attributes
+     * @param dsPath
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws GetDataSourceChildResourcesSoapFault
@@ -695,9 +695,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param status
-     * @param reintrospectId
      * @param isBlocking
+     * @param reintrospectId
+     * @param status
      * @param reintrospectReport
      * @throws GetDataSourceReintrospectResultSoapFault
      */
@@ -789,8 +789,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -829,13 +829,13 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
      * @param totalResults
-     * @param page
+     * @param resourceIdentifiers
      * @param lastUpdate
      * @param block
-     * @param resourceIdentifiers
+     * @param page
      * @param completed
+     * @param taskId
      * @throws GetIntrospectableResourceIdsResultSoapFault
      */
     @WebMethod(action = "getIntrospectableResourceIdsResult")
@@ -861,12 +861,12 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
-     * @param totalResults
-     * @param dsContainerId
      * @param path
-     * @param attributes
+     * @param totalResults
      * @param recurse
+     * @param dsContainerId
+     * @param attributes
+     * @param taskId
      * @throws GetIntrospectableResourceIdsTaskSoapFault
      */
     @WebMethod(action = "getIntrospectableResourceIdsTask")
@@ -890,13 +890,13 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
      * @param totalResults
-     * @param page
+     * @param resourceIdentifiers
      * @param lastUpdate
      * @param block
-     * @param resourceIdentifiers
+     * @param page
      * @param completed
+     * @param taskId
      * @throws GetIntrospectedResourceIdsResultSoapFault
      */
     @WebMethod(action = "getIntrospectedResourceIdsResult")
@@ -922,10 +922,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
-     * @param totalResults
      * @param path
+     * @param totalResults
      * @param attributes
+     * @param taskId
      * @throws GetIntrospectedResourceIdsTaskSoapFault
      */
     @WebMethod(action = "getIntrospectedResourceIdsTask")
@@ -962,9 +962,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param dsPath
      * @param path
      * @param dsType
+     * @param dsPath
      * @return
      *     returns com.compositesw.services.system.util.common.AttributeList
      * @throws GetIntrospectionAttributesSoapFault
@@ -985,8 +985,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param includeOnlyUnlockableResources
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws GetLockedResourcesSoapFault
@@ -1005,8 +1005,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.IntrospectionStatus
      * @throws GetMostRecentIntrospectionStatusSoapFault
@@ -1025,9 +1025,9 @@ public interface ResourcePortType {
 
     /**
      * 
+     * @param parentDataSourceType
      * @param resources
      * @param selfDataSourceTypeName
-     * @param parentDataSourceType
      * @throws GetParentDataSourceTypeSoapFault
      */
     @WebMethod(action = "getParentDataSourceType")
@@ -1045,8 +1045,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1068,8 +1068,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1111,9 +1111,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param includeColumnPrivileges
-     * @param entries
      * @param filter
+     * @param entries
+     * @param includeColumnPrivileges
      * @return
      *     returns com.compositesw.services.system.admin.resource.GetResourcePrivilegesResponse.PrivilegeEntries
      * @throws GetResourcePrivilegesSoapFault
@@ -1154,11 +1154,11 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
-     * @param includeLockState
-     * @param resourcesToUpdate
      * @param discoverChildren
+     * @param resourcesToUpdate
+     * @param detail
      * @param changeId
+     * @param includeLockState
      * @param version
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceUpdates
@@ -1186,8 +1186,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param entries
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws GetResourcesSoapFault
@@ -1223,8 +1223,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param entries
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.LineageResourceList
      * @throws GetUsedDataSourcesSoapFault
@@ -1243,8 +1243,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1266,13 +1266,13 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
-     * @param detail
-     * @param status
      * @param totalResults
-     * @param page
      * @param block
+     * @param page
+     * @param detail
      * @param completed
+     * @param taskId
+     * @param status
      * @throws IntrospectResourcesResultSoapFault
      */
     @WebMethod(action = "introspectResourcesResult")
@@ -1298,13 +1298,13 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param taskId
-     * @param plan
+     * @param path
      * @param totalResults
      * @param runInBackgroundTransaction
-     * @param path
      * @param attributes
      * @param completed
+     * @param plan
+     * @param taskId
      * @throws IntrospectResourcesTaskSoapFault
      */
     @WebMethod(action = "introspectResourcesTask")
@@ -1330,8 +1330,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1353,8 +1353,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param entries
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws LockResourcesSoapFault
@@ -1373,11 +1373,11 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param overwrite
-     * @param targetContainerPath
      * @param path
      * @param newName
      * @param type
+     * @param overwrite
+     * @param targetContainerPath
      * @throws MoveResourceSoapFault
      */
     @WebMethod(action = "moveResource")
@@ -1399,9 +1399,9 @@ public interface ResourcePortType {
 
     /**
      * 
+     * @param entries
      * @param overwrite
      * @param targetContainerPath
-     * @param entries
      * @throws MoveResourcesSoapFault
      */
     @WebMethod(action = "moveResources")
@@ -1419,8 +1419,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param rebindRules
      * @param entries
+     * @param rebindRules
      * @throws RebindResourcesSoapFault
      */
     @WebMethod(action = "rebindResources")
@@ -1473,11 +1473,11 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param status
-     * @param reintrospectId
      * @param path
      * @param isBlocking
+     * @param reintrospectId
      * @param attributes
+     * @param status
      * @param reintrospectReport
      * @throws ReintrospectDataSourceSoapFault
      */
@@ -1545,9 +1545,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param status
      * @param path
      * @param messages
+     * @param status
      * @throws TestDataSourceConnectionSoapFault
      */
     @WebMethod(action = "testDataSourceConnection")
@@ -1565,9 +1565,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
      * @param comment
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1591,9 +1591,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param entries
      * @param comment
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UnlockResourcesSoapFault
@@ -1615,11 +1615,11 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
+     * @param path
+     * @param transformSourceType
+     * @param attributes
      * @param detail
      * @param transformSourcePath
-     * @param path
-     * @param attributes
-     * @param transformSourceType
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateBasicTransformProcedureSoapFault
@@ -1646,10 +1646,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param cachedStatisticsConfig
-     * @param detail
      * @param path
+     * @param detail
      * @param type
+     * @param cachedStatisticsConfig
      * @throws UpdateCachedResourceStatisticsConfigSoapFault
      */
     @WebMethod(action = "updateCachedResourceStatisticsConfig")
@@ -1669,8 +1669,8 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param connector
+     * @param detail
      * @throws UpdateConnectorSoapFault
      */
     @WebMethod(action = "updateConnector")
@@ -1703,21 +1703,21 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
-     * @param alternateURL
      * @param bindingType
-     * @param requireAllAuthMethods
-     * @param bindingProfileType
      * @param annotation
-     * @param authMethods
-     * @param transportSecurity
-     * @param implementation
-     * @param path
      * @param bindingProperties
+     * @param implementation
      * @param correlationType
+     * @param alternateURL
+     * @param authMethods
+     * @param requireAllAuthMethods
+     * @param path
      * @param isConnectorGroup
      * @param connector
+     * @param transportSecurity
+     * @param bindingProfileType
      * @param attributes
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateDataServicePortSoapFault
@@ -1763,9 +1763,9 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
      * @param attributes
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateDataSourceSoapFault
@@ -1789,8 +1789,8 @@ public interface ResourcePortType {
     /**
      * 
      * @param path
-     * @param attributes
      * @param childInfos
+     * @param attributes
      * @throws UpdateDataSourceChildInfosSoapFault
      */
     @WebMethod(action = "updateDataSourceChildInfos")
@@ -1808,10 +1808,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param path
-     * @param attributes
-     * @param childInfos
      * @param filter
+     * @param path
+     * @param childInfos
+     * @param attributes
      * @throws UpdateDataSourceChildInfosWithFilterSoapFault
      */
     @WebMethod(action = "updateDataSourceChildInfosWithFilter")
@@ -1831,26 +1831,26 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param bindingType
-     * @param requireAllAuthMethods
-     * @param bindingProfileType
      * @param annotation
-     * @param outputMappingType
-     * @param inputPipeline
-     * @param inputMappingOptions
-     * @param authMethods
-     * @param transportSecurity
-     * @param path
      * @param bindingProperties
+     * @param inputMappingOptions
      * @param correlationType
+     * @param outputMappingType
+     * @param authMethods
+     * @param inputPipeline
+     * @param timeout
+     * @param requireAllAuthMethods
+     * @param path
      * @param isConnectorGroup
-     * @param outputMappingOptions
-     * @param connector
      * @param inputMappingType
+     * @param connector
+     * @param transportSecurity
+     * @param bindingProfileType
      * @param attributes
      * @param outputPipeline
-     * @param timeout
+     * @param detail
+     * @param outputMappingOptions
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateDataSourcePortSoapFault
@@ -1905,10 +1905,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
      * @param path
-     * @param type
      * @param dataSourceStatisticsConfig
+     * @param detail
+     * @param type
      * @throws UpdateDataSourceStatisticsConfigSoapFault
      */
     @WebMethod(action = "updateDataSourceStatisticsConfig")
@@ -1949,10 +1949,10 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param sourceDocument
      * @param path
+     * @param sourceDocument
      * @param attributes
+     * @param detail
      * @param definitions
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -1981,12 +1981,12 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param externalDataSourcePath
-     * @param detail
      * @param path
-     * @param attributes
-     * @param parameters
      * @param externalSqlText
+     * @param externalDataSourcePath
+     * @param attributes
+     * @param detail
+     * @param parameters
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateExternalSqlProcedureSoapFault
@@ -2016,14 +2016,14 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param outputMappingType
-     * @param inputPipeline
-     * @param detail
-     * @param inputMappingOptions
      * @param path
-     * @param outputMappingOptions
      * @param inputMappingType
+     * @param inputMappingOptions
+     * @param outputMappingType
      * @param outputPipeline
+     * @param detail
+     * @param inputPipeline
+     * @param outputMappingOptions
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateImplementationContainerSoapFault
@@ -2057,10 +2057,10 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param targetPath
-     * @param detail
      * @param path
+     * @param targetPath
      * @param targetType
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateLinkSoapFault
@@ -2086,8 +2086,8 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
+     * @param detail
      * @param type
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
@@ -2111,9 +2111,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param cacheConfig
-     * @param detail
      * @param path
+     * @param detail
+     * @param cacheConfig
      * @param type
      * @throws UpdateResourceCacheConfigSoapFault
      */
@@ -2134,10 +2134,10 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param enabled
-     * @param detail
      * @param path
+     * @param detail
      * @param type
+     * @param enabled
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateResourceEnabledSoapFault
@@ -2160,11 +2160,11 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param updateRecursively
      * @param privilegeEntries
+     * @param mode
+     * @param updateRecursively
      * @param updateDependentsRecursively
      * @param updateDependenciesRecursively
-     * @param mode
      * @throws UpdateResourcePrivilegesSoapFault
      */
     @WebMethod(action = "updateResourcePrivileges")
@@ -2186,9 +2186,9 @@ public interface ResourcePortType {
 
     /**
      * 
-     * @param detail
-     * @param statisticsConfig
      * @param path
+     * @param statisticsConfig
+     * @param detail
      * @param type
      * @throws UpdateResourceStatisticsConfigSoapFault
      */
@@ -2227,13 +2227,13 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
-     * @param scriptModel
-     * @param attributes
-     * @param parameters
-     * @param scriptText
      * @param isExplicitDesign
+     * @param scriptText
+     * @param attributes
+     * @param detail
+     * @param scriptModel
+     * @param parameters
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateSqlScriptProcedureSoapFault
@@ -2265,13 +2265,13 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param sqlModel
-     * @param columns
-     * @param sqlText
      * @param path
-     * @param attributes
+     * @param sqlText
      * @param isExplicitDesign
+     * @param columns
+     * @param sqlModel
+     * @param attributes
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateSqlTableSoapFault
@@ -2303,14 +2303,14 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
+     * @param path
+     * @param isExplicitDesign
+     * @param transformSourceType
+     * @param streamModel
+     * @param attributes
      * @param detail
      * @param transformSourcePath
-     * @param path
-     * @param attributes
      * @param parameters
-     * @param isExplicitDesign
-     * @param streamModel
-     * @param transformSourceType
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateStreamTransformProcedureSoapFault
@@ -2344,10 +2344,10 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
      * @param transformModel
      * @param attributes
+     * @param detail
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateTransformProcedureSoapFault
@@ -2373,16 +2373,16 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param enabled
-     * @param conditionSchedule
-     * @param detail
-     * @param conditionType
      * @param path
-     * @param attributes
-     * @param actionType
-     * @param maxEventsQueued
      * @param conditionAttributes
+     * @param actionType
+     * @param conditionSchedule
+     * @param conditionType
      * @param actionAttributes
+     * @param attributes
+     * @param detail
+     * @param maxEventsQueued
+     * @param enabled
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateTriggerSoapFault
@@ -2420,12 +2420,12 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
-     * @param attributes
-     * @param parameters
      * @param isExplicitDesign
      * @param xqueryText
+     * @param attributes
+     * @param detail
+     * @param parameters
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateXQueryProcedureSoapFault
@@ -2455,13 +2455,13 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
      * @param path
-     * @param attributes
-     * @param parameters
      * @param isExplicitDesign
      * @param xqueryModel
      * @param xqueryText
+     * @param attributes
+     * @param detail
+     * @param parameters
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateXQueryTransformProcedureSoapFault
@@ -2493,12 +2493,12 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param xsltText
      * @param path
-     * @param attributes
-     * @param parameters
      * @param isExplicitDesign
+     * @param attributes
+     * @param detail
+     * @param parameters
+     * @param xsltText
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateXSLTProcedureSoapFault
@@ -2528,15 +2528,15 @@ public interface ResourcePortType {
     /**
      * 
      * @param annotation
-     * @param detail
-     * @param xsltText
-     * @param transformSourcePath
      * @param path
-     * @param xsltModel
-     * @param attributes
-     * @param parameters
      * @param isExplicitDesign
      * @param transformSourceType
+     * @param xsltModel
+     * @param attributes
+     * @param detail
+     * @param transformSourcePath
+     * @param parameters
+     * @param xsltText
      * @return
      *     returns com.compositesw.services.system.admin.resource.ResourceList
      * @throws UpdateXsltTransformProcedureSoapFault

@@ -24,8 +24,8 @@ public class UpdateStreamTransformProcedureSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public UpdateStreamTransformProcedureSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class UpdateStreamTransformProcedureSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public UpdateStreamTransformProcedureSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

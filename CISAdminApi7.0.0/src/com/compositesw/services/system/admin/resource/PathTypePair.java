@@ -36,8 +36,8 @@ import com.compositesw.services.system.admin.archive.ResourceAttributeNames;
     "type"
 })
 @XmlSeeAlso({
-    ExportResource.class,
-    ResourceAttributeNames.class
+    ResourceAttributeNames.class,
+    ExportResource.class
 })
 public class PathTypePair {
 

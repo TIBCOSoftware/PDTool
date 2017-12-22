@@ -24,22 +24,22 @@ import com.compositesw.services.system.util.common.OperationStatus;
  */
 @WebService(name = "archivePortType", targetNamespace = "http://www.compositesw.com/services/system/admin")
 @XmlSeeAlso({
+    com.compositesw.services.system.admin.server.ObjectFactory.class,
+    com.compositesw.services.system.admin.resource.ObjectFactory.class,
     com.compositesw.services.system.admin.archive.ObjectFactory.class,
+    com.compositesw.services.system.admin.execute.ObjectFactory.class,
     com.compositesw.services.system.util.common.ObjectFactory.class,
     com.compositesw.services.system.util.security.ObjectFactory.class,
-    com.compositesw.services.system.admin.resource.ObjectFactory.class,
-    com.compositesw.services.system.admin.user.ObjectFactory.class,
-    com.compositesw.services.system.admin.server.ObjectFactory.class,
-    com.compositesw.services.system.admin.execute.ObjectFactory.class
+    com.compositesw.services.system.admin.user.ObjectFactory.class
 })
 public interface ArchivePortType {
 
 
     /**
      * 
-     * @param status
-     * @param archiveId
      * @param archiveReport
+     * @param archiveId
+     * @param status
      * @throws CancelArchiveSoapFault
      */
     @WebMethod(action = "cancelArchive")
@@ -108,11 +108,11 @@ public interface ArchivePortType {
 
     /**
      * 
-     * @param status
-     * @param archiveId
-     * @param archiveReport
      * @param data
      * @param maxBytes
+     * @param archiveReport
+     * @param archiveId
+     * @param status
      * @throws GetArchiveExportDataSoapFault
      */
     @WebMethod(action = "getArchiveExportData")
@@ -151,10 +151,10 @@ public interface ArchivePortType {
 
     /**
      * 
-     * @param status
-     * @param archiveId
-     * @param archiveReport
      * @param isBlocking
+     * @param archiveReport
+     * @param archiveId
+     * @param status
      * @throws GetArchiveImportReportSoapFault
      */
     @WebMethod(action = "getArchiveImportReport")
@@ -191,10 +191,10 @@ public interface ArchivePortType {
 
     /**
      * 
-     * @param status
-     * @param archiveId
-     * @param archiveReport
      * @param isBlocking
+     * @param archiveReport
+     * @param archiveId
+     * @param status
      * @throws PerformArchiveImportSoapFault
      */
     @WebMethod(action = "performArchiveImport")
@@ -214,8 +214,8 @@ public interface ArchivePortType {
 
     /**
      * 
-     * @param archiveId
      * @param settings
+     * @param archiveId
      * @throws UpdateArchiveExportSettingsSoapFault
      */
     @WebMethod(action = "updateArchiveExportSettings")
@@ -231,8 +231,8 @@ public interface ArchivePortType {
 
     /**
      * 
-     * @param archiveId
      * @param settings
+     * @param archiveId
      * @throws UpdateArchiveImportSettingsSoapFault
      */
     @WebMethod(action = "updateArchiveImportSettings")

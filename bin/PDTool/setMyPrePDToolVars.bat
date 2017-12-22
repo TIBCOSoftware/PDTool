@@ -1,20 +1,21 @@
 @echo off
 REM ############################################################################################################################
-REM # (c) 2014 Cisco and/or its affiliates. All rights reserved.
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 REM # 
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
+REM #
 REM ############################################################################################################################
 REM #
 REM #==========================================================
@@ -73,15 +74,15 @@ REM ################################
 REM # if exist "%PDTOOL_HOME%\bin\setCustomVars.bat" call "%PDTOOL_HOME%\bin\setCustomVars.bat"
 REM #
 REM ################################
-REM # CISCO SERVER VARIABLES
+REM # DV SERVER VARIABLES
 REM ################################
 REM # 0=Do not print this section, 1 or true=Print this section
 set CIS_PRINT=1
-REM # Cisco Server Username
+REM # DV Server Username
 set CIS_USERNAME=
-REM # Cisco Server Password
+REM # DV Server Password
 set CIS_PASSWORD=
-REM # Cisco Server Domain
+REM # DV Server Domain
 set CIS_DOMAIN=
 REM # Check to see if the ExecutePDToolRelease has set the CIS REL_ variables
 REM # This allows the same CIS_ variables to be used in the servers.xml file.
@@ -99,7 +100,7 @@ REM # The TFS Home folder where VCS client exists
 set TFS_HOME=
 REM # The TFS repository URL pointing to the repository's collection
 set TFS_VCS_REPOSITORY_URL=
-REM # The TFS folder path starting at the TFS project and ending where the Cisco base level root folders start
+REM # The TFS folder path starting at the TFS project and ending where the DV base level root folders start
 set TFS_VCS_PROJECT_ROOT=
 REM # TFS user name including the domain.  If LDAP it may need to include the domain user@domain.
 set TFS_VCS_USERNAME=
@@ -155,7 +156,7 @@ REM # The SVN Home folder where VCS client exists
 set SVN_HOME=
 REM # The subversion repository path at trunk or any folder designation within trunk
 set SVN_VCS_REPOSITORY_URL=
-REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the Cisco base level root folders start
+REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the DV base level root folders start
 set SVN_VCS_PROJECT_ROOT=
 REM # Subversion user name
 set SVN_VCS_USERNAME=
@@ -211,7 +212,7 @@ REM # The GIT Home folder where VCS client exists
 set GIT_HOME=
 REM # The Git repository path at trunk or any folder designation within trunk
 set GIT_VCS_REPOSITORY_URL=
-REM # The Git folder path starting directly after the Git repo URL and ending where the Cisco base level root folders start
+REM # The Git folder path starting directly after the Git repo URL and ending where the DV base level root folders start
 set GIT_VCS_PROJECT_ROOT=
 REM # Git user name
 set GIT_VCS_USERNAME=
@@ -267,7 +268,7 @@ REM # The Perforce Home folder where VCS client exists
 set P4_HOME=
 REM # The subversion repository path at trunk or any folder designation within trunk
 set P4_VCS_REPOSITORY_URL=
-REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the Cisco base level root folders start
+REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the DV base level root folders start
 set P4_VCS_PROJECT_ROOT=
 REM # Subversion user name
 set P4_VCS_USERNAME=
@@ -323,7 +324,7 @@ REM # The Perforce Home folder where VCS client exists
 set CVS_HOME=
 REM # The subversion repository path at trunk or any folder designation within trunk
 set CVS_VCS_REPOSITORY_URL=
-REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the Cisco base level root folders start
+REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the DV base level root folders start
 set CVS_VCS_PROJECT_ROOT=
 REM # Subversion user name
 set CVS_VCS_USERNAME=

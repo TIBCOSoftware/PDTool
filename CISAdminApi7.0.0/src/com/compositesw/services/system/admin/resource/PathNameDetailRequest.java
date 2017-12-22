@@ -39,8 +39,8 @@ import com.compositesw.services.system.util.common.DetailLevel;
 })
 @XmlSeeAlso({
     CreateDataSourceRequest.class,
-    CreateResourceRequest.class,
-    CreateLinkRequest.class
+    CreateLinkRequest.class,
+    CreateResourceRequest.class
 })
 public class PathNameDetailRequest
     extends BaseRequest

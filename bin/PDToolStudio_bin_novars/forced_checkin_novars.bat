@@ -1,20 +1,21 @@
 @echo off
 SETLOCAL
 REM ############################################################################################################################
-REM # (c) 2014 Cisco and/or its affiliates. All rights reserved.
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
+REM # 
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
 REM # 
 REM ############################################################################################################################
 REM #=======================================================================================
@@ -75,7 +76,7 @@ REM # Print out the Banner
 call %writeOutput% " " 
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "---                                                    ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %writeOutput% "--- Cisco Advanced Services                            ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "--- TIBCO Professional Services                        ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "--- PDToolStudio: Promotion and Deployment Tool Studio ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "---                                                    ---" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "----------------------------------------------------------" 											"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
@@ -258,9 +259,9 @@ REM # Set DeployManager Environment Variables
 REM #=======================================
 set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\*"
 set ENDORSED_DIR=%PROJECT_HOME%\lib\endorsed
-set DEPLOY_MANAGER=com.cisco.dvbu.ps.deploytool.DeployManagerUtil
+set DEPLOY_MANAGER=com.tibco.ps.deploytool.DeployManagerUtil
 set CONFIG_LOG4J=-Dlog4j.configuration="file:%PROJECT_HOME%\resources\config\log4j.properties" 
-set CONFIG_ROOT=-Dcom.cisco.dvbu.ps.configroot="%PROJECT_HOME%\resources\config"
+set CONFIG_ROOT=-Dcom.tibco.ps.configroot="%PROJECT_HOME%\resources\config"
 
 REM #=======================================
 REM # Precedence evaluation

@@ -36,8 +36,8 @@ import com.compositesw.services.system.util.common.NameList;
     "names"
 })
 @XmlSeeAlso({
-    GetGroupsRequest.class,
-    GetUsersRequest.class
+    GetUsersRequest.class,
+    GetGroupsRequest.class
 })
 public class DomainMultiNameRequest
     extends BaseRequest

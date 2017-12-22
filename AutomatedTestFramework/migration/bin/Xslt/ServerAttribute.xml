@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:ServerAttributeModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
+<ns2:ServerAttributeModule xmlns:ns2="http://www.tibco.com/ps/deploytool/modules">
     <serverAttribute>
         <id>cms1</id>
         <name>/cms/central/enabled</name>

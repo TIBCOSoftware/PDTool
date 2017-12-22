@@ -1,9 +1,9 @@
 @echo off
 REM ############################################################################################################################
 REM #
-REM # Cisco AS Assets PDTool Installation
+REM # PDTool Installation
 REM #
-REM # Execute: SetupPDTool.bat "[I_PDTOOL_INSTALL_TYPE]" "[I_PDTOOL_INSTALL_HOME]" "[I_JAVA_HOME]" "[I_PDTOOL_DESTINATION_HOME]" "[I_PDTOOL_DESTINATION_DIR]" "[I_CONFIGURE_VCS]" "[I_VCS_BASE_TYPE]" "[I_VCS_HOME]" "[I_VCS_REPOSITORY_URL]" "[I_VCS_PROJECT_ROOT]" "[I_RELEASE_FOLDER]" "[I_VCS_WORKSPACE_HOME]" "[I_VCS_WORKSPACE_NAME]" "[I_VCS_TEMP_DIR]" "[I_VCS_USERNAME]" "[I_VCS_DOMAIN]" "[I_VCS_PASSWORD]" "[I_CIS_USERNAME]" "[I_CIS_DOMAIN]" "[I_CIS_PASSWORD]" "[I_CIS_HOSTNAME]" "[I_CONFIG_PROPERTY_FILE]" "[I_VCS_EDITOR]" "[I_VALID_ENV_CONFIG_PAIRS]"
+REM # Execute: SetupPDTool.bat "[I_PDTOOL_INSTALL_TYPE]" "[I_PDTOOL_INSTALL_HOME]" "[I_JAVA_HOME]" "[I_PDTOOL_DESTINATION_HOME]" "[I_PDTOOL_DESTINATION_DIR]" "[I_CONFIGURE_VCS]" "[I_VCS_BASE_TYPE]" "[I_VCS_HOME]" "[I_VCS_REPOSITORY_URL]" "[I_VCS_PROJECT_ROOT]" "[I_RELEASE_FOLDER]" "[I_VCS_WORKSPACE_HOME]" "[I_VCS_WORKSPACE_NAME]" "[I_VCS_TEMP_DIR]" "[I_VCS_USERNAME]" "[I_VCS_DOMAIN]" "[I_VCS_PASSWORD]" "[I_CIS_USERNAME]" "[I_CIS_DOMAIN]" "[I_CIS_PASSWORD]" "[I_CIS_HOSTNAME]" "[I_CONFIG_PROPERTY_FILE]" "[I_VCS_EDITOR]" "[I_VALID_ENV_CONFIG_PAIRS]" "[debug]" "[debugReplaceText]"
 REM # 
 REM # I_PDTOOL_INSTALL_TYPE - [PDTool or PDToolStudio]. Determine which installer type to use.
 REM # I_PDTOOL_INSTALL_HOME - The location of the PDTool installation scripts.
@@ -30,22 +30,25 @@ REM # I_CONFIG_PROPERTY_FILE - VCS Configuration property file used for connecti
 REM # I_VCS_EDITOR - VCS default editor to use if required. Windows=notepad and UNIX=vi
 REM # I_VALID_ENV_CONFIG_PAIRS - The valid environment and configuration property file pairs provides the ability to use a short environment
 REM #                            name in place of the configuration property name when instructing PDTool on which environment to deploy to.
+REM # debug - 0=no debug, 1=debug
+REM # debugReplaceText - 0=no debug, 1=debug replacement text
 REM ############################################################################################################################
-REM # (c) 2015 Cisco and/or its affiliates. All rights reserved.
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 REM # 
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
+REM #
 REM ############################################################################################################################
 cls
 REM ############################################
@@ -105,6 +108,10 @@ shift
 set I_VCS_EDITOR=%9
 shift
 set I_VALID_ENV_CONFIG_PAIRS=%9
+shift
+set debug=%9
+shift
+set debugReplaceText=%9
 
 REM ############################################
 REM # Remove double quotes
@@ -134,6 +141,8 @@ if defined I_CIS_HOSTNAME set I_CIS_HOSTNAME=!I_CIS_HOSTNAME:"=!
 if defined I_CONFIG_PROPERTY_FILE set I_CONFIG_PROPERTY_FILE=!I_CONFIG_PROPERTY_FILE:"=!
 if defined I_VCS_EDITOR set I_VCS_EDITOR=!I_VCS_EDITOR:"=!
 if defined I_VALID_ENV_CONFIG_PAIRS set I_VALID_ENV_CONFIG_PAIRS=!I_VALID_ENV_CONFIG_PAIRS:"=!
+if defined debug set debug=!debug:"=!
+if defined debugReplaceText set debugReplaceText=!debugReplaceText:"=!
 
 REM ############################################
 REM # Display banner
@@ -142,7 +151,7 @@ set I_PDTOOL_INSTALL_TYPE_PAD="%I_PDTOOL_INSTALL_TYPE%%DEFAULT_CIS_VERSION%"
 call :RPAD I_PDTOOL_INSTALL_TYPE_PAD 20
 echo.----------------------------------------------------------------------
 echo.-----------                                                -----------
-echo.----------- Cisco Advanced Services %I_PDTOOL_INSTALL_TYPE_PAD%   -----------
+echo.-----------   Professional Services %I_PDTOOL_INSTALL_TYPE_PAD%   -----------
 echo.-----------           Promotion and Deployment Tool        -----------
 echo.-----------                                                -----------    
 echo.----------- Installation and Setup for %I_PDTOOL_INSTALL_TYPE_PAD%-----------
@@ -162,6 +171,8 @@ if "%I_PDTOOL_INSTALL_HOME%" == "" goto DISPLAY_CONTINUE
 	echo.--------------------------------------------------------------------------------------
 	echo.%SCRIPT_NAME% Input Variables Defined for %I_PDTOOL_INSTALL_TYPE%:
 	echo.--------------------------------------------------------------------------------------
+	echo.debug=                     [%debug%]
+	echo.debugReplaceText=          [%debugReplaceText%]
 	echo.I_BASE_CIS_VERSION=        [%I_BASE_CIS_VERSION%]
 	echo.I_PDTOOL_INSTALL_TYPE=     [%I_PDTOOL_INSTALL_TYPE%]
 	echo.I_PDTOOL_INSTALL_HOME=     [%I_PDTOOL_INSTALL_HOME%]
@@ -443,7 +454,7 @@ if not defined I_RELEASE_FOLDER (
    echo.
    echo.USAGE: Enter the release folder for the project root
    echo.
-   echo.       I_RELEASE_FOLDER=[Name of the release folder within the Project Root e.g. YYYYMMDD]
+   echo.       I_RELEASE_FOLDER=[Name of the release folder within the Project Root e.g. YYYYMMDD.  Enter a space for no folder name.]
    echo.
    set /P I_RELEASE_FOLDER=Enter I_RELEASE_FOLDER [!DEF_RELEASE_FOLDER!]: 
    if not defined I_RELEASE_FOLDER set I_RELEASE_FOLDER=!DEF_RELEASE_FOLDER!
@@ -573,7 +584,7 @@ if "%debug%"=="1" echo [DEBUG] INPUT REQUEST/VALIDATE:  I_CIS_USERNAME=!I_CIS_US
 if not defined I_CIS_USERNAME ( 
    echo.
    echo.
-   echo. [Cisco Information Server] CIS_USERNAME=[username]
+   echo. [Data Virtualization] CIS_USERNAME=[username]
    echo.            This is your CIS username.
    echo.
    set /P I_CIS_USERNAME=Enter CIS_USERNAME [!DEF_CIS_USERNAME!]: 
@@ -617,7 +628,7 @@ REM #---------------------------------------
 if defined I_CIS_PASSWORD GOTO I_CIS_PASSWORD_BYPASS
    echo.
    echo.
-   echo. [Cisco Information Server] CIS_PASSWORD=[username password]
+   echo. [Data Virtualization] CIS_PASSWORD=[username password]
    echo.            This is your CIS username password which will be encrypted for I_CIS_USERNAME=!I_CIS_USERNAME!
    echo.
    powershell -Command $pword = read-host "enter I_CIS_PASSWORD" -AsSecureString ; $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword) ; [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) > .tmp.txt & set /p I_CIS_PASSWORD=<.tmp.txt & del .tmp.txt
@@ -859,7 +870,7 @@ if exist "%I_PDTOOL_HOME%" GOTO MKDIR_PDTOOL_HOME_COMPLETE
 	echo.#
 	echo.################################################################################################
 	GOTO ERROR_EXIT_SCRIPT
-:MKDIR_PDTOOL_HOME_COMPLETE
+:MKDIR_PDTOOL_HOME_COMPLETE 
 
 REM ####################################################################
 REM #

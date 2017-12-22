@@ -78,13 +78,13 @@ import com.compositesw.services.system.util.common.AttributeList;
     "attributes"
 })
 @XmlSeeAlso({
+    TreeResource.class,
     LinkResource.class,
+    TriggerResource.class,
     ProcedureResource.class,
     TableResource.class,
-    TreeResource.class,
     DefinitionSetResource.class,
-    ContainerResource.class,
-    TriggerResource.class
+    ContainerResource.class
 })
 public class Resource {
 

@@ -36,8 +36,8 @@ import com.compositesw.services.system.admin.resource.IntrospectResourcesTaskRes
 })
 @XmlSeeAlso({
     IntrospectResourcesResultResponse.class,
-    GetIntrospectedResourceIdsResultResponse.class,
     GetIntrospectableResourceIdsResultResponse.class,
+    GetIntrospectedResourceIdsResultResponse.class,
     IntrospectResourcesTaskResponse.class
 })
 public class ServerTaskResultResponse

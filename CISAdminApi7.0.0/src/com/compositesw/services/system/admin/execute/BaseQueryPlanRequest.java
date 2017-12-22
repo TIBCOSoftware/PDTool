@@ -32,9 +32,9 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "rootNodeTitle"
 })
 @XmlSeeAlso({
+    GetSqlPlanRequest.class,
     GetResourcePlanRequest.class,
-    GetResultSetPlanRequest.class,
-    GetSqlPlanRequest.class
+    GetResultSetPlanRequest.class
 })
 public class BaseQueryPlanRequest
     extends BaseRequest

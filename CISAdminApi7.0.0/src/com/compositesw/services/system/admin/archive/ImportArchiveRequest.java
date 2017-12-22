@@ -33,10 +33,10 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "archiveId"
 })
 @XmlSeeAlso({
-    PerformArchiveImportRequest.class,
     GetArchiveImportSettingsRequest.class,
-    UpdateArchiveImportSettingsRequest.class,
-    GetArchiveImportReportRequest.class
+    PerformArchiveImportRequest.class,
+    GetArchiveImportReportRequest.class,
+    UpdateArchiveImportSettingsRequest.class
 })
 public class ImportArchiveRequest
     extends BaseRequest

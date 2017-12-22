@@ -33,8 +33,8 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "paths"
 })
 @XmlSeeAlso({
-    GetServerAttributesRequest.class,
-    GetServerAttributeDefsRequest.class
+    GetServerAttributeDefsRequest.class,
+    GetServerAttributesRequest.class
 })
 public class PathsRequest
     extends BaseRequest

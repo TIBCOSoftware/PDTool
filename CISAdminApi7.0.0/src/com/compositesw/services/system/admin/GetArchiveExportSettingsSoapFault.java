@@ -24,8 +24,8 @@ public class GetArchiveExportSettingsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public GetArchiveExportSettingsSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class GetArchiveExportSettingsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public GetArchiveExportSettingsSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

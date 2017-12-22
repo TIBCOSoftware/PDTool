@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
     "requestId"
 })
 @XmlSeeAlso({
-    ExecuteSqlResponse.class,
-    ExecuteNativeSqlResponse.class
+    ExecuteNativeSqlResponse.class,
+    ExecuteSqlResponse.class
 })
 public class BaseExecuteSqlResponse
     extends BaseTabularResultResponse

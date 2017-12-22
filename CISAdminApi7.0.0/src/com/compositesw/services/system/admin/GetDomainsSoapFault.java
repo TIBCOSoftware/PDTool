@@ -24,8 +24,8 @@ public class GetDomainsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public GetDomainsSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class GetDomainsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public GetDomainsSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

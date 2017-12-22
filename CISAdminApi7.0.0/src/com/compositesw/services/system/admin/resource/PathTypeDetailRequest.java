@@ -38,22 +38,22 @@ import com.compositesw.services.system.util.common.DetailLevel;
     "detail"
 })
 @XmlSeeAlso({
-    UpdateResourceCacheConfigRequest.class,
-    UpdateCachedResourceStatisticsConfigRequest.class,
-    UpdateResourceAnnotationRequest.class,
-    GetUsedDSResourcesRequest.class,
-    ChangeResourceOwnerRequest.class,
-    GetParentResourceRequest.class,
-    GetDependentResourcesRequest.class,
-    UpdateResourceStatisticsConfigRequest.class,
-    GetUsedResourcesRequest.class,
-    GetAncestorResourcesRequest.class,
-    UpdateResourceEnabledRequest.class,
-    UpdateDataSourceStatisticsConfigRequest.class,
-    GetChildResourcesRequest.class,
-    CreateLinksRecursivelyRequest.class,
     UnlockResourceRequest.class,
-    LockResourceRequest.class
+    UpdateResourceCacheConfigRequest.class,
+    UpdateDataSourceStatisticsConfigRequest.class,
+    GetDependentResourcesRequest.class,
+    LockResourceRequest.class,
+    CreateLinksRecursivelyRequest.class,
+    GetUsedResourcesRequest.class,
+    ChangeResourceOwnerRequest.class,
+    GetUsedDSResourcesRequest.class,
+    GetParentResourceRequest.class,
+    GetChildResourcesRequest.class,
+    UpdateCachedResourceStatisticsConfigRequest.class,
+    UpdateResourceEnabledRequest.class,
+    GetAncestorResourcesRequest.class,
+    UpdateResourceAnnotationRequest.class,
+    UpdateResourceStatisticsConfigRequest.class
 })
 public class PathTypeDetailRequest
     extends BaseRequest

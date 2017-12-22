@@ -24,7 +24,7 @@
 				<body>
 					<![CDATA[		
 <?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
 	<xsl:template match="/">
 		<server:getServerAttributes>
 			<server:paths>
@@ -47,10 +47,10 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
 	xmlns:common="http://www.compositesw.com/services/system/util/common" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:ServerAttributeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<xsl:for-each select="server:getServerAttributesResponse/server:attributes/common:attribute">
 			<xsl:variable name="count" select="position()"/>
 			<serverAttribute>
@@ -134,7 +134,7 @@
 				<body>
 					<![CDATA[		
 <?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
 	<xsl:template match="/">
 		<server:getServerAttributes>
 			<server:paths>
@@ -166,7 +166,7 @@
 				<body>
 					<![CDATA[
 <?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
 	<xsl:template match="/">
 		<server:getServerAttributeDefs>
 			<server:paths>
@@ -189,10 +189,10 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
 	xmlns:common="http://www.compositesw.com/services/system/util/common" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:ServerAttributeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<xsl:for-each select="server:getServerAttributeDefsResponse/server:attributeDefs/common:attributeDef">
 			<xsl:variable name="count" select="position()"/>
 			<serverAttributeDef>
@@ -308,7 +308,7 @@
 				<body>
 					<![CDATA[
 <?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
 	<xsl:template match="/">
 		<server:getServerAttributeDefChildren>
 				<xsl:for-each select="ServerAttributeModule/serverAttributeDef">
@@ -329,10 +329,10 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
 	xmlns:common="http://www.compositesw.com/services/system/util/common" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:ServerAttributeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<xsl:for-each select="server:getServerAttributeDefChildrenResponse/server:attributeDefs/common:attributeDef">
 			<xsl:variable name="count" select="position()"/>
 			<serverAttributeDef>
@@ -372,7 +372,7 @@
 				<body>
 					<![CDATA[		
 <?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
 	<xsl:template match="/">
 
 	<server:updateServerAttributes xmlns:server="http://www.compositesw.com/services/system/admin/server" xmlns:common="http://www.compositesw.com/services/system/util/common">
@@ -446,9 +446,9 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
 	xmlns:common="http://www.compositesw.com/services/system/util/common" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:template match="/">
-		<p1:ServerAttributeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
 	</xsl:template>
 </xsl:stylesheet>
 					]]>
@@ -498,9 +498,9 @@
 <?xml version='1.0' ?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:resource="http://www.compositesw.com/services/system/admin/resource"
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:template match="/">
-		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 		<xsl:if test="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry/resource:privileges/resource:privilege">
 		  <xsl:for-each select="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry">
 			<xsl:variable name="count" select="position()"/>
@@ -611,10 +611,10 @@
 <?xml version='1.0' ?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:resource="http://www.compositesw.com/services/system/admin/resource" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
 	</xsl:template>
 </xsl:stylesheet>
 					]]>
@@ -662,10 +662,10 @@
 <?xml version='1.0' ?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:resource="http://www.compositesw.com/services/system/admin/resource" 
-	xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
 	<xsl:variable name="counter" select="0"/>
 	<xsl:template match="/">
-		<p1:PrivilegeModule xmlns:p1="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
 	</xsl:template>
 </xsl:stylesheet>
 					]]>

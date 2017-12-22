@@ -1,20 +1,21 @@
 @echo off
 REM ############################################################################################################################
-REM # (c) 2015 Cisco and/or its affiliates. All rights reserved.
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 REM # 
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
+REM #
 REM ############################################################################################################################
 REM # ---------------------
 REM # SETUP INSTRUCTIONS:
@@ -62,7 +63,7 @@ REM #######################################################
 REM # Force SetupPDTool.bat to use default values when present and bypass prompting the user. Values=[Y or N].  This will streamline setup.
 REM # Set to "Y" to bypass prompting for defaults values that are set with a value.
 set DEF_FORCE_PROMPT_BYPASS=Y
-REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to Cisco DV Studio JRE path.
+REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
 set DEF_JAVA_HOME=C:\Program Files\Java\jre7
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDTool installation folder.
 set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\.compositesw\PDTool7.0.0_TFS
@@ -139,5 +140,5 @@ if not exist %PDTOOL_SETUP_SCRIPT% (
 if "%DEF_FORCE_PROMPT_BYPASS%"=="n" set DEF_FORCE_PROMPT_BYPASS=N
 if "%DEF_FORCE_PROMPT_BYPASS%"=="Y" set DEF_FORCE_PROMPT_BYPASS=Y
 if "%DEF_FORCE_PROMPT_BYPASS%"=="N" call %PDTOOL_SETUP_SCRIPT% PDTool
-if "%DEF_FORCE_PROMPT_BYPASS%"=="Y" call %PDTOOL_SETUP_SCRIPT% PDTool "%DEF_PDTOOL_INSTALL_HOME%" "%DEF_JAVA_HOME%" "%DEF_PDTOOL_DESTINATION_HOME%" "%DEF_PDTOOL_DESTINATION_DIR%" "%DEF_CONFIGURE_VCS%" "%DEF_VCS_BASE_TYPE%" "%DEF_VCS_HOME%" "%DEF_VCS_REPOSITORY_URL%" "%DEF_VCS_PROJECT_ROOT%" "%DEF_RELEASE_FOLDER%" "%DEF_VCS_WORKSPACE_HOME%" "%DEF_VCS_WORKSPACE_NAME%" "%DEF_VCS_TEMP_DIR%" "%DEF_VCS_USERNAME%" "%DEF_VCS_DOMAIN%" "" "%DEF_CIS_USERNAME%" "%DEF_CIS_DOMAIN%" "" "" "%DEF_CONFIG_PROPERTY_FILE%" "%DEF_VCS_EDITOR%"  "%DEF_VALID_ENV_CONFIG_PAIRS%"
+if "%DEF_FORCE_PROMPT_BYPASS%"=="Y" call %PDTOOL_SETUP_SCRIPT% PDTool "%DEF_PDTOOL_INSTALL_HOME%" "%DEF_JAVA_HOME%" "%DEF_PDTOOL_DESTINATION_HOME%" "%DEF_PDTOOL_DESTINATION_DIR%" "%DEF_CONFIGURE_VCS%" "%DEF_VCS_BASE_TYPE%" "%DEF_VCS_HOME%" "%DEF_VCS_REPOSITORY_URL%" "%DEF_VCS_PROJECT_ROOT%" "%DEF_RELEASE_FOLDER%" "%DEF_VCS_WORKSPACE_HOME%" "%DEF_VCS_WORKSPACE_NAME%" "%DEF_VCS_TEMP_DIR%" "%DEF_VCS_USERNAME%" "%DEF_VCS_DOMAIN%" "" "%DEF_CIS_USERNAME%" "%DEF_CIS_DOMAIN%" "" "" "%DEF_CONFIG_PROPERTY_FILE%" "%DEF_VCS_EDITOR%"  "%DEF_VALID_ENV_CONFIG_PAIRS%"  "%debug%" "%debugReplaceText%"
 pause

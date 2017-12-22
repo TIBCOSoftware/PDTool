@@ -37,10 +37,10 @@ import com.compositesw.services.system.util.common.OperationStatus;
     "archiveReport"
 })
 @XmlSeeAlso({
-    CancelArchiveResponse.class,
-    GetArchiveImportReportResponse.class,
     PerformArchiveImportResponse.class,
-    GetArchiveExportDataResponse.class
+    GetArchiveImportReportResponse.class,
+    GetArchiveExportDataResponse.class,
+    CancelArchiveResponse.class
 })
 public class ArchiveReportResponse
     extends BaseResponse

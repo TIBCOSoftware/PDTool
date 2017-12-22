@@ -33,12 +33,12 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "domainName"
 })
 @XmlSeeAlso({
-    CreateDomainRequest.class,
     GetDomainGroupsRequest.class,
+    CreateDomainRequest.class,
     DestroyDomainRequest.class,
+    GetDomainUsersRequest.class,
     CancelCreateDomainRequest.class,
-    UpdateDomainRequest.class,
-    GetDomainUsersRequest.class
+    UpdateDomainRequest.class
 })
 public class DomainRequest
     extends BaseRequest

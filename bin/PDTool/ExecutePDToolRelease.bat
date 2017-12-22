@@ -1,22 +1,23 @@
 @echo off
 SETLOCAL
-REM ######################################################################
-REM # (c) 2014 Cisco and/or its affiliates. All rights reserved.
+REM ############################################################################################################################
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 REM # 
-REM ######################################################################
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
+REM #
+REM ############################################################################################################################
 REM #
 REM # ExecutePDToolRelease.bat REL_DESCRIPTION  REL_FORCE_WORKSPACE_INIT  REL_VCS_TYPE  REL_VCS_REPOSITORY_URL  REL_VCS_PROJECT_ROOT  REL_VCS_USERNAME  REL_VCS_PASSWORD  REL_RELEASE_FOLDER  REL_VCS_WORKSPACE_CONF_DIR  REL_VCS_WORKSPACE_SRC_DIR  REL_VCS_TEMP_DIR  REL_CIS_USERNAME  REL_CIS_PASSWORD  REL_CIS_DOMAIN  REL_ENV_CONFIG_FILE_NAME  REL_PLAN_FILE_NAME  REL_NO_OPERATION  REL_VALID_ENV_CONFIG_PAIRS
 REM #
@@ -50,7 +51,7 @@ REM #
 REM #   4.  REL_VCS_REPOSITORY_URL - [Optional].  The VCS repository URL pointing to the repository's collection or base folder path
 REM #           Note: Leave this blank to use the default values for [TFS|SVN|GIT|P4|CVS]_VCS_REPOSITORY_URL in setMyPrePDToolVars.bat
 REM #                 Always use 4 forward slashes to escape https://url --> https:////url and no slash at the end.
-REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/CiscoDV/Rel/20160516m ----->|--/services
+REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/DV/Rel/20160516m      ----->|--/services
 REM #                      |---------------------------------------| |----------------------| |-------|       |  /shared
 REM #           Variables: VCS_REPOSITORY_URL                        VCS_PROJECT_ROOT         RELEASE_FOLDER  |--/user
 REM #
@@ -59,10 +60,10 @@ REM #                      |-----------------------------------------------| |--
 REM #           Variables: VCS_REPOSITORY_URL                                ^        RELEASE_FOLDER          |--/user
 REM #                                                                        VCS_PROJECT_ROOT
 REM #
-REM #   5.  REL_VCS_PROJECT_ROOT - [Optional].  The VCS relative folder path starts directly after the VCS Repository URL and ending where the Cisco base level root folders [/shared] start
+REM #   5.  REL_VCS_PROJECT_ROOT - [Optional].  The VCS relative folder path starts directly after the VCS Repository URL and ending where the DV base level root folders [/shared] start
 REM #           Note: Leave this blank to use the default values for [TFS|SVN|GIT|P4|CVS]_VCS_PROJECT_ROOT in setMyPrePDToolVars.bat
 REM #                 The project root does not start with a slash.
-REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/CiscoDV/Rel/20160516m ----->|--/services
+REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/DV/Rel/20160516m      ----->|--/services
 REM #                      |---------------------------------------| |----------------------| |-------|       |  /shared
 REM #           Variables: VCS_REPOSITORY_URL                        VCS_PROJECT_ROOT         RELEASE_FOLDER  |--/user
 REM #
@@ -78,21 +79,21 @@ REM #   7.  REL_VCS_PASSWORD - [Optional].  VCS user password.
 REM #           Note: Leave this blank to use the default values for [TFS|SVN|GIT|P4|CVS]_VCS_PASSWORD in setMyPrePDToolVars.bat
 REM #
 REM #   8.  REL_RELEASE_FOLDER - The release folder identifies which VCS release folders will be used for deployment.  
-REM #           It is the relative path into the VCS and the local workspace that specifies where the Cisco DV source files begin.
+REM #           It is the relative path into the VCS and the local workspace that specifies where the DV source files begin.
 REM #             Identify the folder in the VCS that changes on a per release basis and include any subfolders leading up to 
-REM #             where the Cisco DV repo folders begin such as /shared and you have identified the release folder(s).
+REM #             where the DV repo folders begin such as /shared and you have identified the release folder(s).
 REM #           Note: This will replace RELEASE_FOLDER in VCSModule.xml.
 REM #
 REM #           TFS Example: YYYYMMDD[m,i,o] - This is a relative path into the VCS URL.  
 REM #                      REL_RELEASE_FOLDER=20160516m
-REM #                      Full TFS URL for a given release where the Cisco DV source begins:  
-REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/CiscoDV/Rel/20160516m ----->|--/services
+REM #                      Full TFS URL for a given release where the DV source begins:  
+REM #                      http://tfs-hostname/tfs/DefaultCollection/WorkTracking/DV/Rel/20160516m      ----->|--/services
 REM #                      |---------------------------------------| |----------------------| |-------|       |  /shared
 REM #           Variables: VCS_REPOSITORY_URL                        VCS_PROJECT_ROOT         RELEASE_FOLDER  |--/user
 REM #
 REM #           SVN Example: R.YY.MM.DD.n_[INT,IND,OTH]/src - This is a relative path into the VCS URL.  
 REM #                      REL_RELEASE_FOLDER=R.16.05.16.1_IND/src
-REM #                      Full SVN URL for a given release where the Cisco DV source begins:  
+REM #                      Full SVN URL for a given release where the DV source begins:  
 REM #                      http://svn-hostname/svnrepos/myrepo/DataServices7/branches/R.16.05.16.1_IND/src -->|--/services
 REM #                      |-----------------------------------------------| |------| |------------------|    |  /shared
 REM #           Variables: VCS_REPOSITORY_URL                                ^        RELEASE_FOLDER          |--/user
@@ -115,7 +116,7 @@ REM #   10. REL_VCS_WORKSPACE_SRC_DIR - Full path to the PDTool workspace direct
 REM #           Note: This script will derive REL_VCS_WORKSPACE_HOME and REL_VCS_WORKSPACE_NAME from this path.
 REM #                 This will replace [TFS|SVN|GIT|P4|CVS]_WORKSPACE_HOME and [TFS|SVN|GIT|P4|CVS]_WORKSPACE_NAME in setMyPrePDToolVars.bat
 REM #           TFS Example: 
-REM #               VCS_WORKSPACE_DIR=C:\TEMP\TFS7\usernameYYYYMMDDm\WorkTracking\CiscoDV\Rel\20160516m ----->|--/services
+REM #               VCS_WORKSPACE_DIR=C:\TEMP\TFS7\usernameYYYYMMDDm\WorkTracking\DV\Rel\20160516m      ----->|--/services
 REM #                                                                                                         |  /shared
 REM #                                                                                                         |--/user
 REM #           SVN Example: 
@@ -281,7 +282,7 @@ REM # Begin the script execution.
 cls
 echo.%REL_BATCH_FILE_NAME%::------------------------------------------------------------------
 echo.%REL_BATCH_FILE_NAME%::-----------                                            -----------
-echo.%REL_BATCH_FILE_NAME%::----------- Cisco Advanced Services                    -----------
+echo.%REL_BATCH_FILE_NAME%::----------- TIBCO Professional Services                -----------
 echo.%REL_BATCH_FILE_NAME%::----------- PDTool: Promotion and Deployment Tool      -----------
 echo.%REL_BATCH_FILE_NAME%::-----------                                            -----------
 echo.%REL_BATCH_FILE_NAME%::------------------------------------------------------------------
@@ -354,7 +355,7 @@ REM #   1.  REL_DESCRIPTION - Provides a way of passing in a description of the 
 REM #   2.  REL_FORCE_WORKSPACE_INIT - [true|false] Force workspace initialization. Whenever there is a change to the VCS release folder and the workspace was previously intialized, this setting will force a re-initialization to pick up new resources.
 REM #   3.  REL_VCS_TYPE - [SVN,TFS,CVS,P4,GIT] The type of VCS system being used.   Used to construct the workspace path.  It does not replace any other variables.  Used in VCSModuleRelease.xml with VCS_WORKSPACE_HOME variable.
 REM #   4.  REL_VCS_REPOSITORY_URL - The VCS repository URL pointing to the repository's collection or base folder path
-REM #   5.  REL_VCS_PROJECT_ROOT - The VCS relative folder path starting directly after the VCS Repository URL and ending where the Cisco base level root folders [/shared] start
+REM #   5.  REL_VCS_PROJECT_ROOT - The VCS relative folder path starting directly after the VCS Repository URL and ending where the DV base level root folders [/shared] start
 REM #   6.  REL_VCS_USERNAME - VCS user name including the domain if applicable.  For a VCS that authenticates against an LDAP it may need to include the domain user@domain.
 REM #   7.  REL_VCS_PASSWORD - VCS user password.
 REM #   8.  REL_RELEASE_FOLDER - The release folder identifies which VCS release folder will be used for deployment.  e.g. YYYYMMDD, YYYYMMDDi, YYYYMMDDm.  Used to construct the workspace path.

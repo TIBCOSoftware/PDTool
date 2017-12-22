@@ -47,12 +47,12 @@ public class TriggerResource
 {
 
     @XmlElementRefs({
+        @XmlElementRef(name = "conditionType", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "maxEventsQueued", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "conditionAttributes", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "actionType", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "enabled", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "conditionSchedule", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "actionType", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "conditionAttributes", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "maxEventsQueued", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "conditionType", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "actionAttributes", namespace = "http://www.compositesw.com/services/system/admin/resource", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> rest;
@@ -63,8 +63,8 @@ public class TriggerResource
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Enabled" is used by two different parts of a schema. See: 
-     * line 2058 of file:/E:/dev/Workspaces/PDToolGitTest/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl
-     * line 2012 of file:/E:/dev/Workspaces/PDToolGitTest/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl
+     * line 2058 of file:/C:/MyFiles/git/ASAssets_GIT_Repo/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl
+     * line 2012 of file:/C:/MyFiles/git/ASAssets_GIT_Repo/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -86,12 +86,12 @@ public class TriggerResource
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link Boolean }{@code >}
+     * {@link JAXBElement }{@code <}{@link BigInteger }{@code >}
+     * {@link JAXBElement }{@code <}{@link AttributeList }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      * {@link JAXBElement }{@code <}{@link Schedule }{@code >}
      * {@link JAXBElement }{@code <}{@link AttributeList }{@code >}
-     * {@link JAXBElement }{@code <}{@link AttributeList }{@code >}
-     * {@link JAXBElement }{@code <}{@link BigInteger }{@code >}
      * 
      * 
      */

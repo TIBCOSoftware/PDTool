@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "archive", targetNamespace = "http://www.compositesw.com/services/system/admin", wsdlLocation = "file:/E:/dev/Workspaces/PDToolGitTest/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl")
+@WebServiceClient(name = "archive", targetNamespace = "http://www.compositesw.com/services/system/admin", wsdlLocation = "file:/C:/MyFiles/git/ASAssets_GIT_Repo/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl")
 public class Archive
     extends Service
 {
@@ -30,7 +30,7 @@ public class Archive
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/E:/dev/Workspaces/PDToolGitTest/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl");
+            url = new URL("file:/C:/MyFiles/git/ASAssets_GIT_Repo/PDTool/CISAdminApi7.0.0/wsdl/CisAdminApi.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

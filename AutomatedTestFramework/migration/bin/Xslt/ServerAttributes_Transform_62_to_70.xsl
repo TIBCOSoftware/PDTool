@@ -1,6 +1,6 @@
 <?xml version='1.0' ?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules">
+	xmlns:ns2="http://www.tibco.com/ps/deploytool/modules">
 	<!-- The CIS_PREV_VERSION and CIS_NEW_VERSION represent the portion of the various CIS paths within the Server Attribute XML file.
 	        If CIS previous and new install are installed on the same base path then it will only be necessary to change the version as 
 			shown below.  However, if they are installed on different paths, then the full base path should be provided for both variables. -->
@@ -22,7 +22,7 @@
 	
 	<!-- Perform the XSL Transformation -->
 	<xsl:template match="/">
-		<ns2:ServerAttributeModule xmlns:ns2="http://www.dvbu.cisco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<ns2:ServerAttributeModule xmlns:ns2="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<xsl:for-each select="ns2:ServerAttributeModule/serverAttribute">
 
 		  <xsl:choose>

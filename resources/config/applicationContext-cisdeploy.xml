@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ######################################################################
-# (c) 2014 Cisco and/or its affiliates. All rights reserved.
+# (c) 2017 TIBCO Software Inc. All rights reserved.
 # 
-# This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-# Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-# described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-# part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-# csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-# csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-# optional version number) are provided as a convenience, but are covered under the licensing for the 
-# Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-# through a valid license for that product.
+# Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+# The details can be found in the file LICENSE.
 # 
-# This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-# Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+# The following proprietary files are included as a convenience, and may not be used except pursuant
+# to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+# csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+# csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+# and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+# are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 # 
+# This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+# If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+# agreement with TIBCO.
+#
 ######################################################################
 -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
     "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <bean id="deployManager" class="com.cisco.dvbu.ps.deploytool.DeployManagerImpl">
+    <bean id="deployManager" class="com.tibco.ps.deploytool.DeployManagerImpl">
         <property name="dataSourceManager" ref="dataSourceManager" />
         <property name="groupManager" ref="groupManager" />
         <property name="privilegeManager" ref="privilegeManager" />
@@ -38,77 +39,77 @@
         <property name="VCSManager" ref="vcsManager" />
     </bean>
 
-    <bean id="dataSourceManager" class="com.cisco.dvbu.ps.deploytool.services.DataSourceManagerImpl">
+    <bean id="dataSourceManager" class="com.tibco.ps.deploytool.services.DataSourceManagerImpl">
         <property name="dataSourceDAO" ref="dataSourceDAO" />
     </bean>
     
-    <bean id="groupManager" class="com.cisco.dvbu.ps.deploytool.services.GroupManagerImpl">
+    <bean id="groupManager" class="com.tibco.ps.deploytool.services.GroupManagerImpl">
         <property name="groupDAO" ref="groupDAO" />
     </bean>
 
-    <bean id="privilegeManager" class="com.cisco.dvbu.ps.deploytool.services.PrivilegeManagerImpl">
+    <bean id="privilegeManager" class="com.tibco.ps.deploytool.services.PrivilegeManagerImpl">
         <property name="privilegeDAO" ref="privilegeDAO" />
     </bean>
 
-    <bean id="rebindManager" class="com.cisco.dvbu.ps.deploytool.services.RebindManagerImpl">
+    <bean id="rebindManager" class="com.tibco.ps.deploytool.services.RebindManagerImpl">
         <property name="rebindDAO" ref="rebindDAO" />
     </bean>
  
-	<bean id="regressionManager" class="com.cisco.dvbu.ps.deploytool.services.RegressionManagerImpl">
+	<bean id="regressionManager" class="com.tibco.ps.deploytool.services.RegressionManagerImpl">
         <property name="regressionInputFileJdbcDAO" ref="regressionInputFileJdbcDAO" />
         <property name="regressionPubTestJdbcDAO" ref="regressionPubTestJdbcDAO" />
         <property name="regressionPerfTestDAO" ref="regressionPerfTestDAO" />
         <property name="regressionSecurityTestDAO" ref="regressionSecurityTestDAO" />
     </bean>
      
-    <bean id="resourceCacheManager" class="com.cisco.dvbu.ps.deploytool.services.ResourceCacheManagerImpl">
+    <bean id="resourceCacheManager" class="com.tibco.ps.deploytool.services.ResourceCacheManagerImpl">
         <property name="resourceCacheDAO" ref="resourceCacheDAO" />
     </bean>
 	
-    <bean id="resourceManager" class="com.cisco.dvbu.ps.deploytool.services.ResourceManagerImpl">
+    <bean id="resourceManager" class="com.tibco.ps.deploytool.services.ResourceManagerImpl">
         <property name="resourceDAO" ref="resourceDAO" />
     </bean>
 
-    <bean id="serverManager" class="com.cisco.dvbu.ps.deploytool.services.ServerManagerImpl">
+    <bean id="serverManager" class="com.tibco.ps.deploytool.services.ServerManagerImpl">
         <property name="serverDAO" ref="serverDAO" />
     </bean>  
     
-    <bean id="serverAttributeManager" class="com.cisco.dvbu.ps.deploytool.services.ServerAttributeManagerImpl">
+    <bean id="serverAttributeManager" class="com.tibco.ps.deploytool.services.ServerAttributeManagerImpl">
         <property name="serverAttributeDAO" ref="serverAttributeDAO" />
     </bean>
 
-    <bean id="triggerManager" class="com.cisco.dvbu.ps.deploytool.services.TriggerManagerImpl">
+    <bean id="triggerManager" class="com.tibco.ps.deploytool.services.TriggerManagerImpl">
         <property name="triggerDAO" ref="triggerDAO" />
     </bean>
 
-    <bean id="userManager" class="com.cisco.dvbu.ps.deploytool.services.UserManagerImpl">
+    <bean id="userManager" class="com.tibco.ps.deploytool.services.UserManagerImpl">
         <property name="userDAO" ref="userDAO" />
     </bean>
 
-     <bean id="archiveManager" class="com.cisco.dvbu.ps.deploytool.services.ArchiveManagerImpl">
+     <bean id="archiveManager" class="com.tibco.ps.deploytool.services.ArchiveManagerImpl">
         <property name="archiveDAO" ref="archiveDAO" />
     </bean>
 
-     <bean id="vcsManager" class="com.cisco.dvbu.ps.deploytool.services.VCSManagerImpl">
+     <bean id="vcsManager" class="com.tibco.ps.deploytool.services.VCSManagerImpl">
         <property name="VCSDAO" ref="vcsDAO" />
     </bean>
   
-    <bean id="dataSourceDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.DataSourceWSDAOImpl"/>
-    <bean id="groupDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.GroupWSDAOImpl"/>
-	<bean id="privilegeDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.PrivilegeWSDAOImpl"/>
-	<bean id="rebindDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.RebindWSDAOImpl"/>
-	<bean id="regressionInputFileJdbcDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionInputFileJdbcDAOImpl"/>
-	<bean id="regressionPubTestJdbcDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPubTestJdbcDAOImpl"/>
-	<bean id="regressionPerfTestDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl"/>
-	<bean id="regressionSecurityTestDAO" class="com.cisco.dvbu.ps.deploytool.dao.jdbcapi.RegressionSecurityTestDAOImpl"/>
-	<bean id="resourceCacheDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ResourceCacheWSDAOImpl"/>
-    <bean id="resourceDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ResourceWSDAOImpl"/>
-	<bean id="serverAttributeDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl"/>
-	<bean id="serverDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ServerWSDAOImpl"/>
-	<bean id="triggerDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.TriggerWSDAOImpl"/>
-    <bean id="userDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.UserWSDAOImpl"/>
-    <bean id="archiveDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.ArchiveWSDAOImpl"/>
-    <bean id="vcsDAO" class="com.cisco.dvbu.ps.deploytool.dao.wsapi.VCSWSDAOImpl"/>
+    <bean id="dataSourceDAO" class="com.tibco.ps.deploytool.dao.wsapi.DataSourceWSDAOImpl"/>
+    <bean id="groupDAO" class="com.tibco.ps.deploytool.dao.wsapi.GroupWSDAOImpl"/>
+	<bean id="privilegeDAO" class="com.tibco.ps.deploytool.dao.wsapi.PrivilegeWSDAOImpl"/>
+	<bean id="rebindDAO" class="com.tibco.ps.deploytool.dao.wsapi.RebindWSDAOImpl"/>
+	<bean id="regressionInputFileJdbcDAO" class="com.tibco.ps.deploytool.dao.jdbcapi.RegressionInputFileJdbcDAOImpl"/>
+	<bean id="regressionPubTestJdbcDAO" class="com.tibco.ps.deploytool.dao.jdbcapi.RegressionPubTestJdbcDAOImpl"/>
+	<bean id="regressionPerfTestDAO" class="com.tibco.ps.deploytool.dao.jdbcapi.RegressionPerfTestDAOImpl"/>
+	<bean id="regressionSecurityTestDAO" class="com.tibco.ps.deploytool.dao.jdbcapi.RegressionSecurityTestDAOImpl"/>
+	<bean id="resourceCacheDAO" class="com.tibco.ps.deploytool.dao.wsapi.ResourceCacheWSDAOImpl"/>
+    <bean id="resourceDAO" class="com.tibco.ps.deploytool.dao.wsapi.ResourceWSDAOImpl"/>
+	<bean id="serverAttributeDAO" class="com.tibco.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl"/>
+	<bean id="serverDAO" class="com.tibco.ps.deploytool.dao.wsapi.ServerWSDAOImpl"/>
+	<bean id="triggerDAO" class="com.tibco.ps.deploytool.dao.wsapi.TriggerWSDAOImpl"/>
+    <bean id="userDAO" class="com.tibco.ps.deploytool.dao.wsapi.UserWSDAOImpl"/>
+    <bean id="archiveDAO" class="com.tibco.ps.deploytool.dao.wsapi.ArchiveWSDAOImpl"/>
+    <bean id="vcsDAO" class="com.tibco.ps.deploytool.dao.wsapi.VCSWSDAOImpl"/>
     
 </beans>
 

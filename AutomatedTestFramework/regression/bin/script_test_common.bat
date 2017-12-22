@@ -1,32 +1,33 @@
 @echo off
 REM ############################################################################################################################
-REM # (c) 2015 Cisco and/or its affiliates. All rights reserved.
+REM # (c) 2017 TIBCO Software Inc. All rights reserved.
 REM # 
-REM # This software is released under the Eclipse Public License. The details can be found in the file LICENSE. 
-REM # Any dependent libraries supplied by third parties are provided under their own open source licenses as 
-REM # described in their own LICENSE files, generally named .LICENSE.txt. The libraries supplied by Cisco as 
-REM # part of the Composite Information Server/Cisco Data Virtualization Server, particularly csadmin-XXXX.jar, 
-REM # csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar, csext-XXXX.jar, csjdbc-XXXX.jar, 
-REM # csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar, and customproc-XXXX.jar (where -XXXX is an 
-REM # optional version number) are provided as a convenience, but are covered under the licensing for the 
-REM # Composite Information Server/Cisco Data Virtualization Server. They cannot be used in any way except 
-REM # through a valid license for that product.
+REM # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+REM # The details can be found in the file LICENSE.
 REM # 
-REM # This software is released AS-IS!. Support for this software is not covered by standard maintenance agreements with Cisco. 
-REM # Any support for this software by Cisco would be covered by paid consulting agreements, and would be billable work.
+REM # The following proprietary files are included as a convenience, and may not be used except pursuant
+REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+REM # are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
 REM # 
+REM # This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+REM # If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+REM # agreement with TIBCO.
+REM #
 REM ############################################################################################################################
 REM # Author: Mike Tinius, Data Virtualization Business Unit, Advanced Services
 REM # Date:   June 2015
 REM # PDTool Regression Module - Regression Automated Test Framework
 REM #=======================================================================================
 REM # Instructions: 
-REM #   script_test_common.bat INVOKING_SCRIPT  ENV_TYPE  DEPLOYMENT_PLAN  [CUSTOM]  [RENAME]  [PAUSE]
+REM #   script_test_common.bat INVOKING_SCRIPT  ENV_TYPE_NAME  DEPLOYMENT_PLAN  [CUSTOM]  [RENAME]  [PAUSE]
 REM # 
 REM # Parameters:
 REM #   INVOKING_SCRIPT - The name of the script invoking this script.
 REM #
-REM #   ENV_TYPE - Example: [DEV,UAT,PROD]
+REM #   ENV_TYPE_NAME - Example: [DEV,UAT,PROD]
 REM #         1. The valid values are defined as a result of the variable: VALID_ENV_CONFIG_PAIRS
 REM #
 REM #   DEPLOYMENT_PLAN - The name of the deployment plan such as:
@@ -75,7 +76,7 @@ REM ######################################
 REM Validate input
 REM ######################################
 set INVOKING_SCRIPT=%1
-set ENV_TYPE=%2
+set ENV_TYPE_NAME=%2
 set DEPLOYMENT_PLAN=%3
 set CUSTOM=%4
 set RENAME_REL=%5
@@ -111,7 +112,7 @@ if %ERROR%==1 (
 echo.Original Command:             %new_SCRIPT_ORIGINAL_DEFINITION%
 echo.                              %new_SCRIPT_ORIGINAL_INVOCATION%
 echo.
-call :padHeader "SCRIPT_NAME ENV_TYPE DEPLOYMENT_PLAN [CUSTOM] [RENAME_REL] [PAUSE]" "%0  [%ENV_TYPE%] [%DEPLOYMENT_PLAN%] [%CUSTOM%] [%RENAME_REL%] [%PAUSE%]" new_SCRIPT_ORIGINAL_DEFINITION new_SCRIPT_ORIGINAL_INVOCATION ERROR
+call :padHeader "SCRIPT_NAME ENV_TYPE_NAME DEPLOYMENT_PLAN [CUSTOM] [RENAME_REL] [PAUSE]" "%0  [%ENV_TYPE_NAME%] [%DEPLOYMENT_PLAN%] [%CUSTOM%] [%RENAME_REL%] [%PAUSE%]" new_SCRIPT_ORIGINAL_DEFINITION new_SCRIPT_ORIGINAL_INVOCATION ERROR
 if %ERROR%==1 (
 	echo.Error detected within the header. Exiting.
 	goto USAGE
@@ -130,7 +131,7 @@ set LF=^
 
 REM # Remove double quotes and set default values for input parameters
 if defined INVOKING_SCRIPT set INVOKING_SCRIPT=!INVOKING_SCRIPT:"=!
-if defined ENV_TYPE set ENV_TYPE=!ENV_TYPE:"=!
+if defined ENV_TYPE_NAME set ENV_TYPE_NAME=!ENV_TYPE_NAME:"=!
 if defined DEPLOYMENT_PLAN set DEPLOYMENT_PLAN=!DEPLOYMENT_PLAN:"=!
 if defined CUSTOM set CUSTOM=!CUSTOM:"=!
 if not defined RENAME_REL goto LBL_RENAME_REL
@@ -160,8 +161,7 @@ if not defined PAUSE set PAUSE=TRUE
 
 
 REM # Convert execute type to upper case
-CALL :UCase ENV_TYPE ENV_TYPE 
-
+CALL :UCase ENV_TYPE_NAME ENV_TYPE_NAME
 
 REM # Resolve the absolute path for PDTOOL_INSTALL_HOME
 pushd .
@@ -185,7 +185,7 @@ if not defined RELEASE_FOLDER2			set errorMsg=!errorMsg!%TAB%The variable RELEAS
 if not defined DEBUG					set errorMsg=!errorMsg!%TAB%The variable DEBUG has not been defined.!LF!
 if not defined SCRIPT_CIS_VERSION		set errorMsg=!errorMsg!%TAB%The variable SCRIPT_CIS_VERSION has not been defined.!LF!
 if not defined INVOKING_SCRIPT			set errorMsg=!errorMsg!%TAB%The variable INVOKING_SCRIPT has not been defined.!LF!
-if not defined ENV_TYPE					set errorMsg=!errorMsg!%TAB%The variable ENV_TYPE has not been defined.!LF!
+if not defined ENV_TYPE_NAME			set errorMsg=!errorMsg!%TAB%The variable ENV_TYPE_NAME has not been defined.!LF!
 if not defined DEPLOYMENT_PLAN			set errorMsg=!errorMsg!%TAB%The variable DEPLOYMENT_PLAN has not been defined.!LF!
 if not defined RENAME_REL				set errorMsg=!errorMsg!%TAB%The variable RENAME_REL has not been defined.!LF!
 if not defined PAUSE					set errorMsg=!errorMsg!%TAB%The variable PAUSE has not been defined.!LF!
@@ -216,11 +216,11 @@ set VALID_ENV=0
 set CONFIG_PROPERTY_NAME=
 set FUNCTION_NAME1=[DEBUG] VALIDATE_CONFIG_PROPERTY_NAME      
 if %DEBUG%==Y echo.%FUNCTION_NAME1%    BEGIN: ------------------------------------------
-CALL :VALIDATE_CONFIG_PROPERTY_NAME "%ENV_TYPE%" "%VALID_ENV_CONFIG_PAIRS%" VALID_ENV CONFIG_PROPERTY_NAME
+CALL :VALIDATE_CONFIG_PROPERTY_NAME "%ENV_TYPE_NAME%" "%VALID_ENV_CONFIG_PAIRS%" VALID_ENV CONFIG_PROPERTY_NAME
 if %DEBUG%==Y echo.%FUNCTION_NAME1%   RETURN: %VALID_ENV% %CONFIG_PROPERTY_NAME%
 if %DEBUG%==Y echo.%FUNCTION_NAME1%      END: ------------------------------------------
 if %DEBUG%==Y echo.
-if %VALID_ENV%==0 set errorMsg=!errorMsg!%TAB%Parameter ENV_TYPE=%ENV_TYPE% is invalid.!LF!
+if %VALID_ENV%==0 set errorMsg=!errorMsg!%TAB%Parameter ENV_TYPE_NAME=%ENV_TYPE_NAME% is invalid.!LF!
 
 
 REM # Check to see if any error messages have been compiled.
@@ -310,6 +310,11 @@ if %FOUND_STR_SECURITY_EXEC%==1 	SET RENAME_FOLDER_CMD=TRUE
 REM # Set the rename folder command for renaming the release folder based on user input which can override the settings above.
 if "%RENAME_REL%"=="FALSE" SET RENAME_FOLDER_CMD=FALSE
 
+REM # Get the current date parts
+SET M=%DATE:~4,2%
+SET D=%DATE:~7,2%
+SET Y=%DATE:~-4,4%
+SET CURR_DATE=%Y%%M%%D%
 
 REM # Validate the CUSTOM variable and set text for user output
 set CUSTOM_TEXT1=Use SELECT COUNT(*) cnt
@@ -360,9 +365,8 @@ goto SQL_INPUT_FILE_CONTINUE
 
 
 REM # Set the log file name
-call :replace .dp "" "%DEPLOYMENT_PLAN%" BusLineBusAreaSubjArea_Log_Name 
+call :replace .dp "" "%DEPLOYMENT_PLAN%" BusLineBusAreaSubjArea_Log_Name
 SET LOG_FILE_NAME=%CONFIG_PROPERTY_NAME%_%BusLineBusAreaSubjArea_Log_Name%%CUSTOM%.log
-
 
 REM # Check to see if any error messages have been compiled.
 if "!errorMsg!" NEQ "" goto USAGE
@@ -371,7 +375,7 @@ set ERROR=0
 
 REM # Display variables
 echo.Input Variables:..............
-echo.ENV_TYPE=                     %ENV_TYPE%
+echo.ENV_TYPE_NAME=                %ENV_TYPE_NAME%
 echo.DEPLOYMENT_PLAN=              %DEPLOYMENT_PLAN%
 echo.CUSTOM=                       %CUSTOM%
 echo.RENAME_REL=                   %RENAME_REL%
@@ -382,6 +386,7 @@ echo.Test Type=                    %REGRESSION_TEST_TYPE%
 echo.BusLineBusAreaSubjArea=       %BusLineBusAreaSubjArea%
 echo.Query Style=                  %CUSTOM_TEXT1%
 echo.RENAME_REL Override Command=  %RENAME_FOLDER_CMD%
+echo.LOG_FILE_NAME=                %LOG_FILE_NAME%
 echo.
 echo.Path Information:.............
 echo.REGRESSION_TEST_PLANS=        %REGRESSION_TEST_PLANS%
@@ -472,14 +477,14 @@ REM ############################################################################
 	echo.
 	echo.---------------------------------------------------------------------------------------------------------------------------------------- 
 	REM ### INVOKE PDTOOL ###
-	echo.#  EXECUTE PDTOOL FOR ENV=%ENV_TYPE%  TIMESTAMP=%DATE% %TIME%  #
-	echo.%DATE% %TIME% COMMAND: call ExecutePDTool.bat -exec "%REGRESSION_TEST_PLANS%\%DEPLOYMENT_PLAN%" -config %CONFIG_PROPERTY_NAME%.properties > "%REGRESSION_TEST_LOGS%\%LOG_FILE_NAME%"
-	call ExecutePDTool.bat -exec "%REGRESSION_TEST_PLANS%\%DEPLOYMENT_PLAN%" -config %CONFIG_PROPERTY_NAME%.properties > "%REGRESSION_TEST_LOGS%\%LOG_FILE_NAME%"
+	echo.#  EXECUTE PDTOOL FOR ENV=%ENV_TYPE_NAME%  TIMESTAMP=%DATE% %TIME%  #
+	echo.%DATE% %TIME% COMMAND_: call ExecutePDTool.bat -exec "%REGRESSION_TEST_PLANS%\%DEPLOYMENT_PLAN%" -config %CONFIG_PROPERTY_NAME%.properties > "%REGRESSION_TEST_LOGS%\%LOG_FILE_NAME%"
+	call ExecutePDTool.bat -exec "%REGRESSION_TEST_PLANS%\%DEPLOYMENT_PLAN%" -config %CONFIG_PROPERTY_NAME%.properties >> "%REGRESSION_TEST_LOGS%\%LOG_FILE_NAME%"
 	set ERROR=%ERRORLEVEL%
 	popd
-	if %ERROR% NEQ 0 echo.%DATE% %TIME% ERROR: %ENV_TYPE% - An Error occurred for activity: %SCRIPT_ACTIVITY%
+	if %ERROR% NEQ 0 echo.%DATE% %TIME% ERROR: %ENV_TYPE_NAME% - An Error occurred for activity: %SCRIPT_ACTIVITY%
 	if %ERROR% EQU 0 (
-	   echo.%DATE% %TIME% SUCCESS: %ENV_TYPE% - Activity: %SCRIPT_ACTIVITY%
+	   echo.%DATE% %TIME% SUCCESS: %ENV_TYPE_NAME% - Activity: %SCRIPT_ACTIVITY%
 	)
 	set %1=%ERROR%
 GOTO:EOF

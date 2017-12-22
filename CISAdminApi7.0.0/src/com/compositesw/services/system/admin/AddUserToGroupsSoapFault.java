@@ -24,8 +24,8 @@ public class AddUserToGroupsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public AddUserToGroupsSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class AddUserToGroupsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public AddUserToGroupsSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

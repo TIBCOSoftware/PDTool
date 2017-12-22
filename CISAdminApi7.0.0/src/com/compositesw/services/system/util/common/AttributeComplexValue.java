@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "attributeComplexValue")
 @XmlSeeAlso({
+    AttributeTypeValueMap.class,
     AttributeSimpleValueList.class,
-    AttributeTypeValueList.class,
-    AttributeTypeValueMap.class
+    AttributeTypeValueList.class
 })
 public class AttributeComplexValue {
 

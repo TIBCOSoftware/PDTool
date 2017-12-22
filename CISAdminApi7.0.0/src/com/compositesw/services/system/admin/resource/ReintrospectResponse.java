@@ -48,8 +48,8 @@ import com.compositesw.services.system.util.common.OperationStatus;
     "reintrospectReport"
 })
 @XmlSeeAlso({
-    ReintrospectDataSourceResponse.class,
     GetDataSourceReintrospectResultResponse.class,
+    ReintrospectDataSourceResponse.class,
     CancelDataSourceReintrospectResponse.class
 })
 public class ReintrospectResponse

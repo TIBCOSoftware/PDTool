@@ -24,8 +24,8 @@ public class DestroyConnectorSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public DestroyConnectorSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class DestroyConnectorSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public DestroyConnectorSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

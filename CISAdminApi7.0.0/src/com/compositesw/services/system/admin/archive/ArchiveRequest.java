@@ -33,9 +33,9 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "archiveId"
 })
 @XmlSeeAlso({
-    GetArchiveExportSettingsRequest.class,
+    CancelArchiveRequest.class,
     GetArchiveContentsRequest.class,
-    CancelArchiveRequest.class
+    GetArchiveExportSettingsRequest.class
 })
 public class ArchiveRequest
     extends BaseRequest

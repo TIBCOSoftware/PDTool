@@ -33,9 +33,9 @@ import com.compositesw.services.system.util.common.DetailLevel;
     "detail"
 })
 @XmlSeeAlso({
+    LockResourcesRequest.class,
     UnlockResourcesRequest.class,
-    GetUsedDataSourcesRequest.class,
-    LockResourcesRequest.class
+    GetUsedDataSourcesRequest.class
 })
 public class MultiPathTypeDetailRequest
     extends MultiPathTypeRequest

@@ -35,11 +35,11 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "groupName"
 })
 @XmlSeeAlso({
-    CreateGroupRequest.class,
     AddUsersToGroupRequest.class,
-    DestroyGroupRequest.class,
+    CreateGroupRequest.class,
     RemoveUsersFromGroupRequest.class,
-    UpdateGroupRequest.class
+    UpdateGroupRequest.class,
+    DestroyGroupRequest.class
 })
 public class DomainGroupRequest
     extends BaseRequest

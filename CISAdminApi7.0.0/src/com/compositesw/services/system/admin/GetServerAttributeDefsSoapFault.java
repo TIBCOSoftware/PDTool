@@ -24,8 +24,8 @@ public class GetServerAttributeDefsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public GetServerAttributeDefsSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class GetServerAttributeDefsSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public GetServerAttributeDefsSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

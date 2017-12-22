@@ -36,25 +36,25 @@ import com.compositesw.services.system.util.common.DetailLevel;
     "detail"
 })
 @XmlSeeAlso({
+    UpdateSqlTableRequest.class,
+    GetMostRecentIntrospectionStatusRequest.class,
+    UpdateLinkRequest.class,
+    UpdateXQueryTransformProcedureRequest.class,
+    GetAllResourcesByPathRequest.class,
+    UpdateXsltTransformProcedureRequest.class,
+    UpdateTriggerRequest.class,
     UpdateXQueryProcedureRequest.class,
+    UpdateTransformProcedureRequest.class,
     UpdateXSLTProcedureRequest.class,
+    UpdateDefinitionSetRequest.class,
+    UpdateDataSourceRequest.class,
     UpdateBasicTransformProcedureRequest.class,
     UpdateImplementationContainerRequest.class,
     UpdateSqlScriptProcedureRequest.class,
     UpdateExternalSqlProcedureRequest.class,
-    UpdateLinkRequest.class,
-    UpdateDefinitionSetRequest.class,
     UpdateStreamTransformProcedureRequest.class,
-    GetMostRecentIntrospectionStatusRequest.class,
-    UpdateSqlTableRequest.class,
-    UpdateXsltTransformProcedureRequest.class,
-    UpdateTriggerRequest.class,
-    UpdateTransformProcedureRequest.class,
-    GetAllResourcesByPathRequest.class,
-    UpdateDataSourceRequest.class,
-    UpdateXQueryTransformProcedureRequest.class,
-    UpdateBasePortRequest.class,
-    UpdateOperationProcedureRequest.class
+    UpdateOperationProcedureRequest.class,
+    UpdateBasePortRequest.class
 })
 public class PathDetailRequest
     extends BaseRequest

@@ -35,19 +35,19 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "type"
 })
 @XmlSeeAlso({
-    ClearResourceCacheRequest.class,
-    CopyResourceRequest.class,
-    CancelResourceStatisticsRequest.class,
-    MoveResourceRequest.class,
-    RefreshResourceStatisticsRequest.class,
-    GetCachedResourceStatisticsConfigRequest.class,
-    RenameResourceRequest.class,
-    DestroyResourceRequest.class,
     RefreshResourceCacheRequest.class,
+    RenameResourceRequest.class,
+    GetResourceCacheConfigRequest.class,
+    CopyResourceRequest.class,
     ClearResourceStatisticsRequest.class,
     GetDataSourceStatisticsConfigRequest.class,
+    MoveResourceRequest.class,
     GetResourceStatisticsConfigRequest.class,
-    GetResourceCacheConfigRequest.class
+    RefreshResourceStatisticsRequest.class,
+    CancelResourceStatisticsRequest.class,
+    ClearResourceCacheRequest.class,
+    DestroyResourceRequest.class,
+    GetCachedResourceStatisticsConfigRequest.class
 })
 public class PathTypeRequest
     extends BaseRequest

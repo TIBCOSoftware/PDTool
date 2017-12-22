@@ -40,8 +40,8 @@ import com.compositesw.services.system.admin.resource.IntrospectResourcesResultR
 })
 @XmlSeeAlso({
     GetIntrospectedResourceIdsResultRequest.class,
-    IntrospectResourcesResultRequest.class,
-    GetIntrospectableResourceIdsResultRequest.class
+    GetIntrospectableResourceIdsResultRequest.class,
+    IntrospectResourcesResultRequest.class
 })
 public class ServerTaskResultRequest
     extends BaseRequest

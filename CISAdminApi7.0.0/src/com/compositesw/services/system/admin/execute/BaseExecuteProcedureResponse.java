@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
     "requestId"
 })
 @XmlSeeAlso({
-    ExecuteSqlScriptResponse.class,
-    ExecuteProcedureResponse.class
+    ExecuteProcedureResponse.class,
+    ExecuteSqlScriptResponse.class
 })
 public class BaseExecuteProcedureResponse
     extends BaseProceduralResultResponse

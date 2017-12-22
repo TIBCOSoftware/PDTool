@@ -24,8 +24,8 @@ public class IntrospectResourcesTaskSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public IntrospectResourcesTaskSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class IntrospectResourcesTaskSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public IntrospectResourcesTaskSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

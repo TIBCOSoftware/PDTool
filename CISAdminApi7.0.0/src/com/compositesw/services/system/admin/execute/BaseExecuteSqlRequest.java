@@ -48,8 +48,8 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "groups"
 })
 @XmlSeeAlso({
-    ExecuteSqlRequest.class,
-    ExecuteNativeSqlRequest.class
+    ExecuteNativeSqlRequest.class,
+    ExecuteSqlRequest.class
 })
 public class BaseExecuteSqlRequest
     extends BaseRequest

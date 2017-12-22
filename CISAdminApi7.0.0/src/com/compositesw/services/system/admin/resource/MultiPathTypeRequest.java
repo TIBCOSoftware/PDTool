@@ -45,10 +45,10 @@ import com.compositesw.services.system.util.common.BaseRequest;
     "entries"
 })
 @XmlSeeAlso({
-    DestroyResourcesRequest.class,
     MoveResourcesRequest.class,
     CopyResourcesRequest.class,
     RebindResourcesRequest.class,
+    DestroyResourcesRequest.class,
     MultiPathTypeDetailRequest.class
 })
 public class MultiPathTypeRequest

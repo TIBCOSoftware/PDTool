@@ -41,8 +41,8 @@ import javax.xml.bind.annotation.XmlType;
     "schemaLocation"
 })
 @XmlSeeAlso({
-    XmlSchemaDocumentSet.class,
-    WsdlDocumentSet.class
+    WsdlDocumentSet.class,
+    XmlSchemaDocumentSet.class
 })
 public class XmlDocumentSet {
 

@@ -29,13 +29,13 @@ import com.compositesw.services.system.util.common.OperationStatus;
  */
 @WebService(name = "serverPortType", targetNamespace = "http://www.compositesw.com/services/system/admin")
 @XmlSeeAlso({
+    com.compositesw.services.system.admin.server.ObjectFactory.class,
+    com.compositesw.services.system.admin.resource.ObjectFactory.class,
     com.compositesw.services.system.admin.archive.ObjectFactory.class,
+    com.compositesw.services.system.admin.execute.ObjectFactory.class,
     com.compositesw.services.system.util.common.ObjectFactory.class,
     com.compositesw.services.system.util.security.ObjectFactory.class,
-    com.compositesw.services.system.admin.resource.ObjectFactory.class,
-    com.compositesw.services.system.admin.user.ObjectFactory.class,
-    com.compositesw.services.system.admin.server.ObjectFactory.class,
-    com.compositesw.services.system.admin.execute.ObjectFactory.class
+    com.compositesw.services.system.admin.user.ObjectFactory.class
 })
 public interface ServerPortType {
 
@@ -73,8 +73,8 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param tableName
      * @param tablePath
+     * @param tableName
      * @throws CreateDBHealthMonitorTableSoapFault
      */
     @WebMethod(action = "createDBHealthMonitorTable")
@@ -104,8 +104,8 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param tableName
      * @param tablePath
+     * @param tableName
      * @return
      *     returns java.lang.String
      * @throws GetCreateDBHealthMonitorTableSQLSoapFault
@@ -169,8 +169,8 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param getAllAttributeDefs
      * @param paths
+     * @param getAllAttributeDefs
      * @return
      *     returns com.compositesw.services.system.util.common.AttributeDefList
      * @throws GetServerAttributeDefsSoapFault
@@ -189,8 +189,8 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param paths
      * @param getAllAttributes
+     * @param paths
      * @return
      *     returns com.compositesw.services.system.util.common.AttributeList
      * @throws GetServerAttributesSoapFault
@@ -223,11 +223,11 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param remotePassword
-     * @param remotePort
-     * @param remoteHostName
-     * @param remoteDomainName
      * @param remoteUserName
+     * @param remotePort
+     * @param remotePassword
+     * @param remoteDomainName
+     * @param remoteHostName
      * @return
      *     returns com.compositesw.services.system.util.common.MessageEntryList
      * @throws JoinClusterSoapFault
@@ -252,10 +252,10 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param status
-     * @param actionName
-     * @param attributes
      * @param messages
+     * @param attributes
+     * @param actionName
+     * @param status
      * @throws PerformServerActionSoapFault
      */
     @WebMethod(action = "performServerAction")
@@ -309,12 +309,12 @@ public interface ServerPortType {
 
     /**
      * 
-     * @param remotePassword
+     * @param remoteUserName
      * @param remotePort
-     * @param remoteHostName
+     * @param remotePassword
      * @param remoteDomainName
      * @param option
-     * @param remoteUserName
+     * @param remoteHostName
      * @return
      *     returns com.compositesw.services.system.util.common.MessageEntryList
      * @throws RepairClusterSoapFault

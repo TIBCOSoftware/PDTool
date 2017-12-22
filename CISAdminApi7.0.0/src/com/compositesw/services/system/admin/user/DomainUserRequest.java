@@ -37,9 +37,9 @@ import com.compositesw.services.system.util.common.BaseRequest;
 @XmlSeeAlso({
     AddUserToGroupsRequest.class,
     DestroyUserRequest.class,
-    CreateUserRequest.class,
+    RemoveUserFromGroupsRequest.class,
     UpdateUserRequest.class,
-    RemoveUserFromGroupsRequest.class
+    CreateUserRequest.class
 })
 public class DomainUserRequest
     extends BaseRequest

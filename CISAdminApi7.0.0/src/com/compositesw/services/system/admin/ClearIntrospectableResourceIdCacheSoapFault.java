@@ -24,8 +24,8 @@ public class ClearIntrospectableResourceIdCacheSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
+     * @param message
      */
     public ClearIntrospectableResourceIdCacheSoapFault(String message, Fault faultInfo) {
         super(message);
@@ -34,9 +34,9 @@ public class ClearIntrospectableResourceIdCacheSoapFault
 
     /**
      * 
-     * @param message
      * @param faultInfo
      * @param cause
+     * @param message
      */
     public ClearIntrospectableResourceIdCacheSoapFault(String message, Fault faultInfo, Throwable cause) {
         super(message, cause);

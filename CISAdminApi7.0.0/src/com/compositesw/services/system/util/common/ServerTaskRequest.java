@@ -29,9 +29,9 @@ import com.compositesw.services.system.admin.resource.IntrospectResourcesTaskReq
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "serverTaskRequest")
 @XmlSeeAlso({
-    GetIntrospectableResourceIdsTaskRequest.class,
     GetIntrospectedResourceIdsTaskRequest.class,
-    IntrospectResourcesTaskRequest.class
+    IntrospectResourcesTaskRequest.class,
+    GetIntrospectableResourceIdsTaskRequest.class
 })
 public class ServerTaskRequest
     extends BaseRequest
