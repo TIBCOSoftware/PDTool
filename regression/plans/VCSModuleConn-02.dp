@@ -19,6 +19,6 @@
 # -----------------------------------------
 # VCS Module: VCS Connection Properties version
 # -----------------------------------------
-# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
+# Initialize Base-Level and Custom Folders in the VCS
 #
-PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"
+PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]" "$MODULE_HOME/VCSModule.xml"

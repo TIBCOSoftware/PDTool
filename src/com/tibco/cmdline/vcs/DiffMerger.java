@@ -33,16 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.tibco.cmdline.vcs.spi.LifecycleListener;
 import com.tibco.cmdline.vcs.spi.LifecycleListener.Event;
 import com.tibco.cmdline.vcs.spi.LifecycleListener.Mode;
 import com.tibco.cmdline.vcs.spi.LifecycleListener.VCSException;
-import com.tibco.ps.common.exception.ApplicationException;
-import com.tibco.ps.common.exception.CompositeException;
-import com.tibco.ps.deploytool.dao.wsapi.VCSWSDAOImpl;
 import com.compositesw.common.namespace.NamespaceConstants;
 import com.compositesw.common.repository.Path;
 import com.compositesw.common.vcs.primitives.FilePrimitives;
@@ -52,8 +46,6 @@ import com.compositesw.common.vcs.primitives.ResourceType;
  * @author panagiotis
  */
 public class DiffMerger {
-
-	private static Log logger = LogFactory.getLog(DiffMerger.class);
 
     private static final String ROOT_NAME = "root";
     
@@ -584,21 +576,17 @@ public class DiffMerger {
         // depth-first, post-order
         private static void delete(File file, LifecycleListener vcsListener, boolean verbose) throws VCSException {
             
-        	/* Original code: */
-        	 if (file.isDirectory()) {
-               for (File f: file.listFiles()) {
+            if (file.isDirectory()) {
+                for (File f: file.listFiles()) {
                     if (!FilePrimitives.CMF_FILTER.accept(f)) continue;
                     delete(f, vcsListener, verbose);
-                } 
+                }                
             }
             // folder or file
-        	if (vcsListener != null)
-       			vcsListener.handle(file, Event.DELETE, Mode.PRE, verbose);
-        	if (file.exists()) 
-        		file.delete();
-        	if (vcsListener != null) 
-        		vcsListener.handle(file, Event.DELETE, Mode.POST, verbose);
-         }
+            if (vcsListener != null) vcsListener.handle(file, Event.DELETE, Mode.PRE, verbose);
+            if (file.exists()) file.delete();
+            if (vcsListener != null) vcsListener.handle(file, Event.DELETE, Mode.POST, verbose);
+        }
         
         /**
          * Overwrites the contents of the target file with the contents of the source file.

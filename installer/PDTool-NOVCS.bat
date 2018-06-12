@@ -26,7 +26,7 @@ REM # 2. Variable Usage:
 REM #      a. Variables with a single % are variables from the command window environment that gets resolved immediately or
 REM #            variables within this setup batch file that the person insalling wants to use.
 REM #            Example 1: %USERNAME% is an example of a variable set in by the command window automaticaly.
-REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool7.0.0_SVN
+REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\.compositesw\PDTool7.0.0_SVN
 REM #            Example 2: %DEF_VCS_WORKSPACE_NAME%t is used to construct the temporary workspace name from the workspace name
 REM #                set DEF_VCS_TEMP_DIR=%%%%PDTOOL_SUBSTITUTE_DRIVE%%%%\%DEF_VCS_WORKSPACE_NAME%t
 REM #
@@ -48,11 +48,11 @@ REM #      d. PDTool copies installer source files to the target PDTool director
 REM #      e. PDTool copies default setMyPrePDToolVars.bat and setMyPostPDToolVars.bat to the target PDTool installation home directory.
 REM #      f. PDTool modifes the following files:
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\setMyPrePDToolVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\setMyPrePDToolVars.bat
+REM #              Example: C:\Users\username\.compositesw\PDTool7.0.0_SVN\setMyPrePDToolVars.bat
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\%DEF_PDTOOL_DESTINATION_DIR%\bin\setVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\PDTool\bin\setVars.bat
+REM #              Example: C:\Users\username\.compositesw\PDTool7.0.0_SVN\PDTool\bin\setVars.bat
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\%DEF_PDTOOL_DESTINATION_DIR%\AutomatedTestFramework\regression\bin\setVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\PDTool\AutomatedTestFramework\regression\bin\setVars.bat
+REM #              Example: C:\Users\username\.compositesw\PDTool7.0.0_SVN\PDTool\AutomatedTestFramework\regression\bin\setVars.bat
 REM #      g. PDTool encrypts setMyPrePDToolVars.bat
 REM #      h. If VCS configuration, PDTool removes the workspace directory.
 REM #      i. If VCS configuration and VCS is TFS, PDTool requests use to accept TFS eula agreement
@@ -66,7 +66,7 @@ set DEF_FORCE_PROMPT_BYPASS=Y
 REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
 set DEF_JAVA_HOME=C:\Program Files\Java\jre7
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDTool installation folder.
-set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool7.0.0_NOVCS
+set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\.compositesw\PDTool7.0.0_NOVCS
 REM # Default for I_PDTOOL_DESTINATION_DIR.  This is the default PDTool directory name.
 set DEF_PDTOOL_DESTINATION_DIR=PDTool
 REM # Default for I_VALID_ENV_CONFIG_PAIRS

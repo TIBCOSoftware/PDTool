@@ -73,21 +73,15 @@ public class ScriptExecutor {
 		this.envList = envList;
 	}
 
-	public int executeCommand(){
+	public int executeCommand(String errorFile){
 		int exitValue = -99;
        	
 		String prefix = "ScriptExecutor::";
 		String command = "";
-		String stderr_str;
-		String stdout_str;
-		
 		try {
 			 // Print out the command and execution directory
 			 for (int i=0; i < scriptArgsList.size(); i++) {
-				 if (scriptArgsList.get(i).contains(" "))
-					 command = command + "\"" + scriptArgsList.get(i) + "\"" + " ";
-				 else
-					 command = command + scriptArgsList.get(i) + " ";
+				 command = command + scriptArgsList.get(i) + " ";
 			 }
 			 if (logger.isDebugEnabled()) {
 				 logger.debug(prefix+"-------------------------------------------------");
@@ -100,23 +94,21 @@ public class ScriptExecutor {
 			
 			// Setup the environment variables
 			 Map<String, String> env = pb.environment();
-			 if (envList != null) {
-				 for (int i=0; i < envList.size(); i++) {
-					String envVar = envList.get(i).toString();
-					StringTokenizer st = new StringTokenizer(envVar,"=");
-					if (st.hasMoreTokens()) {
-						String property = st.nextToken();
-						String propertyVal = "";
-						try {
-							propertyVal = st.nextToken();
-						} catch (Exception e) {}
-						env.put(property, propertyVal);
-						
-						if (logger.isDebugEnabled()) {
-							logger.debug(prefix+"Env Var:  "+CommonUtils.maskCommand(envVar));
-						}
+			 for (int i=0; i < envList.size(); i++) {
+				String envVar = envList.get(i).toString();
+				StringTokenizer st = new StringTokenizer(envVar,"=");
+				if (st.hasMoreTokens()) {
+					String property = st.nextToken();
+					String propertyVal = "";
+					try {
+						propertyVal = st.nextToken();
+					} catch (Exception e) {}
+					env.put(property, propertyVal);
+					
+					if (logger.isDebugEnabled()) {
+						logger.debug(prefix+"Env Var:  "+CommonUtils.maskCommand(envVar));
 					}
-				 }
+				}
 			 }
 			if (logger.isDebugEnabled()) {
 		        logger.debug(prefix+"-------------------------------------------------");
@@ -160,22 +152,8 @@ public class ScriptExecutor {
 			}
 
 			if (exitValue > 0) {
-				// Get the standard error
-				stderr_str = getStandardErrorFromCommand().toString().trim();
-				if (stderr_str != null && stderr_str.length() == 0)
-					stderr_str = null;
-
-				// Get the standard out
-				stdout_str = getStandardOutputFromCommand().toString().trim();
-				if (stdout_str != null && stdout_str.length() == 0)
-					stdout_str = null;
-
-				// If the there is no standard error but there is a standard out then use the standard out.  GIT will put messages in standard out.
-			    if (stderr_str == null && stdout_str != null)
-			    	stderr_str = stdout_str;
-
 				logger.error("Error executing command="+CommonUtils.maskCommand(command));
-				logger.error("Error="+CommonUtils.maskCommand(stderr_str));
+				logger.error("Error="+CommonUtils.maskCommand(getStandardErrorFromCommand().toString()));
 			} else {
 				if (logger.isInfoEnabled()) {
 					logger.info("Successfully executed command:\n"+CommonUtils.maskCommand(command));
