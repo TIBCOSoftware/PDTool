@@ -7,7 +7,7 @@
 # The details can be found in the file LICENSE.
 # 
 # The following proprietary files are included as a convenience, and may not be used except pursuant
-# to valid license to Composite Information Server or TIBCO� Data Virtualization Server:
+# to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
 # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
 # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
 # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files

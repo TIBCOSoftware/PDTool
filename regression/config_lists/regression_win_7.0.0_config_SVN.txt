@@ -30,7 +30,7 @@
 #regression_win_7.0.0          regression_plan_test_list.txt            # TEST the base module connection
 
 # PDTool - All modules except VCS using HTTP
-regression_win_7.0.0          regression_plan_base_list.txt            # Full regression of base modules
+#regression_win_7.0.0          regression_plan_base_list.txt            # Full regression of base modules
 
 # PDTool - All modules except VCS using HTTPS
 #regression_win_7.0.0__https   regression_plan_base_list.txt            # Full regression of base modules
@@ -41,7 +41,7 @@ regression_win_7.0.0          regression_plan_base_list.txt            # Full re
 #regression_win_7.0.0_git      regression_plan_vcs_test_list.txt        # TEST GIT connection
 
 # PDTool - VCS Module for Subversion
-#regression_win_7.0.0_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+regression_win_7.0.0_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
 # TEST:
 #regression_win_7.0.0_svn      regression_plan_vcs_test_list.txt        # TEST Subversion connection
 

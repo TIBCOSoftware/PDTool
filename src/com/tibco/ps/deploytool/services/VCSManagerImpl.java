@@ -628,7 +628,20 @@ public class VCSManagerImpl implements VCSManager {
 			//--------------------------------------------------------------
 			// checkin
 			//--------------------------------------------------------------
-			checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);
+			/*
+			 * 06/08/2018 mtinius: For GIT only, redirect to a forced_checkin pattern.
+			 * 		Since GIT is applying changes to the local branch the pattern that checkin follows was much different than the other VCS types.
+			 * 		The issue with the checkin pattern is that it wants to checkout from the VCS and then do a diffmerger.  For all other VCS types,
+			 * 		this pattern works fine.  For GIT it simply overwrites the changes and they never get checked in.  For GIT, following the forced_checkin
+			 * 		pattern insures that the checkout from the GIT branch occurs before the diffmerger and so the local ADD, UPDATE and DELETE are committed
+			 * 		or checked in directly after the diffmerger.
+			 */
+			if (vcsStruct.getVcsBaseType().equalsIgnoreCase("GIT")) {
+				CommonUtils.writeOutput("   GIT only: Redirecting from checkin() to forced_checkin().",prefix,"-info",logger,debug1,debug2,debug3);
+				forced_checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);						
+			} else {
+				checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);								
+			}
 
 			CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("Successfully completed "+actionName+".",prefix,"-info",logger,debug1,debug2,debug3);
@@ -1235,6 +1248,9 @@ public class VCSManagerImpl implements VCSManager {
 				throw new ValidationException("VCS Message is null or empty.");		
 			}
 
+			// Initialize the workspace first
+			vcsInitWorkspaceCommon(vcsUser, vcsPassword);
+			
 			// Print out info statements
 			CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("---VCS Module ID Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
@@ -1446,12 +1462,8 @@ public class VCSManagerImpl implements VCSManager {
 			if (vcsMultiUserTopology) {
 				logger.info("Multi-User Direct Access Topology is configured.  Redirecting to vcsStudioForcedCheckin().");
 				vcsStudioForcedCheckin(resourcePath, resourceType, message, vcsWorkspace, vcsWorkspaceTemp);
+
 			} else {
-			
-				logger.info("--------------------------------------------------------");
-				logger.info("---------------- STUDIO/VCS INTEGRATION ----------------");
-				logger.info("--------------------------------------------------------");
-		
 		        try {
 					/*****************************************
 					 * INITIALIZE VCS STRUCTURE VARIABLE
@@ -1464,106 +1476,125 @@ public class VCSManagerImpl implements VCSManager {
 					vcsStruct.setVcsWorkspaceProject(vcsWorkspace);
 					vcsStruct.setVcsTemp(vcsWorkspaceTemp);
 					
-			        /*****************************************
-					 * DISPLAY/VALIDATE VCS VARIABLES
-					 *****************************************/	        
-			        // Validate, Create VCS Workspace and Temp directories
-			        vcsStruct.validateVcs(prefix);
-			        // Resolve Absolute paths
-			        vcsStruct.resolveCanonicalPathsVcs(prefix);
-					// Display VCS variables
-			        vcsStruct.displayVcs(prefix);
-
-			        // Check the VCS_MESSAGE_MANDATORY=true and determine whether the incoming message is null or empty and throw an exception.
-			        /* 3-7-2012: may not need 		
-			        String messageMandatory = vcsStruct.getVcsMessageMandatory();
-			        if (messageMandatory.equalsIgnoreCase("true")) {
-			        	if (message == null || message.length() == 0) {
-			        		throw new ValidationException("The comment message may not be null or empty.");
-			        	}
-			        }
-			       	*/
-			        
-	        		// Extract the vcs checkin command template from the studio comment:  VCS_CHECKIN_OPTIONS(<command>)
-	        		if (message.toUpperCase().contains("VCS_CHECKIN_OPTIONS")) 
-	        		{
-	        			String tempMessage = "";
-	        			int beg = message.indexOf("VCS_CHECKIN_OPTIONS");
-	        			if (beg >= 0) 
-	        			{
-	        				int pbeg = message.indexOf("(", beg);
-	        				int pend = message.indexOf(")", beg);
-	        				if (beg > 0)
-	        					tempMessage = message.substring(0, beg);
-	        				if (pbeg > 0 && pend > 0 && pbeg != pend) {
-	        					String command = message.substring(pbeg+1, pend);
-	        					String vcsCheckinOptions = "";
-	        					if (vcsStruct.getVcsCheckinOptions() != null) 
-	        					{
-	        						vcsCheckinOptions = vcsStruct.getVcsCheckinOptions().trim();
-	        						if (!command.equalsIgnoreCase(vcsCheckinOptions)) {
-	        							if (vcsCheckinOptions.toLowerCase().contains(command.toLowerCase())) 
-	        							{
-	        								command = vcsCheckinOptions;
-	        							} else {
-	        								if (command.toLowerCase().contains(vcsCheckinOptions.toLowerCase())) {
-	        									// no operation required since the command contains all commands
-	        								} else {
-	        									command = command + " " + vcsCheckinOptions;
-	        								}
-	        							}
-	        						}
-	        					}
-	        					
-	        					// Add the studio command to any existing command options
-	        					vcsStruct.setVcsCheckinOptions(command);
-	        				}
-	        				message = tempMessage + message.substring(pend+1);
-	        			}
-	        		}
-	        
-			        // Prepend the property VCS_MESSAGE_PREPEND to message
-			        String messagePrepend = vcsStruct.getVcsMessagePrepend();
-			        if (messagePrepend != null && messagePrepend.length() > 0) {
-			        	if (message == null) {
-			        		message = messagePrepend;
-			        	} else {
-			        		message = messagePrepend+" "+message;	        		
-			        	}
-			        }
-
-			        /*****************************************
-					 * PERFORM VCS STUDIO CHECKIN
-					 *****************************************/
-					CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] Studio Checkin ========",prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("---VCS Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      resourcePath=             "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      resourceType=             "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      Message=                  "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsCheckinOptions=        "+vcsStruct.getVcsCheckinOptions(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsCheckinOptionsRequired="+vcsStruct.getVcsCheckinOptionsRequired(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsWorkspace=             "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsWorkspaceProject=      "+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsTemp=                  "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsUser=                  "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("      VcsPassword=              ********",prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
-									
-					CommonUtils.writeOutput("========== DIFFMERGER CHECKIN ============",prefix,"-debug2",logger,debug1,debug2,debug3);
-			        diffmerger__checkin(resourcePath, resourceType, vcsStruct);
-			        
-					CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
-			        vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD",  vcsStruct);
+					/*
+					 * 06/08/2018 mtinius: For GIT only, redirect to a forced_checkin scenario.
+					 * 		Since GIT is applying changes to the local branch the pattern that checkin follows was much different than the other VCS types.
+					 * 		The issue with the checkin pattern is that it wants to checkout from the VCS and then do a diffmerger.  For all other VCS types,
+					 * 		this pattern works fine.  For GIT it simply overwrites the changes and they never get checked in.  For GIT, following the forced_checkin
+					 * 		pattern insures that the checkout from the GIT branch occurs before the diffmerger and so the local ADD, UPDATE and DELETE are committed
+					 * 		or checked in directly after the diffmerger.
+					 */
+					if (vcsStruct.getVcsBaseType().equalsIgnoreCase("GIT")) {
+						logger.info("GIT in use.  Redirecting from vcsStudioCheckin() to vcsStudioForcedCheckin().");
+						vcsStudioForcedCheckin(resourcePath, resourceType, message, vcsWorkspace, vcsWorkspaceTemp);
+						
+					} else {
+						
+						logger.info("--------------------------------------------------------");
+						logger.info("---------------- STUDIO/VCS INTEGRATION ----------------");
+						logger.info("--------------------------------------------------------");
+				
+				        /*****************************************
+						 * DISPLAY/VALIDATE VCS VARIABLES
+						 *****************************************/	        
+				        // Validate, Create VCS Workspace and Temp directories
+				        vcsStruct.validateVcs(prefix);
+				        // Resolve Absolute paths
+				        vcsStruct.resolveCanonicalPathsVcs(prefix);
+						// Display VCS variables
+				        vcsStruct.displayVcs(prefix);
+	
+				        // Check the VCS_MESSAGE_MANDATORY=true and determine whether the incoming message is null or empty and throw an exception.
+				        /* 3-7-2012: may not need 		
+				        String messageMandatory = vcsStruct.getVcsMessageMandatory();
+				        if (messageMandatory.equalsIgnoreCase("true")) {
+				        	if (message == null || message.length() == 0) {
+				        		throw new ValidationException("The comment message may not be null or empty.");
+				        	}
+				        }
+				       	*/
+				        
+		        		// Extract the vcs checkin command template from the studio comment:  VCS_CHECKIN_OPTIONS(<command>)
+		        		if (message.toUpperCase().contains("VCS_CHECKIN_OPTIONS")) 
+		        		{
+		        			String tempMessage = "";
+		        			int beg = message.indexOf("VCS_CHECKIN_OPTIONS");
+		        			if (beg >= 0) 
+		        			{
+		        				int pbeg = message.indexOf("(", beg);
+		        				int pend = message.indexOf(")", beg);
+		        				if (beg > 0)
+		        					tempMessage = message.substring(0, beg);
+		        				if (pbeg > 0 && pend > 0 && pbeg != pend) {
+		        					String command = message.substring(pbeg+1, pend);
+		        					String vcsCheckinOptions = "";
+		        					if (vcsStruct.getVcsCheckinOptions() != null) 
+		        					{
+		        						vcsCheckinOptions = vcsStruct.getVcsCheckinOptions().trim();
+		        						if (!command.equalsIgnoreCase(vcsCheckinOptions)) {
+		        							if (vcsCheckinOptions.toLowerCase().contains(command.toLowerCase())) 
+		        							{
+		        								command = vcsCheckinOptions;
+		        							} else {
+		        								if (command.toLowerCase().contains(vcsCheckinOptions.toLowerCase())) {
+		        									// no operation required since the command contains all commands
+		        								} else {
+		        									command = command + " " + vcsCheckinOptions;
+		        								}
+		        							}
+		        						}
+		        					}
+		        					
+		        					// Add the studio command to any existing command options
+		        					vcsStruct.setVcsCheckinOptions(command);
+		        				}
+		        				message = tempMessage + message.substring(pend+1);
+		        			}
+		        		}
+		        
+				        // Prepend the property VCS_MESSAGE_PREPEND to message
+				        String messagePrepend = vcsStruct.getVcsMessagePrepend();
+				        if (messagePrepend != null && messagePrepend.length() > 0) {
+				        	if (message == null) {
+				        		message = messagePrepend;
+				        	} else {
+				        		message = messagePrepend+" "+message;	        		
+				        	}
+				        }
+	
+				        /*****************************************
+						 * PERFORM VCS STUDIO CHECKIN
+						 *****************************************/
+						CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] Studio Checkin ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("",prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("---VCS Arguments:",prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      resourcePath=             "+resourcePath,prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      resourceType=             "+resourceType,prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      Message=                  "+message,prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsCheckinOptions=        "+vcsStruct.getVcsCheckinOptions(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsCheckinOptionsRequired="+vcsStruct.getVcsCheckinOptionsRequired(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsWorkspace=             "+vcsStruct.getVcsWorkspace(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsWorkspaceProject=      "+vcsStruct.getVcsWorkspaceProject(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsTemp=                  "+vcsStruct.getVcsTemp(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsUser=                  "+vcsStruct.getVcsUsername(),prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("      VcsPassword=              ********",prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
 		
-					CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
-			        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
-
-			        CommonUtils.writeOutput("============== VCS CHECKIN ===============",prefix,"-debug2",logger,debug1,debug2,debug3);
-					vcs_checkin_checkout__vcs_checkin(resourcePath, resourceType, message, vcsStruct);
-		
-					CommonUtils.writeOutput("====== COMPLETED VCS ["+vcsStruct.getVcsType()+"] Studio Checkin ======",prefix,"-debug2",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("========== DIFFMERGER CHECKIN ============",prefix,"-debug2",logger,debug1,debug2,debug3);
+				        diffmerger__checkin(resourcePath, resourceType, vcsStruct);
+				        
+						CommonUtils.writeOutput("==============  VCS CHECKOUT =============",prefix,"-debug2",logger,debug1,debug2,debug3);
+				        vcs_checkin_checkout__vcs_checkout(resourcePath, resourceType, null, "HEAD",  vcsStruct);
+			
+						CommonUtils.writeOutput("==========  VCS CHECKOUT VALIDATE ========",prefix,"-debug2",logger,debug1,debug2,debug3);
+				        vcs_checkout_validate(resourcePath, resourceType, vcsStruct);
+	
+				        CommonUtils.writeOutput("============== VCS CHECKIN ===============",prefix,"-debug2",logger,debug1,debug2,debug3);
+						vcs_checkin_checkout__vcs_checkin(resourcePath, resourceType, message, vcsStruct);
+			
+						CommonUtils.writeOutput("====== COMPLETED VCS ["+vcsStruct.getVcsType()+"] Studio Checkin ======",prefix,"-debug2",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("",prefix,"-debug2",logger,debug1,debug2,debug3);
+					}
 				} catch (CompositeException e) {
 				    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
 					logger.error("Failed executing "+prefix+".",e);
@@ -2951,7 +2982,7 @@ public class VCSManagerImpl implements VCSManager {
 			        // mtinius 2016-05-12:  modified the OLD: removeDirectory(prefix, vcsStruct.getVcsWorkspace());
 					//                      to include the project root which pinpoints the removal down to the actual workspace directory 
 					//                      and not the parent folders which may contain configuration folders for plans and modules.
-			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()+"/"+vcsStruct.getVcsProjectRoot()).replaceAll("//", "/"));
+			        removeDirectory(prefix, (vcsStruct.getVcsWorkspace()).replaceAll("//", "/"));
 			        
 			        // Only remove the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
@@ -2963,8 +2994,12 @@ public class VCSManagerImpl implements VCSManager {
 			        String workspaceDir = vcsStruct.getVcsWorkspace().replaceAll("//", "/");
 			        
 			        // Create the workspace directory
-			        createDirectory(prefix, workspaceDir);
-
+			        // ORIGINAL: createDirectory(prefix, workspaceDir);
+			        if (vcsStruct.getVcsProjectRoot() != null)
+			        	createDirectory(prefix, workspaceDir + "/" + vcsStruct.getVcsProjectRoot());
+			        else
+			        	createDirectory(prefix, workspaceDir);
+			        
 			        // Only create the VCS Temp directory with PD Tool as PD Tool Studio VCS Temp is managed by Studio
 			        if (!pdToolStudio) {
 			        	// Create the workspace temp directory
@@ -2972,7 +3007,11 @@ public class VCSManagerImpl implements VCSManager {
 			        }
 			        
 			        // Set the directory to execute from the workspace directory
-					execFromDir = workspaceDir;
+					// ORIGINAL: execFromDir = workspaceDir;
+			        if (vcsStruct.getVcsProjectRoot() != null)
+			        	execFromDir = (vcsStruct.getVcsWorkspace() + "/" + vcsStruct.getVcsProjectRoot()).replaceAll("//", "/");
+			        else
+			        	execFromDir = vcsStruct.getVcsWorkspace();
 					
 					// Set the VCS command
 					command = vcsStruct.getVcsExecCommand();
@@ -2987,7 +3026,20 @@ public class VCSManagerImpl implements VCSManager {
                         // URL encode the username and password so they don't cause problems on the command line
 						try {
 							encUser = URLEncoder.encode(vcsStruct.getVcsUsername(), "UTF-8");
+	                        if (encUser != null) {
+	                        	if (encUser.contains("%"))
+	                        		encUser = encUser.replaceAll("%", "%%");
+	                        	if (encUser.contains("$"))
+	                        		encUser = encUser.replaceAll("$", "$$");
+	                        }
+	                        
 	                        encPass = URLEncoder.encode(vcsStruct.getVcsPassword(), "UTF-8");
+	                        if (encPass != null) {
+	                        	if (encPass.contains("%"))
+	                        		encPass = encPass.replaceAll("%", "%%");
+	                        	if (encPass.contains("$"))
+	                        		encPass = encPass.replaceAll("$", "$$");
+	                        }
                         } catch (Exception ignored) {;}
                         
 						// Git supports a number of different URL protocols so we'll need to make some substitutions on the 
@@ -3049,6 +3101,7 @@ public class VCSManagerImpl implements VCSManager {
 					//
 			        if (System.getProperty("os.name").startsWith("Windows")) {
 			        	
+			        	/*** Enable Credential Helper ***/
 			        	// git config --global credential.helper wincred
 						arguments=" config --global credential.helper wincred";
 
@@ -3064,12 +3117,30 @@ public class VCSManagerImpl implements VCSManager {
 					    
 					    // Execute the command line
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+			        	
+					    /*** Enable long paths ***/
+			        	// git config --system core.longpaths true
+						arguments=" config --system core.longpaths true";
+
+						// Print out command
+						commandDesc = "    Enabling long file path names...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 			        }
 					
 					// Link the VCS Repository URL and Project Root to the local workspace. Creates an empty clone (nothing checked out.)					
-					// git clone ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" .
-					arguments=" clone -n " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions() + " " + vcsRepositoryUrl + " .";
-
+					// git clone -n ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_LINK_OPTIONS} "${VCS_REPOSITORY_URL}" .
+			        arguments=" clone -n " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsWorkspaceInitLinkOptions() + " " + vcsRepositoryUrl + " ." ;
+			        
 					// Print out command
 					commandDesc = "    Linking local worksapce to VCS Repository...";
 					CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
@@ -3084,8 +3155,9 @@ public class VCSManagerImpl implements VCSManager {
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 
 					// Check out the desired branch (or other "tree-ish") to the local workspace						
-					// git checkout ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS} ${VCS_PROJECT_ROOT}
-					arguments=" checkout " + vcsStruct.getVcsOptions() + " " + remoteBranch + " " + vcsStruct.getVcsProjectRoot();
+					// git checkout ${GIT_OPTIONS} ${VCS_WORKSPACE_INIT_GET_OPTIONS} .
+					// ORIGINAL: arguments=" checkout " + vcsStruct.getVcsOptions() + " " + remoteBranch + " " + vcsStruct.getVcsProjectRoot();
+					arguments=" checkout " + vcsStruct.getVcsOptions() + " " + remoteBranch + " .";
 
 					// Print out command
 					commandDesc = "    Checking out VCS Repository resources ...";
@@ -3142,8 +3214,6 @@ public class VCSManagerImpl implements VCSManager {
 				    
 				    // Execute the command line
 				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-				    
-
 				}
 
 				/**********************************************************
@@ -3492,8 +3562,22 @@ public class VCSManagerImpl implements VCSManager {
 						// checkin
 						//--------------------------------------------------------------
 						if (actionName.equalsIgnoreCase(VCSManager.action.CHECKIN.name())) {
+							
+							/*
+							 * 06/08/2018 mtinius: For GIT only, redirect to a forced_checkin pattern.
+							 * 		Since GIT is applying changes to the local branch the pattern that checkin follows was much different than the other VCS types.
+							 * 		The issue with the checkin pattern is that it wants to checkout from the VCS and then do a diffmerger.  For all other VCS types,
+							 * 		this pattern works fine.  For GIT it simply overwrites the changes and they never get checked in.  For GIT, following the forced_checkin
+							 * 		pattern insures that the checkout from the GIT branch occurs before the diffmerger and so the local ADD, UPDATE and DELETE are committed
+							 * 		or checked in directly after the diffmerger.
+							 */
+							if (vcsStruct.getVcsBaseType().equalsIgnoreCase("GIT")) {
+								CommonUtils.writeOutput("   GIT only: Redirecting from checkin() to forced_checkin().",prefix,"-info",logger,debug1,debug2,debug3);
+								forced_checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);						
+							} else {
+								checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);								
+							}
 
-							checkin(vcsResourcePath, vcsResourceType, vcsMessage, vcsStruct, serverId, pathToServersXML);
 						} 	
 						//--------------------------------------------------------------
 						// checkout
@@ -3692,6 +3776,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= SUCCESSFULLY COMPLETED ${SCRIPT1} ============="
 	*/
 		String prefix = "checkout";
+ 
 		try {
 			CommonUtils.writeOutput("======== BEGIN VCS ["+vcsStruct.getVcsType()+"] checkout ========",prefix,"-debug3",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3769,6 +3854,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= SUCCESSFULLY COMPLETED ${SCRIPT1} ============="
 	*/
 		String prefix = "forced_checkin";
+
 		try {
 			CommonUtils.writeOutput("====== BEGIN VCS ["+vcsStruct.getVcsType()+"] checkout ======",prefix,"-debug3",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -3841,6 +3927,7 @@ public class VCSManagerImpl implements VCSManager {
 		echo "${PREFIX1}============= SUCCESSFULLY COMPLETED ${SCRIPT1} ============="
 	*/
 		String prefix = "prepare_checkin";
+
 		try {
 			CommonUtils.writeOutput("===== BEGIN VCS ["+vcsStruct.getVcsType()+"] checkout ====",prefix,"-debug3",logger,debug1,debug2,debug3);
 			CommonUtils.writeOutput("",prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -4160,12 +4247,13 @@ public class VCSManagerImpl implements VCSManager {
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.git.GITLifecycleListener
 		System.setProperty(LifecycleListener.SYSTEM_PROPERTY, vcsStruct.getVcsLifecycleListener());
 		
-		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, and VCS_ENV 
+		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, VCS_ENV and VCS_IGNORE_MESSAGES
 		//    Note: VCS_ENV - pipe separated list VAR1=val1|VAR2=val2|VAR3=val3
 		System.setProperty("VCS_EXEC", vcsStruct.getVcsExecCommand());
 		System.setProperty("VCS_OPTIONS", vcsStruct.getVcsOptions());
 		System.setProperty("VCS_ENV", vcsStruct.getVcsEnvironment());
-		
+		System.setProperty("VCS_IGNORE_MESSAGES", vcsStruct.getVcsIgnoreMessages());
+
 		String diffMergerOptions = "";
 		if (diffmergerVerbose) {
 			diffMergerOptions = "-verbose";
@@ -4227,11 +4315,12 @@ public class VCSManagerImpl implements VCSManager {
 		// com.compositesw.cmdline.vcs.spi.LifecycleListener=com.compositesw.cmdline.vcs.spi.git.GITLifecycleListener
 		System.setProperty(LifecycleListener.SYSTEM_PROPERTY, vcsStruct.getVcsLifecycleListener());
 		
-		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, and VCS_ENV 
+		// Set System environment properties for VCS_EXEC, VCS_OPTIONS, VCS_ENV and VCS_IGNORE_MESSAGES
 		//    Note: VCS_ENV - pipe separated list VAR1=val1|VAR2=val2|VAR3=val3
 		System.setProperty("VCS_EXEC", vcsStruct.getVcsExecCommand());
 		System.setProperty("VCS_OPTIONS", vcsStruct.getVcsOptions());
 		System.setProperty("VCS_ENV", vcsStruct.getVcsEnvironment());
+		System.setProperty("VCS_IGNORE_MESSAGES", vcsStruct.getVcsIgnoreMessages());
 
 		// 2014-09-03 (cgoodric): Git operations must be executed from within the Git workspace
 		//
@@ -4855,7 +4944,7 @@ public class VCSManagerImpl implements VCSManager {
 				//cd "${Workspace}"
 				//   e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
 				execFromDir=vcsStruct.getVcsWorkspaceProject();
-				
+
 				// 2012-10-29 mtinius: differentiate between folder and data_source
 				if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
 					//------------------------------------------
@@ -5035,6 +5124,8 @@ public class VCSManagerImpl implements VCSManager {
 		# $2 -> Resource type 		 (e.g. FOLDER, table etc.)
 		# $3 -> Rollback revision 	 (e.g. HEAD, 827)
 		# $4 -> VCS Workspace Folder (e.g. /tmp/workspaces/workspace_CIS)
+		# $5 -> VCS Checkout Type    VCS context sensative.  Can provide different text for each VCS to provide additional meaning.
+									 (e.g. GIT: CHECKOUT - absolute checkout command.  PULL - stash local changes. pull changes from repo.  Reapply local changes.)
 	*/
 		String prefix = "vcs_checkin_checkout__vcs_checkout_"+vcsStruct.getVcsType();
 	    List<String> argList = new ArrayList<String>();
@@ -5472,29 +5563,31 @@ public class VCSManagerImpl implements VCSManager {
 					throw new ApplicationException("The option for using vcs labels has not been implemented for Git.  Use resourcePath and resourceType instead.");
 				} 
 				else 
-				{
-					// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
-					// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
-					// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
-					// can use -o <name> when cloning to rename the remote name to something other than "origin".)
-					//
-				    // git reset --hard origin/HEAD
-					arguments=" reset --hard origin/HEAD";
-
-					commandDesc = "    Perform hard reset to Git Repository HEAD...";
-					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
-					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
-					
-				    // Parse the command arguments into a list
-				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-				    
-				    // Execute the command line
-				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-					
+				{					
 					// 2012-10-29 mtinius: differentiate between folder and data_source
 					if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
+						
+						// Perform an absolute checkout
+						// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
+						// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
+						// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
+						// can use -o <name> when cloning to rename the remote name to something other than "origin".)
+						//
+					    // git reset --hard origin/HEAD
+						arguments=" reset --hard origin/HEAD";
+
+						commandDesc = "    Perform hard reset to Git Repository HEAD...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
 						//------------------------------------------
 						// Check out Folder
 						//------------------------------------------
@@ -5519,9 +5612,30 @@ public class VCSManagerImpl implements VCSManager {
 					    
 					    // Execute the command line
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-						
+
 					} else {
-						//------------------------------------------
+						// Perform an absolute checkout
+						// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
+						// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
+						// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
+						// can use -o <name> when cloning to rename the remote name to something other than "origin".)
+						//
+					    // git reset --hard origin/HEAD
+						arguments=" reset --hard origin/HEAD";
+
+						commandDesc = "    Perform hard reset to Git Repository HEAD...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+					    //------------------------------------------
 						// Check out File
 						//------------------------------------------
 						
@@ -5545,6 +5659,7 @@ public class VCSManagerImpl implements VCSManager {
 					    
 					    // Execute the command line
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
 					}				
 				}
 			}
@@ -5671,7 +5786,7 @@ public class VCSManagerImpl implements VCSManager {
 		
 		try {
 			/********************************************
-			 * [CVS] vcs_checkin_checkout__vcs_checkout:
+			 * [CVS] vcs_checkout_validate:
 			 *      CVS=Concurrent Versions System
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("CVS")) {
@@ -5682,7 +5797,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 						
 			/********************************************
-			 * [P4] vcs_checkin_checkout__vcs_checkout:
+			 * [P4] vcs_checkout_validate:
 			 *      P4=Perforce
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("P4")) {
@@ -5691,7 +5806,7 @@ public class VCSManagerImpl implements VCSManager {
 				execFromDir=vcsStruct.getVcsWorkspaceProject();
 			}
 			/********************************************
-			 * [SVN] vcs_checkin_checkout__vcs_checkout:
+			 * [SVN] vcs_checkout_validate:
 			 *      SVN=Subversion
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("SVN")) {
@@ -5700,7 +5815,7 @@ public class VCSManagerImpl implements VCSManager {
 				execFromDir=vcsStruct.getVcsWorkspaceProject();
 			}
 			/********************************************
-			 * [TFS] vcs_checkin_checkout__vcs_checkout:
+			 * [TFS] vcs_checkout_validate:
 			 *      TFS=Team Foundation Server
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("TFS2010") || 
@@ -5714,7 +5829,7 @@ public class VCSManagerImpl implements VCSManager {
 			}
 			
 			/********************************************
-			 * [GIT] vcs_checkin_checkout__vcs_checkout:
+			 * [GIT] vcs_checkout_validate:
 			 *      GIT=Git
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
@@ -5723,7 +5838,7 @@ public class VCSManagerImpl implements VCSManager {
 				execFromDir=vcsStruct.getVcsWorkspaceProject();
 			}
 			/********************************************
-			 * [CLC] vcs_checkin_checkout__vcs_checkout:
+			 * [CLC] vcs_checkout_validate:
 			 *      CLC=Clearcase
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("CLC")) {
@@ -5992,9 +6107,9 @@ public class VCSManagerImpl implements VCSManager {
 			 *      GIT=Git
 			 ********************************************/
 			if (vcsStruct.getVcsType().equalsIgnoreCase("GIT")) {
-				//	 e.g: vcsWorkspace:  D:/PDTool/GITuw
-				execFromDir=vcsStruct.getVcsWorkspace(); // execute from the workspace root ($PDTOOL_HOME/GITuw not the project sub-folder.)
-				
+				//	 e.g: vcsWorkspace:  D:/PDTool/GITuw/cis_objects
+				execFromDir=vcsStruct.getVcsWorkspaceProject();
+
 				if (vcsLabel != null) {
 					throw new ApplicationException("The option for using vcs labels has not been implemented for Git.  Use resourcePath and resourceType instead.");
 				} else {
@@ -6002,6 +6117,26 @@ public class VCSManagerImpl implements VCSManager {
 					// Check out Folder
 					//------------------------------------------
 
+				    /*** Enable long paths ***/
+			        if (System.getProperty("os.name").startsWith("Windows")) {
+			        	// git config --system core.longpaths true
+						arguments=" config --system core.longpaths true";
+	
+						// Print out command
+						commandDesc = "    Enabling long file path names...";
+						CommonUtils.writeOutput(commandDesc,prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-info",logger,debug1,debug2,debug3);
+						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-info",logger,debug1,debug2,debug3);
+						
+					    // Parse the command arguments into a list
+					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");
+					    
+					    // Execute the command line
+					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+			        }
+				    
+				    /*** Checkout the folder ***/
 				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
 				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
 
@@ -6308,7 +6443,7 @@ public class VCSManagerImpl implements VCSManager {
 					//cd "${Workspace}"
 					//   e.g: vcsWorkspaceProject:  D:/PDTool/GITuw/cis_objects
 					execFromDir=vcsStruct.getVcsWorkspaceProject();
-					
+
 					//------------------------------------------
 					// Add Files or Folders
 					//------------------------------------------
@@ -7457,7 +7592,23 @@ public class VCSManagerImpl implements VCSManager {
 		// loadVcs: Derived variables
 		//-------------------------------------------------------------------	
 	    private void loadVcs(String prefix, String user, String password) {
-	    	// Get the VCS_USERNAME from the (1) command or (2) Java Env or (3) Property File
+			//-------------------------------------------------------------------
+			// loadVcs: Get the VCS_TYPE and VCS_BASE TYPE
+			//-------------------------------------------------------------------
+	    	this.setVcsType(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_TYPE"), propertyFile, true));
+	    	String vcsBaseType = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_BASE_TYPE"), propertyFile, true);
+	    	// If the VCS_BASE_TYPE is null or empty then set it to the VCS_TYPE
+	    	if (vcsBaseType == null || vcsBaseType.length() == 0)
+	    		vcsBaseType = this.getVcsType();
+	    	this.setVcsBaseType(vcsBaseType);
+	    	// Set the VCS_BASE_TYPE for use by the CommonUtils.maskCommand()
+	    	System.setProperty("VCS_BASE_TYPE", vcsBaseType);
+
+	    	
+			//-------------------------------------------------------------------
+			// loadVcs: Get the VCS_USERNAME from the (1) command or (2) Java Env or (3) Property File
+			//-------------------------------------------------------------------
+	    	// 
 	    	// Trim the username
 			if (user == null || user.length() == 0) {
 				this.setVcsUsername(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_USERNAME").trim(), propertyFile, true));
@@ -7485,12 +7636,6 @@ public class VCSManagerImpl implements VCSManager {
 			//-------------------------------------------------------------------
 	    	this.setSystemPath(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PATH"), propertyFile, true));
 	    	this.setProjectHome(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PROJECT_HOME"), propertyFile, true));
-	    	this.setVcsType(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_TYPE"), propertyFile, true));
-	    	String vcsBaseType = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_BASE_TYPE"), propertyFile, true);
-	    	// If the VCS_BASE_TYPE is null or empty then set it to the VCS_TYPE
-	    	if (vcsBaseType == null || vcsBaseType.length() == 0)
-	    		vcsBaseType = this.getVcsType();
-	    	this.setVcsBaseType(vcsBaseType);
 	    	this.setVcsHome(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_HOME"), propertyFile, true));
 	    	this.setVcsCommand(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_COMMAND"), propertyFile, true));
 	    	this.setVcsExecFullPath(CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"VCS_EXEC_FULL_PATH"), propertyFile, true));

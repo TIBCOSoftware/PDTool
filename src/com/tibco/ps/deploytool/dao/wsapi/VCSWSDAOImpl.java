@@ -169,7 +169,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 
 			
 		} catch (Exception e) {
-			if (resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
+			if (CommonUtils.resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
 				ApplicationException applicationException = new ApplicationException("ImportCommand execution returned an error="+e.getMessage().toString());
 				if (logger.isErrorEnabled()) {
 					logger.error(applicationException);
@@ -249,7 +249,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 	        }
 
 		} catch (Exception e) {
-			if (resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
+			if (CommonUtils.resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
 			    ApplicationException applicationException = new ApplicationException("ExportCommand execution returned an error="+e.getMessage().toString());
 				if (logger.isErrorEnabled()) {
 					logger.error(applicationException);
@@ -330,7 +330,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 	        }
 	        
 		} catch (Exception e) {
-			if (resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
+			if (CommonUtils.resolveExecCommandLineError(prefix, e.getMessage().toString(), vcsIgnoreMessages)) {
 				ApplicationException applicationException = new ApplicationException("DiffMerger execution returned an error="+e.getMessage().toString());
 				if (logger.isErrorEnabled()) {
 					logger.error(applicationException);
@@ -345,6 +345,9 @@ public class VCSWSDAOImpl implements VCSDAO {
 		
 		String identifier = "VCSWSDAOImpl.execCommandLineVCS"; // some unique identifier that characterizes this invocation.
 		StringBuilder stdout = new StringBuilder();
+		StringBuilder stderr = new StringBuilder();
+		String stderr_str;
+		String stdout_str;
 		String actionName = "EXECVCS";
 		
 		// For debugging
@@ -375,12 +378,30 @@ public class VCSWSDAOImpl implements VCSDAO {
 			{
 				// Invoke the ScriptExecute command
 				ScriptExecutor se = new ScriptExecutor(execFromDir, args, envList);
-				int result = se.executeCommand(CommonUtils.getUniqueFilename("error", "txt"));
+				int result = se.executeCommand();
 
 				if(result > 0){
-					StringBuilder stderr = se.getStandardErrorFromCommand();
-					if (resolveExecCommandLineError(prefix, stderr.toString(), vcsIgnoreMessages)) {
-						ApplicationException applicationException = new ApplicationException(CommonUtils.maskCommand(command)+" Execution Returned an Error="+stderr.toString());
+					// Get the standard error
+					stderr = se.getStandardErrorFromCommand();
+					stderr_str = stderr.toString().trim();
+					if (stderr_str != null && stderr_str.length() == 0)
+						stderr_str = null;
+					
+					// Get the standard out
+				    stdout = se.getStandardOutputFromCommand();
+				    stdout_str = stdout.toString().trim();
+					if (stdout_str != null && stdout_str.length() == 0)
+						stdout_str = null;
+					
+					// If the there is no standard error but there is a standard out then use the standard out.  GIT will put messages in standard out.
+				    if (stderr_str == null && stdout_str != null)
+				    	stderr_str = stdout_str;
+				    
+				    if (logger.isDebugEnabled()) {
+				    	logger.debug(identifier+": "+prefix+CommonUtils.maskCommand(command)+" executed successfully");
+				    }
+					if (CommonUtils.resolveExecCommandLineError(prefix, stderr_str, vcsIgnoreMessages)) {
+						ApplicationException applicationException = new ApplicationException(CommonUtils.maskCommand(command)+" Execution Returned an Error="+stderr_str);
 					    throw applicationException;					
 					}
 				}else{
@@ -672,30 +693,5 @@ public class VCSWSDAOImpl implements VCSDAO {
         }
     
     }	
-
-    
-    // Resolve the command line error message - if it is in the list of ignore messages then don't throw the original error
-	private static boolean resolveExecCommandLineError(String prefix, String error, String vcsIgnoreMessages) {
-		boolean throwOriginalError = true;
-		
-		if (prefix == null) {
-			prefix = "";
-		} else {
-			prefix = prefix+"::";
-		}
-
-		StringTokenizer st = new StringTokenizer(vcsIgnoreMessages,",");
-		while(st.hasMoreTokens()){
-			String message = st.nextToken().trim();
-			if (error.toLowerCase().contains(message.toLowerCase())) {
-				throwOriginalError = false;
-				if (logger.isErrorEnabled()) {
-					logger.info(prefix+"Warning::Error message ignored.  Error Message matches VCS_IGNORE_MESSAGES="+message);
-				}
-			}
-		}
-		return throwOriginalError;
-	}
-
 
 }
