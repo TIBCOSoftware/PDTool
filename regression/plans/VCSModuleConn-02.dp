@@ -5,7 +5,7 @@
 # The details can be found in the file LICENSE.
 # 
 # The following proprietary files are included as a convenience, and may not be used except pursuant
-# to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+# to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
 # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
 # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
 # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
@@ -19,6 +19,6 @@
 # -----------------------------------------
 # VCS Module: VCS Connection Properties version
 # -----------------------------------------
-# Initialize Base-Level and Custom Folders in the VCS
+# These versions are new methods which use VCSModule.xml for the VCS Connection properties and not "deploy.properties"
 #
-PASS	TRUE	ExecuteAction  	vcsInitializeBaseFolderCheckin2   $VCONN "/shared/My Folder,/shared/My Folder/My.Folder/My-Folder/MyFolder,/services/webservices/My Folder/My.Folder/My-Folder,/services/databases/My Database[TYPE=DATABASE]/My.Catalog[TYPE=CATALOG]/My$$Schema[TYPE=SCHEMA]" "$MODULE_HOME/VCSModule.xml"
+PASS	TRUE	ExecuteAction  	vcsInitWorkspace2				  $VCONN												"$MODULE_HOME/VCSModule.xml"

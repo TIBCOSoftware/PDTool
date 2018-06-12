@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.tibco.cmdline.vcs.spi.git.GITLifecycleListener;
+import com.tibco.ps.common.exception.ApplicationException;
 import com.tibco.ps.common.util.CommonUtils;
 import com.compositesw.common.vcs.primitives.IOPrimitives;
 import com.compositesw.common.vcs.primitives.ProcessPrimitives;
@@ -39,6 +40,7 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
     protected static final String VCS_EXEC = System.getProperty("VCS_EXEC");
     protected static final String VCS_OPTIONS = System.getProperty("VCS_OPTIONS");
     protected static final String VCS_ENV = System.getProperty("VCS_ENV");
+    protected static final String VCS_IGNORE_MESSAGES = System.getProperty("VCS_IGNORE_MESSAGES");
     protected static final String prefix = "AbstractLifecycleListener::";
 
     protected static final String LS = System.getProperty("line.separator");
@@ -141,7 +143,7 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
         Process process = execute(processBuilder);
         try {
             handleOutput(process, verbose);
-            handleErrors(process);
+            handleErrors(process, processBuilder);
         }
         finally {
             ProcessPrimitives.closeStreams(process, verbose);
@@ -170,12 +172,22 @@ public abstract class AbstractLifecycleListener implements LifecycleListener {
         }
     }
     
-    private void handleErrors(Process process) throws VCSException {
+    private void handleErrors(Process process, ProcessBuilder processBuilder) throws VCSException {
         String errorMessages = getErrorMessages(process);
         if (errorMessages != null && errorMessages.length() > 0) {
+            // Extract the command into a string
+        	String command = "";
+        	for (int i=0; i < processBuilder.command().size(); i++) {
+        		command = command + processBuilder.command().get(i).toString() + " ";
+        	}
+
         	// Mask the original command for any passwords
-        	String command = CommonUtils.maskCommand(processBuilder.command().toString());	
-            throw new VCSException(command + ": " + errorMessages);   
+        	command = CommonUtils.maskCommand(command);	
+        	
+        	// Determine if the error should be thrown or not based on VCS_IGNORE_MESSAGES
+			if (CommonUtils.resolveExecCommandLineError(prefix, errorMessages, VCS_IGNORE_MESSAGES)) {
+	            throw new VCSException("[" + command + "] ERROR: " + errorMessages);   
+			}
         }
     }    
     

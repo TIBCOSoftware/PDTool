@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.tibco.cmdline.vcs.spi.LifecycleListener;
 import com.tibco.cmdline.vcs.spi.LifecycleListener.Event;
 import com.tibco.cmdline.vcs.spi.LifecycleListener.Mode;
@@ -576,17 +579,21 @@ public class DiffMerger {
         // depth-first, post-order
         private static void delete(File file, LifecycleListener vcsListener, boolean verbose) throws VCSException {
             
-            if (file.isDirectory()) {
-                for (File f: file.listFiles()) {
+        	/* Original code: */
+        	 if (file.isDirectory()) {
+               for (File f: file.listFiles()) {
                     if (!FilePrimitives.CMF_FILTER.accept(f)) continue;
                     delete(f, vcsListener, verbose);
-                }                
+                } 
             }
             // folder or file
-            if (vcsListener != null) vcsListener.handle(file, Event.DELETE, Mode.PRE, verbose);
-            if (file.exists()) file.delete();
-            if (vcsListener != null) vcsListener.handle(file, Event.DELETE, Mode.POST, verbose);
-        }
+        	if (vcsListener != null)
+       			vcsListener.handle(file, Event.DELETE, Mode.PRE, verbose);
+        	if (file.exists()) 
+        		file.delete();
+        	if (vcsListener != null) 
+        		vcsListener.handle(file, Event.DELETE, Mode.POST, verbose);
+         }
         
         /**
          * Overwrites the contents of the target file with the contents of the source file.

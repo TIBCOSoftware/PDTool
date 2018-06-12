@@ -6,7 +6,7 @@ REM # Except as specified below, this software is licensed pursuant to the Eclip
 REM # The details can be found in the file LICENSE.
 REM # 
 REM # The following proprietary files are included as a convenience, and may not be used except pursuant
-REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
 REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
 REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
 REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files

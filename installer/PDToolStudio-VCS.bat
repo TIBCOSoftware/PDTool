@@ -6,7 +6,7 @@ REM # Except as specified below, this software is licensed pursuant to the Eclip
 REM # The details can be found in the file LICENSE.
 REM # 
 REM # The following proprietary files are included as a convenience, and may not be used except pursuant
-REM # to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+REM # to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
 REM # csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
 REM # csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
 REM # and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
@@ -26,7 +26,7 @@ REM # 2. Variable Usage:
 REM #      a. Variables with a single % are variables from the command window environment that gets resolved immediately or
 REM #            variables within this setup batch file that the person insalling wants to use.
 REM #            Example 1: %USERNAME% is an example of a variable set in by the command window automaticaly.
-REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\.compositesw\PDToolStudio7.0.0_SVN
+REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDToolStudio7.0.0_SVN
 REM #            Example 2: %DEF_VCS_WORKSPACE_NAME%t is used to construct the temporary workspace name from the workspace name
 REM #                set DEF_VCS_TEMP_DIR=%%%%PDTOOL_SUBSTITUTE_DRIVE%%%%\%DEF_VCS_WORKSPACE_NAME%t
 REM #
@@ -47,9 +47,9 @@ REM #      d. PDToolStudio copies installer source files to the target PDToolStu
 REM #      e. PDToolStudio copies default setMyPrePDToolStudioVars.bat and setMyPostPDToolStudioVars.bat to the target PDToolStudio installation home directory.
 REM #      f. PDToolStudio modifes the following files:
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\setMyPrePDToolStudioVars.bat
-REM #              Example: C:\Users\username\.compositesw\PDToolStudio7.0.0_SVN\setMyPrePDToolStudioVars.bat
+REM #              Example: C:\Users\username\PDToolStudio7.0.0_SVN\setMyPrePDToolStudioVars.bat
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\%DEF_PDTOOL_DESTINATION_DIR%\bin\setVars.bat
-REM #              Example: C:\Users\username\.compositesw\PDToolStudio7.0.0_SVN\PDToolStudio\bin\setVars.bat
+REM #              Example: C:\Users\username\PDToolStudio7.0.0_SVN\PDToolStudio\bin\setVars.bat
 REM #      g. PDToolStudio encrypts setMyPrePDToolStudioVars.bat
 REM #      h. If PDToolStudio, PDToolStudio creates "Enable VCS" property file for Studio.
 REM #      i. PDToolStudio removes the workspace directory.
@@ -64,7 +64,7 @@ set DEF_FORCE_PROMPT_BYPASS=Y
 REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
 set DEF_JAVA_HOME=C:\Program Files\Java\jre7
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDToolStudio installation folder.
-set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\.compositesw\PDToolStudio7.0.0_TFS
+set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDToolStudio7.0.0_TFS
 REM # Default for I_PDTOOL_DESTINATION_DIR.  This is the default PDToolStudio directory name.
 set DEF_PDTOOL_DESTINATION_DIR=PDToolStudio
 REM # Default for I_CONFIGURE_VCS.  Bypass VCS variables when set to "N".
