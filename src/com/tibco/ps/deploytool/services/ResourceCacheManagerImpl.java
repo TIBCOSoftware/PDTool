@@ -25,6 +25,7 @@ package com.tibco.ps.deploytool.services;
  * 
  */
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -44,6 +45,7 @@ import com.tibco.ps.deploytool.dao.ResourceCacheDAO;
 import com.tibco.ps.deploytool.dao.wsapi.ResourceCacheWSDAOImpl;
 import com.tibco.ps.deploytool.util.DeployUtil;
 import com.tibco.ps.deploytool.modules.ObjectFactory;
+import com.tibco.ps.deploytool.modules.ResourceCacheBucketPropertiesType;
 import com.tibco.ps.deploytool.modules.ResourceCacheCalendarPeriodType;
 import com.tibco.ps.deploytool.modules.ResourceCacheConfigType;
 import com.tibco.ps.deploytool.modules.ResourceCacheModule;
@@ -52,7 +54,10 @@ import com.tibco.ps.deploytool.modules.ResourceCacheRefreshType;
 import com.tibco.ps.deploytool.modules.ResourceCacheStorageTargetsType;
 import com.tibco.ps.deploytool.modules.ResourceCacheStorageType;
 import com.tibco.ps.deploytool.modules.ResourceCacheType;
+import com.tibco.ps.deploytool.modules.ResourceCacheBucketPropertiesType;
 import com.tibco.ps.deploytool.modules.ResourceTypeSimpleType;
+import com.compositesw.services.system.admin.resource.BucketModeType;
+import com.compositesw.services.system.admin.resource.BucketPropertiesType;
 import com.compositesw.services.system.admin.resource.CacheConfig;
 import com.compositesw.services.system.admin.resource.CacheConfig.Refresh;
 import com.compositesw.services.system.admin.resource.CacheConfig.Storage;
@@ -223,6 +228,10 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 						} else {
 							if (resourceCacheModule.getCacheConfig() != null) {
 
+								// Set allOrNothing if it exists
+								if (resourceCacheModule.getCacheConfig().isAllOrNothing() != null) {
+									cacheConfig.setAllOrNothing(resourceCacheModule.getCacheConfig().isAllOrNothing());
+								}
 								// Set configured if it exists
 								if (resourceCacheModule.getCacheConfig().isConfigured() != null) {
 									cacheConfig.setConfigured(resourceCacheModule.getCacheConfig().isConfigured());
@@ -231,12 +240,46 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 								if (resourceCacheModule.getCacheConfig().isEnabled() != null) {
 									cacheConfig.setEnabled(resourceCacheModule.getCacheConfig().isEnabled());
 								}
+								// Set incremental if it exists
+								if (resourceCacheModule.getCacheConfig().isIncremental() != null) {
+									cacheConfig.setIncremental(resourceCacheModule.getCacheConfig().isIncremental());
+								}
 								// Set the storage if it exists
 								if (resourceCacheModule.getCacheConfig().getStorage() != null) {
 									Storage storage = new Storage();
+									// Set use default cache storage if it exists
+									if (resourceCacheModule.getCacheConfig().getStorage().isUseDefaultCacheStorage() != null) {
+										storage.setUseDefaultCacheStorage(resourceCacheModule.getCacheConfig().getStorage().isUseDefaultCacheStorage());
+									}
 									if (resourceCacheModule.getCacheConfig().getStorage().getMode() != null) {
 										storage.setMode(StorageMode.valueOf(resourceCacheModule.getCacheConfig().getStorage().getMode()));
 									}
+									// Set the bucket mode: AUTO_GEN or MANUAL
+									if (resourceCacheModule.getCacheConfig().getStorage().getBucketMode() != null) {
+										storage.setBucketMode(BucketModeType.valueOf(resourceCacheModule.getCacheConfig().getStorage().getBucketMode()));
+									}
+									// Set the bucket properties if it exists
+									if (resourceCacheModule.getCacheConfig().getStorage().getBucketProperties() != null) {
+										BucketPropertiesType bucketProperties = new BucketPropertiesType();
+										if (resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketCatalog() != null) {
+											bucketProperties.setBucketCatalog(resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketCatalog());
+										}
+										if (resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketSchema() != null) {
+											bucketProperties.setBucketSchema(resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketSchema());
+										}
+										if (resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketPrefix() != null) {
+											bucketProperties.setBucketPrefix(resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getBucketPrefix());
+										}
+										if (resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getNumBuckets() != null) {
+											bucketProperties.setNumBuckets(resourceCacheModule.getCacheConfig().getStorage().getBucketProperties().getNumBuckets().intValue());
+										}
+										storage.setBucketProperties(bucketProperties);
+									}
+									// Set drop create index if it exists
+									if (resourceCacheModule.getCacheConfig().getStorage().isDropCreateIdx() != null) {
+										storage.setDropCreateIdx(resourceCacheModule.getCacheConfig().getStorage().isDropCreateIdx());
+									}
+									// Set the storage data source path
 									if (resourceCacheModule.getCacheConfig().getStorage().getStorageDataSourcePath() != null) {
 										storage.setStorageDataSourcePath(CommonUtils.extractVariable(prefix, resourceCacheModule.getCacheConfig().getStorage().getStorageDataSourcePath(), propertyFile, true));
 									}
@@ -257,6 +300,7 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 										storage.setStorageTargets(entry);
 									}
 									cacheConfig.setStorage(storage);
+
 								} //end::if (resourceCacheModule.getCacheConfig().getStorage() != null) {
 								
 								// Set the refresh if it exists
@@ -299,6 +343,14 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 								if (resourceCacheModule.getCacheConfig().getExpirationPeriod() != null) {
 									Long milliCount = convertPeriodCount(resourceCacheModule.getCacheConfig().getExpirationPeriod().getPeriod(), resourceCacheModule.getCacheConfig().getExpirationPeriod().getCount(), "milliseconds");
 									cacheConfig.setExpirationPeriod(milliCount);
+								}
+								// Set the First Refresh Callback if it exists
+								if (resourceCacheModule.getCacheConfig().getFirstRefreshCallback() != null) {
+									cacheConfig.setFirstRefreshCallback(resourceCacheModule.getCacheConfig().getFirstRefreshCallback());
+								}
+								// Set the Second Refresh Callback if it exists
+								if (resourceCacheModule.getCacheConfig().getSecondRefreshCallback() != null) {
+									cacheConfig.setSecondRefreshCallback(resourceCacheModule.getCacheConfig().getSecondRefreshCallback());
 								}
 								// Set the clear rule if it exists
 								if (resourceCacheModule.getCacheConfig().getClearRule() != null) {
@@ -583,8 +635,14 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 					// Only set cacheConfig objects if it is configured
 					if (cacheConfig.isConfigured()) {
 
+						if (cacheConfig.isAllOrNothing() != null) {
+							resourceCacheConfigType.setAllOrNothing(cacheConfig.isAllOrNothing());
+						}
 						if (cacheConfig.isEnabled() != null) {
 							resourceCacheConfigType.setEnabled(cacheConfig.isEnabled());
+						}
+						if (cacheConfig.isIncremental() != null) {
+							resourceCacheConfigType.setIncremental(cacheConfig.isIncremental());
 						}
 						if (cacheConfig.getExpirationPeriod() != null) {
 							// Define the calendar period type
@@ -596,6 +654,12 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 							calendarPeriod.setCount(period.getCount());
 							// Set the expiration period
 							resourceCacheConfigType.setExpirationPeriod(calendarPeriod);
+						}
+						if (cacheConfig.getFirstRefreshCallback() != null) {
+							resourceCacheConfigType.setFirstRefreshCallback(cacheConfig.getFirstRefreshCallback().toString());
+						}
+						if (cacheConfig.getSecondRefreshCallback() != null) {
+							resourceCacheConfigType.setSecondRefreshCallback(cacheConfig.getSecondRefreshCallback().toString());
 						}
 						if (cacheConfig.getClearRule() != null) {
 							resourceCacheConfigType.setClearRule(cacheConfig.getClearRule().toString());
@@ -658,18 +722,44 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 							// Define the resource storage type
 							ResourceCacheStorageType resourceCacheStorageType = new ResourceCacheStorageType();
 							
+							if (cacheConfig.getStorage().isUseDefaultCacheStorage() != null) {
+								resourceCacheStorageType.setUseDefaultCacheStorage(cacheConfig.getStorage().isUseDefaultCacheStorage());
+							}
 							if (cacheConfig.getStorage().getMode() != null) {
 								resourceCacheStorageType.setMode(cacheConfig.getStorage().getMode().toString());
+							}
+							if (cacheConfig.getStorage().getBucketMode() != null) {
+								resourceCacheStorageType.setBucketMode(cacheConfig.getStorage().getBucketMode().toString());
+							}
+							if (cacheConfig.getStorage().getBucketProperties() != null) {								
+								ResourceCacheBucketPropertiesType bucketProperties = new ResourceCacheBucketPropertiesType();
+								
+								if (cacheConfig.getStorage().getBucketProperties().getBucketCatalog() != null) {
+									bucketProperties.setBucketCatalog(cacheConfig.getStorage().getBucketProperties().getBucketCatalog());
+								}
+								if (cacheConfig.getStorage().getBucketProperties().getBucketSchema() != null) {
+									bucketProperties.setBucketSchema(cacheConfig.getStorage().getBucketProperties().getBucketSchema());
+								}
+								if (cacheConfig.getStorage().getBucketProperties().getBucketPrefix() != null) {
+									bucketProperties.setBucketPrefix(cacheConfig.getStorage().getBucketProperties().getBucketPrefix());
+								}
+								bucketProperties.setNumBuckets(BigInteger.valueOf(cacheConfig.getStorage().getBucketProperties().getNumBuckets()));
+
+								// Set the bucket properties
+								resourceCacheStorageType.setBucketProperties(bucketProperties);
+							}
+							if (cacheConfig.getStorage().isDropCreateIdx() != null) {
+								resourceCacheStorageType.setDropCreateIdx(cacheConfig.getStorage().isDropCreateIdx());
 							}
 							if (cacheConfig.getStorage().getStorageDataSourcePath() != null) {
 								resourceCacheStorageType.setStorageDataSourcePath(cacheConfig.getStorage().getStorageDataSourcePath());
 							}
 							
 							if (cacheConfig.getStorage().getStorageTargets() != null) {
-								// Define the storage target type
-								ResourceCacheStorageTargetsType entry = new ResourceCacheStorageTargetsType();
 
 								for (TargetPathTypePair storageTarget : cacheConfig.getStorage().getStorageTargets().getEntry()) {
+									// Define the storage target type
+									ResourceCacheStorageTargetsType entry = new ResourceCacheStorageTargetsType();
 									// Set the storage target entry
 									entry.setPath(storageTarget.getPath());
 									entry.setTargetName(storageTarget.getTargetName());

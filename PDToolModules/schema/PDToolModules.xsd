@@ -3219,6 +3219,16 @@ group replace the previous value for that user or group.
 			</xs:documentation>  
 		</xs:annotation>
 		<xs:sequence>
+			<xs:element name="allOrNothing" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						allOrNothing (optional): "true"
+						if cache group refresh policy should be all or nothing; "false" if cache group refresh policy should
+						be best effort. This flag only applies to cache group. For individual cache group, this flag always
+						returns true and setting this flag has no effect.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
 			<xs:element name="configured" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
@@ -3233,6 +3243,14 @@ group replace the previous value for that user or group.
 					<xs:documentation xml:lang="en">
 						"true" if the cache is enabled; otherwise "false".
 	           			If not provided, the enable setting will be left unaltered.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="incremental" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						incremental (optional): "true" if the cache is incrementally maintained;
+						otherwise "false". If not provided, the incrementally maintained setting will be left unaltered.
 					</xs:documentation>
 				</xs:annotation>
 		   </xs:element>
@@ -3253,6 +3271,20 @@ group replace the previous value for that user or group.
 						If not provided, the enable setting will be left unaltered.
 				</xs:documentation>
 			</xs:annotation>
+		   </xs:element>
+			<xs:element name="firstRefreshCallback" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					 firstRefreshCallback: An optional path pointing to a procedure with zero input elements that should be invoked before the cache refresh.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="secondRefreshCallback" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					 secondRefreshCallback: An optional path pointing to a procedure with zero input elements that should be invoked after a successful or failed cache refresh.
+					</xs:documentation>
+				</xs:annotation>
 		   </xs:element>
 			<xs:element name="clearRule" minOccurs="0">
 				<xs:annotation>
@@ -3287,20 +3319,59 @@ group replace the previous value for that user or group.
 			</xs:documentation>  
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="mode">
-			<xs:annotation>
-				<xs:documentation xml:lang="en">
-				mode: Storage type used for the cache. May be either "AUTOMATIC" or "DATA_SOURCE".
-				</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="AUTOMATIC"/>
-					<xs:enumeration value="DATA_SOURCE"/>
-				</xs:restriction>
-			</xs:simpleType>
+			<xs:element name="useDefaultCacheStorage" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						(optional): boolean.  If "true", CIS will use the default cache datasource to store the cache 
+						tables. Only numBuckets and dropCreateIdx values are considered when this value is set to "true" 
+						rest are ignored.
+					</xs:documentation>
+				</xs:annotation>
 		   </xs:element>
-			<xs:element name="storageDataSourcePath" type="xs:string" minOccurs="0">
+			<xs:element name="mode">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						mode: Storage type used for the cache. May be either "AUTOMATIC", "DATA_SOURCE" or "DATA_SOURCE_OTPS".
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="AUTOMATIC"/>
+						<xs:enumeration value="DATA_SOURCE"/>
+						<xs:enumeration value="DATA_SOURCE_OTPS"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+			<xs:element name="bucketMode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						bucketMode (optional): Present when storage mode is "DATA_SOURCE_OTPS", ignored otherwise. May be "AUTO_GEN" or "MANUAL".
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="AUTO_GEN"/>
+						<xs:enumeration value="MANUAL"/>
+					</xs:restriction>
+				</xs:simpleType>
+		   </xs:element>
+
+			<xs:element name="bucketProperties" minOccurs="0" type="ns:ResourceCacheBucketPropertiesType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						bucketProperties: Present when bucketMode is "AUTO_GEN", ignored otherwise.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="dropCreateIdx" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						dropCreateIdx (optional): boolean.  If "true", CIS will automatically drop indexes before loading
+						cache data, and create them after loading.
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+		   <xs:element name="storageDataSourcePath" type="xs:string" minOccurs="0">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
 				storageDataSourcePath (optional): If the mode is "DATA_SOURCE", this identifies the path to the data source being used to store cache data.
@@ -3313,6 +3384,44 @@ group replace the previous value for that user or group.
 				storageTargets (optional): If the mode is "DATA_SOURCE", this identifies the tables used for storing cache data entry.
 				</xs:documentation>
 			</xs:annotation>
+		   </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+		<xs:complexType name="ResourceCacheBucketPropertiesType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Bucket Properties Type: Define the bucket properties Present when bucketMode is "AUTO_GEN", ignored otherwise.
+			</xs:documentation>  
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="bucketCatalog" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+					 bucketCatalog (optional): database catalog in which to create the bucket
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="bucketSchema" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						bucketSchema (optional): database schema in which to create the bucket
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="bucketPrefix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						bucketPrefix: short string which begins the name of each bucket
+					</xs:documentation>
+				</xs:annotation>
+		   </xs:element>
+			<xs:element name="numBuckets" type="xs:integer" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						numBuckets: number of buckets to use for caching
+					</xs:documentation>
+				</xs:annotation>
 		   </xs:element>
 		</xs:sequence>
 	</xs:complexType>

@@ -25,18 +25,26 @@
         <resourcePath>/shared/test00/DataSources/ds_orders/$CIS_CATALOG$orders</resourcePath>
         <resourceType>TABLE</resourceType>
         <cacheConfig>
+            <allOrNothing>true</allOrNothing>
             <configured>true</configured>
             <enabled>true</enabled>
+            <incremental>false</incremental>
             <storage>
-                <mode>AUTOMATIC</mode>
+                <mode>DATA_SOURCE</mode>
+                <storageDataSourcePath>/shared/test00/DataSources/ds_orders</storageDataSourcePath>
+                <storageTargets>
+                    <targetName>result</targetName>
+                    <path>/shared/test00/DataSources/ds_orders/tutorial/orders_cache</path>
+                    <type>TABLE</type>
+                </storageTargets>
             </storage>
             <refresh>
                 <mode>SCHEDULED</mode>
                 <schedule>
-                    <startTime>2011-06-10T17:43:53.000Z</startTime>
+                    <startTime>2018-10-01T10:00:00.000Z</startTime>
                     <refreshPeriod>
                         <period>DAY</period>
-                        <count>2</count>
+                        <count>1</count>
                     </refreshPeriod>
                 </schedule>
             </refresh>
@@ -52,10 +60,18 @@
         <resourcePath>/shared/test00/ResourceCache/customer_cache</resourcePath>
         <resourceType>TABLE</resourceType>
         <cacheConfig>
+            <allOrNothing>true</allOrNothing>
             <configured>true</configured>
             <enabled>true</enabled>
+            <incremental>false</incremental>
             <storage>
                 <mode>AUTOMATIC</mode>
+                <storageDataSourcePath>/lib/sources/cacheDataSource</storageDataSourcePath>
+                <storageTargets>
+                    <targetName>result</targetName>
+                    <path>/lib/sources/cacheDataSource/view1610215</path>
+                    <type>TABLE</type>
+                </storageTargets>
             </storage>
             <refresh>
                 <mode>SCHEDULED</mode>
@@ -79,10 +95,18 @@
         <resourcePath>/shared/test00/ResourceCache/testCacheProc</resourcePath>
         <resourceType>PROCEDURE</resourceType>
         <cacheConfig>
+            <allOrNothing>true</allOrNothing>
             <configured>true</configured>
             <enabled>true</enabled>
+            <incremental>false</incremental>
             <storage>
                 <mode>AUTOMATIC</mode>
+                <storageDataSourcePath>/lib/sources/cacheDataSource</storageDataSourcePath>
+                <storageTargets>
+                    <targetName>result</targetName>
+                    <path>/lib/sources/cacheDataSource/proc1610211p1</path>
+                    <type>TABLE</type>
+                </storageTargets>
             </storage>
             <refresh>
                 <mode>SCHEDULED</mode>
@@ -106,10 +130,18 @@
         <resourcePath>/shared/test00/ResourceCache/testCacheView</resourcePath>
         <resourceType>TABLE</resourceType>
         <cacheConfig>
+            <allOrNothing>true</allOrNothing>
             <configured>true</configured>
             <enabled>true</enabled>
+            <incremental>false</incremental>
             <storage>
                 <mode>AUTOMATIC</mode>
+                <storageDataSourcePath>/lib/sources/cacheDataSource</storageDataSourcePath>
+                <storageTargets>
+                    <targetName>result</targetName>
+                    <path>/lib/sources/cacheDataSource/view1610295</path>
+                    <type>TABLE</type>
+                </storageTargets>
             </storage>
             <refresh>
                 <mode>SCHEDULED</mode>
@@ -146,7 +178,7 @@
     </resourceCache>
     <resourceCache>
         <id>cache_enable_all</id>
-        <resourcePath>/shared/test00</resourcePath>
+        <resourcePath>/shared/test00/ResourceCache</resourcePath>
         <resourceType>CONTAINER</resourceType>
         <cacheConfig>
             <enabled>true</enabled>
@@ -154,7 +186,7 @@
     </resourceCache>
     <resourceCache>
         <id>cache_disable_all</id>
-        <resourcePath>/shared/test00</resourcePath>
+        <resourcePath>/shared/test00/ResourceCache</resourcePath>
         <resourceType>CONTAINER</resourceType>
         <cacheConfig>
             <enabled>false</enabled>

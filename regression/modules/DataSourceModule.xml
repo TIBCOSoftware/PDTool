@@ -300,7 +300,7 @@
     <datasource>
 	    <introspectDataSource>
 			<id>ds8</id>
-			<resourcePath>/shared/test00/DataSources/cisOraDemoDS</resourcePath>
+			<resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
 			<!--Element runInBackgroundTransaction is optional-->
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>SIMPLE_COMPRESSED</reportDetail>
@@ -316,7 +316,7 @@
 				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
-						<resourcePath>CISORADEMO/EMPLOYEES</resourcePath>
+						<resourcePath>$CIS_CATALOG$orders</resourcePath>
 						<resourceType>TABLE</resourceType>
 						<subtype>DATABASE_TABLE</subtype>
 					</resourceId>
@@ -324,23 +324,7 @@
 				</planEntry>	
 				<planEntry>
 					<resourceId>
-						<resourcePath>CISORADEMO/Suppliers0</resourcePath>
-						<resourceType>TABLE</resourceType>
-						<subtype>DATABASE_TABLE</subtype>
-					</resourceId>
-					<action>REMOVE</action>
-				</planEntry>
-				<planEntry>
-					<resourceId>
-						<resourcePath>CISORADEMO/Suppliers1</resourcePath>
-						<resourceType>TABLE</resourceType>
-						<subtype>DATABASE_TABLE</subtype>
-					</resourceId>
-					<action>REMOVE</action>
-				</planEntry>
-				<planEntry>
-					<resourceId>
-						<resourcePath>CISORADEMO/Suppliers2</resourcePath>
+						<resourcePath>$CIS_CATALOG$orders_cache</resourcePath>
 						<resourceType>TABLE</resourceType>
 						<subtype>DATABASE_TABLE</subtype>
 					</resourceId>
@@ -353,7 +337,7 @@
     <datasource>
 	    <introspectDataSource>
 			<id>ds9</id>
-			<resourcePath>/shared/test00/DataSources/cisOraDemoDS</resourcePath>
+			<resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
 			<!--Element runInBackgroundTransaction is optional-->
 			<runInBackgroundTransaction>false</runInBackgroundTransaction>
 			<reportDetail>FULL</reportDetail>
@@ -369,7 +353,7 @@
 				   Set updateAllIntrospectedResources to FALSE when using this section. -->
 				<planEntry>
 					<resourceId>
-						<resourcePath>CISORADEMO</resourcePath>
+						<resourcePath>$CIS_CATALOG$</resourcePath>
 						<resourceType>CONTAINER</resourceType>
 						<subtype>SCHEMA_CONTAINER</subtype>
 					</resourceId>

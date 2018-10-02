@@ -1,0 +1,62 @@
+######################################################################
+# (c) 2017 TIBCO Software Inc. All rights reserved.
+# 
+# Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+# The details can be found in the file LICENSE.
+# 
+# The following proprietary files are included as a convenience, and may not be used except pursuant
+# to valid license to Composite Information Server or TIBCO® Data Virtualization Server:
+# csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+# csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+# and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+# are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
+# 
+# This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+# If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+# agreement with TIBCO.
+#
+######################################################################
+# Provides the order of execution for the different PDTool configurations on windows
+# PDTool Config File        PDTool Plan File List
+#   Note: Do not put the .properties on the end of the config file name.
+#   Note: Do use tabs as separators.  Use spaces only.
+#
+# Execute PDTool regression for Windows and CIS 7.0.0 environment
+#
+# Regression Module Only
+#regression_win_7.0.0          regression_plan_regession_list.txt
+
+# TEST: execute this line for a quick test of the regression infrastructure and then comment it out.
+#regression_win_7.0.0          regression_plan_test_list.txt            # TEST the base module connection
+
+# PDTool - All modules except VCS using HTTP
+#regression_win_7.0.0          regression_plan_base_list.txt            # Full regression of base modules
+
+# PDTool - All modules except VCS using HTTPS
+#regression_win_7.0.0__https   regression_plan_base_list.txt            # Full regression of base modules
+
+# PDTool - VCS Module for Git
+#regression_win_7.0.0_git      regression_plan_vcs_base_list.txt        # Full regression of VCS Git
+# TEST:
+#regression_win_7.0.0_git      regression_plan_vcs_test_list.txt        # TEST GIT connection
+
+# PDTool - VCS Module for Subversion
+regression_win_7.0.0_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+# TEST:
+#regression_win_7.0.0_svn      regression_plan_vcs_test_list.txt        # TEST Subversion connection
+
+# PDTool - VCS Module for Microsoft Team Foundation Server
+#regression_win_7.0.0_tfs      regression_plan_vcs_base_list.txt        # Full regression of VCS TFS
+# TEST:
+#regression_win_7.0.0_tfs      regression_plan_vcs_test_list.txt        # TEST TFS connection
+
+# PDTool - VCS Module for Perforce
+#regression_win_7.0.0_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
+#regression_win_7.0.0_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)
+# TEST:
+#regression_win_7.0.0_p4       regression_plan_vcs_test_list.txt        # TEST Perforce connection
+
+# PDTool - VCS Module for CVS
+#regression_win_7.0.0_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+# TEST:
+#regression_win_7.0.0_cvs      regression_plan_vcs_test_list.txt        # TEST CVS connection
