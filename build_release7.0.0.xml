@@ -61,11 +61,8 @@
 	<property file="${relbase}/_general_release/release_date_candidate.properties"/>
 	<property name="rel" value="${relbase}/${ver}/Release-${ver}-${RELEASE_DT_CANDIDATE}"/>
 	<property name="pdtool-zip-file-name" value="PDTool-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.zip"/>
-	<property name="pdtoolstudio-zip-file-name" value="PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.zip"/>
 	<property name="pdtool-installer-target" value="PDTool${ver}_installer"/>
-	<property name="pdtoolstudio-installer-target" value="PDToolStudio${ver}_installer"/>
 	<property name="pdtool-target" value="${pdtool-installer-target}/installer_source/PDTool"/>
-	<property name="pdtoolstudio-target" value="${pdtoolstudio-installer-target}/installer_source/PDToolStudio"/>
 
 	<!-- These environment variables are used to modify the windows batch file for the build environment vs. the release environment. -->
 	<!-- mtinius-20160502 - No longer relavent.  Testing to be done outside of build folder
@@ -95,16 +92,9 @@
 			</condition>
 		</fail>
 	</target>
-	<!-- Check for existence of a PDToolStudio release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
-	<target name="PdtoolStudioZipExist">
-		<fail message="PDTOOL STUDIO ZIP FILE ALREADY EXISTS: ${rel}/${pdtoolstudio-zip-file-name}">
-			<condition>
-				<available file="${rel}/${pdtoolstudio-zip-file-name}"/>
-			</condition>
-		</fail>
-	</target>
 
-	<target name="init" depends="PdtoolZipExist,PdtoolStudioZipExist">
+	<!-- Check for existence of a PDTool release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
+	<target name="init" depends="PdtoolZipExist">
 		<!-- Create the time stamp -->
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
@@ -377,6 +367,7 @@
 		<copy todir="${pdtool-target}/resources/modules">
 		    <fileset dir="${resources}/modules">
 		        <include name="*.xml"/>
+		        <include name="*.jks"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/resources/modules/generated">
@@ -431,234 +422,6 @@
 
 		<!-- Delete the staging directory used to create the zip file. -->
 		<delete dir="${pdtool-installer-target}"/>
-		
-		<!-- 
-		***************************************************************
-		Create PDTool Studio distribution zip file.
-		***************************************************************
-		-->
-		<!-- Create the PD Tool Studio distribution zip file. -->
-		<mkdir dir="${pdtoolstudio-installer-target}"/>
-		<mkdir dir="${pdtoolstudio-installer-target}/installer"/>
-		<mkdir dir="${pdtoolstudio-installer-target}/installer_source"/>
-		<mkdir dir="${pdtoolstudio-installer-target}/installer_source/VCSClients"/>
-		<mkdir dir="${pdtoolstudio-target}"/>
-		<mkdir dir="${pdtoolstudio-target}/bin"/>
-		<mkdir dir="${pdtoolstudio-target}/bin_novars"/>
-		<mkdir dir="${pdtoolstudio-target}/bin_host1"/>
-		<mkdir dir="${pdtoolstudio-target}/bin_host2"/>
-		<mkdir dir="${pdtoolstudio-target}/dist"/>
-		<mkdir dir="${pdtoolstudio-target}/docs/VCS_Studio"/>
-		<mkdir dir="${pdtoolstudio-target}/lib"/>
-		<mkdir dir="${pdtoolstudio-target}/lib/endorsed"/>
-		<mkdir dir="${pdtoolstudio-target}/licenses"/>
-		<mkdir dir="${pdtoolstudio-target}/logs"/>
-		<mkdir dir="${pdtoolstudio-target}/resources/config"/>
-		<mkdir dir="${pdtoolstudio-target}/resources/config/${ver}"/>
-		<mkdir dir="${pdtoolstudio-target}/resources/vcs_initial"/>
-		<mkdir dir="${pdtoolstudio-target}/security"/>
-		
-		<!-- Copy the installer files -->
-		<copy todir="${pdtoolstudio-installer-target}/installer">
-		    <fileset dir="installer">
-		        <include name="PDTool Studio Installer Admin Guide.docx"/>
-		        <include name="PDTool Studio Installer Admin Guide.pdf"/>
-		        <include name="PDTool Studio Installer User Guide.docx"/>
-		        <include name="PDTool Studio Installer User Guide.pdf"/>
-		        <include name="LICENSE.txt"/>
-		        <include name="PDToolStudio-*.bat"/>
-		        <include name="replaceText.bat"/>
-		        <include name="SetupPDTool.bat"/>
-		        <include name="cisVersion.template.bat"/>
-		    </fileset>
-		</copy>
-		<!-- Rename the cisVersion batch/shell script templates -->
-		<move file="${pdtoolstudio-installer-target}/installer/cisVersion.template.bat" tofile="${pdtoolstudio-installer-target}/installer/cisVersion.bat"/>
-		<!-- Replace @version@ string -->
-		<replace
-            file="${pdtoolstudio-installer-target}/installer/cisVersion.bat"
-            token="@version@"
-            value="${ver}" />
-
-		<!-- Copy the VCSClients directory -->
-		<copy todir="${pdtoolstudio-installer-target}/installer_source/VCSClients">
-		    <fileset dir="installer_source/VCSClients">
-		        <include name="**"/>
-		    </fileset>
-		</copy>
-
-		<!-- Copy the release notes in preparation for zipping the distribution. -->
-		<copy tofile="${pdtoolstudio-target}/PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
-		    <fileset dir="${relbase}/_general_release">
-		        <include name="PDToolStudio_release_notes.txt"/>
-		    </fileset>
-		</copy>
-
-		<!-- Copy distribution file -->
-		<copy todir="${pdtoolstudio-target}/bin">
-		    <fileset dir="${bin}/PDToolStudio">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		        <include name="*.properties"/>
-		    </fileset>
-		</copy>
-		<!-- copy PDToolStudio/bin/envBin directory -->
-		<copy todir="${pdtoolstudio-target}/bin/envBin">
-		    <fileset dir="${bin}/PDToolStudio/envBin">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		    </fileset>
-		</copy>
-
-		<copy todir="${pdtoolstudio-target}/bin_novars">
-		    <fileset dir="${bin}/PDToolStudio_bin_novars">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		        <include name="*.properties"/>
-		    </fileset>
-		</copy>
-
-		<!-- Rename the cisVersion batch/shell script templates -->
-		<move file="${pdtoolstudio-target}/bin_novars/cisVersion.template.bat" tofile="${pdtoolstudio-target}/bin_novars/cisVersion.bat"/>
-		<!-- Replace @version@ string -->
-		<replace
-            file="${pdtoolstudio-target}/bin_novars/cisVersion.bat"
-            token="@version@"
-            value="${ver}" />
-
-		<!-- Copy distribution file -->
-		<copy todir="${pdtoolstudio-target}/bin_host1">
-		    <fileset dir="${bin}/PDToolStudio_bin_host1">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		        <include name="*.properties"/>
-		    </fileset>
-		</copy>
-		<!-- copy PDToolStudio/bin_host1/envBin directory -->
-		<copy todir="${pdtoolstudio-target}/bin_host1/envBin">
-		    <fileset dir="${bin}/PDToolStudio_bin_host1/envBin">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/bin_host2">
-		    <fileset dir="${bin}/PDToolStudio_bin_host2">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		        <include name="*.properties"/>
-		    </fileset>
-		</copy>
-		<!-- copy PDToolStudio/bin_host2/envBin directory -->
-		<copy todir="${pdtoolstudio-target}/bin_host2/envBin">
-		    <fileset dir="${bin}/PDToolStudio_bin_host2/envBin">
-		        <include name="*.bat"/>
-		        <include name="*.cmd"/>
-		        <include name="*.sh"/>
-		    </fileset>
-		</copy>
-
-		<copy todir="${pdtoolstudio-target}/dist">
-		    <fileset dir="${dist}">
-		        <include name="*${ver}.jar"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/docs">
-		    <fileset dir="${docs}">
-		        <include name="*.ppt"/>
-		        <include name="*.pptx"/>
-		        <include name="VCS_Studio/*"/>
-		    </fileset>
-		</copy>
-		<!-- Copy from common lib: /lib -->
-		<copy todir="${pdtoolstudio-target}/lib">
-		    <fileset dir="${lib}">
-		        <include name="*.jar"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/lib">
-		    <fileset dir="${lib}">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<!-- Copy from version lib [lib7.0.0]: /libx.x.x -->
-		<copy todir="${pdtoolstudio-target}/lib">
-		    <fileset dir="${libver}">
-		        <include name="*.jar"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/lib">
-		    <fileset dir="${libver}">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/lib/endorsed">
-		    <fileset dir="${libver}/endorsed">
-		        <include name="*.jar"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/lib/endorsed">
-		    <fileset dir="${libver}/endorsed">
-		        <include name="*.txt"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/licenses">
-		    <fileset dir=".">
-		        <include name="LICENSE"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/licenses">
-		    <fileset dir="${licenses}">
-		        <include name="**"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/resources/config">
-		    <fileset dir="${resources}/config">
-		        <include name="adapter.properties"/>
-		        <include name="application*.xml"/>
-		        <include name="log*.properties"/>
-			    <include name="studio.properties"/>
-			    <include name="studio_*.properties"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/resources/config/${ver}">
-		    <fileset dir="${resources}/config/${ver}">
-		        <include name="cis_adapter_config.xml"/>
-		    </fileset>
-		</copy>	
-		<copy todir="${pdtoolstudio-target}/resources/vcs_initial">
-		    <fileset dir="${resources}/vcs_initial">
-		        <include name="**"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/security">
-		    <fileset dir="${security}">
-		        <include name="*.jks"/>
-		    </fileset>
-		</copy>
-		<copy todir="${pdtoolstudio-target}/security">
-		    <fileset dir="${security}">
-		        <include name="java.policy"/>
-		    </fileset>
-		</copy>
-		
-		<!-- Create the PDToolStudio zip file -->
-		<zip destfile="${rel}/${pdtoolstudio-zip-file-name}" basedir="." includes="${pdtoolstudio-installer-target}/**" />
-		<!-- Copy the release notes to the target release directory. -->
-		<copy tofile="${rel}/PDToolStudio-${ver}-${RELEASE_DT_CANDIDATE}.${relNum}.txt">
-		    <fileset dir="${relbase}/_general_release">
-		        <include name="PDToolStudio_release_notes.txt"/>
-		    </fileset>
-		</copy>
-		
-		<!-- Delete the staging directory used to create the zip file. -->
-		<delete dir="${pdtoolstudio-installer-target}"/>
-
 	</target>
 	
 	<target name="clean" description="clean up">
@@ -666,5 +429,6 @@
 		<delete dir="${build}" />
 	</target>
 
-	<target name="default" depends="clean,dist" description="Create the PDTool and PDToolStudio Distribution"/>
+	<target name="default" depends="clean,dist" description="Create the PDTool Distribution"/>
+
 </project>

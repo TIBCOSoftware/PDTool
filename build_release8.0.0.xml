@@ -367,6 +367,7 @@
 		<copy todir="${pdtool-target}/resources/modules">
 		    <fileset dir="${resources}/modules">
 		        <include name="*.xml"/>
+		        <include name="*.jks"/>
 		    </fileset>
 		</copy>
 		<copy todir="${pdtool-target}/resources/modules/generated">
