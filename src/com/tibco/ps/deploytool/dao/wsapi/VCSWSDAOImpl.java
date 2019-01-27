@@ -25,7 +25,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -49,11 +48,9 @@ import com.tibco.ps.common.exception.ApplicationException;
 import com.tibco.ps.common.exception.CompositeException;
 import com.tibco.ps.common.util.CommonUtils;
 import com.tibco.ps.common.util.ScriptExecutor;
-import com.tibco.ps.common.util.XMLUtils;
 import com.tibco.ps.common.util.wsapi.CisApiFactory;
 import com.tibco.ps.common.util.wsapi.CompositeServer;
 import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
-import com.tibco.ps.deploytool.dao.ArchiveDAO;
 import com.tibco.ps.deploytool.dao.VCSDAO;
 import com.tibco.ps.deploytool.modules.VCSModule;
 import com.tibco.ps.deploytool.modules.VCSResourceType;
@@ -108,7 +105,10 @@ public class VCSWSDAOImpl implements VCSDAO {
 
 			// Parse the arguments
 			argsList = CommonUtils.parseArguments(argsList, initArgsList, arguments, preserveQuotes, propertyFile);
+			// This shows how to add a debug flag
+			//argsList.add("-debug");
 			String[] args = argsList.toArray(new String[0]) ;
+			
 			
 			/*
 			 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
@@ -146,6 +146,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 				if (CommonUtils.isExecOperation()) 
 				{
 		            // Invoke the Composite native import command.
+		            //ImportCommand.startCommand(".", ".", args);
 		            ImportCommand.startCommand(null, null, args);
 				} else {
 					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
@@ -227,6 +228,7 @@ public class VCSWSDAOImpl implements VCSDAO {
 				if (CommonUtils.isExecOperation()) 
 				{
 		            // Invoke the Composite native export command.
+		            //ExportCommand.startCommand(".", ".", args);
 		            ExportCommand.startCommand(null, null, args);
 				} else {
 					logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						

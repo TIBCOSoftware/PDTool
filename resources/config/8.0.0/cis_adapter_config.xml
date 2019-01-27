@@ -1,0 +1,677 @@
+<?xml version="1.0"?>
+<!-- CIS WS Adapter configuration file -->
+<adapterconfiguration version="1">
+	<name>CIS Adapter</name>
+	<description>An adapter for executing CIS System Web Service operations.</description>
+	<cisversion>7.0.0</cisversion>
+	<retryattempts>3</retryattempts>
+	<maxclients>5</maxclients>
+	<minclients>3</minclients>
+	<endpoints>
+		<endpoint name="resource" type="soap">/services/system/admin/resource/resourcePort.ws</endpoint>
+		<endpoint name="server" type="soap">/services/system/admin/server/serverPort.ws</endpoint>
+		<endpoint name="archive" type="soap">/services/system/admin/archive/archivePort.ws</endpoint>
+		<endpoint name="user" type="soap">/services/system/admin/user/userPort.ws</endpoint>
+		<endpoint name="execute" type="soap">/services/system/admin/execute/executePort.ws</endpoint>
+	</endpoints>
+	<callbacks>
+		<callback name="getServerAttributes" endpoint="server">
+			<description>Get Server Attributes</description>
+			<soapaction>getServerAttributes</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[		
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+	<xsl:template match="/">
+		<server:getServerAttributes>
+			<server:paths>
+				<xsl:for-each select="ServerAttributeModule/serverAttribute">
+					<server:path>
+						<xsl:value-of select="name"/>
+					</server:path>
+				</xsl:for-each>
+			</server:paths>
+		</server:getServerAttributes>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
+	xmlns:common="http://www.compositesw.com/services/system/util/common" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<xsl:for-each select="server:getServerAttributesResponse/server:attributes/common:attribute">
+			<xsl:variable name="count" select="position()"/>
+			<serverAttribute>
+				<id>attr<xsl:value-of select="$count"/></id>
+				<name>
+					<xsl:value-of select="common:name"/>
+				</name>
+				<type>
+					<xsl:value-of select="common:type"/>
+				</type>
+				<xsl:choose>
+					<xsl:when test="common:type='STRING_ARRAY' or common:type='INT_ARRAY' or common:type='BYTE_ARRAY'">
+						<valueArray>
+							<xsl:for-each select="common:valueArray/common:item">
+								<item>
+								<xsl:value-of select="."/>
+								</item>
+							</xsl:for-each>
+						</valueArray>
+        			</xsl:when>
+					<xsl:when test="common:type = 'LIST'">
+						<valueList>
+								<xsl:for-each select="common:valueList/common:item">
+								<item>
+									<type>
+										<xsl:value-of select="common:type"/>
+									</type>
+									<value>
+										<xsl:value-of select="common:value"/>
+									</value>
+								</item>
+							</xsl:for-each>
+						</valueList>
+        			</xsl:when>
+					<xsl:when test="common:type = 'MAP'">
+						<valueMap>
+							<xsl:for-each select="common:valueMap/common:entry">
+							<entry>
+								<key>
+									<type>
+										<xsl:value-of select="common:key/common:type"/>
+									</type>
+									<value>
+										<xsl:value-of select="common:key/common:value"/>
+									</value>
+								</key>
+								<value>
+									<type>
+										<xsl:value-of select="common:value/common:type"/>
+									</type>
+									<value>
+										<xsl:value-of select="common:value/common:value"/>
+									</value>
+								</value>
+							</entry>
+							</xsl:for-each>
+						</valueMap>
+        			</xsl:when>
+					<xsl:otherwise>
+						<value>
+							<xsl:value-of select="common:value"/>
+						</value>
+					</xsl:otherwise>
+				</xsl:choose>
+			</serverAttribute>
+		</xsl:for-each>
+		</p1:ServerAttributeModule>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+		
+		<callback name="getServerAttributesNoXform" endpoint="server">
+			<description>Get Server Attributes</description>
+			<soapaction>getServerAttributes</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[		
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+	<xsl:template match="/">
+		<server:getServerAttributes>
+			<server:paths>
+				<xsl:for-each select="ServerAttributeModule/serverAttribute">
+					<server:path>
+						<xsl:value-of select="name"/>
+					</server:path>
+				</xsl:for-each>
+			</server:paths>
+		</server:getServerAttributes>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="getServerAttributeDefs" endpoint="server">
+			<description>Get Server Attribute Definitions</description>
+			<soapaction>getServerAttributeDefs</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+	<xsl:template match="/">
+		<server:getServerAttributeDefs>
+			<server:paths>
+				<xsl:for-each select="ServerAttributeModule/serverAttributeDef">
+					<server:path>
+						<xsl:value-of select="name"/>
+					</server:path>
+				</xsl:for-each>
+			</server:paths>
+		</server:getServerAttributeDefs>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
+	xmlns:common="http://www.compositesw.com/services/system/util/common" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<xsl:for-each select="server:getServerAttributeDefsResponse/server:attributeDefs/common:attributeDef">
+			<xsl:variable name="count" select="position()"/>
+			<serverAttributeDef>
+				<id>attr<xsl:value-of select="$count"/></id>
+				<name>
+					<xsl:value-of select="common:name"/>
+				</name>
+				<type>
+					<xsl:value-of select="common:type"/>
+				</type>
+				<xsl:if test="common:allowedValues">
+				   <allowedValues>
+					   <xsl:template match="//common:allowedValues"> 
+					        <xsl:apply-templates select="*" /> 
+					        <xsl:text>&#x0A;</xsl:text> 
+					    </xsl:template> 
+						<!--<xsl:value-of select="common:allowedValues"/>-->
+			 	   </allowedValues>
+				</xsl:if>
+				<xsl:if test="common:annotation">
+				   <annotation>
+						<xsl:value-of select="common:annotation"/>
+			 	   </annotation>
+				</xsl:if>
+				<xsl:if test="common:defaultValue">
+				   <defaultValue>
+						<xsl:value-of select="common:defaultValue"/>
+			 	   </defaultValue>
+				</xsl:if>
+				<xsl:if test="common:displayName">
+				   <displayName>
+						<xsl:value-of select="common:displayName"/>
+			 	   </displayName>
+				</xsl:if>
+				<xsl:if test="common:maxValue">
+				   <maxValue>
+						<xsl:value-of select="common:maxValue"/>
+			 	   </maxValue>
+				</xsl:if>
+				<xsl:if test="common:minValue">
+				   <minValue>
+						<xsl:value-of select="common:minValue"/>
+			 	   </minValue>
+				</xsl:if>
+				<xsl:if test="common:pattern">
+				   <pattern>
+						<xsl:value-of select="common:pattern"/>
+			 	   </pattern>
+				</xsl:if>
+				<xsl:if test="common:suggestedValues">
+				   <suggestedValues>
+					   <xsl:template match="//common:suggestedValues"> 
+					        <xsl:apply-templates select="*" /> 
+					        <xsl:text>&#x0A;</xsl:text> 
+					    </xsl:template> 
+						<!--<xsl:value-of select="common:suggestedValues"/>-->
+			 	   </suggestedValues>
+				</xsl:if>
+				<xsl:if test="common:updateRule">
+				   <updateRule>
+						<xsl:value-of select="common:updateRule"/>
+			 	   </updateRule>
+				</xsl:if>
+			</serverAttributeDef>
+		</xsl:for-each>
+		</p1:ServerAttributeModule>
+	</xsl:template>
+	
+    <xsl:template match="//common:allowedValues//*"> 
+        <xsl:choose> 
+            <xsl:when test="count(child::*) > 0"> 
+                <xsl:apply-templates select="*" /> 
+            </xsl:when> 
+            <xsl:otherwise> 
+                <xsl:text>"</xsl:text> 
+                <xsl:value-of select="."/> 
+                <xsl:text>"</xsl:text> 
+            </xsl:otherwise> 
+        </xsl:choose> 
+        <xsl:if test="position() != last()"> 
+            <xsl:text>,</xsl:text> 
+        </xsl:if> 
+    </xsl:template>	
+
+    <xsl:template match="//common:suggestedValues//*"> 
+        <xsl:choose> 
+            <xsl:when test="count(child::*) > 0"> 
+                <xsl:apply-templates select="*" /> 
+            </xsl:when> 
+            <xsl:otherwise> 
+                <xsl:text>"</xsl:text> 
+                <xsl:value-of select="."/> 
+                <xsl:text>"</xsl:text> 
+            </xsl:otherwise> 
+        </xsl:choose> 
+        <xsl:if test="position() != last()"> 
+            <xsl:text>,</xsl:text> 
+        </xsl:if> 
+    </xsl:template>	
+    
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="getServerAttributeDefChildren" endpoint="server">
+			<description>Get Server Attribute Definition Children</description>
+			<soapaction>getServerAttributeDefChildren</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+	<xsl:template match="/">
+		<server:getServerAttributeDefChildren>
+				<xsl:for-each select="ServerAttributeModule/serverAttributeDef">
+					<server:path>
+						<xsl:value-of select="name"/>
+					</server:path>
+				</xsl:for-each>
+		</server:getServerAttributeDefChildren>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>		
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
+	xmlns:common="http://www.compositesw.com/services/system/util/common" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<xsl:for-each select="server:getServerAttributeDefChildrenResponse/server:attributeDefs/common:attributeDef">
+			<xsl:variable name="count" select="position()"/>
+			<serverAttributeDef>
+				<id>attr<xsl:value-of select="$count"/></id>
+				<name>
+					<xsl:value-of select="common:name"/>
+				</name>
+				<type>
+					<xsl:value-of select="common:type"/>
+				</type>
+				<xsl:if test="common:displayName">
+				   <displayName>
+						<xsl:value-of select="common:displayName"/>
+			 	   </displayName>
+				</xsl:if>
+				<xsl:if test="common:updateRule">
+				   <updateRule>
+						<xsl:value-of select="common:updateRule"/>
+			 	   </updateRule>
+				</xsl:if>
+			</serverAttributeDef>
+		</xsl:for-each>
+		</p1:ServerAttributeModule>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="updateServerAttributes" endpoint="server">
+			<description>Update Server Attributes</description>
+			<soapaction>updateServerAttributes</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[		
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:server="http://www.compositesw.com/services/system/admin/server">
+	<xsl:template match="/">
+
+	<server:updateServerAttributes xmlns:server="http://www.compositesw.com/services/system/admin/server" xmlns:common="http://www.compositesw.com/services/system/util/common">
+		<server:attributes>
+		<xsl:for-each select="ServerAttributeModule/serverAttribute">
+			<common:attribute>
+			  <common:name><xsl:value-of select="name"/></common:name>
+			  <common:type><xsl:value-of select="type"/></common:type>
+			  <xsl:choose>
+
+					<xsl:when test="type = 'LIST'">
+						<common:valueList>
+							<xsl:for-each select="valueList/item">
+								<common:item>
+								  <common:type><xsl:value-of select="type"/></common:type>
+								  <common:value><xsl:value-of select="value"/></common:value>
+								</common:item>
+							</xsl:for-each>
+						</common:valueList>
+        			</xsl:when>
+        							  
+					<xsl:when test="type = 'MAP'">
+					  <common:valueMap>
+						<xsl:for-each select="valueMap/entry">
+							<common:entry>
+							  <common:key>
+								<common:type><xsl:value-of select="key/type"/></common:type>
+								<common:value><xsl:value-of select="key/value"/></common:value>
+							  </common:key>
+							  <common:value>
+								<common:type><xsl:value-of select="value/type"/></common:type>
+								<common:value><xsl:value-of select="value/value"/></common:value>
+							  </common:value>
+							</common:entry>
+						</xsl:for-each>
+					</common:valueMap>
+        		</xsl:when>
+        							  
+				<xsl:when test="type='STRING_ARRAY' or type='INT_ARRAY' or type='BYTE_ARRAY'">
+				  <common:valueArray>
+					<xsl:for-each select="valueArray/item">
+						<common:item>
+						<xsl:value-of select="."/>
+						</common:item>
+					</xsl:for-each>
+				  </common:valueArray>
+			   	</xsl:when>
+			   	
+				<xsl:otherwise>
+					<common:value><xsl:value-of select="value"/></common:value>
+				</xsl:otherwise>
+				
+			  </xsl:choose>
+			  
+			  <xsl:if test="unset">
+				<common:unset><xsl:value-of select="unset"/></common:unset>
+			  </xsl:if>
+			  
+			</common:attribute>
+		  </xsl:for-each>
+		</server:attributes>
+		</server:updateServerAttributes>
+	</xsl:template>
+</xsl:stylesheet>					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:server="http://www.compositesw.com/services/system/admin/server" 
+	xmlns:common="http://www.compositesw.com/services/system/util/common" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:template match="/">
+		<p1:ServerAttributeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="getResourcePrivileges" endpoint="resource">
+			<description>Get Resource Privileges</description>
+			<soapaction>getResourcePrivileges</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:resource="http://www.compositesw.com/services/system/admin/resource">
+	<xsl:template match="/">
+		<resource:getResourcePrivileges xmlns:resource="http://www.compositesw.com/services/system/admin/resource">
+		  <resource:entries>
+		  <xsl:for-each select="getResourcePrivileges/entries/entry">
+		    <resource:entry>
+		      <resource:path><xsl:value-of select="path"/></resource:path>
+		      <resource:type><xsl:value-of select="type"/></resource:type>
+		    </resource:entry>
+		  </xsl:for-each>
+		  </resource:entries>
+		  <xsl:if test="getResourcePrivileges/resource:filter">
+				<resource:filter>
+					<xsl:value-of select="getResourcePrivileges/filter"/>
+				</resource:filter>
+		  </xsl:if>
+		  <xsl:if test="getResourcePrivileges/includeColumnPrivileges">
+				<resource:includeColumnPrivileges>
+					<xsl:value-of select="getResourcePrivileges/includeColumnPrivileges"/>
+				</resource:includeColumnPrivileges>
+		  </xsl:if>
+		</resource:getResourcePrivileges>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:resource="http://www.compositesw.com/services/system/admin/resource"
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:template match="/">
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+		<xsl:if test="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry/resource:privileges/resource:privilege">
+		  <xsl:for-each select="resource:getResourcePrivilegesResponse/resource:privilegeEntries/resource:privilegeEntry">
+			<xsl:variable name="count" select="position()"/>
+			<resourcePrivilege>
+				<id>priv<xsl:value-of select="$count"/></id>
+				<resourcePath><xsl:value-of select="resource:path"/></resourcePath>
+				<resourceType><xsl:value-of select="resource:type"/></resourceType>
+				<xsl:for-each select="resource:privileges/resource:privilege">
+					<privilege>
+						<name><xsl:value-of select="resource:name"/></name>
+						<nameType><xsl:value-of select="resource:nameType"/></nameType>
+						<domain><xsl:value-of select="resource:domain"/></domain>
+						<privileges><xsl:value-of select="resource:privs"/></privileges>
+						<xsl:if test="resource:combinedPrivs">
+							<combinedPrivileges><xsl:value-of select="resource:combinedPrivs"/></combinedPrivileges>
+						</xsl:if>
+						<xsl:if test="resource:inheritedPrivs">
+							<inheritedPrivileges><xsl:value-of select="resource:inheritedPrivs"/></inheritedPrivileges>
+						</xsl:if>
+				   </privilege>
+				</xsl:for-each>
+			</resourcePrivilege>
+		  </xsl:for-each>
+		</xsl:if> 
+		</p1:PrivilegeModule>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="updateResourcePrivileges" endpoint="resource">
+			<description>Update Resource Privileges</description>
+			<soapaction>updateResourcePrivileges</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:resource="http://www.compositesw.com/services/system/admin/resource">
+	<xsl:template match="/">
+		<resource:updateResourcePrivileges xmlns:resource="http://www.compositesw.com/services/system/admin/resource">
+			<resource:updateRecursively>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/recurse"/>
+			</resource:updateRecursively>
+			<xsl:if test="PrivilegeModule/resourcePrivilege/updateDependenciesRecursively">
+				<resource:updateDependenciesRecursively>
+					<xsl:value-of select="PrivilegeModule/resourcePrivilege/updateDependenciesRecursively"/>
+				</resource:updateDependenciesRecursively>
+			</xsl:if>
+			<xsl:if test="PrivilegeModule/resourcePrivilege/updateDependentsRecursively">
+				<resource:updateDependentsRecursively>
+					<xsl:value-of select="PrivilegeModule/resourcePrivilege/updateDependentsRecursively"/>
+				</resource:updateDependentsRecursively>
+			</xsl:if>
+			<resource:privilegeEntries>
+				<resource:privilegeEntry>
+					<resource:path>
+						<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourcePath"/>
+					</resource:path>
+					<resource:type>
+						<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceType"/>
+					</resource:type>
+					<resource:privileges>
+						<xsl:for-each select="PrivilegeModule/resourcePrivilege/privilege">
+							<resource:privilege>
+								<resource:domain>
+									<xsl:value-of select="domain"/>
+								</resource:domain>
+								<resource:name>
+									<xsl:value-of select="name"/>
+								</resource:name>
+								<resource:nameType>
+									<xsl:value-of select="nameType"/>
+								</resource:nameType>
+								<resource:privs>
+									<xsl:value-of select="privileges"/>
+								</resource:privs>
+								<xsl:if test="combinedPrivs">
+									<resource:combinedPrivs>
+										<xsl:value-of select="combinedPrivileges"/>
+									</resource:combinedPrivs>
+								</xsl:if>
+								<xsl:if test="inheritedPrivileges">
+									<resource:inheritedPrivs>
+										<xsl:value-of select="inheritedPrivileges"/>
+									</resource:inheritedPrivs>
+								</xsl:if>
+							</resource:privilege>
+						</xsl:for-each>
+					</resource:privileges>
+				</resource:privilegeEntry>
+			</resource:privilegeEntries>
+			<xsl:if test="PrivilegeModule/resourcePrivilege/mode">
+				<resource:mode><xsl:value-of select="PrivilegeModule/resourcePrivilege/mode"/></resource:mode>
+			</xsl:if>
+		</resource:updateResourcePrivileges>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:resource="http://www.compositesw.com/services/system/admin/resource" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+
+		<callback name="changeResourceOwner" endpoint="resource">
+			<description>Change Resource Owner</description>
+			<soapaction>changeResourceOwner</soapaction>
+			<request>
+				<header>
+				</header>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:resource="http://www.compositesw.com/services/system/admin/resource" xmlns:common="http://www.compositesw.com/services/system/util/common">
+	<xsl:template match="/">
+		<resource:changeResourceOwner xmlns:resource="http://www.compositesw.com/services/system/admin/resource" xmlns:common="http://www.compositesw.com/services/system/util/common">
+			<resource:path>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourcePath"/>
+			</resource:path>
+			<resource:type>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceType"/>
+			</resource:type>
+			<resource:detail>NONE</resource:detail>
+			<resource:newOwnerName>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerName"/>
+			</resource:newOwnerName>
+			<resource:newOwnerDomain>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerDomain"/>
+			</resource:newOwnerDomain>
+			<resource:recurse>
+				<xsl:value-of select="PrivilegeModule/resourcePrivilege/resourceOwner/resourceOwnerRecurse"/>
+			</resource:recurse>
+		</resource:changeResourceOwner>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</request>
+			<response>
+				<body>
+					<![CDATA[
+<?xml version='1.0' ?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:resource="http://www.compositesw.com/services/system/admin/resource" 
+	xmlns:p1="http://www.tibco.com/ps/deploytool/modules">
+	<xsl:variable name="counter" select="0"/>
+	<xsl:template match="/">
+		<p1:PrivilegeModule xmlns:p1="http://www.tibco.com/ps/deploytool/modules" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+	</xsl:template>
+</xsl:stylesheet>
+					]]>
+				</body>
+			</response>
+		</callback>
+		
+	</callbacks>
+</adapterconfiguration>

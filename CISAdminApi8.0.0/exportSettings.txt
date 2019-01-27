@@ -1,0 +1,143 @@
+/services/webservices/system/admin/archive/operations/createExportArchive
+
+Create and prepare an archive for export. The archive will be defined by its settings.
+The settings define what exactly will be exported.  "CreateExportArchive" must be called within an explicit
+transaction context wrapping its usage and that of other archive operations between "beginTransaction" and "closeTransaction" calls.
+
+An export archive is created on the server using
+this operation.  After it is created, the export archive can be further manipulated using the
+"getArchiveContents", "getArchiveExportSettings", and "updateArchiveExportSettings" operations. 
+Multiple calls to these three operations can be made in any order to analyze and redefine what will
+be exported.  When satisfied, the client then calls "getArchiveExportData" one or more times.
+
+After "getArchiveExportData" is called, "updateArchiveExportSettings" can no longer be called.  When the
+last of the export data is returned by "getArchiveExportData" or when "cancelArchive" is called, the
+server's concept of the archive will no longer exist and further calls to any of these operations
+will result in NotFound faults because the archiveId will be invalid.
+
+The archive will contain all of the resources listed in the "resources" elements.
+Each resource has an optional "includeChildren" element.  This defaults to "true" if unset.  
+If a user exports a resource that contains a child
+resource, that the user does not have READ permission for, then the child resource is omitted. The
+export succeeds without generating a security fault, but the resource is not exported. If this
+element is unset, no resources will be exported. The "all" sub-element can be used to include all
+resources on the server.
+
+The archive will contain definitions of all the domains, users, and groups
+identified in the "users" element.  If this element is unset, no domains, users, or groups are
+exported.  The "all" sub-element can be used to includes all domains, users, and groups defined by
+the server.
+ 
+The archive will contain all of the server attributes identified in the
+"serverAttributes" element.  If this element is unset, no server attributes are exported.  The "all"
+sub-element can be used to export all server attributes.  See "getServerAttributeDefs" for server
+attribute definitions and "getServerAttributes" for server attribute values.
+
+A number of additional options can be specified in the "exportOptions" element.  If an option is specified, then the
+associated information is exported.  Otherwise it will not.  By default none of these options are exported.  
+The valid options are:
+    * INCLUDE_CACHING: Include caching configurations for resources.
+    * INCLUDE_CUSTOM_JAVA_JARS: Include custom Java JARs in the export. (ADMIN ONLY)
+    * INCLUDE_STATISTICS: Include any resources stats known about objects including the table boundaries, and column boundaries. 
+    * INCLUDE_DEPENDENCY: Gather and include all dependent resources for the resources you choose to export. 
+    * INCLUDE_PHYSICAL_SOURCE_INFO: Include sensitive connection information for included physical sources. (OWNER ONLY)
+    * INCLUDE_REQUIRED_USERS: Include the information about the required users in the export file.
+    * INCLUDE_SECURITY: Include resource privilege settings. (OWNER ONLY)
+
+If the caller requests an option marked 'ADMIN ONLY' and does not have admin privileges, a Security fault will be generated.
+
+If the caller requests an option marked 'OWNER ONLY', that option will only be applied
+to resources where the caller is the owner.  If the caller has admin privileges, the option will be
+applied to all resources regardless of ownership.  Messages will be generated, but no fault will
+occur during export.
+
+The "importHints" element contains information that can be used by the client
+performing an import of this exported data at a later time.  This allows you to create an export
+archive that has built-in preconceptions of what resources and users should be rebound on import. 
+In addition, what resource attributes should be remapped, such as database connection information.
+
+      <xs:complexType name="exportSettings">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="description" type="xs:string"/>
+          <xs:element name="type" type="ns3:archiveTypes"/>
+          <xs:element minOccurs="0" name="resources" type="ns3:archiveResources"/>
+          <xs:element minOccurs="0" name="users" type="ns3:archiveUsers"/>
+          <xs:element minOccurs="0" name="serverAttributes" type="ns3:exportServerAttributes"/>
+          <xs:element minOccurs="0" name="exportOptions" type="ns2:nameList"/>
+          <xs:element minOccurs="0" name="importHints" type="ns3:importHints"/>
+          <xs:element minOccurs="0" name="createInfo" type="ns3:exportCreateInfo"/>
+          <xs:element minOccurs="0" name="encryptionPassword" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+
+
+Request Elements:
+settings: Description of how much information to export.  The settings have the following structure:
+	name: The name of the export archive.
+	description: A verbose description of the archive.
+	type: 	If "BACKUP" then all information in this archive will replace the server information when imported.  
+			If "ROOT", then resources within the archive can not be relocated when reimported.  
+			If "PACKAGE", then resources within the archive can be relocated when reimported.
+	resources (optional): The list of resources to be exported.
+		all (optional): If set, then all resources on the server will be exported.
+		resource (0 or more):  A list of individual resources to be exported.
+			path: The path to the resource.
+			type: The type of the resource.
+			includeChildren (optional): If "true" or unset, recursively include all children of this resource in the export.  If "false", then do not include any children.
+	users (optional): The list of users to be exported.
+		all (optional): If set then all domains, users, and groups will be exported.
+		domains (optional): A list of domains to be exported in their entirety.
+		all (optional): If set, then all domains will be exported.
+		domains: A space-delimited list of domain names of the domains to be exported.
+		users (optional): A list of users to be exported.
+		domain (0 or more): A domain that contains users to be exported.
+		name: The name of the domain containing users.
+		all (optional): If set, then all users within this domain will be exported.
+		users (optional): A space-delimited list of user names of the users to be exported.
+		groups (optional): A list of groups to be exported in their entirety. Includes user membership.
+		domain (0 or more): A domain that contains groups to be exported.
+		name: The name of the domain containing groups.
+		all (optional): If set, all groups within this domain will be exported.
+		groups (optional): A list of groups and their definitions to be exported.
+		name: The name of the group.
+		all (optional): If set, then all users within this group will be listed as part of the group.
+		user (optional): A list of users to be listed as members of the group.
+		
+	serverAttributes (optional):  The list of server attributes to be exported.
+		all (optional): If set, then all server attributes will be exported.
+		attributes (optional): A space-delimited list of server attribute names of the attributes to be exported.
+	exportOptions (optional): A space-delimited list of archive options.
+	importHints (optional):  Hints that can be used during import.
+		rebindResources: A list of resources that should rebound on import.
+		rebindUsers: A list of users that should be mapped to other users on import.
+		remapAttributes: List resource attributes that should be mapped during import.
+	createInfo (optional): Any setting of this element will be ignored.
+	
+	encryptionPassword - THIS IS NOT DOCUMENTED
+	
+	
+Response Elements:
+	archiveId: The archive ID.  This is used by other archive operations to manipulate this archive.
+
+Faults:
+   
+IllegalArgument: If the type is malformed.
+    IllegalArgument: If any of the resource paths or types are malformed.
+    IllegalArgument: If any of the settings are malformed or contain illegal values.
+    IllegalArgument: If any of the server attributes are malformed.
+    IllegalArgument: If any of the export options are malformed.
+    IllegalArgument: If any of the import hints are malformed.
+    IllegalState: This operations can only be called within an explicit transaction context.  Use "beginTransaction" and "closeTransaction".
+    NotAllowed: If an explicitly named resource can not be exported.  The inclusion of implicitly identified resources, 
+				using "includeChildren", that are not allowed to be exported will not cause this fault.
+    NotFound: If any portion of any of the resource paths and types do not exist.
+    NotFound: If any of the domains, users, or groups do not exist.
+    NotFound: If any of the server attributes do not exist.
+
+NotFound: If any of the resources specified in the "importHints" will not be included in the export archive.
+NotFound: If any of the users specified in the "importHints" will not be included in any of the resources, privileges, or user data in the export archive.
+Security: If the caller does not have READ access on all items in the explicitly identified resource paths.  Paths to
+			resources implicitly included, via "includeChildren", that the caller does not have READ on will not generate this fault.
+Security: If the caller does not have admin privileges and attempts to use an export option that is 'ADMIN ONLY'.
+Security: If the caller attempts to use an 'OWNER ONLY' export option does not have admin privileges and attempts to use an export option that is 'ADMIN ONLY'.

@@ -23,7 +23,7 @@ REM #===========================================================================
 REM # Example Execution Statement:
 REM # Option 1 - Execute a command line deploy plan file:
 REM #
-REM #            ExecutePDTool.bat -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-noop]
+REM #            ExecutePDTool.bat -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-ver CIS_VERSION] [-noop]
 REM #
 REM #               arg1::    -exec is used to execute a deploy plan file
 REM #	            arg2::    orchestration property file path (full or relative path)
@@ -31,7 +31,7 @@ REM #               arg3-4::  [-vcsuser username] optional parameter specifying 
 REM #               arg5-6::  [-vcspassword password] optional parameter specifying the vcs password
 REM #				arg7-8::  [-config deploy.properties] optional parameter specifying the deployment configuration property file
 REM #				arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS
-REM #               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
+REM #               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.  e.g. 7.0.0, 8.0.0
 REM #               arg13::   [-noop] optional parameter that allows the PDTool deployment plan to execute with no operation taking place on the target CIS server.
 REM #                                 Operations that perform READ or GET from the CIS target server are allowed.  
 REM #                                 Operations that perform UPDATE or changes are trapped and not executed.
@@ -58,7 +58,7 @@ REM #                                                  that are found within a v
 REM #
 REM # Option 4 - Execute an Ant build file:
 REM #
-REM #            ExecutePDTool.bat -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-noop]
+REM #            ExecutePDTool.bat -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-release RELEASE_FOLDER] [-ver CIS_VERSION] [-noop]
 REM #
 REM #               arg1::    -ant is used to execute an Ant build file
 REM #	            arg2::    orchestration build file path (full or relative path)
@@ -66,7 +66,7 @@ REM #               arg3-4::  [-vcsuser username] optional parameter specifying 
 REM #               arg5-6::  [-vcspassword password] optional parameter specifying the vcs password
 REM #				arg7-8::  [-config deploy.properties] optional parameter specifying the deployment configuration property file
 REM #				arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS
-REM #               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
+REM #               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.  e.g. 7.0.0, 8.0.0
 REM #               arg13::   [-noop] optional parameter that allows the PDTool deployment plan to execute with no operation taking place on the target CIS server.
 REM #                                 Operations that perform READ or GET from the CIS target server are allowed.  
 REM #                                 Operations that perform UPDATE or changes are trapped and not executed.
@@ -130,7 +130,8 @@ call %writeOutput% "%SCRIPT%: Parse command line and set input variables:"
 call %writeOutput% "########################################################################################################################################"
 set PARAMS=
 call :getParams %*
-if %debug%==1 echo.[DEBUG] %SCRIPT%: PARAMS=%PARAMS%
+echo.[COMMAND] %SCRIPT%.bat %PARAMS%
+echo.
 
 REM # Parse the parameters
 set PARSE_ERROR=0
@@ -229,13 +230,18 @@ REM # Resovlve RELEASE_FOLDER
 REM #=====================================================================================
 REM #   Insure there is a backslash "\" for the first character.
 REM #=====================================================================================
+setlocal EnableDelayedExpansion
+call:RTRIM RELEASE_FOLDER RELEASE_FOLDER
+endlocal & SET RELEASE_FOLDER=%RELEASE_FOLDER%
+if "%RELEASE_FOLDER%" == "" GOTO FINISH_RELEASE_FOLDER
+if "%RELEASE_FOLDER%" == "" GOTO FINISH_RELEASE_FOLDER
 set PDTOOL_RELEASE_FOLDER_FIRST_CHAR=%RELEASE_FOLDER:~0,1%
 if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: PDTOOL_RELEASE_FOLDER_FIRST_CHAR=%PDTOOL_RELEASE_FOLDER_FIRST_CHAR%
 if "%PDTOOL_RELEASE_FOLDER_FIRST_CHAR%"=="/" set RELEASE_FOLDER=%PDTOOL_RELEASE_FOLDER:~1%
 if "%PDTOOL_RELEASE_FOLDER_FIRST_CHAR%"=="\" set RELEASE_FOLDER=%PDTOOL_RELEASE_FOLDER:~1%
 set RELEASE_FOLDER=\%RELEASE_FOLDER%
 if %debug%==1 echo.[DEBUG] %SCRIPT_DEBUG%: RELEASE_FOLDER=%RELEASE_FOLDER%
-
+:FINISH_RELEASE_FOLDER
 
 REM #=======================================
 REM # Resovlve PDTOOL_CONFIG_PROPERTY_FILE
@@ -373,12 +379,12 @@ if not defined NETWORK_DRIVE goto MAPSUCCESS
 	)
 	
 	call :REPLACE "%PDTOOL_HOME_DRIVE%" "\\%COMPUTERNAME%\%PDTOOL_HOME_DRIVE_SHARE%" "%PROJECT_HOME_PHYSICAL%" PROJECT_HOME_PHYSICAL_NEW
-	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute network drive command:  net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES"				"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
     net use %NETWORK_DRIVE% "%PROJECT_HOME_PHYSICAL_NEW%" /PERSISTENT:YES
     set ERROR=%ERRORLEVEL%
     if "%ERROR%" == "0" goto MAPSUCCESS
-	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% [%PROJECT_HOME_PHYSICAL_NEW%] /PERSISTENT:YES" 				 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%An error=%ERROR% occurred executing command: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+	call %writeOutput% "%PAD%Execute this command manually: net use %NETWORK_DRIVE% %PROJECT_HOME_PHYSICAL_NEW% /PERSISTENT:YES" 				 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	call %writeOutput% "%PAD%Re-execute %SCRIPT%.bat" 																							 "%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 	if defined PWD cd "%PWD%"
     exit /b 1
@@ -932,7 +938,7 @@ REM #-------------------------------------------------------------
 	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters specifying the vcs password"
 	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters specifying the deployment configuration property file"
 	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
-	call %writeOutput% "               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
+	call %writeOutput% "               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.  e.g. 7.0.0, 8.0.0
 	call %writeOutput% "               arg13::   [-noop] optional parameter that allows the PDTool deployment plan to execute with no operation taking place on the target CIS server."
 	call %writeOutput% "                                 Operations that perform READ or GET from the CIS target server are allowed."
 	call %writeOutput% "                                 Operations that perform UPDATE or changes are trapped and not executed."
@@ -976,7 +982,7 @@ REM #-------------------------------------------------------------
 	call %writeOutput% "               arg5-6::  [-vcspassword password] optional parameters specifying the vcs password"
 	call %writeOutput% "               arg7-8::  [-config deploy.properties] optional parameters specifying the deployment configuration property file"
 	call %writeOutput% "               arg9-10:: [-release YYYYMMDD] optional parameter used to specify the release folder for the VCS"
-	call %writeOutput% "               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.
+	call %writeOutput% "               arg11-12::[-ver 7.0.0] optional parameter used to specify the version of CIS to connect to.  e.g. 7.0.0, 8.0.0
 	call %writeOutput% "               arg13::   [-noop] optional parameter that allows the PDTool deployment plan to execute with no operation taking place on the target CIS server."
 	call %writeOutput% "                                 Operations that perform READ or GET from the CIS target server are allowed."
 	call %writeOutput% "                                 Operations that perform UPDATE or changes are trapped and not executed."

@@ -27,7 +27,7 @@
 		Example:  <encryptedpassword>Pass &quot; &apos; &lt; &gt; &amp; word</encryptedpassword>
 -->
 <servers>
-  <!-- CIS 7.0.1 Server -->
+  <!-- DV 7.0 Server -->
   <server>
     <id>DEV1_9400http</id>
     <hostname>localhost</hostname>
@@ -36,7 +36,7 @@
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
-    <cishome>/CompositeSoftware/CIS7.0.0</cishome>
+    <cishome>C:\MySW\TDV7.0</cishome>
     <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
@@ -50,7 +50,7 @@
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
-    <cishome>/CompositeSoftware/CIS7.0.0</cishome>
+    <cishome>C:\MySW\TDV7.0</cishome>
     <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
@@ -64,12 +64,102 @@
     <user>$CIS_USERNAME</user>
     <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
     <domain>$CIS_DOMAIN</domain>
-    <cishome>/CompositeSoftware/CIS7.0.0</cishome>
+    <cishome>C:\MySW\TDV7.0</cishome>
     <clustername />
     <site>Local</site>
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
+
+  <!-- Servers for 9500 -->
+  <server>
+    <id>DEV1_9500http</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>DEV1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV7.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>UAT1_9500http</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>UAT1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV7.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>PROD1_9500http</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>PROD1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV7.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <!-- Servers for 9800 -->
+  <server>
+    <id>DEV1_9800http</id>
+    <hostname>localhost</hostname>
+    <port>9800</port>
+    <usage>DEV1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV8.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>UAT1_9800http</id>
+    <hostname>localhost</hostname>
+    <port>9800</port>
+    <usage>UAT1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV8.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>PROD1_9800http</id>
+    <hostname>localhost</hostname>
+    <port>9800</port>
+    <usage>PROD1</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>C:\MySW\TDV8.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  
   <server>
     <id>localhost9400http</id>
     <hostname>localhost</hostname>
@@ -98,6 +188,7 @@
     <useHttps>true</useHttps>
     <allowVariables>true</allowVariables>
   </server>
+  
   <server>
     <id>localhost9420http</id>
     <hostname>localhost</hostname>
@@ -126,5 +217,122 @@
     <useHttps>false</useHttps>
     <allowVariables>true</allowVariables>
   </server>
+  
+  <server>
+    <id>localhost9500http</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9500https</id>
+    <hostname>localhost</hostname>
+    <port>9500</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
+    <id>localhost9600http</id>
+    <hostname>localhost</hostname>
+    <port>9600</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9600https</id>
+    <hostname>localhost</hostname>
+    <port>9600</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
+    <id>localhost9700http</id>
+    <hostname>localhost</hostname>
+    <port>9700</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9700https</id>
+    <hostname>localhost</hostname>
+    <port>9700</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
+    <id>localhost9800http</id>
+    <hostname>localhost</hostname>
+    <port>9800</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9800https</id>
+    <hostname>localhost</hostname>
+    <port>9800</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>D:\CompositeSoftware\CIS7.0.0</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
 </servers>
 

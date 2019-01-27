@@ -44,9 +44,11 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>password</attribute>
-				<value>admin</value>
+				<value>$CIS_PASSWORD</value>
 			</resourceAttribute>
 		</setAttributes>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
@@ -59,6 +61,8 @@
 			<export>/shared/test00</export>
 			<export></export>	
 		</resources>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
@@ -70,6 +74,7 @@
 		<includejars>true</includejars>
 		<includesourceinfo>true</includesourceinfo>
 		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
 		<setAttributes>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
@@ -87,7 +92,7 @@
 				<resourcePath>/shared/test00/DataSources/testWebService</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>password</attribute>
-				<value>admin</value>
+				<value>$CIS_PASSWORD</value>
 			</resourceAttribute>
 			<resourceAttribute>
 				<resourcePath>/shared/test00/DataSources/ds_orders</resourcePath>
@@ -102,9 +107,21 @@
 				<value>$CIS_REPO_PORT</value>
 			</resourceAttribute>
 		</setAttributes>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	<archive>
 		<id>import02</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>true</includecaching>
+		<includejars>true</includejars>
+		<includesourceinfo>true</includesourceinfo>
+		<overwrite>true</overwrite> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+	</archive>
+	<archive>
+		<id>import03</id>
 		<archiveMethod>CAR</archiveMethod>
 		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%_longpath.car</archiveFileName>
 		<includeaccess>true</includeaccess>
@@ -112,6 +129,8 @@
 		<includejars>false</includejars>
 		<includesourceinfo>false</includesourceinfo>
 		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<!-- Used for Regression Module Testing -->
@@ -122,19 +141,19 @@
 		<overwrite>true</overwrite> 
 		<setAttributes>
 			<resourceAttribute>
-				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/INVENTORY/ds_inventory</resourcePath>
+				<resourcePath>/shared/_regression/Physical/Metadata/Relational/INVENTORY/ds_inventory</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>port</attribute>
 				<value>$CIS_REPO_PORT</value>
 			</resourceAttribute>
 			<resourceAttribute>
-				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/ORDERS1/ds_orders1</resourcePath>
+				<resourcePath>/shared/_regression/Physical/Metadata/Relational/ORDERS1/ds_orders1</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>port</attribute>
 				<value>$CIS_REPO_PORT</value>
 			</resourceAttribute>
 			<resourceAttribute>
-				<resourcePath>/shared/_regression/Physical/Metadata/MysqlSource/ORDERS2/ds_orders2</resourcePath>
+				<resourcePath>/shared/_regression/Physical/Metadata/Relational/ORDERS2/ds_orders2</resourcePath>
 				<resourceType>DATA_SOURCE</resourceType>
 				<attribute>port</attribute>
 				<value>$CIS_REPO_PORT</value>
@@ -146,6 +165,7 @@
 				<value>C:\CompositeSoftware\CIS6.2.5\docs\examples</value>
 			</resourceAttribute>
 		</setAttributes>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
@@ -181,6 +201,7 @@
 			</resourceAttribute>
 		</setAttributes>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	<archive>
 		<id>TestRestoreOptions</id>
@@ -200,6 +221,7 @@
 			</relocate>
 		</resources>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 
 	<archive>
@@ -246,6 +268,7 @@
 			</resourceAttribute>
 		</setAttributes>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 
 

@@ -226,6 +226,9 @@ public class DeployManagerUtil {
 		if (cisVersion == null)
 			throw new CompositeException(prefix+"::The environment variable \"CIS_VERSION\" may not be null.");
 
+		if(logger.isInfoEnabled()){
+			logger.info("Environment variable CIS_VERSION="+cisVersion);
+	    }	
 		if(logger.isDebugEnabled()){
 			logger.debug("Environment variable CIS_VERSION="+cisVersion);
 		}

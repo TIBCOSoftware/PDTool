@@ -57,19 +57,37 @@ public class ExportCommand implements ArchiveConstants, PackageCommandConstants 
             outFile = new BufferedOutputStream(eafos);
 
             // Open network session
-            session = ArchiveUtil.connectToServer(state.server, state.port,
-                                                  state.encrypt, state.domain, state.username, state.password);
+            session = ArchiveUtil.connectToServer(state.server, state.port, state.encrypt, state.domain, state.username, state.password);
 
-            // Perform the actual export
+            /* Create the settings
+             * 
+             * @XmlAccessorType(XmlAccessType.FIELD)
+				@XmlType(name = "exportSettings", propOrder = {
+				    "name",
+				    "description",
+				    "type",
+				    "resources",
+				    "users",
+				    "serverAttributes",
+				    "exportOptions",
+				    "importHints",
+				    "createInfo",
+				    "encryptionPassword"
+				})
+             */
             Map<Object, Object> settings = new HashMap<Object, Object>();
             settings.put(KEY_VCS_EXPORT, null);
-
+            // Check the encryptionPassword state and update settings if not null
+            if (state.encryptionPassword != null)
+            	settings.put("encryptionPassword", state.encryptionPassword);
+           
             WResourceEntry[] entries = new WResourceEntry[1];
-            // TODO: WResourceEntry is under-specified. Resource type is missing.
+            // Create the entry
             entries[0] = new WResourceEntry(-1, state.namespacePath, state.resourceTypeType, true);
-            
+                        
             archive = session.createExportArchive(settings, entries);
-            if (archive == null) throw new IllegalStateException("Error during package file export. Export archive is null.");            
+             
+            if (archive == null) throw new IllegalStateException("Error during package file export. Export archive is null.");   
 
             archive.downloadStream(outFile);
             outFile.flush();

@@ -687,13 +687,31 @@ public class ResourceCacheManagerImpl implements ResourceCacheManager{
 									if (cacheConfig.getRefresh().getSchedule().getMode().toString().equalsIgnoreCase("INTERVAL")) {
 										// Define the calendar period type
 										ResourceCacheCalendarPeriodType calendarPeriod = new ResourceCacheCalendarPeriodType();
-
 										
 										if (cacheConfig.getRefresh().getSchedule().getInterval() != null) {
 											Period period = new Period();
-											period = period.getCalandarPeriod(cacheConfig.getExpirationPeriod(), "seconds");
-											calendarPeriod.setPeriod(period.getPeriod());
-											calendarPeriod.setCount(period.getCount());
+											// 2019-01-10 mtinius: fixed issue where expiration was being used instead of refresh interval.
+											period = period.getCalandarPeriod(cacheConfig.getRefresh().getSchedule().getInterval().longValue(), "seconds");
+
+											// 2019-01-10 mtinius: fixed issue where the wrong period was being selected based on the calendar period.  INTERVAL only
+											//		supports SECOND and MINUTE but it was calculating HOUR in some cases.  The code below resolves to MINUTE or SECOND
+											//		if a period other than SECOND or MINUTE is caclulated such as HOUR.
+											if (!period.getPeriod().toString().equalsIgnoreCase("SECOND") && !period.getPeriod().toString().equalsIgnoreCase("MINUTE")) {
+												int count = cacheConfig.getRefresh().getSchedule().getInterval().intValue();
+												// If the count is divisible by 60 with no remainder then it is calculated as minutes
+												if (count % 60 == 0) {
+													calendarPeriod.setPeriod("MINUTE");
+													calendarPeriod.setCount(count / 60);
+												// otherwise it is assumed to be seconds
+												} else { 
+													calendarPeriod.setPeriod("SECOND");
+													calendarPeriod.setCount(count);
+												}
+											} else {
+												calendarPeriod.setPeriod(period.getPeriod());
+												calendarPeriod.setCount(period.getCount());
+											}
+												
 											// Set the refresh period
 											resourceCacheRefreshScheduleType.setRefreshPeriod(calendarPeriod);
 										}

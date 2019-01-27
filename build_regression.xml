@@ -33,12 +33,11 @@
 			Select lib7.0.0 library and click finish
 			Click OK to 
 	3. Clean the project
-	4. Execute the build_release7.0.0.xml
+	4. Execute the build_regression.xml
 -->
 <project name="PDTool" default="default" basedir=".">
 
 	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
-	<property name="ver" value="7.0.0"/>
 	<property name="relNum" value="r1"/>
 	<property name="project-name" value="PDTool"/>
 	<property name="atf" value="AutomatedTestFramework"/>
@@ -48,7 +47,6 @@
 	<property name="dist" value="dist"/>
 	<property name="ext" location="ext"/>
 	<property name="lib" value="libcommon"/>
-	<property name="libver" value="lib${ver}"/>
 	<property name="licenses" location="licenses"/>
 	<property name="regression" location="regression"/>
 	<property name="resources" location="resources"/>
@@ -62,18 +60,6 @@
 	<property name="regression_rel" location="${relbase}/regression"/>
 	<property name="regression-target" value="PDToolRegression"/>
 	<property name="regression-zip-file-name" value="regression-${RELEASE_DT_CANDIDATE}.zip"/>
-	
-	<path id="project.class.path">
-		<fileset dir="${lib}">
-			<include name="**/*.jar"/>
-		</fileset>
-		<fileset dir="${libver}">
-			<include name="**/*.jar"/>
-		</fileset>
-		<fileset dir="ext/ant/lib">
-			<include name="**/*.jar"/>
-		</fileset>
-	</path>
 
 	<!-- Check for existence of a Regression release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
 	<target name="PdtoolRegressionZipExist">
@@ -94,7 +80,6 @@
 		-->
 		<!-- Create the Regression zip file target directories -->
 		<mkdir dir="${regression-target}"/>
-		<mkdir dir="${regression-target}/carfiles"/>
 		<mkdir dir="${regression-target}/config"/>
 		<mkdir dir="${regression-target}/config_lists"/>
 		<mkdir dir="${regression-target}/modules"/>
@@ -108,11 +93,6 @@
 		        <include name="*.txt"/>
 		        <include name="*.bat"/>
 		        <include name="*.sh"/>
-		    </fileset>
-		</copy>
-		<copy todir="${regression-target}/carfiles">
-		    <fileset dir="${regression}/carfiles">
-		        <include name="*.car"/>
 		    </fileset>
 		</copy>
 		<copy todir="${regression-target}/config">

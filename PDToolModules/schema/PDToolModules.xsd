@@ -64,6 +64,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:enumeration value="READ_ALL_STATUS"/>
 			<xs:enumeration value="READ_ALL_USERS"/>
 			<xs:enumeration value="UNLOCK_RESOURCE"/>
+			<xs:enumeration value="DM"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -133,7 +134,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 	(Datasource table columns)
 	* COLUMN / n/a - The column type is only used when updating privileges on a table column.
 
-	(Basic CIS folder)
+	(Basic DV folder)
 	* CONTAINER / FOLDER_CONTAINER - A Composite folder.   Cannot be created anywhere under /services except in another FOLDER under /services/webservices.
 	* CONTAINER / DIRECTORY_CONTAINER - A Composite directory.
 	(Database)
@@ -164,7 +165,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 
 	* LINK / sub-type unknown - Used to link a Composite Data Service to a Composite resource such as a view or sql procedure.
 
-	(CIS procedures)
+	(DV procedures)
 	* PROCEDURE / SQL_SCRIPT_PROCEDURE - A Composite SQL Procedure.  Created with a simple default script body that is runnable.
 	(Custom procedures)
 	* PROCEDURE / JAVA_PROCEDURE - A Composite java data source procedure.  Created from a java data source (jar file).
@@ -253,6 +254,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="includeDependencies" minOccurs="0" maxOccurs="1" type="xs:boolean" default="true">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
 					IncludeDependencies specifies whether in a pkg_import or pkg_export command dependencies 
 					of resources specified in the Resources section will be included. 
 				</xs:documentation>
@@ -266,7 +268,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="encrypt" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
-					Encrypts communication between the command line and CIS using SSL sent over the dedicated HTTPS port. 
+					Encrypts communication between the command line and DV using SSL sent over the dedicated HTTPS port. 
 					See Admin guide chapter 11 for complete details.
 				</xs:documentation>
 			  </xs:annotation>
@@ -274,7 +276,10 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="description" maxOccurs="1" minOccurs="0" type="xs:string">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
-					Package description of the archive file. Notation appears when Composite Studio is used to import the CAR.
+				ON PACKAGE EXPORT:
+					Package description of the archive file. Notation appears when DV Studio is used to import the CAR.
+				ON BACKUP EXPORT:
+					Package description of the archive file. Notation appears when DV Studio is used to import the CAR.
 				</xs:documentation>
 			  </xs:annotation>
 			</xs:element>
@@ -383,14 +388,14 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 				<xs:documentation xml:lang="en">
 				ON BACKUP IMPORT:
 					This option does a destructive import clearing all resources prior to importing the backup CAR. 
-					Using the backup_import utility with the -overwrite option ensures that CIS matches the contents 
+					Using the backup_import utility with the -overwrite option ensures that DV matches the contents 
 					of the imported CAR file.
 				ON PACKAGE IMPORT:
-					Use of the -overwrite option ensures that CIS will exactly match the directories present in the CAR file.
+					Use of the -overwrite option ensures that DV will exactly match the directories present in the CAR file.
 					The -overwrite option clears targeted folder directories before copying the CAR file contents to 
 					those cleared directories. 
 					The pkg_import utility clears only those folders that have representative resources in the CAR file from 
-					those directories. CIS directories that do not have representative resources in the CAR file remain 
+					those directories. DV directories that do not have representative resources in the CAR file remain 
 					untouched even if the -overwrite option is specified.
 				</xs:documentation>
 			  </xs:annotation>
@@ -398,13 +403,16 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="pkgName" maxOccurs="1" minOccurs="0" type="xs:string" default="Composite Server Archive File via PD Tool">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
-					Names an attribute in the contents.xml within the exported backup file.
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+					Let you include a name within the contents.xml to assist in later identification.
 				</xs:documentation>
 			  </xs:annotation>
 			</xs:element>
 			<xs:element name="printinfo" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
 					The -printinfo option causes the archive file to be examined and for information about it to be printed to 
 					the display. 
 					The archive file is NOT imported when this option is given
@@ -414,6 +422,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="printroots" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
 					Prints the new paths to the imported resources. 
 					The archive file is NOT imported when this option is given.
 				</xs:documentation>
@@ -422,6 +431,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="printusers" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
 					Prints the user names of the owners of the imported resources and their associated user groups. 
 					The archive file is NOT imported when this option is given.
 				</xs:documentation>
@@ -430,6 +440,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="printcontents" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
 					This option disables actual import, and prints properties of the CAR file to the command window.
 					The archive file is NOT imported when this option is  is given.
 				</xs:documentation>
@@ -438,6 +449,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="printreferences" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
 			  <xs:annotation>
 				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
 					Prints a list of resources referred to by the imported resources. 
 					The archive file is NOT imported when this option is given.
 				</xs:documentation>
@@ -451,9 +463,243 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			  </xs:annotation>
 			</xs:element>
 
-			<xs:element name="users" minOccurs="0" maxOccurs="1" type="ns:ArchiveExportSecurityType"/>         
-
+			<xs:element name="users" minOccurs="0" maxOccurs="1" type="ns:ArchiveExportSecurityType"/>
 		<!-- DA@20120610-End -->
+
+		<!-- mtinius@20181218-Start - added missing options -->
+			<xs:element name="verbose" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. Causes verbose reporting of information.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="quiet" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON PACKAGE IMPORT:
+					Optional. Do not report any errors during the import or export operation.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="excludeJars" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON BACKUP EXPORT:
+					Optional. Suppresses export of custom Java procedure data source JAR files.
+				ON PACKAGE IMPORT:
+					Optional. Does not import custom Java procedure data source JAR files within the CAR file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="nosourceinfo" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Optional. Data source connection details (such as user name, password, host name, and port) are included by default. 
+					Specify -nosourceinfo to exclude these. If passwords are included, they are encrypted.
+				ON PACKAGE IMPORT:
+					Optional. (An overwrite safeguard.) Suppresses import of the following pre-existing connection attributes 
+					when an otherwise identical resource is already present in the target: driver, connectionURL, port, 
+					database name, login, password, and pass-through login.  Supports re-import without need for explicit set 
+					options and without altering original data source attributes.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="mergeusers" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+					Optional. Imports all users present in the CAR file who are not already present in the server target. This option 
+					takes precedence over the includeusers option, and can have different behavior when combined with the overwrite option.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="nocaching" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+					Optional. Caching configuration is imported by default. This option must be used if you want to ignore cache configurations.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="nocachepolicy" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+					Optional. Caching configuration is imported by default. This option must be used if you want to ignore cache policy information.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="noscheduling" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+					Optional. Scheduling configuration is imported by default. Use this option to ignore scheduling configurations. 
+					If you are logged in as a member of the admin group, all scheduling is imported. If not, only the schedules you own are imported.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="createcachetables" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. If used, the cache status, tracking and target tables required by cached resources are created, 
+					if not already present in the database for your data source as it is described in the metadata of the CAR 
+					file you are importing.  The import process does not create the TDV resources for cache_status, cache_tracking, 
+					and target tables if they are not described in the CAR file metadata.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="updateCacheTables" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. Yes or no. Use this optional value to indicate whether you want to have the cache tables 
+					dropped and recreated with any potential changes that are included in the CAR file.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="reintrospect" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON BACKUP IMPORT:
+					Optional. Used to control whether the data sources are reintrospected after they are imported.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="reintrospectNone" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON BACKUP IMPORT:
+					Optional. Used to control whether the data sources are reintrospected after they are imported.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+
+			<xs:element name="rebindableResources" maxOccurs="1" minOccurs="0" type="ns:ArchiveRebindablePathType">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Marks a resource dependency for rebinding on import. When a rebindable resource is imported a 
+					reminder and the [Description] are displayed on the command line. The -rebind option must be 
+					specified on import for that action to take place on import. That message is also displayed in 
+					Studio to prompt designation of a new resource (path) as the resource dependency.  Rebinding must 
+					be done after the import unless this option specifies the new resource for rebinding during import.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			
+			<xs:element name="sso" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. Enables SSO authentication. Must be used with the -spn option. 
+					You do not need to input a user name or password.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="sspi" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. For Windows environments configured with SSPI, you can use this parameter after -sso and -spn.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="spn" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. Use this parameter after specifying -sso, to indicate what the service principal name is. 
+					Use one of the following formats depending on the protocol you are using:
+						sspi is <!--<ServiceName/Full_ComputerName@Realm>-->
+						JGSS is <!--<ServiceName@Full_ComputerName>-->
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="krb5Conf" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. For environments configured with multiple Kerberos authentication files, you can use this 
+					parameter after -sso and -spn to specify which authentication file to use.
+					<!--<krb5Conf>--> must specify the full path and filename to use.
+					If this parameter is not specified, the default Kerberos system file is used.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+
+			<xs:element name="optfile" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. Specifies an options file to pass options without using the command line. 
+					The options file is useful for hiding password information. For example:
+					backup_export
+					-server localhost
+					-user test
+					-password password
+					-pkgfile sample.car
+					is the same as:
+					backup_export
+					-optfile sample.opt
+					where sample.opt contains:
+					-server localhost -user test
+					-password password
+					-pkgfile sample.car
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			
+			<xs:element name="encryptionPassword" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional.  For 8.0 and above only.  Provides the ability to set the encryption password for import and export.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="genopt" maxOccurs="1" minOccurs="0" type="xs:string">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+				ON BACKUP EXPORT:
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. For 8.0 and above only.  It is used for making an option file to store the number of arguments 
+					into a text file. In this way the password parameters are protected from exposing them in process list 
+					or command history (it is obfuscated). Alternatively the option file could be used by using -optfile option.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+
+		<!-- mtinius@20181218-End -->
 			
 		</xs:all>
 	</xs:complexType>
@@ -495,7 +741,9 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 						<xs:element name="domain" type="xs:string"/>
 						<xs:element name="group" minOccurs="0" type="xs:string"/>
 						<xs:element name="user" minOccurs="0" type="xs:string"/>
-					</xs:sequence></xs:complexType></xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="import" maxOccurs="1">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -596,7 +844,29 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="newPath" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
-     
+
+	<xs:complexType name="ArchiveRebindablePathType">
+	  	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Marks a resource dependency for rebinding on import. When a rebindable resource is imported 
+				a reminder and the [Description] are displayed on the command line. The -rebind option must 
+				be specified on import for that action to take place on import. That message is also displayed 
+				in Studio to prompt designation of a new resource (path) as the resource dependency.  Rebinding 
+				must be done after the import unless this option specifies the new resource for rebinding during import.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="rebindablePaths" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="path" type="xs:string"/>
+						<xs:element name="descripiton" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
     <!--   
 	<xs:simpleType name="ArchiveTypeSimpleType">
 		<xs:annotation>
@@ -625,19 +895,6 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 		</xs:restriction>
 	</xs:simpleType>
 
-  <!-- 
-  <xs:simpleType name="YesNoSimpleType">
-	  	<xs:annotation>
-			<xs:documentation xml:lang="en">
-				The acceptable values are YES and NO
-			</xs:documentation>  
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="YES"/>
-			<xs:enumeration value="NO"/>
-		</xs:restriction>
-  </xs:simpleType>
- -->
 <!-- END: ArchiveModule Property Definition-->
 
 
@@ -950,7 +1207,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
 			Introspect Data Source Type: Provides a way to introspect a data source. 
-			Introspection is the process of analyzing resources in a data source and creating resources withing the CIS that represent them.
+			Introspection is the process of analyzing resources in a data source and creating resources withing the DV that represent them.
 		</xs:documentation>
 	</xs:annotation>
 		<xs:sequence>
@@ -1302,7 +1559,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 	<xs:simpleType name="GroupPrivilegeList">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
-				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE]
+				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE DM]
 			</xs:documentation>  
 		</xs:annotation>
 	  <xs:list itemType="ns:AccessRightsValidationList"/>
@@ -1390,7 +1647,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 						resourceOwnerApply=[true|false] informs whether to apply resource ownership or not.
 						This provides the ability to have a single instantiation of resource ownership but
 						decide whether to apply it or not based on the use of variables.  This way the user
-						can decide to apply resource ownership in some CIS environments and not others. For
+						can decide to apply resource ownership in some DV environments and not others. For
 						example, you might want to apply privileges in DEV but you don't want to wipe out
 						the existing resource ownership.
 					</xs:documentation>
@@ -1399,14 +1656,14 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 			<xs:element name="resourceOwnerName" type="xs:string" minOccurs="1">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						resourceOwnerName is the name of the CIS user who will take ownership of the resource.
+						resourceOwnerName is the name of the DV user who will take ownership of the resource.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="resourceOwnerDomain" type="xs:string" minOccurs="1">
 					<xs:annotation>
 					<xs:documentation xml:lang="en">
-						resourceOwnerDomain is the CIS domain of the resource owner name who will take ownership of the resource.
+						resourceOwnerDomain is the DV domain of the resource owner name who will take ownership of the resource.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -1583,7 +1840,7 @@ group replace the previous value for that user or group.
 				Rebind Folder Type: The Rebind Folder Type provides an easy to configure interface where the user wants to rebind all 
 				procedures or views within the starting folder.  Only views and procedures are supported.  The rebindFromFolder is what
 				the resource is currently pointing to.  The rebindToFolder is where you want to rebind the resource to.  Only the target
-				resource need be present in the CIS for this operation to be successful.
+				resource need be present in the DV for this operation to be successful.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -1687,7 +1944,7 @@ group replace the previous value for that user or group.
 			<xs:element name="datasource" minOccurs="1" maxOccurs="1" type="xs:string">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
-					The datasource identifies which CIS published data source the query belongs to.
+					The datasource identifies which DV published data source the query belongs to.
 				</xs:documentation>
 			</xs:annotation>
 		   </xs:element>
@@ -1722,7 +1979,7 @@ group replace the previous value for that user or group.
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
 						The web service path is really the endpoint URL or the port path.  
-						For Composite Legacy Web Services open the port container in CIS Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
+						For Composite Legacy Web Services open the port container in DV Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
 						The wsPath=/services/testWebService00/testService/testPort.ws
 						For Composite New Web Service (6.1 or higher) open the web service in Studio and click on the SOAP tab and Service panel and look at Endpoint and WSDL URLS: /testWebService
 						For Soap11 wsPath=/soap11/testWebService
@@ -1816,7 +2073,7 @@ group replace the previous value for that user or group.
 
 			<xs:element name="createSoapType">
 				<xs:annotation>
-					<xs:documentation xml:lang="en">[all|soap11|soap12] The soap type specifies whether to generate web services using soap11 (default), soap12 or all.  soap12 is only applicable for CIS 6.1 and higher and only if a CIS New Composite Web Service has been created.</xs:documentation>
+					<xs:documentation xml:lang="en">[all|soap11|soap12] The soap type specifies whether to generate web services using soap11 (default), soap12 or all.  soap12 is only applicable for DV 6.1 and higher and only if a DV New Composite Web Service has been created.</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -2635,7 +2892,7 @@ group replace the previous value for that user or group.
 	<xs:complexType name="RegressionDatasourcesType">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
-				CIS Published Datasource Names
+				DV Published Datasource Names
 			</xs:documentation>  
 		</xs:annotation>
 		<xs:sequence>
@@ -2827,7 +3084,7 @@ group replace the previous value for that user or group.
 	<xs:complexType name="RegressionSecurityUserType">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
-				Regression Security User Type: a user profile used to connect to CIS to test security privileges.
+				Regression Security User Type: a user profile used to connect to DV to test security privileges.
 			</xs:documentation>  
 		</xs:annotation>
 		<xs:sequence>
@@ -2860,7 +3117,7 @@ group replace the previous value for that user or group.
 			<xs:element name="datasource" minOccurs="1" maxOccurs="1" type="xs:string">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
-					The datasource identifies which CIS published data source the query belongs to.
+					The datasource identifies which DV published data source the query belongs to.
 				</xs:documentation>
 			</xs:annotation>
 		   </xs:element>
@@ -2905,7 +3162,7 @@ group replace the previous value for that user or group.
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
 						The web service path is really the endpoint URL or the port path.  
-						For Composite Legacy Web Services open the port container in CIS Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
+						For Composite Legacy Web Services open the port container in DV Studio, click on the info tab and look at Endpoint URL: http://localhost:9400/services/testWebService00/testService/testPort.ws.
 						The wsPath=/services/testWebService00/testService/testPort.ws
 						For Composite New Web Service (6.1 or higher) open the web service in Studio and click on the SOAP tab and Service panel and look at Endpoint and WSDL URLS: /testWebService
 						For Soap11 wsPath=/soap11/testWebService
@@ -2952,14 +3209,14 @@ group replace the previous value for that user or group.
 			<xs:element name="resourcePath" minOccurs="0" maxOccurs="1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						The CIS resource path.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
+						The DV resource path.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="resourceType" minOccurs="0" maxOccurs="1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						The CIS resource type.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
+						The DV resource type.  It is not required for this to be set for executing queries.  It is a transient setting used when populating security plans.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -3048,8 +3305,8 @@ group replace the previous value for that user or group.
   <xs:element name="ResourceModule">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
-			Resource Module: This module contains is used to manage Composite Resources.   A CIS resource is considered
-			to be anything in CIS except users, groups, and domains.   Managing a resource involves actions such as
+			Resource Module: This module contains is used to manage Composite Resources.   A DV resource is considered
+			to be anything in DV except users, groups, and domains.   Managing a resource involves actions such as
 			checking for existence, renaming, deleting, and more.
 		</xs:documentation>
 	</xs:annotation>
@@ -3088,7 +3345,7 @@ group replace the previous value for that user or group.
 			<xs:element name="resourcePath" minOccurs="0" maxOccurs="unbounded" type="xs:string">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
-					The CIS resource path.  Generally only a single resource path is used.  However, methods such as doResourceExists and createFolder allow a list of resource paths to be specified.
+					The DV resource path.  Generally only a single resource path is used.  However, methods such as doResourceExists and createFolder allow a list of resource paths to be specified.
 				</xs:documentation>
 			</xs:annotation>
 		   </xs:element>
@@ -3322,7 +3579,7 @@ group replace the previous value for that user or group.
 			<xs:element name="useDefaultCacheStorage" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						(optional): boolean.  If "true", CIS will use the default cache datasource to store the cache 
+						(optional): boolean.  If "true", DV will use the default cache datasource to store the cache 
 						tables. Only numBuckets and dropCreateIdx values are considered when this value is set to "true" 
 						rest are ignored.
 					</xs:documentation>
@@ -3366,7 +3623,7 @@ group replace the previous value for that user or group.
 			<xs:element name="dropCreateIdx" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-						dropCreateIdx (optional): boolean.  If "true", CIS will automatically drop indexes before loading
+						dropCreateIdx (optional): boolean.  If "true", DV will automatically drop indexes before loading
 						cache data, and create them after loading.
 					</xs:documentation>
 				</xs:annotation>
@@ -4182,7 +4439,7 @@ group replace the previous value for that user or group.
 	<xs:simpleType name="TriggerModeValidationList">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">
-				NONE = Exactly Once in CIS.  PERIODIC = Periodic in CIS [encompasses INTERVAL and CALENDAR]
+				NONE = Exactly Once in DV.  PERIODIC = Periodic in DV [encompasses INTERVAL and CALENDAR]
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -4304,7 +4561,7 @@ group replace the previous value for that user or group.
 	<xs:simpleType name="UserPrivilegeList">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
-				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE]
+				A space separated list of Privilege Access Rights that may include 1 or more of [ACCESS_TOOLS MODIFY_ALL_CONFIG MODIFY_ALL_RESOURCES MODIFY_ALL_STATUS MODIFY_ALL_USERS READ_ALL_CONFIG READ_ALL_RESOURCES READ_ALL_STATUS READ_ALL_USERS UNLOCK_RESOURCE DM]
 			</xs:documentation>  
 		</xs:annotation>
 	  <xs:list itemType="ns:AccessRightsValidationList"/>
@@ -4541,7 +4798,7 @@ VCS_PROJECT_ROOT=cis_objects
 			<xs:element name="VCS_WORKSPACE_HOME" minOccurs="1" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-VCS_WORKSPACE_HOME - This is the CIS VCS Workspace Home.  
+VCS_WORKSPACE_HOME - This is the DV VCS Workspace Home.  
      It is recommended to set the location to PDTool home [e.g. $PROJECT_HOME].
      The user does have the flexibility to place the VCS workspace in a location other than PDTool home. [e.g. $APPDATA] 
 VCS_WORKSPACE_HOME=$PROJECT_HOME
@@ -4673,21 +4930,21 @@ P4PASSWD=$VCS_PASSWORD
 	<xs:complexType name="VCSResourceType">
 	  	<xs:annotation>
 			<xs:documentation xml:lang="en">
-				VCS Resource Type: Each row represents a resource to act upon within CIS. Either check-in or check-out.
+				VCS Resource Type: Each row represents a resource to act upon within DV. Either check-in or check-out.
 			</xs:documentation>  
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="id" type="xs:string">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
-					id is a unique name identifier within the list of versioned CIS resources.
+					id is a unique name identifier within the list of versioned DV resources.
 				</xs:documentation>
 			</xs:annotation>
 		   	</xs:element>
 			<xs:element name="resourcePath" minOccurs="0" type="xs:string">
 				<xs:annotation>
 					<xs:documentation xml:lang="en">
-							resourcePath – the resource path within CIS.  This is mutually exclusive with the vcslabel element.  
+							resourcePath – the resource path within DV.  This is mutually exclusive with the vcslabel element.  
 							If resourcePath is present and not empty it will take precedence over the vcslabel.  
 					</xs:documentation>
 				</xs:annotation>
@@ -4697,8 +4954,8 @@ P4PASSWD=$VCS_PASSWORD
 					<xs:documentation xml:lang="en">
 							resourceType – the type of VCS resources pointed to by resourcePath include FOLDER, definitions, link, procedure, table, tree, and trigger.   Also valid in lieu of FOLDER is container.  For ease of use, users may use the “Display Resource Type” found on the info tab of each Studio resource.  For example, the display resource type for a Composite published web service is “Composite Web Service”.  This actually gets translated to the VCS type of “FOLDER”.  Finally, let’s say that the user of PD Tool discovers that an exception is being thrown regarding an unknown resource type when using a resource type on the Studio Info tab.   The user can “teach” PD Tool what VCS Resource Type the Studio Info tab Resource Type belongs to.   This is accomplished by using the property “VCSModule_ExternalVcsResourceTypeList” in the deploy.properties file.   The rules for usage are as follows:
 	This provides an externalized mechanism to teach PD Tool about new Resource Types and how they are associated with the basic VCS Resource Types.  The basic VCS Resource Types include: FOLDER, definitions, link, procedure, table, tree, and trigger
-	Each Studio Resource contains an info tab with a resource path and a display type.  Use the Resource path in the info tab as input into the following Studio Web Service API to discover the CIS Resource Type.  /services/webservices/system/admin/resource/operations/getResource()
-	The CIS Resource Type is mapped to one of the basic VCS Resource Types provided above.   Finally, provide the name value pair in the form of "VCS Resource Type=Studio Display Resource Type".  Create a comma separate list of these name=value pairs.  For example:
+	Each Studio Resource contains an info tab with a resource path and a display type.  Use the Resource path in the info tab as input into the following Studio Web Service API to discover the DV Resource Type.  /services/webservices/system/admin/resource/operations/getResource()
+	The DV Resource Type is mapped to one of the basic VCS Resource Types provided above.   Finally, provide the name value pair in the form of "VCS Resource Type=Studio Display Resource Type".  Create a comma separate list of these name=value pairs.  For example:
 	VCSModule_ExternalVcsResourceTypeList=folder=Data Source, folder=Composite Database, procedure=Basic Transformation
 					</xs:documentation>
 				</xs:annotation>

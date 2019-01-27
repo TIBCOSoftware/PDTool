@@ -69,6 +69,11 @@ class ExportOptions extends AbstractOptions {
      * Optional.
      */
     String domain = DEFAULT_DOMAIN;
+
+    /**
+     * Optional.
+     */
+    String encryptionPassword;
     
     /**
      * Optional.
@@ -151,6 +156,13 @@ class ExportOptions extends AbstractOptions {
                     usage(true);
                 }
                 this.password = args[i];
+            } else if (args[i].equalsIgnoreCase("-encryptionPassword")) {
+                i++;
+                if (i == args.length) {
+                    missingArgumentError(args[i - 1]);
+                    usage(true);
+                }
+                this.encryptionPassword = args[i];
             } else if (args[i].equalsIgnoreCase("-domain")) {
                 i++;
                 if (i == args.length) {

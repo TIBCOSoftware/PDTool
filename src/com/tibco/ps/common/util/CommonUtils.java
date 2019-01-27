@@ -320,7 +320,14 @@ public class CommonUtils {
 			if(encrypted != null && encrypted.trim().length() > 25 && encrypted.startsWith("Encrypted:")){
 				retval = EncryptionManager.decrypt(encrypted.substring(10));
 			}else{
-				retval = encrypted;
+				// Check for a variable
+				if (encrypted.startsWith("$") || (encrypted.startsWith("Encrypted:") && encrypted.endsWith("$"))) {
+					retval = CommonUtils.extractVariable("decrypt", encrypted, null, false);
+					if (retval == null)
+						retval = encrypted;
+				} else {
+					retval = encrypted;
+				}
 			}
 		} catch (CompositeSecurityException e) {
 			CompositeLogger.logException(e, e.getMessage());
@@ -331,7 +338,7 @@ public class CommonUtils {
 	}
 
 	// Check to see if a property exists in the encrypt property list
-	// Encrypt property list="VCS_PASSWORD encryptedPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD"
+	// Encrypt property list="VCS_PASSWORD encryptedPassword encryptionPassword PASSWORD_STRING SVN_VCS_PASSWORD, P4_VCS_PASSWORD CVS_VCS_PASSWORD TFS_VCS_PASSWORD GIT_VCS_PASSWORD"
 	public static boolean existsEncryptPropertyList(String property) 
 	{
 		boolean exists = false;
@@ -1841,7 +1848,7 @@ public class CommonUtils {
 
 			if(logger.isDebugEnabled()){
 				logger.debug("CommonUtils.getFileOrSystemPropertyValue() : "+" propertyOrderPrecedence="+propertyOrderPrecedence+", propertyFile="+propertyFile+
-						", propertyValueOrigin="+propertyValueOrigin+", property="+property+", propertyVal="+propertyVal);
+						", propertyValueOrigin="+propertyValueOrigin+", "+ maskCommand(property+"="+propertyVal));
 			}
 
 			/* deprecated code
@@ -2043,7 +2050,7 @@ public class CommonUtils {
 	public static String getArgumentListMasked(List<String> argsList) {
 		String maskedArgList = "";
 		String token = null;
-		String maskTokenList = "-password,password,password2";
+		String maskTokenList = "-password,password,password2,-encryptionPassword";
 		boolean maskToken = false;
 		boolean valueMasked = false;
 		

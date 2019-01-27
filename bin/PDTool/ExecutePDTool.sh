@@ -21,22 +21,23 @@
 # Example Execution Statement:
 # Option 1 - Execute a command line property file:
 #
-#            ExecutePDTool.sh -exec property-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties]
+#            ExecutePDTool.sh -exec property-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-ver CIS_VERSION]
 #
 #               arg1=-exec is used to execute a property file
 #	            arg2=orchestration propertiy file path (full or relative path)
-#               arg3-4=[-vcsuser username] optional parameters
-#               arg5-6=[-vcspassword password] optional parameters
-#				arg7-8=[-config deploy.properties] optional parameters"
+#               arg3-4=[-vcsuser username] optional parameter
+#               arg5-6=[-vcspassword password] optional parameter
+#				arg7-8=[-config deploy.properties] optional parameter
+#               arg9-10=[-ver CIS_VERSION] optional parameter  e.g. 7.0.0, 8.0.0
 #
 # Option 2 - Execute VCS Workspace initialization:
 #
 #            ExecutePDTool.sh -vcsinit [-vcsuser username] [-vcspassword password] [-config deploy.properties]
 #
 #	            arg1=-vcsinit is used to initialize the vcs workspace and link it to the repository
-#               arg3-4=[-vcsuser username] optional parameters
-#               arg5-6=[-vcspassword password] optional parameters
-#				arg7-8=[-config deploy.properties] optional parameters"
+#               arg3-4=[-vcsuser username] optional parameter
+#               arg5-6=[-vcspassword password] optional parameter
+#				arg7-8=[-config deploy.properties] optional parameter
 #
 # Option 3 - Execute property file encryption:
 #
@@ -44,19 +45,20 @@
 #
 #	            arg1=-encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file
 #	            arg2=file path to deploy.properties or XML property file (full or relative path)
-#				arg3-4=[-config deploy.properties] optional parameters"
+#				arg3-4=[-config deploy.properties] optional parameter
 #				arg4-5=[-bypass "string1,string2"] optional parameter specifying a quoted, comma-separated list of strings to bypass
 #                                                  that are found within a variable or XML element designated for passwords.
 #
 # Option 4 - Execute an Ant build file:
 #
-#            ExecutePDTool.sh -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties]
+#            ExecutePDTool.sh -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-ver CIS_VERSION]
 #
 #               arg1=-ant is used to execute an Ant build file
 #	            arg2=orchestration build file path (full or relative path)
-#               arg3-4=[-vcsuser username] optional parameters
-#               arg5-6=[-vcspassword password] optional parameters
-#				arg7-8=[-config deploy.properties] optional parameters"
+#               arg3-4=[-vcsuser username] optional parameter
+#               arg5-6=[-vcspassword password] optional parameter
+#				arg7-8=[-config deploy.properties] optional parameter
+#               arg9-10=[-ver CIS_VERSION] optional parameter  e.g. 7.0.0, 8.0.0
 #
 ## Editor: Set tab=4 in your text editor for this file to format properly
 #=======================================================================================
@@ -101,15 +103,16 @@ usage() {
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 1 - Execute a command line deploy plan file:"
 	writeOutput  " "
-	writeOutput  "            ${SCRIPT}${ext} -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties]"
+	writeOutput  "            ${SCRIPT}${ext} -exec deploy-plan-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-ver CIS_VERSION]"
 	writeOutput  " "
 	writeOutput  "            Example: ${SCRIPT}${ext} -exec ../resources/properties/myplan.dp -vcsuser user -vcspassword password -config deploy.properties"
 	writeOutput  " "
 	writeOutput  "               arg1::   -exec is used to execute a deploy plan file"
 	writeOutput  "               arg2::   orchestration propertiy file path [full or relative path]"
-	writeOutput  "               arg3-4:: [-vcsuser username] optional parameters"
-	writeOutput  "               arg5-6:: [-vcspassword password] optional parameters"
-	writeOutput  "               arg7-8:: [-config deploy.properties] optional parameters"
+	writeOutput  "               arg3-4:: [-vcsuser username] optional parameter"
+	writeOutput  "               arg5-6:: [-vcspassword password] optional parameter"
+	writeOutput  "               arg7-8:: [-config deploy.properties] optional parameter"
+	writeOutput  "               arg9-10::[-ver CIS_VERSION] optional parameter e.g. 7.0.0, 8.0.0"
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 2 - Execute VCS Workspace initialization:"
 	writeOutput  " "
@@ -118,9 +121,9 @@ usage() {
 	writeOutput  "            Example: ${SCRIPT}${ext} -vcsinit -vcsuser user -vcspassword password -config deploy.properties"
  	writeOutput  " "
 	writeOutput  "               arg1::   -vcsinit is used to initialize the vcs workspace and link it to the repository"
-	writeOutput  "               arg2::   [-vcsuser username] optional parameters"
-	writeOutput  "               arg3-4:: [-vcspassword password] optional parameters"
-	writeOutput  "               arg5-6:: [-config deploy.properties] optional parameters"
+	writeOutput  "               arg2::   [-vcsuser username] optional parameter"
+	writeOutput  "               arg3-4:: [-vcspassword password] optional parameter"
+	writeOutput  "               arg5-6:: [-config deploy.properties] optional parameter"
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 3 - Execute Encrypt Property File:"
 	writeOutput  " "
@@ -130,21 +133,22 @@ usage() {
  	writeOutput  " "
 	writeOutput  "               arg1::   -encrypt is used to encrypt the passwords in deploy.properties or a Module XML property file"
 	writeOutput  "               arg2::   file path to deploy.properties or XML property file [full or relative path]"
-	writeOutput  "               arg3-4:: [-config deploy.properties] optional parameters"
+	writeOutput  "               arg3-4:: [-config deploy.properties] optional parameter"
 	writeOutput "                arg4-5:: [-bypass \"string1,string2\"] optional parameter specifying a quoted, comma-separated list of strings to bypass"
 	writeOutput "                                                     that are found within a variable or XML element designated for passwords."
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput  " Option 4 - Execute an Ant build file:"
 	writeOutput  " "
-	writeOutput  "            ${SCRIPT}${ext} -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties]"
+	writeOutput  "            ${SCRIPT}${ext} -ant build-file-path [-vcsuser username] [-vcspassword password] [-config deploy.properties] [-ver CIS_VERSION]"
 	writeOutput  " "
 	writeOutput  "            Example: ${SCRIPT}${ext} -ant ../resources/ant/build.xml -vcsuser user -vcspassword password -config deploy.properties"
 	writeOutput  " "
 	writeOutput  "               arg1::   -ant is used to execute an Ant build file"
 	writeOutput  "               arg2::   orchestration build file path (full or relative path)"
-	writeOutput  "               arg3-4:: [-vcsuser username] optional parameters"
-	writeOutput  "               arg5-6:: [-vcspassword password] optional parameters"
-	writeOutput  "               arg7-8:: [-config deploy.properties] optional parameters"
+	writeOutput  "               arg3-4:: [-vcsuser username] optional parameter"
+	writeOutput  "               arg5-6:: [-vcspassword password] optional parameter"
+	writeOutput  "               arg7-8:: [-config deploy.properties] optional parameter"
+	writeOutput  "               arg9-10::[-ver CIS_VERSION] optional parameter e.g. 7.0.0, 8.0.0"
 	writeOutput  " -----------------------------------------------------------------------------------------------------"
 	writeOutput " "
 	exit 1
@@ -328,6 +332,15 @@ do
 		ARG="CONFIG_PROPERTY_FILE"
 		#echo "CONFIG_PROPERTY_FILE=$CONFIG_PROPERTY_FILE"
 		if [ "$CONFIG_PROPERTY_FILE" == "" ]; then
+			error="1"
+		fi
+		shift
+		;;
+    -ver)
+		export CIS_VERSION="$2"
+		ARG="CIS_VERSION"
+		#echo "CIS_VERSION=$CIS_VERSION"
+		if [ "$CIS_VERSION" == "" ]; then
 			error="1"
 		fi
 		shift

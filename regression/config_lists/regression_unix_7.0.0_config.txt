@@ -24,34 +24,34 @@
 # Execute PDTool regression for UNIX and CIS 7.0.0 environment
 #
 # Regression Module Only
-#regression_unix_7.0.0          regression_plan_regession_list.txt
+#regression_unix_7.0.0_novcs_http    regression_plan_regession_list.txt
 
 # TEST - execute this line for a quick test of the regression infrastructure and then comment it out.
-#regression_unix_7.0.0          regression_plan_test_list.txt            # TEST the base module connection
+#regression_unix_7.0.0_novcs_http    regression_plan_test_list.txt            # TEST the base module connection
 
 # PDTool - All modules except VCS using HTTP
-regression_unix_7.0.0          regression_plan_base_list.txt            # Full regression of base modules
+regression_unix_7.0.0_novcs_http     regression_plan_base_list.txt            # Full regression of base modules
 
 # PDTool - All modules except VCS using HTTPS
-regression_unix_7.0.0__https   regression_plan_base_list.txt            # Full regression of base modules
+regression_unix_7.0.0_novcs_https    regression_plan_base_list.txt            # Full regression of base modules
 
 # PDTool - VCS Module for Git
-regression_unix_7.0.0_git      regression_plan_vcs_base_list.txt        # Full regression of VCS Git
+regression_unix_7.0.0_git            regression_plan_vcs_base_list.txt        # Full regression of VCS Git
 # TEST - execute this line for a quick test of GIT and then comment it out.
-#regression_unix_7.0.0_git      regression_plan_vcs_test_list.txt        # test Subversion connection
+#regression_unix_7.0.0_git           regression_plan_vcs_test_list.txt        # test Subversion connection
 
 # PDTool - VCS Module for Subversion
-regression_unix_7.0.0_svn      regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
+regression_unix_7.0.0_svn            regression_plan_vcs_base_list.txt        # Full regression of VCS Subversion
 # TEST - execute this line for a quick test of SVN and then comment it out.
-#regression_unix_7.0.0_svn      regression_plan_vcs_test_list.txt        # test Subversion connection
+#regression_unix_7.0.0_svn           regression_plan_vcs_test_list.txt        # test Subversion connection
 
 # PDTool - VCS Module for Perforce
-regression_unix_7.0.0_p4       regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
-#regression_unix_7.0.0_p4       regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)
+regression_unix_7.0.0_p4             regression_plan_vcs_base_list.txt        # Full regression of VCS Perforce
+#regression_unix_7.0.0_p4            regression_plan_vcs_perforce_list.txt    # Full regression of VCS Perforce labels (backup CIS before proceeding)
 # TEST - execute this line for a quick test of P4 and then comment it out.
-#regression_unix_7.0.0_p4       regression_plan_vcs_test_list.txt        # test Perforce connection
+#regression_unix_7.0.0_p4            regression_plan_vcs_test_list.txt        # test Perforce connection
 
 # PDTool - VCS Module for CVS
-regression_unix_7.0.0_cvs      regression_plan_vcs_base_list.txt        # Full regression of VCS CVS
+regression_unix_7.0.0_cvs           regression_plan_vcs_base_list.txt         # Full regression of VCS CVS
 # TEST - execute this line for a quick test of CVS and then comment it out.
-#regression_unix_7.0.0_cvs      regression_plan_vcs_test_list.txt        # test CVS connection
+#regression_unix_7.0.0_cvs          regression_plan_vcs_test_list.txt         # test CVS connection

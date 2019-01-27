@@ -1,0 +1,77 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<adapters>
+  <driver>
+    <driverNode name="Custom Java Procedure">
+      <type>CustomProc</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+    <driverNode name="File-XML">
+      <type>XmlFile</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+    <driverNode name="PostgreSQL 9.1">
+      <type>PostgreSQL</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>org.postgresql.Driver</driverClass>
+      <urlPattern>jdbc:postgresql://&lt;HOST&gt;:&lt;PORT&gt;/&lt;DATABASE_NAME&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="Oracle 12c (Thin Driver)">
+      <type>Oracle</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>oracle.jdbc.OracleDriver</driverClass>
+      <urlPattern>jdbc:oracle:thin:@&lt;HOST&gt;:&lt;PORT&gt;:&lt;DATABASE_NAME&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="Microsoft SQL Server 2014">
+      <type>SqlServer</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>com.microsoft.sqlserver.jdbc.SQLServerDriver</driverClass>
+      <urlPattern>jdbc:sqlserver://&lt;HOST&gt;:&lt;PORT&gt;;databaseName=&lt;DATABASE_NAME&gt;;selectMethod=&lt;SELECT_MODE&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="Microsoft SQL Server 2012">
+      <type>SqlServer</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>com.microsoft.sqlserver.jdbc.SQLServerDriver</driverClass>
+      <urlPattern>jdbc:sqlserver://&lt;HOST&gt;:&lt;PORT&gt;;databaseName=&lt;DATABASE_NAME&gt;;selectMethod=&lt;SELECT_MODE&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="LDAP">
+      <type>Ldap</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+    <driverNode name="Oracle 11g (Thin Driver)">
+      <type>Oracle</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>oracle.jdbc.OracleDriver</driverClass>
+      <urlPattern>jdbc:oracle:thin:@&lt;HOST&gt;:&lt;PORT&gt;:&lt;DATABASE_NAME&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="WSDL">
+      <type>Wsdl</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+    <driverNode name="Composite">
+      <type>Composite</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+      <driverClass>cs.jdbc.driver.CompositeDriver</driverClass>
+      <urlPattern>jdbc:compositesw:dbapi@&lt;HOST&gt;:&lt;PORT&gt;?domain=&lt;DOMAIN&gt;&amp;dataSource=&lt;DATABASE_NAME&gt;</urlPattern>
+    </driverNode>
+    <driverNode name="COMPOSITE_DATABASE">
+      <type>VirtualRelational</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+    <driverNode name="COMPOSITE_WEB_SERVICE">
+      <type>CompositeWebService</type>
+      <owner>system</owner>
+      <ownerDomain>composite</ownerDomain>
+    </driverNode>
+  </driver>
+</adapters>

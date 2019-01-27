@@ -1,0 +1,123 @@
+7.0 and 8.0 TDV command line utilities:
+-------------------------------------------
+./backup_export
+-pkgfile <file_name>
+-server <host_name> 
+[-port <port_number>] 
+-user <user_name> 
+-password <password> 
+[-domain <domain>]
+[-encrypt]
+[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+[-pkgname <name>] 
+[-description <text>]
+[-optfile <file_name>] 
+[-excludeJars]
+[-includeStatistics] 
+[-verbose]
+=================
+8.0
+=================
+-encryptionPassword <encryptionPassword>
+[-genopt <filename>]
+
+./pkg_export 
+-pkgfile <file_name>
+-server <host_name> 
+[-port <port_number>] 
+-user <user_name> 
+-password <password> 
+[-domain <domain>]
+[-encrypt]
+[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+[-pkgname <name>] 
+[-description <text>]
+[-optfile <file_name>] 
+[-rebindable <path> <description>] 
+[-includeaccess] 
+[-includecaching]
+[-nosourceinfo] 
+[-includejars]
+[-includeAllUsers] 
+[-includeUser <domain> <user>]
+[-includeGroup <domain> <group>]
+[-includeDomain <domain>]
+[-includeRequiredUsers] 
+[-includeDependencies]
+[-includeStatistics]
+[-verbose] 
+[-quiet]
+<namespacePath>
+=================
+8.0
+=================
+-encryptionPassword <encryptionPassword>
+[-genopt <filename>]
+
+./backup_import
+-pkgfile <target/file_name>
+-server <host_name> 
+[-port <port_number>] 
+-user <user_name> 
+-password <password> 
+[-domain <domain>]
+[-encrypt]
+[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+[-relocate <old_path> <new_path> ...]
+[-optfile <file_name>]
+[-set <path> <type> <attribute> <value>]
+[-printinfo] 
+[-overwrite] 
+[-verbose] 
+[-createcachetables]
+[-updatecachetables]
+=================
+7.0 undocumented
+=================
+[-reintrospect OR -reintrospectNone]
+=================
+8.0
+=================
+-encryptionPassword <encryptionPassword>
+[-genopt <filename>]
+
+./pkg_import 
+-pkgfile <D:/directory/Path/and/File_Name.car>...
+-server <host_name> 
+[-port <port_number>] 
+-user <user_name> 
+-password <password> 
+[-domain <domain>]
+[-encrypt]
+[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+[-optfile <path_and_filename> ]
+[-relocate <old_path> <new_path>]
+[-rebind <old_path> <new_path>]
+[-set <path> <data_type> <attribute> <value>]
+[-includeusers]
+[-mergeusers]   
+[-includeaccess] 
+[-nocaching] 
+[-nocachepolicy]
+[-noscheduling]
+[-createcachetables]
+[-updateCacheTables]
+[-excludejars] 
+[-nosourceinfo]
+[-overwrite] 
+[-overrideLocks] 
+[-messagesonly]
+[-verbose] 
+[-quiet]
+[-printinfo] 
+[-printroots] 
+[-printusers
+[-printcontents] 
+[-printreferences]
+=================
+8.0
+=================
+-encryptionPassword <encryptionPassword>
+[-genopt <filename>]
+
+

@@ -22,7 +22,7 @@
 #
 # author:      Mike Tinius
 # date:        February 15, 2013
-# description: The scripts in the directory are for executing regression tests against PDTool61 and PDTool62
+# description: The scripts in the directory are for executing regression tests against PDTool
 #              and all of the various environment combinations including windows and unix and the various 
 #              VCS software.  The regression script folder (/regression) may be placed anywhere on your
 #              computer as long as the regressioin_confi_driver.bat|.sh is executed from within the 
@@ -45,8 +45,6 @@ CONFIG_FILE_LIST=$1
 PDTOOL_HOME=$2
 DEBUG=$3
 export INP_VERSION=$4
-
-./setVars.sh
 
 #########################
 # FUNCTION: debug()
@@ -81,7 +79,7 @@ usage() {
   echo "   Missing parameter: $param"
   echo "$msg"
   echo ""
-  echo "   e.g. ./regression_config_driver.sh regression_win_6.2_config.txt \"/u01/qa/home/PDTool6.2\" Y 6.2"
+  echo "   e.g. ./regression_config_driver.sh regression_win_8.2_config.txt \"/u01/qa/home/PDTool6.2\" Y 6.2"
   echo "TRUE" > status_exit_${INP_VERSION}.txt
   exit 2
 }

@@ -287,9 +287,9 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 								if (planString.length() != 0)
 									planString = "], " + planString;
 								planString = planString + "PLAN:[";
-								planString = planString + "action=" + entry.getAction();
-								planString = planString + "path=" + entry.getResourceId().getPath();
-								planString = planString + "type=" + entry.getResourceId().getType();
+								planString = planString + "  action=" + entry.getAction();
+								planString = planString + "  path=" + entry.getResourceId().getPath();
+								planString = planString + "  type=" + entry.getResourceId().getType();
 								String attrList = "";
 								if (entry.getAttributes() != null && entry.getAttributes().getAttribute() != null) {
 									for (Attribute attr:entry.getAttributes().getAttribute()) {
@@ -301,7 +301,7 @@ public class DataSourceWSDAOImpl implements DataSourceDAO {
 											attrList = attrList + attr.getName() + "=" + attr.getValue();	
 									}		
 								}
-								planString = planString + attrList + "]";
+								planString = planString + "  " + attrList + "]";
 							}
 						}
 						logger.debug("DataSourceWSDAOImpl.takeDataSourceAction(\""+actionName+"\").  Invoking port.introspectResourcesTask(\""+dataSourcePath+"\", \""+planString+"\", \""+runInBackgroundTransaction+"\", DS_ATTRIBUTES:[\""+dsAttrString+"]\", taskId, totalResults, completed).   #dataSourceAttributes="+dsAttrSize);

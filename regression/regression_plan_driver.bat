@@ -88,14 +88,35 @@ set _LOG_PATH=%~5
 
 set CURR_DIR=%CD%
 cd %_PDTOOL_HOME%\bin
+
+REM Check the target DV version
+if "%TARGET_DV_VERSION%" == "" goto NO_TARGET_DV_VERSION
+
+REM Variable TARGET_DV_VERSION exists
+call :debug "call ExecutePDTool.bat -exec [PLAN_FILE_PATH] -config [CONFIG_FILE] -ver [TARGET_DV_VERSION]"
+echo "call ExecutePDTool.bat -exec %_PLAN_FILE_PATH% -config %_CONFIG_FILE% -ver %TARGET_DV_VERSION%"
+echo.
+call ExecutePDTool.bat -exec %_PLAN_FILE_PATH% -config %_CONFIG_FILE% -ver %TARGET_DV_VERSION%
+if %errorlevel% NEQ 0 (
+  set ret=FAIL
+) else (
+  set ret=PASS
+)
+GOTO CONTINUE_SCRIPT
+
+REM Variable TARGET_DV_VERSION does not exist
+:NO_TARGET_DV_VERSION
 call :debug "call ExecutePDTool.bat -exec [PLAN_FILE_PATH] -config [CONFIG_FILE]"
 echo "call ExecutePDTool.bat -exec %_PLAN_FILE_PATH% -config %_CONFIG_FILE%"
+echo.
 call ExecutePDTool.bat -exec %_PLAN_FILE_PATH% -config %_CONFIG_FILE%
 if %errorlevel% NEQ 0 (
   set ret=FAIL
 ) else (
   set ret=PASS
 )
+
+:CONTINUE_SCRIPT
 cd %CURR_DIR%
 echo %ret%: %_PLAN_FILE_PATH% >> %_LOG_PATH%
 call :debug "" 0

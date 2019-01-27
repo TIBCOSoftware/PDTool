@@ -47,9 +47,12 @@ import com.tibco.ps.common.util.Sleep;
 import com.tibco.ps.common.util.XMLUtils;
 import com.tibco.ps.common.util.wsapi.CompositeServer;
 import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
+import com.tibco.ps.deploytool.dao.ResourceDAO;
 import com.tibco.ps.deploytool.dao.VCSDAO;
+import com.tibco.ps.deploytool.dao.wsapi.ResourceWSDAOImpl;
 import com.tibco.ps.deploytool.dao.wsapi.VCSWSDAOImpl;
 import com.tibco.ps.deploytool.util.DeployUtil;
+import com.compositesw.common.repository.Path;
 import com.compositesw.common.vcs.primitives.ResourceNameCodec;
 import com.compositesw.services.system.admin.resource.Resource;
 import com.compositesw.services.system.admin.resource.ResourceList;
@@ -76,6 +79,7 @@ import com.tibco.ps.deploytool.modules.VCSResourceType;
 public class VCSManagerImpl implements VCSManager {
 
     private VCSDAO vcsDAO = null;
+	private ResourceDAO resourceDAO = null;
 	private ResourceManager resourceManager = null;
       
 	private static Log logger = LogFactory.getLog(VCSManagerImpl.class);
@@ -4179,14 +4183,16 @@ public class VCSManagerImpl implements VCSManager {
 		String exportCommandOptions = "";
 		if (vcsStruct.getVcsCisExportOptions() != null)
 			exportCommandOptions = vcsStruct.getVcsCisExportOptions();
-				
+		// Additional export options for use within this procedure
+		String optionalExportCommandOptions = "";
+		
 		String prefix = "cis_import_export__export";
 		try {
 			// Get the server info from the servers.xml file
 			CompositeServer serverInfo = WsApiHelperObjects.getServer(serverId, pathToServersXML);
 			serverInfo = validateServerProperties(serverInfo);
 			// Ping the Server to make sure it is alive and the values are correct.
-			WsApiHelperObjects.pingServer(serverInfo, true);
+			//WsApiHelperObjects.pingServer(serverInfo, true);
 
 			// vcs_export must have an empty directory to work properly
 			//rmdir /S /Q %VcsTemp%
@@ -4203,14 +4209,37 @@ public class VCSManagerImpl implements VCSManager {
         	//         CONTAINER_OR_DATA_SOURCE, CONTAINER, DATA_SOURCE, DEFINITION_SET, LINK, PROCEDURE, TABLE, TREE, TRIGGER, RELATIONSHIP, MODEL, POLICY
 			resourceType = getCisResourceTypeFromVcsResourceType(resourceType);
 
+			// Normalize the resource path just for checking whether the path exists or not
+			Path namespacePathPath = new Path(resourcePath);
+			String resourcePathExists = ResourceNameCodec.decode(namespacePathPath).toString();
+			// Determine if the resource exists prior to exporting it from the target server
+			boolean resourceExists = getResourceDAO().resourceExists(serverId, resourcePathExists, resourceType, pathToServersXML);
+			if(logger.isInfoEnabled()){
+				logger.info("Resource exists? ["+resourceExists+"] "+resourcePathExists+" on server "+serverId);
+			}
+
+			// 2018-12-18 mtinius: add encryptionPassword for 8.0 and above
+    		String cisVersion = CommonUtils.getFileOrSystemPropertyValue(null, "CIS_VERSION");
+    		if (cisVersion == null)
+    			throw new CompositeException(prefix+"::The environment variable \"CIS_VERSION\" may not be null.");
+    		cisVersion = cisVersion.replaceAll("\\.", "");
+    		int cisVersionInt = Integer.valueOf(cisVersion);
+    		if (cisVersionInt == 80)
+    			cisVersionInt = 800;
+            // Only set this when 8.0.0 or higher
+            if (cisVersionInt >= 800)
+            	optionalExportCommandOptions = optionalExportCommandOptions + " -encryptionPassword "+serverInfo.getPassword();
+
 			// 2012-10-29 mtinius: add -resourceType
 			//Derived from script:
 			//"%INSTALL_DIR%\bin\vcs_export.bat" -tempDir %VcsTemp% -user %User% -password %Password% -domain %Domain% -server %Host% -port %Port% -useFileSystemNames -resourceType %resourceType% %resourcePath%
-			String arguments = "-tempDir \""+vcsStruct.getVcsTemp()+"\" "+exportCommandOptions + " -user "+serverInfo.getUser()+" -password "+serverInfo.getPassword()+" -domain "+serverInfo.getDomain()+" -server "+serverInfo.getHostname()+" -port "+String.valueOf(serverInfo.getPort())+((serverInfo.isUseHttps()) ? " -encrypt" : "")+" -useFileSystemNames "+" -resourceType \""+resourceType+"\" "+resourcePath;
+			String arguments = "-tempDir \""+vcsStruct.getVcsTemp()+"\" "+exportCommandOptions + " -user "+serverInfo.getUser()+" -password "+serverInfo.getPassword()+" -domain "+serverInfo.getDomain()+" -server "+serverInfo.getHostname()+" -port "+String.valueOf(serverInfo.getPort())+((serverInfo.isUseHttps()) ? " -encrypt" : "")+" -useFileSystemNames "+optionalExportCommandOptions+" -resourceType \""+resourceType+"\" "+resourcePath;
 
 			CommonUtils.writeOutput("Invoke vcsExportCommand with arguments="+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
 
-			getVCSDAO().vcsExportCommand(prefix, arguments, vcsStruct.getVcsIgnoreMessages(), propertyFile);
+			// If the resource exists then export it otherwise skip this invocation because it will cause an exception to be thrown.
+			if (resourceExists)
+				getVCSDAO().vcsExportCommand(prefix, arguments, vcsStruct.getVcsIgnoreMessages(), propertyFile);
 
 		} catch (Exception e) {
 		    CommonUtils.writeOutput("Action ["+prefix+"] Failed.",prefix,"-error",logger,debug1,debug2,debug3);
@@ -6469,7 +6498,7 @@ public class VCSManagerImpl implements VCSManager {
 					    // svn add ${VCS_OPTIONS} ${VCS_BASE_FOLDER_INIT_ADD} ${fullResourcePath}
 						arguments=" add " + vcsStruct.getVcsOptions() + " " + vcsStruct.getVcsBaseFolderInitAddOptions() + " " + fullResourcePath;
 
-						commandDesc = "    Add folder changes to the Subversion Repository...";
+						commandDesc = "    Add folder changes to the GIT Repository...";
 						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
 						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
 						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
@@ -8629,6 +8658,23 @@ public class VCSManagerImpl implements VCSManager {
 	 */
 	public void setResourceManager(ResourceManager resourceManager) {
 		this.resourceManager = resourceManager;
+	}	
+
+	/**
+	 * @return the resourceDAO
+	 */
+	public ResourceDAO getResourceDAO() {
+		if(this.resourceDAO == null){
+			this.resourceDAO = new ResourceWSDAOImpl();
+		}
+		return resourceDAO;
+	}
+
+	/**
+	 * @param resourceDAO the resourceDAO to set
+	 */
+	public void setResourceDAO(ResourceDAO resourceDAO) {
+		this.resourceDAO = resourceDAO;
 	}	
 
 }

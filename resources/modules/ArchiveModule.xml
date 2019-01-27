@@ -47,6 +47,8 @@
 				<value>admin</value>
 			</resourceAttribute>
 		</setAttributes>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
@@ -59,10 +61,24 @@
 			<export>/shared/test00</export>
 			<export></export>	
 		</resources>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
 		<id>import01</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$PDTOOL_HOME/resources/carfiles/TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>true</includecaching>
+		<includejars>true</includejars>
+		<includesourceinfo>true</includesourceinfo>
+		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+	</archive>
+	<archive>
+		<id>import02</id>
 		<archiveMethod>CAR</archiveMethod>
 		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
 		<includeaccess>true</includeaccess>
@@ -102,9 +118,10 @@
 				<value>$CIS_REPO_PORT</value>
 			</resourceAttribute>
 		</setAttributes>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	<archive>
-		<id>import02</id>
+		<id>import03</id>
 		<archiveMethod>CAR</archiveMethod>
 		<archiveFileName>$PROJECT_HOME_PHYSICAL\resources\carfiles\TEST00_$CIS_VERSION$%CIS_HTTP_TYPE%_longpath.car</archiveFileName>
 		<includeaccess>true</includeaccess>
@@ -112,6 +129,8 @@
 		<includejars>false</includejars>
 		<includesourceinfo>false</includesourceinfo>
 		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<!-- Used for Regression Module Testing -->
@@ -146,6 +165,7 @@
 				<value>C:\CompositeSoftware\CIS6.2.5\docs\examples</value>
 			</resourceAttribute>
 		</setAttributes>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	
 	<archive>
@@ -181,6 +201,7 @@
 			</resourceAttribute>
 		</setAttributes>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 	<archive>
 		<id>TestRestoreOptions</id>
@@ -200,6 +221,7 @@
 			</relocate>
 		</resources>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 
 	<archive>
@@ -246,6 +268,7 @@
 			</resourceAttribute>
 		</setAttributes>
 		<archiveMethod>CAR</archiveMethod>
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
 
 

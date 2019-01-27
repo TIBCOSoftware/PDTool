@@ -38,6 +38,10 @@ import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
 import com.tibco.ps.deploytool.dao.ArchiveDAO;
 import com.tibco.ps.deploytool.dao.ServerDAO;
 import com.tibco.ps.deploytool.util.DeployUtil;
+import com.tibco.ps.deploytool.modules.ArchiveIncludeDomainType.Domains;
+import com.tibco.ps.deploytool.modules.ArchiveIncludeGroupType.Groups;
+import com.tibco.ps.deploytool.modules.ArchiveIncludeUserType.Users;
+import com.tibco.ps.deploytool.modules.ArchiveRebindablePathType.RebindablePaths;
 import com.tibco.ps.deploytool.modules.ArchiveType;
 import com.tibco.ps.deploytool.modules.ArchiveRelocateResourcePathType;
 import com.tibco.ps.deploytool.modules.ArchiveRebindResourcePathType;
@@ -92,15 +96,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		
 		// Read target server properties from xml and build target server object based on target server name 
 		CompositeServer targetServer = WsApiHelperObjects.getServerLogger(serverId, pathToServersXML, "ArchiveWSDAOImpl.takeArchiveAction("+actionName+")", logger);
-//
-// DA@20120610 Comment unnecessary ping - if server is down the backup/restore command will fail as fast as ping
-// Ping the Server to make sure it is alive and the values are correct.
-//		WsApiHelperObjects.pingServer(targetServer, true);
-		
+
 		// Get the offset location of the java.policy file [offset from PDTool home].
 		String javaPolicyOffset = CommonConstants.javaPolicy;
 		String javaPolicyLocation = CommonUtils.extractVariable(prefix, CommonUtils.getFileOrSystemPropertyValue(propertyFile,"PROJECT_HOME_PHYSICAL"), propertyFile, true) + javaPolicyOffset;	
-
 		
 		String identifier = "ArchiveWSDAOImpl.takeArchiveAction"; // some unique identifier that characterizes this invocation.
 		try {
@@ -110,7 +109,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				//logger.debug(identifier+":: executing action: "+actionName);
 			}
 
-			List<String> argsList = getCommonArchiveParameters(archive,targetServer) ;			
+			List<String> argsList = getCommonArchiveParameters(propertyFile,archive,targetServer) ;			
 			
 			if(actionName.equalsIgnoreCase(ArchiveDAO.action.IMPORT.name())) 
 			{
@@ -131,6 +130,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
+				String startCommandArguments = "null, null";    // previous parameters: "\".\", \".\"";
 				if ( logger.isDebugEnabled() || debug3 ) {
 					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" argument list=[" + maskedArgList+"]",prefix,"-debug3",logger,debug1,debug2,debug3);
 					//logger.debug(identifier+":: "+ArchiveDAO.action.IMPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
@@ -138,7 +138,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				/*
 				 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
 				 */
-//				ImportCommand.startCommand(".", ".", args);
+				//ImportCommand.startCommand(".", ".", args);
 				/*
 				 * 2014-02-14 (mtinius): Added security manager around the Composite native Archive code because
 				 * 						 it has System.out.println and System.exit commands.  Need to trap both.
@@ -160,25 +160,26 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            System.setSecurityManager(new NoExitSecurityManager());
 
 					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Invoking ImportCommand.startCommand(\".\", \".\", args).");
+						logger.debug(identifier+"().  Invoking ImportCommand.startCommand("+startCommandArguments+", args).");
 					}
 					
 		            // Invoke the Composite native import command.
-		            ImportCommand.startCommand(".", ".", args);
+		            //ImportCommand.startCommand(".", ".", args);
+					ImportCommand.startCommand(null, null, args);
 		            
 					if(logger.isDebugEnabled()) {
 						logger.debug(identifier+"().  Successfully imported.");
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
-		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
+		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")";
 		            logger.error(error);
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
 					if ( logger.isDebugEnabled() || debug3 ) {
-						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
-						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -196,6 +197,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
+				String startCommandArguments = "null, null";    // previous parameters: "\".\", \".\"";
 				if ( logger.isDebugEnabled() || debug3 ) {
 					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.RESTORE.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
 					//logger.debug(identifier+":: "+ArchiveDAO.action.RESTORE.name().toString()+" argument list=[" + maskedArgList+"]" );
@@ -204,7 +206,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				/*
 				 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
 				 */
-//				RestoreCommand.startCommand(".", ".", args) ;
+				//RestoreCommand.startCommand(".", ".", args) ;
 				/*
 				 * 2014-02-14 (mtinius): Added security manager around the Composite native Archive code because
 				 * 						 it has System.out.println and System.exit commands.  Need to trap both.
@@ -226,14 +228,15 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            System.setSecurityManager(new NoExitSecurityManager());
 
 					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Invoking RestoreCommand.startCommand(\".\", \".\", args).");
+						logger.debug(identifier+"().  Invoking RestoreCommand.startCommand"+startCommandArguments+", args).");
 					}
 					
 					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
 					if (CommonUtils.isExecOperation()) 
 					{
 			            // Invoke the Composite native restore command.
-			            RestoreCommand.startCommand(".", ".", args) ;
+			            //RestoreCommand.startCommand(".", ".", args) ;
+			            RestoreCommand.startCommand(null, null, args) ;
 	
 						if(logger.isDebugEnabled()) {
 							logger.debug(identifier+"().  Successfully restored.");
@@ -243,14 +246,14 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
-		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
+		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")";
 		            logger.error(error);
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
 					if ( logger.isDebugEnabled() || debug3 ) {
-						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
-						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -267,6 +270,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
+				String startCommandArguments = "null, null";    // previous parameters: "\".\", \".\"";
 				if ( logger.isDebugEnabled() || debug3 ) {
 					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.EXPORT.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
 					//logger.debug(identifier+":: "+ArchiveDAO.action.EXPORT.name().toString()+" argument list=[" + maskedArgList+"]" );
@@ -275,7 +279,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				/*
 				 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
 				 */
-//				ExportCommand.startCommand(".", ".", args);
+				//ExportCommand.startCommand(".", ".", args);
 				/*
 				 * 2014-02-14 (mtinius): Added security manager around the Composite native Archive code because
 				 * 						 it has System.out.println and System.exit commands.  Need to trap both.
@@ -286,7 +290,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		        PrintStream originalErr = System.err;
 				String command = "ExportCommand.startCommand";
 		        try {
-					// Set the java security policy
+		    		// Set the java security policy
 					System.getProperties().setProperty("java.security.policy", javaPolicyLocation);  
 					
 					// Create a new System.out Logger
@@ -297,15 +301,16 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            System.setSecurityManager(new NoExitSecurityManager());
 
 					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Invoking ExportCommand.startCommand(\".\", \".\", args).");
+						logger.debug(identifier+"().  Invoking ExportCommand.startCommand("+startCommandArguments+", args).");
 					}
 
 					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
 					if (CommonUtils.isExecOperation()) 
 					{
 						// Invoke the Composite native export command.
-			            ExportCommand.startCommand(".", ".", args);
-	
+			            //ExportCommand.startCommand(".", ".", args);
+			            ExportCommand.startCommand(null, null, args);
+			        		
 						if(logger.isDebugEnabled()) {
 							logger.debug(identifier+"().  Successfully exported.");
 						}
@@ -314,14 +319,14 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
-		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
+		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")";
 		            logger.error(error);
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
 					if ( logger.isDebugEnabled() || debug3 ) {
-						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
-						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -338,6 +343,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.addAll(parms) ;
 				String[] args = argsList.toArray(new String[0]) ;
 				String maskedArgList = CommonUtils.getArgumentListMasked(argsList);
+				String startCommandArguments = "null, null";    // previous parameters: "\".\", \".\"";
 				if ( logger.isDebugEnabled() || debug3 ) {
 					CommonUtils.writeOutput(identifier+":: "+ArchiveDAO.action.BACKUP.name().toString()+" argument list=[" + maskedArgList+"]" ,prefix,"-debug3",logger,debug1,debug2,debug3);
 					//logger.debug(identifier+":: "+ArchiveDAO.action.BACKUP.name().toString()+" argument list=[" + maskedArgList+"]" );
@@ -346,7 +352,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				/*
 				 * 2014-02-14 (mtinius): Removed the PDTool Archive capability
 				 */
-//				BackupCommand.startCommand(".", ".", args);
+				//BackupCommand.startCommand(".", ".", args);
 				/*
 				 * 2014-02-14 (mtinius): Added security manager around the Composite native Archive code because
 				 * 						 it has System.out.println and System.exit commands.  Need to trap both.
@@ -368,14 +374,15 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		            System.setSecurityManager(new NoExitSecurityManager());
 
 					if(logger.isDebugEnabled()) {
-						logger.debug(identifier+"().  Invoking BackupCommand.startCommand(\".\", \".\", args).");
+						logger.debug(identifier+"().  Invoking BackupCommand.startCommand("+startCommandArguments+", args).");
 					}
 
 					// Don't execute if -noop (NO_OPERATION) has been set otherwise execute under normal operation.
 					if (CommonUtils.isExecOperation()) 
 					{
 			            // Invoke the Composite native backup command.
-						BackupCommand.startCommand(".", ".", args);
+						//BackupCommand.startCommand(".", ".", args);
+						BackupCommand.startCommand(null, null, args);
 						
 						if(logger.isDebugEnabled()) {
 							logger.debug(identifier+"().  Successfully backed up.");
@@ -385,14 +392,14 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					}
 		        }
 		        catch (NoExitSecurityExceptionStatusNonZero nesesnz) {
-		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")";
+		        	String error = identifier+":: Exited with exception from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")";
 		            logger.error(error);
 		            throw new CompositeException(error);
 		        }
 		        catch (NoExitSecurityExceptionStatusZero nesezero) {
 					if ( logger.isDebugEnabled() || debug3 ) {
-						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
-						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"(\".\", \".\", "+maskedArgList+")");
+						CommonUtils.writeOutput(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")" ,prefix,"-debug3",logger,debug1,debug2,debug3);
+						//logger.debug(identifier+":: Exited successfully from System.exit(): "+command+"("+startCommandArguments+", "+maskedArgList+")");
 					}
 		        }
 		        finally {
@@ -416,7 +423,6 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			// TODO: null - this is where soap-faults get passed - modify if you return a soap-fault (e.g. e.getFaultInfo())
 			if ( e.getCause() != null && e.getCause() instanceof WebapiException ) 
 			{
-//				CompositeLogger.logException(e, DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), actionName, "Archive", identifier, targetServer),e.getCause());
 				CompositeLogger.logException(e.getCause(), DeployUtil.constructMessage(DeployUtil.MessageType.ERROR.name(), actionName, "Archive", identifier, targetServer));
 			}
 			else 
@@ -442,20 +448,45 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 	
 /**
  *  Collects pkg_import parameters for importing package from a CAR file
- *	pkg_import -pkgfile <D:/irectory/Path/and/File_Name.car>...
- *	-server <HostName> [-port <PortNumber>] [-encrypt]
- *	-user <UserName> -password <Password> [-domain <Domain>]
- *	[-relocate <OldPath> <NewPath>] ...
- *	[-rebind <OldPath> <NewPath>] ...
- *	[-set <path> <DataType> <Attribute> <Value>] ...
- *	[-optfile <D:/irectory/Path/and/File_Name>]
- *	[-printinfo] [-printroots] [-printusers]
- *	[-printcontents] [-printreferences]
- *	[-includeaccess] [-nocaching]
- *	[-excludejars] [-nosourceinfo] 
- *	[-overwrite] [-overrideLocks] [-messagesonly]
- *	[-verbose] [-quiet]				
- * 	
+ *	pkg_import
+ * 		-pkgfile <D:/directory/Path/and/File_Name.car>...
+ * 		-server <host_name> 
+ * 		[-port <port_number>] 
+ * 		-user <user_name> 
+ * 		-password <password> 
+ * 		[-domain <domain>]
+ * 		[-encrypt]
+ * 		[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+ * 		[-optfile <path_and_filename> ]
+ * 		[-relocate <old_path> <new_path>] ...
+ * 		[-rebind <old_path> <new_path>] ...
+ * 		[-set <path> <data_type> <attribute> <value>] ...
+ * 		[-includeusers]
+ * 		[-mergeusers]   
+ * 		[-includeaccess] 
+ * 		[-nocaching] 
+ * 		[-nocachepolicy]
+ * 		[-noscheduling]
+ * 		[-createcachetables]
+ * 		[-updateCacheTables]
+ * 		[-excludejars] 
+ * 		[-nosourceinfo]
+ * 		[-overwrite] 
+ * 		[-overrideLocks] 
+ * 		[-messagesonly]
+ * 		[-verbose] 
+ * 		[-quiet]
+ *		[-printinfo] 
+ * 		[-printroots] 
+ * 		[-printusers
+ * 		[-printcontents] 
+ * 		[-printreferences]
+ * 		=================
+ * 		8.0
+ * 		=================
+ * 		-encryptionPassword <encryptionPassword>
+ * 		[-genopt <filename>]
+ * 
  * @param archive Archive definition
  * @return list of parameters specified for pkg_export invocation
  */
@@ -488,6 +519,21 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.isOverwrite() != null && archive.isOverwrite() == true ) {
 			argsList.add("-overwrite");
 		}
+		if (archive.isQuiet() != null && archive.isQuiet() == true ) {
+			argsList.add("-quiet");	
+		}
+		if (archive.isNoscheduling() != null && archive.isNoscheduling() == true ) {
+			argsList.add("-noscheduling");	
+		}
+		if (archive.isNocachepolicy() != null && archive.isNocachepolicy() == true ) {
+			argsList.add("-nocachepolicy");	
+		}
+		if (archive.isCreatecachetables() != null && archive.isCreatecachetables() == true ) {
+			argsList.add("-createcachetables");	
+		}
+		if (archive.isUpdateCacheTables() != null && archive.isUpdateCacheTables() == true ) {
+			argsList.add("-updatecachetables");	
+		}
 	// "prints" disable actual import, and provide corresponding output in logger files 
 	// (see log4j.properties for their location)
 		if (archive.isPrintinfo() != null && archive.isPrintinfo() == true ) {
@@ -505,7 +551,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.isPrintreferences() != null && archive.isPrintreferences() == true ) {
 			argsList.add("-printreferences");	
 		}
-		if ( archive.getResources() != null && archive.getResources().getExportOrRelocateOrRebind() != null ) {
+
+        if ( archive.getResources() != null && archive.getResources().getExportOrRelocateOrRebind() != null ) {
 			for ( Object o : archive.getResources().getExportOrRelocateOrRebind() ) {
 				if ( o instanceof ArchiveRelocateResourcePathType ) {
 					ArchiveRelocateResourcePathType relocate = (ArchiveRelocateResourcePathType)o ;
@@ -548,26 +595,46 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				}
 			}
 		}
+		
 		return argsList ;
 	}
 /**
  *  Collects pkg_export parameters for exporting package into a CAR file
- *		pkg_export -pkgfile <FileName>
+ *	pkg_export
+ * 		-pkgfile <file_name>
+ * 		-server <host_name> 
+ * 		[-port <port_number>] 
+ * 		-user <user_name> 
+ * 		-password <password> 
+ * 		[-domain <domain>]
+ * 		[-encrypt]
+ * 		[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+ * 		[-pkgname <name>] 
+ * 		[-description <text>]
+ * 		[-optfile <file_name>] 
+ * 		[-rebindable <path> <description>] 
+ * 		[-includeaccess] 
+ * 		[-includecaching]
+ *		[-includesourceinfo]
+ * 		[-nosourceinfo] 
+ * 		[-includejars]
+ * 		[-includeAllUsers] 
+ * 		[-includeUser <domain> <user>]
+ * 		[-includeGroup <domain> <group>]
+ * 		[-includeDomain <domain>]
+ * 		[-includeRequiredUsers] 
+ * 		[-includeDependencies]
+ * 		[-includeStatistics]
+ * 		[-verbose] 
+ * 		[-quiet]
+ * 		<namespacePath>
+ * 		=================
+ * 		8.0
+ * 		=================
+ * 		-encryptionPassword <encryptionPassword>
+ * 		[-genopt <filename>] 
  *		<NamespacePath> [...]
- *		-server <hostname> [-port <port>] [-encrypt]
- *		-user <user> -password <password> [-domain <domain>]
- *		[-pkgname <name>] [-description <text>]
- *		[-optfile <filename>] [...]
- *		[-rebindable <path> <description>] ...
- *		[-includeaccess] [-includecaching]
- *		[-includesourceinfo] [-includejars]
- *		[-includeAllUsers] [-includeUser <domain> <user>] ...
- *		[-includeGroup <domain> <group>] ...
- *		[-includeDomain <domain>] ...
- *		[-includeRequiredUsers] [-includeDependencies]
- *		[-includeStatistics]
- *		[-verbose] [-quiet]
- * 	
+ * 
  * @param archive Archive definition
  * @return list of parameters specified for pkg_export invocation
  */
@@ -604,21 +671,18 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.isIncludestatistics() != null && archive.isIncludestatistics() == true ) {
 			argsList.add("-includeStatistics");	
 		}
+		if (archive.isNosourceinfo() != null && archive.isNosourceinfo() == true ) {
+			argsList.add("-nosourceinfo");	
+		}
+		if (archive.isQuiet() != null && archive.isQuiet() == true ) {
+			argsList.add("-quiet");	
+		}
 		if (archive.getPkgName() != null && archive.getPkgName().trim().length() > 0 ) {
 			argsList.add("-pkgname");	
 			argsList.add(archive.getPkgName());	
 		}
-		// process resource lists
-		if (archive.getResources() != null) {
-			for (Object resourcePath: archive.getResources().getExportOrRelocateOrRebind()  ) {
-				if ( resourcePath instanceof String ) {
-					String s = (String)resourcePath ;
-					if ( s.trim().length() > 0 ) 
-						argsList.add(CommonUtils.extractVariable(prefix, s, propertyFile, false));
-				}
-			}
-		}
 		
+		// Process the user lists
 		if ( archive.getUsers() != null ) {
 			for ( Object o : archive.getUsers().getExportOrImport() ) {
 				if ( o instanceof ArchiveExportSecurityType.Export ) {
@@ -641,22 +705,60 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			}
 		}
 		
+		// process rebindable list
+		if (archive.getRebindableResources() != null) {
+			for (RebindablePaths paths: archive.getRebindableResources().getRebindablePaths()  ) {
+				if ( paths.getPath() != null && paths.getPath().toString().trim().length() > 0 ) {
+					argsList.add("-rebindable");	
+					argsList.add(paths.getPath().toString());	
+				}
+				if ( paths.getDescripiton() != null && paths.getDescripiton().toString().trim().length() > 0 ) {
+					argsList.add(paths.getDescripiton().toString());	
+				}
+			}
+		}
+
+		// process resource lists
+		if (archive.getResources() != null) {
+			for (Object resourcePath: archive.getResources().getExportOrRelocateOrRebind()  ) {
+				if ( resourcePath instanceof String ) {
+					String s = (String)resourcePath ;
+					if ( s.trim().length() > 0 ) 
+						argsList.add(CommonUtils.extractVariable(prefix, s, propertyFile, false));
+				}
+			}
+		}
+
 		return argsList ;
 	}
 /**
  *  Collects backup_import parameters for importing full server backup from CAR file
  *	backup_import 
- *		-pkgfile <target/file name>
- *		-user <user name> 
+ * 		-pkgfile <target/file_name>
+ *		-server <host_name> 
+ *		[-port <port_number>] 
+ *		-user <user_name> 
  *		-password <password> 
- *		-server <hostname> 
- *		[-port <port number>] 
- *		[-encrypt]
  *		[-domain <domain>]
- *		[-relocate <oldPath> <newPath>] ...
- *		[-optfile <filename>] ...
+ *		[-encrypt]
+ *		[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+ *		[-relocate <old_path> <new_path> ...]
+ *		[-optfile <file_name>]
  *		[-set <path> <type> <attribute> <value>]
- *		[-printinfo] [-overwrite] [-verbose]
+ *		[-printinfo] 
+ *		[-overwrite] 
+ *		[-verbose] 
+ *		[-createcachetables]
+ *		[-updatecachetables]
+ *		=================
+ *		7.0 undocumented
+ *		=================
+ *		[-reintrospect OR -reintrospectNone]
+ *		=================
+ *		8.0
+ *		=================
+ *		-encryptionPassword <encryptionPassword>
+ *		[-genopt <filename>]
  *
  * 	
  * @param archive Archive definition
@@ -671,6 +773,19 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.isOverwrite() != null && archive.isOverwrite() == true ) {
 			argsList.add("-overwrite");	
 		}
+		if (archive.isCreatecachetables() != null && archive.isCreatecachetables() == true ) {
+			argsList.add("-createcachetables");	
+		}
+		if (archive.isUpdateCacheTables() != null && archive.isUpdateCacheTables() == true ) {
+			argsList.add("-updatecachetables");	
+		}
+		if (archive.isReintrospect() != null && archive.isReintrospect() == true ) {
+			argsList.add("-reintrospect");	
+		}
+		if (archive.isReintrospectNone() != null && archive.isReintrospectNone() == true ) {
+			argsList.add("-reintrospectNone");	
+		}
+
 		if ( archive.getResources() != null && archive.getResources().getExportOrRelocateOrRebind() != null ) {
 			for ( Object o : archive.getResources().getExportOrRelocateOrRebind() ) {
 				if ( o instanceof ArchiveRelocateResourcePathType ) {
@@ -691,19 +806,33 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 				argsList.add(CommonUtils.extractVariable(prefix, aram.getValue(), propertyFile, false));
 			}
 		}
+		
 		return argsList ;
 	}
 
 /**
  *  Collects backup_export parameters for a full server backup into CAR file
- *  	backup_export 
- *		-server <hostname> [-port <port number>] [-encrypt]
- *		-pkgfile <file name> 
- *		-user <user name> -password <password> [-domain <domain>]
- *		[-pkgname <name>] [-description <text>]
- *		[-optfile <file name>] [-excludejars] 
- *		[-includeStatistics] [-verbose]
- * 	
+ *  backup_export 
+ * 		-pkgfile <file_name>
+ * 		-server <host_name> 
+ * 		[-port <port_number>] 
+ * 		-user <user_name> 
+ * 		-password <password> 
+ * 		[-domain <domain>]
+ * 		[-encrypt]
+ * 		[-sso] [-sspi] [-spn <spn>] [-krb5Conf <krb5Conf>]
+ * 		[-pkgname <name>] 
+ * 		[-description <text>]
+ * 		[-optfile <file_name>] 
+ * 		[-excludeJars]
+ * 		[-includeStatistics] 
+ * 		[-verbose]
+ * 		=================
+ * 		8.0
+ * 		=================
+ * 		-encryptionPassword <encryptionPassword>
+ * 		[-genopt <filename>]
+ *
  * @param archive Archive definition
  * @return list of parameters specified for backup_export invocation
  */
@@ -725,6 +854,7 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			argsList.add("-pkgname");	
 			argsList.add(CommonUtils.extractVariable(prefix, archive.getPkgName(), propertyFile, false));
 		}
+		
 		return argsList ;
 	}
 	
@@ -733,7 +863,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * 
  * @return list of parameters common to any archive command invocation
  */
-	private List<String> getCommonArchiveParameters(ArchiveType archive,CompositeServer targetServer) {
+	private List<String> getCommonArchiveParameters(String propertyFile, ArchiveType archive, CompositeServer targetServer) {
+		String prefix = "ArchiveWSDAOImpl.getCommonArchiveParameters";
 		List<String> argsList = new ArrayList<String>() ;
 		argsList.add("-pkgfile");
 		argsList.add(archive.getArchiveFileName());
@@ -767,6 +898,55 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 			if (archive.isEncrypt() != null && archive.isEncrypt() == true)
 				argsList.add("-encrypt");	
 		}
+		
+		// 2018-12-18 mtinius: Determine the CIS version for use with DV 8.0 options.
+		String cisVersion = CommonUtils.getFileOrSystemPropertyValue(null, "CIS_VERSION");
+		if (cisVersion == null)
+			throw new CompositeException(prefix+"::The environment variable \"CIS_VERSION\" may not be null.");
+		cisVersion = cisVersion.replaceAll("\\.", "");
+		int cisVersionInt = Integer.valueOf(cisVersion);
+		if (cisVersionInt == 80)
+			cisVersionInt = 800;
+
+		// 2018-12-18 mtinius: add sso options
+		if (archive.isSso() != null && archive.isSso() == true )
+    		argsList.add("-sso");
+    	if (archive.isSspi() != null && archive.isSspi() == true )
+    		argsList.add("-sspi");
+		if (archive.getSpn() != null && archive.getSpn().trim().length() > 0) {
+    		argsList.add("-spn");
+       		argsList.add(archive.getSpn());
+       	}
+		if (archive.getKrb5Conf() != null && archive.getKrb5Conf().trim().length() > 0) {
+    		argsList.add("-krb5Conf");
+       		argsList.add(archive.getKrb5Conf());
+       	}
+		
+		// 2018-12-18 mtinius: general parameters used by all archive utilities
+		if (archive.isVerbose() != null && archive.isVerbose() == true )
+    		argsList.add("-verbose");
+    	if (archive.getOptfile() != null && archive.getOptfile().trim().length() > 0) {
+    		argsList.add("-optfile");
+       		argsList.add(archive.getOptfile());
+       	}
+		
+		// 2018-12-18 mtinius: Only set this when 8.0.0 or higher
+        if (cisVersionInt >= 800) {
+        	// Add encryptionPassword [encryption password] for 8.0 and above
+    		argsList.add("-encryptionPassword");
+        	if (archive.getEncryptionPassword() != null && archive.getEncryptionPassword().trim().length() > 0) {
+        		argsList.add(CommonUtils.extractVariable(prefix, archive.getEncryptionPassword().toString(), propertyFile, true));
+        	} else {
+        		argsList.add(targetServer.getPassword());
+        	}
+        	
+        	// Add genopt [generation option file] for 8.0 and above
+           	if (archive.getGenopt() != null && archive.getGenopt().trim().length() > 0) {
+        		argsList.add("-genopt ");
+           		argsList.add(archive.getGenopt());
+           	}
+        }
+
 		return argsList ;
 	}
 	

@@ -1,0 +1,184 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<common:attributes xmlns:common="http://www.compositesw.com/services/system/util/common">
+<!--
+<common:attribute xmlns:common="http://www.compositesw.com/services/system/util/common">
+  <common:name>/introspection/datatype/numeric/overrideUnspecifiedPrecision</common:name>
+  <common:type>INTEGER</common:type>
+  <common:value>-1</common:value>
+  <common:configID>introspect.datatype.numeric.override_unspecified_precision</common:configID>
+</common:attribute>
+<ns1:attribute xmlns:ns1="http://www.compositesw.com/services/system/util/common">
+  <ns1:name>/introspection/datatype/numeric/overrideUnspecifiedScale</ns1:name>
+  <ns1:type>INTEGER</ns1:type>
+  <ns1:value>-1</ns1:value>
+  <ns1:configID>introspect.datatype.numeric.override_unspecified_scale</ns1:configID>
+</ns1:attribute>
+<ns2:attribute xmlns:ns2="http://www.compositesw.com/services/system/util/common">
+  <ns2:name>/introspection/relational/supportsPackages</ns2:name>
+  <ns2:type>BOOLEAN</ns2:type>
+  <ns2:value>true</ns2:value>
+  <ns2:configID>introspect.relational.include_packages</ns2:configID>
+</ns2:attribute>
+<ns3:attribute xmlns:ns3="http://www.compositesw.com/services/system/util/common">
+  <ns3:name>/runtime/iud/batchSize</ns3:name>
+  <ns3:type>INTEGER</ns3:type>
+  <ns3:value>500</ns3:value>
+  <ns3:configID>jdbc.batch_size</ns3:configID>
+</ns3:attribute>
+<ns4:attribute xmlns:ns4="http://www.compositesw.com/services/system/util/common">
+  <ns4:name>/runtime/iud/batchUpdates</ns4:name>
+  <ns4:type>BOOLEAN</ns4:type>
+  <ns4:value>true</ns4:value>
+  <ns4:configID>jdbc.batch_updates</ns4:configID>
+</ns4:attribute>
+<ns5:attribute xmlns:ns5="http://www.compositesw.com/services/system/util/common">
+  <ns5:name>/runtime/iud/fetchSize</ns5:name>
+  <ns5:type>INTEGER</ns5:type>
+  <ns5:value>0</ns5:value>
+  <ns5:configID>jdbc.fetch_size</ns5:configID>
+</ns5:attribute>
+<ns6:attribute xmlns:ns6="http://www.compositesw.com/services/system/util/common">
+  <ns6:name>/runtime/query/NoSql92FullCrossJoin</ns6:name>
+  <ns6:type>BOOLEAN</ns6:type>
+  <ns6:value>false</ns6:value>
+  <ns6:configID>jdbcds.no_support_sql92_cross_join</ns6:configID>
+</ns6:attribute>
+<ns7:attribute xmlns:ns7="http://www.compositesw.com/services/system/util/common">
+  <ns7:name>/runtime/query/NoSql92FullOuterJoin</ns7:name>
+  <ns7:type>BOOLEAN</ns7:type>
+  <ns7:value>false</ns7:value>
+  <ns7:configID>jdbcds.no_support_sql92_full_outer_join</ns7:configID>
+</ns7:attribute>
+<ns8:attribute xmlns:ns8="http://www.compositesw.com/services/system/util/common">
+  <ns8:name>/runtime/query/comparisonCaseInSensitive</ns8:name>
+  <ns8:type>BOOLEAN</ns8:type>
+  <ns8:value>false</ns8:value>
+  <ns8:configID>jdbcds.comparisons_case_insensitive</ns8:configID>
+</ns8:attribute>
+<ns9:attribute xmlns:ns9="http://www.compositesw.com/services/system/util/common">
+  <ns9:name>/runtime/query/correlatedSubqueries</ns9:name>
+  <ns9:type>BOOLEAN</ns9:type>
+  <ns9:value>true</ns9:value>
+  <ns9:configID>jdbc.correlated_subqueries</ns9:configID>
+</ns9:attribute>
+<ns10:attribute xmlns:ns10="http://www.compositesw.com/services/system/util/common">
+  <ns10:name>/runtime/query/distinct</ns10:name>
+  <ns10:type>BOOLEAN</ns10:type>
+  <ns10:value>true</ns10:value>
+  <ns10:configID>jdbcds.distinct</ns10:configID>
+</ns10:attribute>
+<ns11:attribute xmlns:ns11="http://www.compositesw.com/services/system/util/common">
+  <ns11:name>/runtime/query/except</ns11:name>
+  <ns11:type>BOOLEAN</ns11:type>
+  <ns11:value>true</ns11:value>
+  <ns11:configID>jdbcds.except_operator</ns11:configID>
+</ns11:attribute>
+<ns12:attribute xmlns:ns12="http://www.compositesw.com/services/system/util/common">
+  <ns12:name>/runtime/query/exceptAll</ns12:name>
+  <ns12:type>BOOLEAN</ns12:type>
+  <ns12:value>false</ns12:value>
+  <ns12:configID>jdbcds.except_all_operator</ns12:configID>
+</ns12:attribute>
+<ns13:attribute xmlns:ns13="http://www.compositesw.com/services/system/util/common">
+  <ns13:name>/runtime/query/exceptNativeKeyword</ns13:name>
+  <ns13:type>STRING</ns13:type>
+  <ns13:value>MINUS</ns13:value>
+  <ns13:configID>jdbcds.except_native_keyword</ns13:configID>
+</ns13:attribute>
+<ns14:attribute xmlns:ns14="http://www.compositesw.com/services/system/util/common">
+  <ns14:name>/runtime/query/groupBy</ns14:name>
+  <ns14:type>BOOLEAN</ns14:type>
+  <ns14:value>true</ns14:value>
+  <ns14:configID>jdbc.group_by</ns14:configID>
+</ns14:attribute>
+<ns15:attribute xmlns:ns15="http://www.compositesw.com/services/system/util/common">
+  <ns15:name>/runtime/query/having</ns15:name>
+  <ns15:type>BOOLEAN</ns15:type>
+  <ns15:value>true</ns15:value>
+  <ns15:configID>jdbcds.having</ns15:configID>
+</ns15:attribute>
+<ns16:attribute xmlns:ns16="http://www.compositesw.com/services/system/util/common">
+  <ns16:name>/runtime/query/inner_joins</ns16:name>
+  <ns16:type>BOOLEAN</ns16:type>
+  <ns16:value>true</ns16:value>
+  <ns16:configID>jdbcds.inner_joins</ns16:configID>
+</ns16:attribute>
+<ns17:attribute xmlns:ns17="http://www.compositesw.com/services/system/util/common">
+  <ns17:name>/runtime/query/intersect</ns17:name>
+  <ns17:type>BOOLEAN</ns17:type>
+  <ns17:value>true</ns17:value>
+  <ns17:configID>jdbcds.intersect_operator</ns17:configID>
+</ns17:attribute>
+<ns18:attribute xmlns:ns18="http://www.compositesw.com/services/system/util/common">
+  <ns18:name>/runtime/query/intersectAll</ns18:name>
+  <ns18:type>BOOLEAN</ns18:type>
+  <ns18:value>false</ns18:value>
+  <ns18:configID>jdbcds.intersect_all_operator</ns18:configID>
+</ns18:attribute>
+<ns19:attribute xmlns:ns19="http://www.compositesw.com/services/system/util/common">
+  <ns19:name>/runtime/query/intersectNativeKeyword</ns19:name>
+  <ns19:type>STRING</ns19:type>
+  <ns19:value>INTERSECT</ns19:value>
+  <ns19:configID>jdbcds.intersect_native_keyword</ns19:configID>
+</ns19:attribute>
+<ns20:attribute xmlns:ns20="http://www.compositesw.com/services/system/util/common">
+  <ns20:name>/runtime/query/maxSqlLength</ns20:name>
+  <ns20:type>INTEGER</ns20:type>
+  <ns20:value>131072</ns20:value>
+  <ns20:configID>jdbcds.max_sql_length</ns20:configID>
+</ns20:attribute>
+<ns21:attribute xmlns:ns21="http://www.compositesw.com/services/system/util/common">
+  <ns21:name>/runtime/query/orderBy</ns21:name>
+  <ns21:type>BOOLEAN</ns21:type>
+  <ns21:value>true</ns21:value>
+  <ns21:configID>jdbcds.order_by</ns21:configID>
+</ns21:attribute>
+<ns22:attribute xmlns:ns22="http://www.compositesw.com/services/system/util/common">
+  <ns22:name>/runtime/query/scalarSubqueries</ns22:name>
+  <ns22:type>BOOLEAN</ns22:type>
+  <ns22:value>true</ns22:value>
+  <ns22:configID>jdbcds.scalar_subqueries</ns22:configID>
+</ns22:attribute>
+<ns23:attribute xmlns:ns23="http://www.compositesw.com/services/system/util/common">
+  <ns23:name>/runtime/query/sql92JoinSyntax</ns23:name>
+  <ns23:type>BOOLEAN</ns23:type>
+  <ns23:value>true</ns23:value>
+  <ns23:configID>jdbcds.sql92_join_syntax</ns23:configID>
+</ns23:attribute>
+<ns24:attribute xmlns:ns24="http://www.compositesw.com/services/system/util/common">
+  <ns24:name>/runtime/query/subqueriesInExists</ns24:name>
+  <ns24:type>BOOLEAN</ns24:type>
+  <ns24:value>true</ns24:value>
+  <ns24:configID>jdbc.subqueries_in_exists</ns24:configID>
+</ns24:attribute>
+<ns25:attribute xmlns:ns25="http://www.compositesw.com/services/system/util/common">
+  <ns25:name>/runtime/query/subqueriesInIns</ns25:name>
+  <ns25:type>BOOLEAN</ns25:type>
+  <ns25:value>true</ns25:value>
+  <ns25:configID>jdbc.subqueries_in_ins</ns25:configID>
+</ns25:attribute>
+<ns26:attribute xmlns:ns26="http://www.compositesw.com/services/system/util/common">
+  <ns26:name>/runtime/query/trailingSpaceIncludeInComparison</ns26:name>
+  <ns26:type>BOOLEAN</ns26:type>
+  <ns26:value>true</ns26:value>
+  <ns26:configID>jdbcds.trailing_spaces_included_in_comparison</ns26:configID>
+</ns26:attribute>
+<ns27:attribute xmlns:ns27="http://www.compositesw.com/services/system/util/common">
+  <ns27:name>/runtime/query/union</ns27:name>
+  <ns27:type>BOOLEAN</ns27:type>
+  <ns27:value>true</ns27:value>
+  <ns27:configID>jdbc.union</ns27:configID>
+</ns27:attribute>
+<ns28:attribute xmlns:ns28="http://www.compositesw.com/services/system/util/common">
+  <ns28:name>/runtime/query/unionAll</ns28:name>
+  <ns28:type>BOOLEAN</ns28:type>
+  <ns28:value>true</ns28:value>
+  <ns28:configID>jdbc.union_all</ns28:configID>
+</ns28:attribute>
+<ns29:attribute xmlns:ns29="http://www.compositesw.com/services/system/util/common">
+  <ns29:name>/runtime/query/withClause</ns29:name>
+  <ns29:type>BOOLEAN</ns29:type>
+  <ns29:value>true</ns29:value>
+  <ns29:configID>jdbcds.with_clause</ns29:configID>
+</ns29:attribute>
+--></common:attributes>

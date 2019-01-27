@@ -17,13 +17,13 @@
 #
 ######################################################################
 ---------------------------------------------------------------
-PDTool Regression Testing Scripts for PDTool6.2 and PDTool7.0.0
+PDTool Regression Testing Scripts for PDTool7.0.0 and PDTool8.0.0
 ---------------------------------------------------------------
 @copyright    (c) 2017 TIBCO Software Inc. All rights reserved.
 @author:      Mike Tinius
-@date:        December 12, 2017
+@date:        January 12, 2019
 
-@description: The scripts in the directory are for executing regression tests against PDTool6.2 and PDTool7.0.0
+@description: The scripts in the directory are for executing regression tests against PDTool7.0.0 and PDTool8.0.0
               and all of the various environment combinations including windows and unix and the various 
               VCS software.  The regression script folder (/regression) may be placed anywhere on your
               computer as long as the regressioin_confi_driver.bat|.sh is executed from within the 
@@ -36,19 +36,28 @@ PDTool Regression Testing Scripts for PDTool6.2 and PDTool7.0.0
 			  is also a separate version/folder that is being tested.
         	  
 @installation:
-              1. Unzip regression-YYYY-MM-DD.zip to any directory on the machine where PDTool6.2 or PDTool7.0.0
+              1. Unzip regression-YYYY-MM-DD.zip to any directory on the machine where PDTool7.0.0 or PDTool8.0.0
                  has been installed.
               2. Insure that the regression/config/*.property files have the proper configuration parameters
                  set for each environment to be tested.
-			  3. Set any custom variables in the setVars.bat or setVars.sh file
-			  4. Verify the /modules/servers.xml to insure you have the correct list of servers
+			  3. Verify the /modules/servers.xml to insure you have the correct list of servers
 				 Pattern: [hostname][port][http|https] e.g. localhost9400http or localhost9400https
 				 Provide an entry for both http and https.  When using https, the useHttps=true is set.
-			  5. Verify the /config_lists/regression_[win|unix]_7.0.0_config.txt to make sure the correct set of lists are uncommented.
-			  6. Verify the target PDTool/security folder and CIS target instance to determine whether it requires weak or strong trust store.
+			  4. Verify the /config_lists/regression_[win|unix]_[7|8].0.0_config_[type].txt to make sure the correct set of lists are uncommented.
+					config type:
+						NOVCS_HTTP  = no vcs testing using http protocol
+						NOVCS_HTTPS = no vcs testing using https protocol
+						CUSTOM      = a custom set of deployment plans to exeucte
+						GIT         = vcs GIT testing only
+						SVN         = vcs Subversion testing only
+						TFS         = vcs TFS testing only
+						P4          = vcs Perforce testing only
+						CVS         = vcs CVS testing only
+			  5. Verify the target PDTool/security folder and CIS target instance to determine whether it requires weak or strong trust store.
 				 Copy the cis_studio_truststore_strong.jks into the PDTool/security folder for https testing if the target CIS is using strong encryption pack.
 				 Configure the PDTool/bin/setVars.bat or setVars.sh with the correct trust store.
-              7. Proceed to "instructions" for execution.
+              6. Proceed to "instructions" for execution.
+			  7. NOTE: PDTool regression will use the variable settings from /PDTool[7|8].0.0_yyyymmdd/PDTool/bin/setVars.bat and /PDTool[7|8].0.0_yyyymmdd/setMyPrePDToolVars.bat
         	  
 @instructions:
               1. This script must be executed from the PDTool regression directory
@@ -59,18 +68,18 @@ PDTool Regression Testing Scripts for PDTool6.2 and PDTool7.0.0
 ---------------------------------
 How to execute on Windows:
 ---------------------------------
-CIS:    Regression Config Driver Script   Configuration List              PDTool Home Dir             Debug Version
-====    ===============================   =============================== ====================        ===== =======
-  6.2:  regression_config_driver.bat      regression_win_6.2_config.txt   "D:\dev\PDTool6.2\PDTool"   Y|N   6.2 <-- Represents a complete regression of PDTool for CIS 6.2 on windows
-7.0.0:  regression_config_driver.bat      regression_win_7.0.0_config.txt "D:\dev\PDTool7.0.0\PDTool" Y|N   7.0.0
+CIS:    Regression Config Driver Script   Configuration List                         PDTool Home Dir             Debug Version
+====    ===============================   ========================================== ====================        ===== =======
+7.0.0:  regression_config_driver.bat      regression_win_7.0.0_config_NOVCS_HTTP.txt "D:\dev\PDTool7.0.0\PDTool" Y|N   7.0.0 <-- Represents a regression of PDTool for DV 7.0 on windows
+8.0.0:  regression_config_driver.bat      regression_win_8.0.0_config_NOVCS_HTTP.txt "D:\dev\PDTool8.0.0\PDTool" Y|N   8.0.0 <-- Represents a regression of PDTool for DV 8.0 on windows
 
 ---------------------------------
 How to execute on Unix (Linux):
 ---------------------------------
-CIS:    Regression Config Driver Script   Configuration List               PDTool Home Dir                   Debug Version
-====    ===============================   ================================ ==========================        ===== =======
-  6.2:  ./regression_config_driver.sh     regression_unix_6.2_config.txt   "/u01/home/qa/PDTool6.2\PDTool"   Y|N   6.2 <-- Represents a complete regression of PDTool for CIS 6.2 on Unix
-7.0.0:  ./regression_config_driver.sh     regression_unix_7.0.0_config.txt "/u01/home/qa/PDTool7.0.0\PDTool" Y|N   7.0.0
+CIS:    Regression Config Driver Script   Configuration List                         PDTool Home Dir                   Debug Version
+====    ===============================   ========================================== ====================              ===== =======
+7.0.0:  ./regression_config_driver.sh     regression_unix_7.0.0_config.txt           "/u01/home/qa/PDTool7.0.0\PDTool" Y|N   7.0.0 <-- Represents a regression of PDTool for DV 7.0 on unix
+8.0.0:  ./regression_config_driver.sh     regression_unix_8.0.0_config.txt           "/u01/home/qa/PDTool8.0.0\PDTool" Y|N   8.0.0 <-- Represents a regression of PDTool for DV 8.0 on unix
 
 ------------------------------------------------------------
 Configuration List File:  regression_unix_7.0.0_config.txt

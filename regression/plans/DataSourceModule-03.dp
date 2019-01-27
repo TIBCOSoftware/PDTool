@@ -20,4 +20,4 @@
 # DataSource Module:
 # -----------------------------------------
 # Update Datasource
-PASS	TRUE	ExecuteAction   	updateDataSources 		$SERVERID "ds1,ds2,ds3,ds4" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"
+PASS	TRUE	ExecuteAction   	updateDataSources 		$SERVERID "ds3,ds11" 		"$MODULE_HOME/DataSourceModule.xml" "$MODULE_HOME/servers.xml"

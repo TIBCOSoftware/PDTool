@@ -164,7 +164,7 @@
             <genericAttribute>
                 <name>password</name>
                 <type>PASSWORD_STRING</type>
-                <value>Encrypted:7F6324FFD300BE8F</value>
+                <value>$CIS_PASSWORD</value>
             </genericAttribute>
             <genericAttribute>
                 <name>persistPassword</name>
