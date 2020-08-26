@@ -30,25 +30,13 @@ import com.tibco.ps.common.exception.CompositeException;
 import com.tibco.ps.common.util.CommonUtils;
 import com.tibco.ps.common.util.CompositeLogger;
 import com.tibco.ps.common.util.XMLUtils;
-import com.tibco.ps.common.util.wsapi.CisApiFactory;
 import com.tibco.ps.common.util.wsapi.CompositeServer;
 import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
 import com.tibco.ps.deploytool.dao.PrivilegeDAO;
-import com.tibco.ps.deploytool.dao.ServerAttributeDAO;
 import com.tibco.ps.deploytool.modules.PrivilegeModule;
-import com.tibco.ps.deploytool.modules.ServerAttributeModule;
 import com.tibco.ps.deploytool.util.DeployUtil;
-import com.compositesw.services.system.admin.GetResourcePrivilegesSoapFault;
-import com.compositesw.services.system.admin.ResourcePortType;
-import com.compositesw.services.system.admin.UpdateResourcePrivilegesSoapFault;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesRequest.Entries;
 import com.compositesw.services.system.admin.resource.PathTypeOrColumnPair;
-import com.compositesw.services.system.admin.resource.Privilege;
-import com.compositesw.services.system.admin.resource.PrivilegeEntry;
-import com.compositesw.services.system.admin.resource.PrivilegeEntry.Privileges;
-import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries;
-import com.compositesw.services.system.admin.resource.UpdatePrivilegesMode;
-import com.compositesw.services.system.util.common.AttributeTypeValueMap.Entry;
 
 /**
  * Privilege module implements the ability to get and set privileges using the HTTP adapter style

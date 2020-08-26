@@ -1013,10 +1013,8 @@ public class TriggerManagerImpl implements TriggerManager {
 			logger.debug("Schedule Id listed in Trigger: " + scheduleId);
 		}
 		
-		int loopCount = 0;
 		scheduleList = getTriggerSchedules(triggerScheduleListType);
 		for (TriggerScheduleType triggerSchedule : scheduleList) {
-			loopCount++;
 			if(triggerSchedule.getScheduleId().equals(scheduleId)) {
 				matchingSchedule = triggerSchedule;
 				if(logger.isDebugEnabled()){

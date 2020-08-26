@@ -1253,6 +1253,7 @@ public class RegressionManagerUtils {
 	                stmt.getMoreResults();
 	                rs = stmt.getResultSet();
 	            }
+	            if (rs != null) {rs.close();}
 	        }
 			catch (SQLException e)
 			{
@@ -1279,7 +1280,7 @@ public class RegressionManagerUtils {
 		} else {
 			logger.info("\n\nWARNING - NO_OPERATION: COMMAND ["+command+"], ACTION ["+actionName+"] WAS NOT PERFORMED.\n");						
 		}
-		
+
 		// <rows>:<firstRowLatency>
 		result = ""+rows+":"+firstRowLatency;
 		return result;

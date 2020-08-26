@@ -18,12 +18,11 @@ agreement with TIBCO.
 
 PURPOSE
 =======
-The Promotion and Deployment Tool (PDTool) supports Data Virtualization (DV) and consists of three major components:
-1.	PDTool Studio – PDTool Studio provides DV Studio Version Control System (VCS) integration with easy-to-configure scripts.
-2.	PDTool – PDTool provides an out-of-the-box, automated, configurable, promotion and deployment tool-kit to allow customers 
+The Promotion and Deployment Tool (PDTool) supports Data Virtualization (DV) and consists of two major components:
+1.	PDTool – PDTool provides an out-of-the-box, automated, configurable, promotion and deployment tool-kit to allow customers 
 	to promote DV resources to target DV servers such as test and production.  This capability seeks to satisfy 90% of customer’s 
 	requirements for promoting DV resources from one environment to another without the customer having to write any custom scripts.
-3.	PDTool Testing – PDTool Regression Module provide the ability to perform testing against on a target DV server.  
+2.	PDTool Testing – PDTool Regression Module provide the ability to perform testing against on a target DV server.  
 	Testing can be broken down into these primary areas:
 	o	Functional Testing – test whether a published virtual view, procedure or web service is functional.  
 		This is a basic smoke test.

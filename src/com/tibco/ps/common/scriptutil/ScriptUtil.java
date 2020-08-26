@@ -105,6 +105,7 @@ public class ScriptUtil {
 				Writer out = new OutputStreamWriter(new FileOutputStream(commandOutputFile));
 				out.write(sb.toString());
 				out.flush();
+				out.close();
 			} catch (FileNotFoundException e) {
 				logger.error("Could not wirte to command file "+commandOutputFile, e);
 				throw new ValidationException(e.getMessage(),e);
@@ -276,6 +277,7 @@ public class ScriptUtil {
 			System.out.println("");
 			CommonUtils.writeOutput("Property File Contents For ["+propertyFilePath+"]",prefix,"-debug1",logger,debug1,false,false);
 			CommonUtils.writeOutput(fileContents,prefix,"-debug1",logger,debug1,false,false);
+			out.close();
 			
 		} catch (FileNotFoundException e) {
 			logger.error("Could not wirte to property file "+propertyFilePath, e);

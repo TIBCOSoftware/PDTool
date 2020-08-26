@@ -25,8 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import com.tibco.ps.common.util.CompositeLogger;
-
 public class ScriptStreamHandler extends Thread {
 	
 	InputStream inputStream;

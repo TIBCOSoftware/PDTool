@@ -26,7 +26,7 @@ REM # 2. Variable Usage:
 REM #      a. Variables with a single % are variables from the command window environment that gets resolved immediately or
 REM #            variables within this setup batch file that the person insalling wants to use.
 REM #            Example 1: %USERNAME% is an example of a variable set in by the command window automaticaly.
-REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool7.0.0_SVN
+REM #                set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool8.0.0_SVN
 REM #            Example 2: %DEF_VCS_WORKSPACE_NAME%t is used to construct the temporary workspace name from the workspace name
 REM #                set DEF_VCS_TEMP_DIR=%%%%PDTOOL_SUBSTITUTE_DRIVE%%%%\%DEF_VCS_WORKSPACE_NAME%t
 REM #
@@ -48,11 +48,11 @@ REM #      d. PDTool copies installer source files to the target PDTool director
 REM #      e. PDTool copies default setMyPrePDToolVars.bat and setMyPostPDToolVars.bat to the target PDTool installation home directory.
 REM #      f. PDTool modifes the following files:
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\setMyPrePDToolVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\setMyPrePDToolVars.bat
+REM #              Example: C:\Users\username\PDTool8.0.0_SVN\setMyPrePDToolVars.bat
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\%DEF_PDTOOL_DESTINATION_DIR%\bin\setVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\PDTool\bin\setVars.bat
+REM #              Example: C:\Users\username\PDTool8.0.0_SVN\PDTool\bin\setVars.bat
 REM #           %DEF_PDTOOL_DESTINATION_HOME%\%DEF_PDTOOL_DESTINATION_DIR%\AutomatedTestFramework\regression\bin\setVars.bat
-REM #              Example: C:\Users\username\PDTool7.0.0_SVN\PDTool\AutomatedTestFramework\regression\bin\setVars.bat
+REM #              Example: C:\Users\username\PDTool8.0.0_SVN\PDTool\AutomatedTestFramework\regression\bin\setVars.bat
 REM #      g. PDTool encrypts setMyPrePDToolVars.bat
 REM #      h. If VCS configuration, PDTool removes the workspace directory.
 REM #      i. If VCS configuration and VCS is TFS, PDTool requests use to accept TFS eula agreement
@@ -64,9 +64,9 @@ REM # Force SetupPDTool.bat to use default values when present and bypass prompt
 REM # Set to "Y" to bypass prompting for defaults values that are set with a value.
 set DEF_FORCE_PROMPT_BYPASS=Y
 REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
-set DEF_JAVA_HOME=C:\Program Files\Java\jre7
+set DEF_JAVA_HOME=C:\Program Files\Java\jre8
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDTool installation folder.
-set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool7.0.0_NOVCS
+set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool8.0.0_NOVCS
 REM # Default for I_PDTOOL_DESTINATION_DIR.  This is the default PDTool directory name.
 set DEF_PDTOOL_DESTINATION_DIR=PDTool
 REM # Default for I_VALID_ENV_CONFIG_PAIRS
@@ -74,7 +74,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Applicable to NOVCS and VCS installations.
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: NDEV~deploy_NOVCS_DEV,NUAT~deploy_NOVCS_UAT,NPROD~deploy_NOVCS_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -87,7 +87,7 @@ REM # Default for I_CIS_DOMAIN.  CIS Domain used for connection by CIS_USERNAME
 set DEF_CIS_DOMAIN=composite
 REM # Default for I_CONFIGURE_VCS
 set DEF_CONFIGURE_VCS=N
-REM # Default for I_VCS_BASE_TYPE=[SVN|TFS|GIT|P4|CVS]
+REM # Default for I_VCS_BASE_TYPE=[SVN|TFS|GIT|P4]
 set DEF_VCS_BASE_TYPE=
 REM # Default for I_VCS_EDITOR. Windows=notepad and UNIX=vi
 set DEF_VCS_EDITOR=

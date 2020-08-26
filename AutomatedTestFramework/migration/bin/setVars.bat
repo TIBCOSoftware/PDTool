@@ -25,31 +25,31 @@ REM #
 REM # Set environment variables
 REM # 
 REM ########################################################
-REM BEGIN: 6.2 USER DEFINED VARIABLE SECTION
-REM ########################################################
-REM # Set environment variables for PDTool 6.2
-REM # 
-REM # Set the location of PDTool 6.2
-set PDTOOL_INSTALL_HOME_6=..\..\..\
-REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
-REM # These are the property file names configured in the PDTool6.2\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS_6=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
-REM ########################################################
-REM END: 6.2 USER DEFINED VARIABLE SECTION
-REM ########################################################
-
-REM ########################################################
 REM BEGIN: 7.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
 REM # Set environment variables for PDTool 7.0
 REM # 
 REM # Set the location of PDTool 7.0
-set PDTOOL_INSTALL_HOME_7=..\..\..\
+set PDTOOL_INSTALL_HOME_SOURCE=..\..\..\
 REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
-REM # These are the property file names configured in the PDTool7.0.0\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS_7=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+REM # These are the property file names configured in the PDTool7.0\resources\config folder minus the .properties extension.
+set VALID_ENV_CONFIG_PAIRS_SOURCE=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
 REM ########################################################
 REM END: 7.0 USER DEFINED VARIABLE SECTION
+REM ########################################################
+
+REM ########################################################
+REM BEGIN: 8.0 USER DEFINED VARIABLE SECTION
+REM ########################################################
+REM # Set environment variables for PDTool 8.0
+REM # 
+REM # Set the location of PDTool 8.0
+set PDTOOL_INSTALL_HOME_TARGET=..\..\..\
+REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
+REM # These are the property file names configured in the PDTool8.0.0\resources\config folder minus the .properties extension.
+set VALID_ENV_CONFIG_PAIRS_TARGET=DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
+REM ########################################################
+REM END: 8.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
 
 REM ########################################################
@@ -61,7 +61,7 @@ REM # Automated Test Framework Home.  This folder may be independent of where PD
 set ATF_HOME=..\..\..\AutomatedTestFramework\migration
 REM # Used by copyPlanTemplates.bat
 REM # Set JAVA_HOME to JRE7
-if not defined JAVA_HOME set JAVA_HOME=C:\Program Files\Java\jre7
+if not defined JAVA_HOME set JAVA_HOME=C:\Program Files\Java\jre8
 REM # Used by copyPlanTemplates.bat
 REM # Use one or the other or provide your own text editor path.  
 REM #    If you have notepad++ it is a much better editor than notepad.
@@ -74,8 +74,8 @@ set SCRIPT_ACTIVITY=Execute Migration Test
 REM # Set the release folders to indicate which version is being tested
 REM #   Release folder 1 is designated as the CIS 6 instance migrating from.  R1 designates it is a release 1 primary folder.
 REM #   Release folder 2 is designated as the CIS 7 instance migrating to.  R1 designates it is a release 1 primary folder.
-set RELEASE_FOLDER1=626R1
-set RELEASE_FOLDER2=701R1
+set RELEASE_FOLDER1=708R1
+set RELEASE_FOLDER2=830R1
 REM # Debug=Y or N.  Default=N
 set DEBUG=N
 REM ########################################################
@@ -103,20 +103,20 @@ REM #    placed into the .xsl file for that variable.  In effect, this satisfies
 REM #    be found in the source file.
 REM #
 REM # CIS Path Version 1
-set CIS_PATH_PREV_VERSION_1="CIS_6.2"
-set CIS_PATH_NEW_VERSION_1="CIS_7.0"
+set CIS_PATH_PREV_VERSION_1="CIS_7.0"
+set CIS_PATH_NEW_VERSION_1="CIS_8.0"
 REM # CIS Path Version 2
-set CIS_PATH_PREV_VERSION_2="6.2.5"
-set CIS_PATH_NEW_VERSION_2="7.0.0"
+set CIS_PATH_PREV_VERSION_2="7.0.5"
+set CIS_PATH_NEW_VERSION_2="8.0.0"
 REM # CIS Path Version 3
-set CIS_PATH_PREV_VERSION_3="6.2.6"
-set CIS_PATH_NEW_VERSION_3="7.0.0"
+set CIS_PATH_PREV_VERSION_3="7.0.6"
+set CIS_PATH_NEW_VERSION_3="8.0.0"
 REM # CIS Path Version 4
-set CIS_PATH_PREV_VERSION_4=""
-set CIS_PATH_NEW_VERSION_4=""
+set CIS_PATH_PREV_VERSION_4="7.0.7"
+set CIS_PATH_NEW_VERSION_4="8.0.0"
 REM # CIS Path Version 5
-set CIS_PATH_PREV_VERSION_5=""
-set CIS_PATH_NEW_VERSION_5=""
+set CIS_PATH_PREV_VERSION_5="7.0.8"
+set CIS_PATH_NEW_VERSION_5="8.0.0"
 REM XSL Transformation script
-set XSL_TRANSFORM_SCRIPT=ServerAttributes_Transform_62_to_70.xsl
+set XSL_TRANSFORM_SCRIPT=ServerAttributes_Transform_70_to_80.xsl
 

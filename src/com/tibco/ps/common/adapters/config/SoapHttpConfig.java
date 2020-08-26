@@ -35,7 +35,6 @@ import org.w3c.dom.NodeList;
 import com.tibco.ps.common.adapters.common.AdapterConstants;
 import com.tibco.ps.common.adapters.common.AdapterException;
 import com.tibco.ps.common.adapters.common.SoapHttpConnectorCallback;
-import com.tibco.ps.common.adapters.config.ConnectorConfig;
 import com.tibco.ps.common.adapters.protocol.AdapterProxy;
 
 /**
@@ -48,12 +47,8 @@ public class SoapHttpConfig implements ConnectorConfig {
 	private HashMap<String,String> connEndpoints					= new HashMap<String,String>();
 	private AdapterConfig config;
 	private String name;
-	private String endpoint;
 	private String nsUrl;
 	private String nsPrefix;
-	private int retryAttempts;
-	private int maxClients;
-	private int minClients;
 	private boolean validated;
 	private AdapterProxy proxyConfig;
 	

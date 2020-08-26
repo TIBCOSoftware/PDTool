@@ -18,15 +18,11 @@
  */
 package com.tibco.cmdline.vcs.spi;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Map;
 
 import com.tibco.cmdline.vcs.spi.git.GITLifecycleListener;
-import com.tibco.ps.common.exception.ApplicationException;
 import com.tibco.ps.common.util.CommonUtils;
 import com.compositesw.common.vcs.primitives.IOPrimitives;
 import com.compositesw.common.vcs.primitives.ProcessPrimitives;

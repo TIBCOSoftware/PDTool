@@ -16,5 +16,5 @@ REM # If you would like to obtain assistance with this software, such assistance
 REM # agreement with TIBCO.
 REM #
 REM ############################################################################################################################
-REM # CIS version [6.2, 7.0.0]
+REM # CIS version [7.0.0,8.0.0]
 set DEFAULT_CIS_VERSION=@version@

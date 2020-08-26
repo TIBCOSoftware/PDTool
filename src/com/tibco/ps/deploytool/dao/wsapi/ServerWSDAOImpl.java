@@ -36,7 +36,6 @@ import com.tibco.ps.deploytool.dao.ServerDAO;
 import com.tibco.ps.deploytool.util.DeployUtil;
 import com.compositesw.services.system.admin.ServerPortType;
 import com.compositesw.services.system.admin.server.LicenseList;
-import com.compositesw.services.system.util.common.AttributeDefList;
 import com.cs.admin.monitor.MonitorConnectionFactory;
 
 public class ServerWSDAOImpl implements ServerDAO {

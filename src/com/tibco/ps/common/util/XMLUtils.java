@@ -126,7 +126,7 @@ public class XMLUtils {
 			FileWriter fw = new FileWriter(xmlFilePath);
 			fw.write(sw.toString());
 			fw.flush();
-			
+			fw.close();
 		} catch (Throwable t) {
 			CompositeLogger.logException(t, t.getMessage());
 			throw new CompositeException(t);

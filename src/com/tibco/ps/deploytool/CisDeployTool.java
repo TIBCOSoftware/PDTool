@@ -572,6 +572,7 @@ public class CisDeployTool {
 				} // end outer if-then-else
 			
 			} // end while loop
+			if (reader != null) {reader.close();}
 			
 			if (!exitOrchestrationOnError) { // Do Not Exit On Error
 				/*****************************************
@@ -610,7 +611,7 @@ public class CisDeployTool {
 
             	throw new ApplicationException("Exiting Script with error.  ERROR="+message);
 			}
-			
+			if (reader != null) {reader.close();}	
 		} catch (ValidationException e) {
 			throw new CompositeException(e.getMessage(),e);
 		} catch (ApplicationException e) {

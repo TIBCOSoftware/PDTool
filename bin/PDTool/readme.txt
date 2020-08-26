@@ -31,7 +31,7 @@ Build
 /bin/PDTool - this is the master folder.  All edits should be done in this folder.
 
 Edits should be performed manually on the ExecutePDTool.template.bat and ExecutePDTool.template.sh because of the version variable that are replaced at build time.
-# CIS version [6.2, 7.0.0]
+# CIS version [7.0.0,8.0.0]
 set DEFAULT_CIS_VERSION=@version@
     
 The build automatically creates PDTool.zip distribution file which will contain the correct

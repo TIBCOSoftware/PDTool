@@ -99,8 +99,8 @@ if defined DEBUG set DEBUG=!DEBUG:"=!
 if defined XSL_PERFORM set XSL_PERFORM=!XSL_PERFORM:"=!
 if defined XSL_TRANSFORM_SCRIPT set XSL_TRANSFORM_SCRIPT=!XSL_TRANSFORM_SCRIPT:"=!
 REM # mtinius - All references to XSL_FROM_CIS_VERSION are commented out but left in tact if determined to be useful.
-REM #    script_test_62.bat:  set XSL_FROM_CIS_VERSION=6.2
-REM #    script_test_70.bat:  set XSL_FROM_CIS_VERSION=6.2
+REM #    script_test_70.bat:  set XSL_FROM_CIS_VERSION=7.0
+REM #    script_test_80.bat:  set XSL_FROM_CIS_VERSION=7.0
 REM #    script_test_transform.bat - no references required
 rem if defined XSL_FROM_CIS_VERSION set XSL_FROM_CIS_VERSION=!XSL_FROM_CIS_VERSION:"=!
 if defined SOURCE_SERVER_ATTRIBUTE_FILENAME set SOURCE_SERVER_ATTRIBUTE_FILENAME=!SOURCE_SERVER_ATTRIBUTE_FILENAME:"=!
@@ -513,11 +513,11 @@ ENDLOCAL &set ERROR=%ERROR%
 REM # Initialize variables
 set ATF_HOME=
 set PDTOOL_INSTALL_HOME=
-set PDTOOL_INSTALL_HOME_6=
 set PDTOOL_INSTALL_HOME_7=
+set PDTOOL_INSTALL_HOME_8=
 set VALID_ENV_CONFIG_PAIRS=
-set VALID_ENV_CONFIG_PAIRS_6=
 set VALID_ENV_CONFIG_PAIRS_7=
+set VALID_ENV_CONFIG_PAIRS_8=
 set EDITOR=
 set SCRIPT_ACTIVITY=
 set RELEASE_FOLDER1=

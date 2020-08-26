@@ -8,10 +8,10 @@ REM #
 REM # I_PDTOOL_INSTALL_TYPE - [PDTool or PDToolStudio]. Determine which installer type to use.
 REM # I_PDTOOL_INSTALL_HOME - The location of the PDTool installation scripts.
 REM # I_JAVA_HOME - The JRE Home used for executing java. e.g. C:\Program Files\Java\jre6
-REM # I_PDTOOL_DESTINATION_HOME - The home folder for the PDTool installation and associated binaries. e.g. C:\Users\%USERNAME%\.compositesw\PDTool7.0.0_SVN
-REM # I_PDTOOL_DESTINATION_DIR - The PDTool directory name.  e.g. PDTool7.0.0
+REM # I_PDTOOL_DESTINATION_HOME - The home folder for the PDTool installation and associated binaries. e.g. C:\Users\%USERNAME%\.compositesw\PDTool8.0.0_SVN
+REM # I_PDTOOL_DESTINATION_DIR - The PDTool directory name.  e.g. PDTool8.0.0
 REM # I_CONFIGURE_VCS - [Y or N] - Y=Install PDTool with VCS. N=Install PDTool with no VCS such as for regression testing only.
-REM # I_VCS_BASE_TYPE - The version control type [SVN|TFS|GIT|P4|CVS]
+REM # I_VCS_BASE_TYPE - The version control type [SVN|TFS|GIT|P4]
 REM # I_VCS_HOME - The location of the VCS executable.
 REM # I_VCS_REPOSITORY_URL - The version control repository URL.
 REM # I_VCS_PROJECT_ROOT - The version control project root folder.
@@ -372,7 +372,7 @@ if "%debug%"=="1" echo [DEBUG] INPUT REQUEST/VALIDATE:  I_VCS_BASE_TYPE=!I_VCS_B
 if defined I_VCS_BASE_TYPE goto NEXT_VALIDATION1_1
    echo.
    echo.
-   echo.       I_VCS_BASE_TYPE=[SVN,TFS,GIT,P4,CVS]
+   echo.       I_VCS_BASE_TYPE=[SVN,TFS,GIT,P4]
    echo.
    set /P I_VCS_BASE_TYPE=Enter I_VCS_BASE_TYPE [%DEF_VCS_BASE_TYPE%]: 
    if not defined I_VCS_BASE_TYPE set I_VCS_BASE_TYPE=%DEF_VCS_BASE_TYPE%
@@ -382,8 +382,7 @@ if defined I_VCS_BASE_TYPE goto NEXT_VALIDATION1_1
    if "%I_VCS_BASE_TYPE%"=="TFS" set I_VCS_BASE_TYPE_VALID=1
    if "%I_VCS_BASE_TYPE%"=="GIT" set I_VCS_BASE_TYPE_VALID=1
    if "%I_VCS_BASE_TYPE%"=="P4" set I_VCS_BASE_TYPE_VALID=1
-   if "%I_VCS_BASE_TYPE%"=="CVS" set I_VCS_BASE_TYPE_VALID=1
-   if %I_VCS_BASE_TYPE_VALID%==0 echo.ERROR: Invalid VCS_TYPE=%I_VCS_BASE_TYPE%.  Valid types=[SVN,TFS,GIT,P4,CVS]
+   if %I_VCS_BASE_TYPE_VALID%==0 echo.ERROR: Invalid VCS_TYPE=%I_VCS_BASE_TYPE%.  Valid types=[SVN,TFS,GIT,P4]
    if %I_VCS_BASE_TYPE_VALID%==0 set I_VCS_BASE_TYPE_VALID=
    goto VALIDATE_INPUT3
 
@@ -422,8 +421,6 @@ if not defined I_VCS_REPOSITORY_URL (
    if "%I_VCS_BASE_TYPE%"=="P4" echo.            When P4: The subversion repository path at trunk or any folder designation within trunk.
    if "%I_VCS_BASE_TYPE%"=="P4" echo.                      e.g. hostname:port
 
-   if "%I_VCS_BASE_TYPE%"=="CVS" echo.            When CVS: The subversion repository path at trunk or any folder designation within trunk.
-   if "%I_VCS_BASE_TYPE%"=="CVS" echo.                      e.g. :pserver:user1:password@remotehost:2401/home/cvs
    echo.
    set /P I_VCS_REPOSITORY_URL=Enter I_VCS_REPOSITORY_URL [!DEF_VCS_REPOSITORY_URL!]: 
    if not defined I_VCS_REPOSITORY_URL set I_VCS_REPOSITORY_URL=!DEF_VCS_REPOSITORY_URL!
@@ -1619,18 +1616,16 @@ if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 :INSTALLER_CIS_DOMAIN_BYPASS
 
 REM #---------------------------------------
-REM # Setup VCS [SVN,TFS,GIT,P4,CVS]
+REM # Setup VCS [SVN,TFS,GIT,P4]
 REM #---------------------------------------
 set SVN_HOME=
 set TFS_HOME=
 set GIT_HOME=
 set P4_HOME=
-set CVS_HOME=
 if "%I_VCS_BASE_TYPE%"=="SVN" set SVN_HOME=%I_VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="TFS" set TFS_HOME=%I_VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="GIT" set GIT_HOME=%I_VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="P4"  set P4_HOME=%I_VCS_HOME%
-if "%I_VCS_BASE_TYPE%"=="CVS" set CVS_HOME=%I_VCS_HOME%
 if "%I_VCS_BASE_TYPE%"=="" (
 	REM #---------------------------------------
 	REM # Set NOVCS_VALID_ENV_CONFIG_PAIRS
@@ -1651,7 +1646,7 @@ if "%I_VCS_BASE_TYPE%"=="" (
 )
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_PRINT
+REM # Set [SVN,TFS,GIT,P4]_PRINT
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_PRINT" in %MODIFY_SET_MY_PRE_VARS%
@@ -1668,7 +1663,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_HOME
+REM # Set [SVN,TFS,GIT,P4]_HOME
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_HOME" in %MODIFY_SET_MY_PRE_VARS%
@@ -1684,7 +1679,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_REPOSITORY_URL
+REM # Set [SVN,TFS,GIT,P4]_VCS_REPOSITORY_URL
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_REPOSITORY_URL" in %MODIFY_SET_MY_PRE_VARS%
@@ -1700,7 +1695,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_PROJECT_ROOT
+REM # Set [SVN,TFS,GIT,P4]_VCS_PROJECT_ROOT
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PROJECT_ROOT" in %MODIFY_SET_MY_PRE_VARS%
@@ -1716,7 +1711,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_WORKSPACE_HOME
+REM # Set [SVN,TFS,GIT,P4]_VCS_WORKSPACE_HOME
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME" in %MODIFY_SET_MY_PRE_VARS%
@@ -1732,7 +1727,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_WORKSPACE_NAME
+REM # Set [SVN,TFS,GIT,P4]_VCS_WORKSPACE_NAME
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME" in %MODIFY_SET_MY_PRE_VARS%
@@ -1748,7 +1743,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_TEMP_DIR
+REM # Set [SVN,TFS,GIT,P4]_VCS_TEMP_DIR
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_TEMP_DIR" in %MODIFY_SET_MY_PRE_VARS%
@@ -1764,7 +1759,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_USERNAME
+REM # Set [SVN,TFS,GIT,P4]_VCS_USERNAME
 REM #---------------------------------------
 REM # Trim the domain before using it
 SETLOCAL ENABLEDELAYEDEXPANSION
@@ -1785,7 +1780,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VCS_PASSWORD
+REM # Set [SVN,TFS,GIT,P4]_VCS_PASSWORD
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_PASSWORD" in %MODIFY_SET_MY_PRE_VARS%
@@ -1817,7 +1812,7 @@ endlocal& set ERROR=%ERROR%
 if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 
 REM #---------------------------------------
-REM # Set [SVN,TFS,GIT,P4,CVS]_VALID_ENV_CONFIG_PAIRS
+REM # Set [SVN,TFS,GIT,P4]_VALID_ENV_CONFIG_PAIRS
 REM #---------------------------------------
 echo.
 echo.Replace "%I_VCS_BASE_TYPE%_VALID_ENV_CONFIG_PAIRS" in %MODIFY_SET_MY_PRE_VARS%

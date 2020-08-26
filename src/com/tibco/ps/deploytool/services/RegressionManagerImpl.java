@@ -2731,6 +2731,7 @@ logger.info(CommonUtils.rpad("   Regression comparsion duration: " + duration, l
 					queryBuilderWithSep.append(ls);
 				}
 			}
+			if (reader != null) {reader.close();}
 		} catch (FileNotFoundException e) {
 			throw new CompositeException(e.getMessage(),e);
 		} catch (IOException e) {

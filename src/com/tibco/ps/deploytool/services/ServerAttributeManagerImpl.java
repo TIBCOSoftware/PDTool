@@ -55,17 +55,7 @@ import com.tibco.ps.deploytool.modules.ServerAttributeValueMap;
 import com.tibco.ps.deploytool.modules.ServerAttributeValueMapEntryKeyType;
 import com.tibco.ps.deploytool.modules.ServerAttributeValueMapEntryType;
 import com.tibco.ps.deploytool.modules.ServerAttributeValueMapEntryValueType;
-import com.compositesw.services.system.util.common.Attribute;
-import com.compositesw.services.system.util.common.AttributeList;
-import com.compositesw.services.system.util.common.AttributeSimpleValueList;
-import com.compositesw.services.system.util.common.AttributeType;
-import com.compositesw.services.system.util.common.AttributeTypeValue;
-import com.compositesw.services.system.util.common.AttributeTypeValueList;
-import com.compositesw.services.system.util.common.AttributeTypeValueMap;
-import com.compositesw.services.system.util.common.AttributeDef;
-import com.compositesw.services.system.util.common.AttributeDefList;
 import com.compositesw.services.system.util.common.AttributeUpdateRule;
-import com.compositesw.services.system.util.common.AttributeTypeValueMap.Entry;
 
 public class ServerAttributeManagerImpl implements ServerAttributeManager{
 

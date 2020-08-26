@@ -26,7 +26,7 @@ REM #
 REM # Instructions: 
 REM #    1. Modify variables as needed.
 REM #    2. Add new variables to the function :writeOutput at the bottom of this batch file when new variables are added.
-REM #    3. Copy this file to a location outside of the PDToolStudio installation so that it is not overwritten during upgrade.
+REM #    3. Copy this file to a location outside of the PDTool installation so that it is not overwritten during upgrade.
 REM #    4. Modify setVars.bat "MY_VARS_HOME" variable to point to the directory that contains this file.
 REM #    5. To encrypt the password in this file:
 REM #       a) Open a windows command line
@@ -43,15 +43,14 @@ REM # 0=Do not print this section, 1 or true=Print this section
 set GEN_PRINT=1
 REM # My Java Home
 set MY_JAVA_HOME=
-REM # PDTool Studio Substitute Drive Letter used for making the path shorter
-REM # PDTool and PDTool Studio must use different drive letters.
+REM # PDTool Substitute Drive Letter used for making the path shorter
 set PDTOOL_SUBSTITUTE_DRIVE=
 REM # PDTool Installation Home Directory
 set PDTOOL_INSTALL_HOME=
 REM # PDTool Home directory
 set PDTOOL_HOME=
-REM # Name of the configuration property file located in PDToolStudio62/resources/config
-REM #    e.g. Default=studio.properties or SVN=studio_SVN.properties or TFS=studio_TFS.properties
+REM # Name of the configuration property file located in PDTool/resources/config
+REM #    e.g. Default=deploy.properties or SVN=deploy_SVN.properties or TFS=deploy_TFS.properties
 set MY_CONFIG_PROPERTY_FILE=
 REM # The editor to use for VCS viewing if needed.  Windows=notepad and UNIX=vi
 set VCS_EDITOR=
@@ -61,7 +60,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: NDEV~deploy_NOVCS_DEV,NUAT~deploy_NOVCS_UAT,NPROD~deploy_NOVCS_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -120,7 +119,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: TDEV~deploy_TFS_DEV,TUAT~deploy_TFS_UAT,TPROD~deploy_TFS_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -176,7 +175,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: SDEV~deploy_SVN_DEV,SUAT~deploy_SVN_UAT,SPROD~deploy_SVN_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -232,7 +231,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: GDEV~deploy_GIT_DEV,GUAT~deploy_GIT_UAT,GPROD~deploy_GIT_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -288,7 +287,7 @@ REM # These pairs provide the ability to use a short environment name in place o
 REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: PDEV~deploy_P4_DEV,PUAT~deploy_P4_UAT,PPROD~deploy_P4_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
+REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
@@ -313,62 +312,6 @@ REM # Check the release VCS temporary directory is set from ExecutePDToolRelease
 if defined REL_VCS_TEMP_DIR           set P4_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
 REM # Check the valid environment configuration pairs is set from ExecutePDToolRelease.bat
 if defined REL_VALID_ENV_CONFIG_PAIRS set P4_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
-REM #
-REM ################################
-REM # CVS VARIABLES
-REM ################################
-REM # 0=Do not print this section, 1 or true=Print this section
-set CVS_PRINT=0
-if "%REL_VCS_TYPE%"=="CVS" set CVS_PRINT=1
-REM # The Perforce Home folder where VCS client exists
-set CVS_HOME=
-REM # The subversion repository path at trunk or any folder designation within trunk
-set CVS_VCS_REPOSITORY_URL=
-REM # The Subversion folder path starting directly after the Subversion repo URL and ending where the DV base level root folders start
-set CVS_VCS_PROJECT_ROOT=
-REM # Subversion user name
-set CVS_VCS_USERNAME=
-REM # Subversion user password.  See notes at top of this file to encrypt.
-set CVS_VCS_PASSWORD=
-REM # Set the workspace home if applicable.  This variable points to the file system location parent folder to VCS_WORKSPACE_NAME
-REM # e.g. If the workspace is in the PDTOOL_HOME then use the shortest path: %PDTOOL_SUBSTITUTE_HOME%
-set CVS_VCS_WORKSPACE_HOME=
-REM # Set the VCS Workspace name.  e.g. CVSww7
-set CVS_VCS_WORKSPACE_NAME=
-REM # Set the VCS TEMP directory by adding a "t" to the end of the concatenated workspace home and workspace name
-REM # e.g. %CVS_VCS_WORKSPACE_HOME%\%CVS_VCS_WORKSPACE_NAME%t
-set CVS_VCS_TEMP_DIR=
-REM #
-REM # CVS ENVIRONMENT-CONFIG PROPERTY PAIRS
-REM # These pairs provide the ability to use a short environment name in place of the configuration property name when instructing PDTool on which environment to deploy to.
-REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: CDEV~deploy_CVS_DEV,CUAT~deploy_CVS_UAT,CPROD~deploy_CVS_PROD
-REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
-REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
-REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4,C=CVS
-REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
-REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
-REM #    Configuration property file names found in PDTool\resources\config folder.
-REM #    It is up to the PDTool installer to modify these pairs to match your environment.
-set CVS_VALID_ENV_CONFIG_PAIRS=
-REM #
-REM # ExecutePDToolRelease.bat OVERRIDE SECTION
-REM #
-REM # Check the release VCS repository URL is set from ExecutePDToolRelease.bat
-if defined REL_VCS_REPOSITORY_URL     set CVS_VCS_REPOSITORY_URL=%REL_VCS_REPOSITORY_URL%
-REM # Check the release VCS project root is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PROJECT_ROOT       set CVS_VCS_PROJECT_ROOT=%REL_VCS_PROJECT_ROOT%
-REM # Check the release VCS username is set from ExecutePDToolRelease.bat
-if defined REL_VCS_USERNAME           set CVS_VCS_USERNAME=%REL_VCS_USERNAME%
-REM # Check the release VCS user password is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PASSWORD           set CVS_VCS_PASSWORD=%REL_VCS_PASSWORD%
-REM # Check the release VCS workspace home is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_HOME     set CVS_VCS_WORKSPACE_HOME=%REL_VCS_WORKSPACE_HOME%
-REM # Check the release VCS workspace name is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_NAME     set CVS_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
-REM # Check the release VCS temporary directory is set from ExecutePDToolRelease.bat
-if defined REL_VCS_TEMP_DIR           set CVS_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
-REM # Check the valid environment configuration pairs is set from ExecutePDToolRelease.bat
-if defined REL_VALID_ENV_CONFIG_PAIRS set CVS_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
 REM #
 REM #=======================================================================================================
 REM # CREATE/MODIFY VARIABLES ABOVE THIS POINT
@@ -407,7 +350,6 @@ if "%TFS_PRINT%"=="true" set TFS_PRINT=1
 if "%SVN_PRINT%"=="true" set SVN_PRINT=1
 if "%GIT_PRINT%"=="true" set GIT_PRINT=1
 if "%P4_PRINT%"=="true"  set P4_PRINT=1
-if "%CVS_PRINT%"=="true" set CVS_PRINT=1
 SETLOCAL ENABLEDELAYEDEXPANSION
 REM # LF must have 2 blank lines following it to create a line feed
 set LF=^
@@ -496,21 +438,6 @@ set MSG=!MSG!P4_VCS_WORKSPACE_HOME       =!P4_VCS_WORKSPACE_HOME!!LF!
 set MSG=!MSG!P4_VCS_WORKSPACE_NAME       =!P4_VCS_WORKSPACE_NAME!!LF!
 set MSG=!MSG!P4_VCS_TEMP_DIR             =!P4_VCS_TEMP_DIR!!LF!
 set MSG=!MSG!P4_VALID_ENV_CONFIG_PAIRS   =!P4_VALID_ENV_CONFIG_PAIRS!!LF!
-)
-if "%CVS_PRINT%"=="1" (
-set MSG=!MSG!------------------!LF!
-set MSG=!MSG!CVS VARIABLES!LF!
-set MSG=!MSG!------------------!LF!
-set MSG=!MSG!CVS_HOME                    =!CVS_HOME!!LF!
-set MSG=!MSG!CVS_VCS_REPOSITORY_URL      =!CVS_VCS_REPOSITORY_URL!!LF!
-set MSG=!MSG!CVS_VCS_PROJECT_ROOT        =!CVS_VCS_PROJECT_ROOT!!LF!
-set MSG=!MSG!CVS_VCS_USERNAME            =!CVS_VCS_USERNAME!!LF!
-CALL:printablePassword "%CVS_VCS_PASSWORD%" PR_PASSWORD
-set MSG=!MSG!CVS_VCS_PASSWORD            =!PR_PASSWORD!!LF!
-set MSG=!MSG!CVS_VCS_WORKSPACE_HOME      =!CVS_VCS_WORKSPACE_HOME!!LF!
-set MSG=!MSG!CVS_VCS_WORKSPACE_NAME      =!CVS_VCS_WORKSPACE_NAME!!LF!
-set MSG=!MSG!CVS_VCS_TEMP_DIR            =!CVS_VCS_TEMP_DIR!!LF!
-set MSG=!MSG!CVS_VALID_ENV_CONFIG_PAIRS  =!CVS_VALID_ENV_CONFIG_PAIRS!!LF!
 )
 echo.!MSG!
 REM # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.bat

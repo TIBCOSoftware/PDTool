@@ -26,43 +26,43 @@ REM #
 REM # Set environment variables
 REM # 
 REM ########################################################
-REM BEGIN: 6.2 USER DEFINED VARIABLE SECTION
+REM BEGIN: 7.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
-REM # Set environment variables for PDTool 6.2
+REM # Set environment variables for PDTool 7.0 [test SOURCE server]
 REM # 
-REM # Set the location of PDTool 6.2
-set PDTOOL_INSTALL_HOME_6=..\..\..\
+REM # Set the location of PDTool 7.0
+set PDTOOL_INSTALL_HOME_SOURCE=..\..\..\
 REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
-REM # These are the property file names configured in the PDTool6.2\resources\config folder minus the .properties extension.
+REM # These are the property file names configured in the PDTool7.0\resources\config folder minus the .properties extension.
 REM #  Example: DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
-set VALID_ENV_CONFIG_PAIRS_6=
+set VALID_ENV_CONFIG_PAIRS_SOURCE=
 REM Set the release folders to indicate which version is being tested
 REM   Release folder 1 is designated as the CIS instance current folder.  R1 designates it is a release 1 primary, current folder.
 REM   Release folder 2 is designated as the CIS instance previous folder.  R2 designates it is a release 2 secondary, previous folder.
-set RELEASE_FOLDER1_6=626R1
-set RELEASE_FOLDER2_6=626R2
+set RELEASE_FOLDER1_SOURCE=708R1
+set RELEASE_FOLDER2_SOURCE=708R2
 REM ########################################################
-REM END: 6.2 USER DEFINED VARIABLE SECTION
+REM END: 7.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
 
 REM ########################################################
-REM BEGIN: 7.0 USER DEFINED VARIABLE SECTION
+REM BEGIN: 8.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
-REM # Set environment variables for PDTool 7.0
+REM # Set environment variables for PDTool 8.0 [test TARGET server]
 REM # 
-REM # Set the location of PDTool 7.0
-set PDTOOL_INSTALL_HOME_7=..\..\..\
+REM # Set the location of PDTool 8.0
+set PDTOOL_INSTALL_HOME_TARGET=..\..\..\
 REM # List of valid Environments~Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
-REM # These are the property file names configured in the PDTool7.0.0\resources\config folder minus the .properties extension.
+REM # These are the property file names configured in the PDTool8.0.0\resources\config folder minus the .properties extension.
 REM #  Example: DEV~deploy_NOVCS_DEV1,UAT~deploy_NOVCS_UAT1,PROD~deploy_NOVCS_PROD1
-set VALID_ENV_CONFIG_PAIRS_7=
+set VALID_ENV_CONFIG_PAIRS_TARGET=
 REM Set the release folders to indicate which version is being tested
 REM   Release folder 1 is designated as the CIS instance current folder.  R1 designates it is a release 1 primary, current folder.
 REM   Release folder 2 is designated as the CIS instance previous folder.  R2 designates it is a release 2 secondary, previous folder.
-set RELEASE_FOLDER1_7=701R1
-set RELEASE_FOLDER2_7=701R2
+set RELEASE_FOLDER1_TARGET=830R1
+set RELEASE_FOLDER2_TARGET=830R2
 REM ########################################################
-REM END: 7.0 USER DEFINED VARIABLE SECTION
+REM END: 8.0 USER DEFINED VARIABLE SECTION
 REM ########################################################
 
 REM ########################################################
@@ -74,7 +74,7 @@ REM # Automated Test Framework Home.  This folder may be independent of where PD
 set ATF_HOME=..\..\..\AutomatedTestFramework\regression
 REM # Used by copyPlanTemplates.bat
 REM # Set JAVA_HOME to JRE7
-if not defined JAVA_HOME set JAVA_HOME=C:\Program Files\Java\jre7
+if not defined JAVA_HOME set JAVA_HOME=C:\Program Files\Java\jre8
 REM # Used by copyPlanTemplates.bat
 REM # Use one or the other or provide your own text editor path.  
 REM #    If you have notepad++ it is a much better editor than notepad.

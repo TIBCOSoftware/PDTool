@@ -19,7 +19,6 @@
 package com.tibco.ps.deploytool.services;
 
 import com.tibco.ps.common.exception.CompositeException;
-import com.compositesw.services.system.util.common.Attribute;
 
 public interface ServerAttributeManager {
 	

@@ -352,7 +352,7 @@ public class PropertyManager
 			}
 			if (stringBuilder != null && (repairSetNeeded || repairExportNeeded)) {
 				// close the original file
-				reader.close();
+				if (reader != null) {reader.close();}
 
 				// write out the repaired file
 				StringBuilder repairStringBuilder = new StringBuilder();;

@@ -22,7 +22,7 @@ REM # Date:   June 2015
 REM # PDTool Regression Module - Regression Automated Test Framework
 REM #=======================================================================================
 REM # Instructions: 
-REM #   script_test_70.bat ENV_TYPE_NAME DEPLOYMENT_PLAN [CUSTOM] [NO_RENAME] [NO_PAUSE]
+REM #   script_test_70.bat ENV_TYPE_NAME DEPLOYMENT_PLAN [CUSTOM] [RENAME] [PAUSE]
 REM # 
 REM # Parameters:
 REM #   ENV_TYPE_NAME - Example: [DEV,UAT,PROD]
@@ -74,17 +74,17 @@ if not exist setVars.bat (
 )
 call setVars.bat
 REM # Set the location of PDTool 7.0
-set PDTOOL_INSTALL_HOME=%PDTOOL_INSTALL_HOME_7%
+set PDTOOL_INSTALL_HOME=%PDTOOL_INSTALL_HOME_SOURCE%
 REM List of valid Environments / Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
 REM # These are the property file names configured in the PDTool7.0.0\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS=%VALID_ENV_CONFIG_PAIRS_7%
+set VALID_ENV_CONFIG_PAIRS=%VALID_ENV_CONFIG_PAIRS_SOURCE%
 REM Set the release folders to indicate which version is being tested
-REM   Release folder 1 is designated as the CIS instance current folder.  R1 designates it is a release 1 primary, current folder.
-REM   Release folder 2 is designated as the CIS instance previous folder.  R2 designates it is a release 2 secondary, previous folder.
-set RELEASE_FOLDER1=%RELEASE_FOLDER1_7%
-set RELEASE_FOLDER2=%RELEASE_FOLDER2_7%
+REM   Release folder 1 is designated as the DV instance current folder.  R1 designates it is a release 1 primary, current folder.
+REM   Release folder 2 is designated as the DV instance previous folder.  R2 designates it is a release 2 secondary, previous folder.
+set RELEASE_FOLDER1=%RELEASE_FOLDER1_SOURCE%
+set RELEASE_FOLDER2=%RELEASE_FOLDER2_SOURCE%
 
-REM Script CIS Version - Coincides with the id field <id></id> in the module XML file "BusLineBusAreaSubjArea_RegressionModule.xml"
+REM Script DV Version - Coincides with the id field <id></id> in the module XML file "BusLineBusAreaSubjArea_RegressionModule.xml"
 REM   that is used to generate the module XML file for each project.
 REM   DO NOT CHANGE
 set SCRIPT_CIS_VERSION=7.0

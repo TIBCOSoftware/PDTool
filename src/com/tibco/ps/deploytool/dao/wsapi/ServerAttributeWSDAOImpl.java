@@ -48,7 +48,6 @@ import com.tibco.ps.deploytool.modules.ServerAttributeDefType;
 import com.tibco.ps.deploytool.modules.ServerAttributeModule;
 import com.tibco.ps.deploytool.modules.ServerAttributeType;
 import com.tibco.ps.deploytool.util.DeployUtil;
-import com.compositesw.services.system.util.common.Fault;
 
 public class ServerAttributeWSDAOImpl implements ServerAttributeDAO {
 

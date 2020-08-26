@@ -21,7 +21,6 @@ package com.tibco.ps.deploytool.dao;
 import com.tibco.ps.common.exception.CompositeException;
 import com.tibco.ps.deploytool.modules.PrivilegeModule;
 import com.compositesw.services.system.admin.resource.GetResourcePrivilegesRequest.Entries;
-import com.compositesw.services.system.admin.resource.UpdateResourcePrivilegesRequest.PrivilegeEntries;
 
 public interface PrivilegeDAO {
 

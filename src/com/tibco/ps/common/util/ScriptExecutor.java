@@ -53,8 +53,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tibco.ps.common.exception.CompositeException;
-import com.tibco.ps.common.util.CommonUtils;
-import com.tibco.ps.common.util.CompositeLogger;
 
 public class ScriptExecutor {
 

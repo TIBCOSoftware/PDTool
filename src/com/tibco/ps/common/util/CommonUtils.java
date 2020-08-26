@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -47,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -68,7 +66,6 @@ import com.tibco.ps.common.CommonConstants;
 import com.tibco.ps.common.exception.ApplicationException;
 import com.tibco.ps.common.exception.CompositeException;
 import com.tibco.ps.common.exception.ValidationException;
-import com.tibco.ps.common.scriptutil.ScriptUtil;
 import com.tibco.ps.deploytool.dao.ServerAttributeDAO;
 import com.tibco.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl;
 import com.compositesw.common.security.CompositeSecurityException;
@@ -76,8 +73,6 @@ import com.compositesw.common.security.EncryptionManager;
 import com.compositesw.common.vcs.primitives.ResourceNameCodec;
 import com.compositesw.ps.utils.repository.CisPathQuoter;
 import com.compositesw.ps.utils.repository.CisPathQuoterException;
-import com.compositesw.services.system.util.common.Attribute;
-import com.compositesw.services.system.util.common.AttributeList;
 
 // -- CommonUtils to avoid confusion with Ant Utils 
 public class CommonUtils {
@@ -252,6 +247,7 @@ public class CommonUtils {
 				stringBuilder.append(line);
 				stringBuilder.append(ls);
 			}
+			if (reader != null) {reader.close();}
 		} catch (FileNotFoundException e) {
 			throw new CompositeException(e.getMessage(),e);
 		} catch (IOException e) {
@@ -1339,6 +1335,7 @@ public class CommonUtils {
 	      // Read file in completely
 		}
 		checkSumValue = check.getChecksum().getValue();
+		in.close();
 //		System.out.println("fileChecksum(): checkSumValue = " + checkSumValue);
 		return checkSumValue;
 	}

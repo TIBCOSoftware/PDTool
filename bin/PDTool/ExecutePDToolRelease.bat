@@ -252,7 +252,7 @@ REM #
 REM #----------------------------------------------------------
 REM #*********** DO NOT MODIFY BELOW THIS LINE ****************
 REM #----------------------------------------------------------
-REM # CIS version [6.2, 7.0.0] - set DEFAULT_CIS_VERSION
+REM # CIS version [7.0.0,8.0.0] - set DEFAULT_CIS_VERSION
 if exist cisVersion.bat call cisVersion.bat
 REM #
 REM # The name of this batch file.

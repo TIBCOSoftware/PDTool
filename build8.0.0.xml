@@ -27,7 +27,7 @@
 	1. Right click on the PDTool project, select properties, Select Java Build Path
 
 	2. LIBRARIES: click on "Libraries" tab
-			Select lib6.2 and click the "Remove" button
+			Select lib7.0.0 and click the "Remove" button
 			Click "Add Library" button
 			Select "User Library" and click Next
 			Select lib8.0.0 library and click finish

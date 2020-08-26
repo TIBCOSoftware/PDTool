@@ -89,7 +89,7 @@ REM #----------------------------------------------------------
 REM #=======================================
 REM # Set up the execution context for invoking common scripts
 REM #=======================================
-REM # CIS version [6.2, 7.0.0] - set DEFAULT_CIS_VERSION
+REM # CIS version [7.0.0,8.0.0] - set DEFAULT_CIS_VERSION
 call cisVersion.bat
 REM # Script name
 set SCRIPT=ExecutePDTool

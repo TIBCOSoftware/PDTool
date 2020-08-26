@@ -34,8 +34,8 @@ REM #         2. BusLineBusArea_2Regression_exec.dp
 REM #         3. BusLineBusArea_2Regression_compare.dp
 REM #         4. BusLineBusArea_3Performance_exec.dp
 REM #         5. BusLineBusArea_3Performance_compare.dp
-REM #         6. CIS_Generate_ServerAttributes.dp
-REM #         7. CIS_Update_ServerAttributes.dp
+REM #         6. CIS_Generate_ServerAttributes[_TEST].dp
+REM #         7. CIS_Update_ServerAttributes[_TEST].dp
 REM #
 REM #   CUSTOM - [optional] variable 
 REM #         1. blank or "" - generate or execute using SQL SELECT COUNT(1) cnt or SELECT COUNT(*) cnt.
@@ -72,24 +72,24 @@ if not exist setVars.bat (
 )
 call setVars.bat
 REM # Set the location of PDTool 7.0
-set PDTOOL_INSTALL_HOME=%PDTOOL_INSTALL_HOME_7%
+set PDTOOL_INSTALL_HOME=%PDTOOL_INSTALL_HOME_SOURCE%
 REM List of valid Environments / Config property file name pairs.   Comma separated, no space and no double quotes.  Tilde separates pairs: ENV~ConfigFileName
-REM # These are the property file names configured in the PDTool7.0.0\resources\config folder minus the .properties extension.
-set VALID_ENV_CONFIG_PAIRS=%VALID_ENV_CONFIG_PAIRS_7%
+REM # These are the property file names configured in the PDTool7.0\resources\config folder minus the .properties extension.
+set VALID_ENV_CONFIG_PAIRS=%VALID_ENV_CONFIG_PAIRS_SOURCE%
 REM Perform the XSLT transform [N=no, BEFORE=Perform XSL transform before PDTool deployment plan, AFTER=Perform XSL transform after PDTool deployment plan]
 set XSL_PERFORM=N
 
 REM ######################################
 REM --- DO NOT CHANGE BELOW THIS LINE ---
 REM ######################################
-REM Script CIS Version - Coincides with the id field <id></id> in the module XML file "BusLineBusAreaSubjArea_RegressionModule.xml"
+REM Script DV Version - Coincides with the id field <id></id> in the module XML file "BusLineBusAreaSubjArea_RegressionModule.xml"
 REM   that is used to generate the module XML file for each project.
 set SCRIPT_CIS_VERSION=7.0
 REM # This is the script definition and invocation parameters
 set SCRIPT_ORIGINAL_DEFINITION=SCRIPT_NAME             ENV_TYPE  DEPLOYMENT_PLAN  [CUSTOM]  [RENAME_REL]  [PAUSE]
 set SCRIPT_ORIGINAL_INVOCATION=%0      %1 %2 [%3] [%4] [%5]
-REM                         SCRIPT_NAME  RELEASE_FOLDER2      ENV_TYPE DEPLOYMENT_PLAN [CUSTOM] [RENAME_REL] [PAUSE]
-call script_test_common.bat %0           "%RELEASE_FOLDER2%"  %1       %2              %3       %4       %5
+REM                         SCRIPT_NAME  RELEASE_FOLDER1      ENV_TYPE DEPLOYMENT_PLAN [CUSTOM] [RENAME_REL] [PAUSE]
+call script_test_common.bat %0           "%RELEASE_FOLDER1%"  %1       %2              %3       %4       %5
 set ERROR=%ERRORLEVEL%
 if %ERROR% NEQ 0 exit /b 1
 exit /b 0

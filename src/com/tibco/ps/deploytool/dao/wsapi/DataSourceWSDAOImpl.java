@@ -51,7 +51,6 @@ import com.compositesw.services.system.admin.resource.DataSourceTypeInfo;
 import com.compositesw.services.system.admin.resource.GetDataSourceTypesResponse.DataSourceTypes;
 import com.compositesw.services.system.admin.resource.IntrospectionChangeEntry;
 import com.compositesw.services.system.admin.resource.IntrospectionPlan;
-import com.compositesw.services.system.admin.resource.IntrospectionPlanEntries;
 import com.compositesw.services.system.admin.resource.IntrospectionPlanEntry;
 import com.compositesw.services.system.admin.resource.IntrospectionStatus;
 import com.compositesw.services.system.admin.resource.Resource;
@@ -64,8 +63,6 @@ import com.compositesw.services.system.util.common.AttributeList;
 import com.compositesw.services.system.util.common.DetailLevel;
 import com.compositesw.services.system.util.common.MessageEntry;
 import com.compositesw.services.system.util.common.Page;
-
-import cs.jdbc.driver.protocol.Logger;
 
 /*
  * port.introspectResourcesResult(taskId, block, page, DetailLevel.FULL, totalResults, completed, status);

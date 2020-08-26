@@ -43,7 +43,6 @@ import com.tibco.ps.common.exception.CompositeException;
 import com.tibco.ps.common.exception.ValidationException;
 import com.tibco.ps.common.util.CommonUtils;
 import com.tibco.ps.common.util.PropertyManager;
-import com.tibco.ps.common.util.Sleep;
 import com.tibco.ps.common.util.XMLUtils;
 import com.tibco.ps.common.util.wsapi.CompositeServer;
 import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
@@ -366,7 +365,7 @@ public class VCSManagerImpl implements VCSManager {
 				throw new ValidationException("VCS Revision is null or empty.");							
 			}
 			/* mtinius 2016-04-01:  Added ability for revision to be a BASE URL for use with tags or COMMITTED or PREV */
-			if (vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
+			if (vcsRevision.equalsIgnoreCase("origin/master") || vcsRevision.equalsIgnoreCase("HEAD") || vcsRevision.equalsIgnoreCase("BASE") || vcsRevision.equalsIgnoreCase("COMMITTED") || vcsRevision.equalsIgnoreCase("PREV")) {
 				vcsRevision = vcsRevision.toUpperCase();
 			} else {
 				try {
@@ -2420,10 +2419,8 @@ public class VCSManagerImpl implements VCSManager {
 
 								BufferedReader reader = new BufferedReader(is);
 								String line = null;
-								int lnCount = 0;
 								// Iterate through the orchestration property file
 								while ( (line = reader.readLine()) != null) {
-									lnCount++;
 									// Make sure the workspace name contains a space so that the search yields a unique entry and not a name within a name.
 							    	int idx = line.indexOf(vcsStruct.getVcsWorkspaceName()+" "); // "TFSww7 "
 							    	
@@ -2760,10 +2757,8 @@ public class VCSManagerImpl implements VCSManager {
 
 								BufferedReader reader = new BufferedReader(is);
 								String line = null;
-								int lnCount = 0;
 								// Iterate through the orchestration property file
 								while ( (line = reader.readLine()) != null) {
-									lnCount++;
 									// Make sure the workspace name contains a space so that the search yields a unique entry and not a name within a name.
 							    	int idx = line.indexOf(vcsStruct.getVcsWorkspaceName()+" "); // "TFSww7 "
 							    	
@@ -4744,11 +4739,9 @@ public class VCSManagerImpl implements VCSManager {
 
 								BufferedReader reader = new BufferedReader(is);
 								String line = null;
-								int lnCount = 0;
 								String statusFilepath = null;
 								// Iterate through the orchestration property file
 								while ( (line = reader.readLine()) != null) {
-									lnCount++;
 							    	int idx = line.indexOf(" add ");
 									if (idx >= 0) {
 										String chkinFilename = line.substring(0, idx).trim();
@@ -4906,11 +4899,9 @@ public class VCSManagerImpl implements VCSManager {
 
 								BufferedReader reader = new BufferedReader(is);
 								String line = null;
-								int lnCount = 0;
 								String statusFilepath = null;
 								// Iterate through the orchestration property file
 								while ( (line = reader.readLine()) != null) {
-									lnCount++;
 							    	int idx = line.indexOf(" add ");
 									if (idx >= 0) {
 										String chkinFilename = line.substring(0, idx).trim();
@@ -5593,30 +5584,42 @@ public class VCSManagerImpl implements VCSManager {
 				} 
 				else 
 				{					
-					// 2012-10-29 mtinius: differentiate between folder and data_source
+					//*************************************************************************************
+					// 2020-08-13 mtinius: The latest changes were not being brought down to the local workspace.  Modified to use get fetch instead.
+				    // git fetch origin
+					arguments=" fetch origin";
+					commandDesc = "    Perform \"fetch origin\" to get latest changes...";
+					//*************************************************************************************
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+					// Perform an absolute checkout
+					// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
+					// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
+					// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
+					// can use -o <name> when cloning to rename the remote name to something other than "origin".)
+					//
+				    // git reset --hard origin/HEAD
+					arguments=" reset --hard origin/HEAD";
+					commandDesc = "    Perform hard reset \"reset --hard origin/HEAD\" to Git Repository HEAD...";
+					CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
+					CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
+				    // Parse the command arguments into a list
+				    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
+				    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
+				    // Execute the command line
+				    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
+
+				    
+				    // 2012-10-29 mtinius: differentiate between folder and data_source
 					if (resourceType.equalsIgnoreCase("FOLDER") || resourceType.equalsIgnoreCase("data_source")) {
-						
-						// Perform an absolute checkout
-						// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
-						// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
-						// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
-						// can use -o <name> when cloning to rename the remote name to something other than "origin".)
-						//
-					    // git reset --hard origin/HEAD
-						arguments=" reset --hard origin/HEAD";
-
-						commandDesc = "    Perform hard reset to Git Repository HEAD...";
-						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
-						
-					    // Parse the command arguments into a list
-					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-					    
-					    // Execute the command line
-					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-
 						//------------------------------------------
 						// Check out Folder
 						//------------------------------------------
@@ -5643,27 +5646,6 @@ public class VCSManagerImpl implements VCSManager {
 					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
 
 					} else {
-						// Perform an absolute checkout
-						// do a hard reset to the remote Git repository's HEAD (this will undo any checking out of specific commits and
-						// revert to the HEAD of origin.) We're assuming a remote name of "origin" here. This should properly run "git remote" 
-						// to get the list of remote repositories and their names and match it to the URL used to clone the repository (user
-						// can use -o <name> when cloning to rename the remote name to something other than "origin".)
-						//
-					    // git reset --hard origin/HEAD
-						arguments=" reset --hard origin/HEAD";
-
-						commandDesc = "    Perform hard reset to Git Repository HEAD...";
-						CommonUtils.writeOutput(commandDesc,prefix,"-debug3",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Command="+command+" "+CommonUtils.maskCommand(arguments),prefix,"-debug3",logger,debug1,debug2,debug3);
-						CommonUtils.writeOutput("    VCS Execute Directory="+execFromDir,prefix,"-debug3",logger,debug1,debug2,debug3);
-						
-					    // Parse the command arguments into a list
-					    argList = CommonUtils.parseArguments(argList, initArgList, command+" "+arguments, preserveQuotes, propertyFile);
-					    envList = CommonUtils.getArgumentsList(envList, initArgList, vcsStruct.getVcsEnvironment(), "|");	
-					    
-					    // Execute the command line
-					    getVCSDAO().execCommandLineVCS(prefix, execFromDir, command, argList, envList, vcsStruct.getVcsIgnoreMessages());
-
 					    //------------------------------------------
 						// Check out File
 						//------------------------------------------
@@ -5983,7 +5965,7 @@ public class VCSManagerImpl implements VCSManager {
 				    // Validate the VCS_CHECKOUT_OPTIONS against the VCS_CHECKOUT_OPTIONS_REQUIRED and throw an exception if a required option is not found
 				    validateCheckoutRequired(vcsStruct.getVcsCheckoutOptions(), vcsStruct.getVcsCheckoutOptionsRequired());
 
-					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
+//					String fullResourcePath = (execFromDir+"/"+resourcePath).replaceAll("//", "/");
 					//Derived from script:
 				    // cvs update -jHEAD ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
 //					arguments=" update -jHEAD "+fullResourcePath+" "+vcsStruct.getVcsCheckoutOptions();

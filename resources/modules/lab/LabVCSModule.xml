@@ -109,43 +109,6 @@
         </vcsSpecificEnvVars>
     </vcsConnection>
     <vcsConnection>
-        <id>cvs01</id>
-        <VCS_TYPE>cvs</VCS_TYPE>
-        <VCS_HOME>D:/dev/vcs/cvsnt</VCS_HOME>
-        <VCS_COMMAND>cvs</VCS_COMMAND>
-        <VCS_EXEC_FULL_PATH>true</VCS_EXEC_FULL_PATH>
-        <VCS_OPTIONS></VCS_OPTIONS>
-	    <VCS_WORKSPACE_INIT_NEW_OPTIONS></VCS_WORKSPACE_INIT_NEW_OPTIONS>
-	    <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
-	    <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
-	    <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
-	    <VCS_CHECKIN_OPTIONS_REQUIRED></VCS_CHECKIN_OPTIONS_REQUIRED>
-	    <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
-	    <VCS_CHECKOUT_OPTIONS_REQUIRED></VCS_CHECKOUT_OPTIONS_REQUIRED>
-        <VCS_REPOSITORY_URL>:pserver:$VCS_USERNAME:$VCS_PASSWORD@$CVS_VCS_HOST:2401/home/cvs</VCS_REPOSITORY_URL>
-        <VCS_PROJECT_ROOT>cis_objects</VCS_PROJECT_ROOT>
-        <VCS_WORKSPACE_HOME>$PROJECT_HOME</VCS_WORKSPACE_HOME>
-		<VCS_WORKSPACE_NAME>CVSww</VCS_WORKSPACE_NAME>
-		<VCS_WORKSPACE_DIR>$VCS_WORKSPACE_HOME/$VCS_WORKSPACE_NAME</VCS_WORKSPACE_DIR>
-        <VCS_TEMP_DIR>$VCS_WORKSPACE_HOME/CVSt</VCS_TEMP_DIR>
-        <VCS_USERNAME></VCS_USERNAME>
-        <VCS_PASSWORD></VCS_PASSWORD>
-        <VCS_IGNORE_MESSAGES></VCS_IGNORE_MESSAGES>
-		<VCS_MESSAGE_PREPEND></VCS_MESSAGE_PREPEND>
-        <!--Element vcsSpecificEnvVars is optional-->
-        <vcsSpecificEnvVars>
-            <!--Element envVar is optional, maxOccurs=unbounded-->
-            <envVar>
-                <envName>CVSROOT</envName>
-                <envValue>$VCS_REPOSITORY_URL</envValue>
-            </envVar>
-            <envVar>
-                <envName>CVS_RSH</envName>
-                <envValue>ssh</envValue>
-            </envVar>
-        </vcsSpecificEnvVars>
-    </vcsConnection>
-    <vcsConnection>
         <id>tfs01</id>
         <VCS_TYPE>tfs2013</VCS_TYPE>
         <VCS_HOME>C:\\dev\\vcs\\TEE-CLC-11.0.0</VCS_HOME>
@@ -158,7 +121,6 @@
 		#		       e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd workspace -new -collection:http://hostname:8080/tfs/DefaultCollection wks -noprompt /login:user,******** /location:server 
 		#		SVN: not applicable
 		#		 P4: not applicable
-		#		CVS: not applicable
 		-->
 	  <VCS_WORKSPACE_INIT_NEW_OPTIONS>/location:server</VCS_WORKSPACE_INIT_NEW_OPTIONS>
 	  
@@ -169,7 +131,6 @@
 		#		SVN: svn import -m "linking workspace to the VCS repository" . "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
 		#		 P4: (UNIX) p4 client -o ${VCS_WORKSPACE_INIT_LINK_OPTIONS} | p4 client -i ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
 		#		 P4: (Windows) p4 client workspacename ${VCS_WORKSPACE_INIT_LINK_OPTIONS}          [manual intervention is required to acknowledge this action on windows only.]
-		#		CVS: cvs import -m "linking workspace to the VCS repository" ${VCS_PROJECT_ROOT} INITIAL start ${VCS_WORKSPACE_INIT_LINK_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_LINK_OPTIONS></VCS_WORKSPACE_INIT_LINK_OPTIONS>
 	  
@@ -179,7 +140,6 @@
 		#			   e.g. E:/dev/vcs/TEE-CLC-11.0.0/tf.cmd get -all -recursive $/Composite_62/cis_objects -noprompt /login:user,********
 		#		SVN: svn co "${VCS_REPOSITORY_URL}/${VCS_PROJECT_ROOT}" ${SVN_OPTIONS} ${SVN_AUTH} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		#		 P4: p4 sync ${VCS_WORKSPACE_INIT_GET_OPTIONS}
-		#		CVS: cvs co ${VCS_PROJECT_ROOT} ${VCS_WORKSPACE_INIT_GET_OPTIONS}
 		-->
       <VCS_WORKSPACE_INIT_GET_OPTIONS></VCS_WORKSPACE_INIT_GET_OPTIONS>
 	  
@@ -202,11 +162,6 @@
 		#					             Check in folder:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath"
 		#								   Check in file:  p4 submit -d "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					             Check in folder:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#								   Check in file:  cvs commit -m "${Message}" ${fullResourcePath} ${VCS_CHECKIN_OPTIONS}
 		-->
       <VCS_CHECKIN_OPTIONS></VCS_CHECKIN_OPTIONS>
 	  
@@ -234,11 +189,6 @@
 		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
 		#					              Check out file:  current:  p4 sync "${fullResourcePath}" ${VCS_CHECKOUT_OPTIONS}
 		#												   revision: p4 sync "${fullResourcePath}@${Revision}" ${VCS_CHECKOUT_OPTIONS}
-		#		CVS: 
-		#			Folder:             fullResourcePath:  execFromDir+"/"+resourcePath"
-		#					            Check out folder:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
-		#		      File:             fullResourcePath:  execFromDir+"/"+resourcePath+"_"+resourceType+".cmf"
-		#					              Check out file:  cvs update -j${Revision} ${fullResourcePath} ${VCS_CHECKOUT_OPTIONS}
 		-->
       <VCS_CHECKOUT_OPTIONS></VCS_CHECKOUT_OPTIONS>	  
 

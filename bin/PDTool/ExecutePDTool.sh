@@ -70,7 +70,7 @@
 #---------------------------------------------
 # Set environment variables
 #---------------------------------------------
-# CIS version [6.2, 7.0.0]
+# CIS version [7.0.0,8.0.0]
 if [ ! -f cisVersion.sh ]; then
    echo "Cannot find cisVersion.sh environment variable file."
    exit 1

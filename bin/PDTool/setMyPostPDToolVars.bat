@@ -32,7 +32,7 @@ REM #
 REM # Instructions: 
 REM #    1. Modify variables as needed.
 REM #    2. Add new variables to the function :writeOutput at the bottom of this batch file when new variables are added.
-REM #    3. Copy this file to a location outside of the PDToolStudio installation so that it is not overwritten during upgrade.
+REM #    3. Copy this file to a location outside of the PDTool installation so that it is not overwritten during upgrade.
 REM #    4. Modify setVars.bat "MY_VARS_HOME" variable to point to the directory that contains this file.
 REM #    5. To encrypt the password in this file:
 REM #       a) Open a windows command line
