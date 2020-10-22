@@ -3,7 +3,7 @@
 <adapterconfiguration version="1">
 	<name>CIS Adapter</name>
 	<description>An adapter for executing CIS System Web Service operations.</description>
-	<cisversion>7.0.0</cisversion>
+	<cisversion>8.0.0</cisversion>
 	<retryattempts>3</retryattempts>
 	<maxclients>5</maxclients>
 	<minclients>3</minclients>

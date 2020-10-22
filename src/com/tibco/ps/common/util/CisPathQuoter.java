@@ -21,8 +21,8 @@ package com.tibco.ps.common.util;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import com.compositesw.ps.utils.repository.CisPathQuoterException;
-import com.compositesw.ps.utils.repository.RepoUtilsPropertiesFactory;
+import com.tibco.ps.utils.repository.CisPathQuoterException;
+import com.tibco.ps.utils.repository.RepoUtilsPropertiesFactory;
 
 public class CisPathQuoter {
 

@@ -50,21 +50,117 @@
 		<verbose>true</verbose> 
 		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
-	
+
 	<archive>
 		<id>export01</id>
 		<archiveMethod>CAR</archiveMethod>
 		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
 		<includeDependencies>false</includeDependencies>
+		<includesourceinfo>true</includesourceinfo>
 		<overwrite></overwrite> 
 		<resources>
-			<export>/shared/test00</export>
+			<export>/shared/test00/DataSources/ds_orders</export>
+			<export>/shared/test00/CisResources/new_view_2</export>	
+		</resources>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+	</archive>
+
+	
+	<archive>
+		<id>export1</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>
+		<includesourceinfo>true</includesourceinfo>
+		<overwrite></overwrite> 
+		<resources>
+			<export>/shared/test00/DataSources/ds_orders</export>
+			<export>/shared/test00/CisResources/new_view_2</export>	
+		</resources>
+		<rebindableResources>
+			<rebindablePaths>
+				<path>/shared/test00/CisResources/new_view_2</path>
+				<description>rebind to DataSourcesCopy</description>
+			</rebindablePaths>
+		</rebindableResources>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+	</archive>
+	<archive>
+		<id>export2</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>
+		<nosourceinfo>false</nosourceinfo>
+		<overwrite></overwrite> 
+		<resources>
+			<export>/shared/test00/DataSources/ds_orders</export>
+			<export>/shared/test00/CisResources/new_view_2</export>	
+		</resources>
+		<rebindableResources>
+			<rebindablePaths>
+				<path>/shared/test00/CisResources/new_view_2</path>
+				<description>rebind to DataSourcesCopy</description>
+			</rebindablePaths>
+		</rebindableResources>
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+	</archive>
+
+	<archive>
+		<id>import1</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>true</includecaching>
+		<includejars>true</includejars>
+		<includesourceinfo>false</includesourceinfo>
+		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+		<resources>
+			  <rebind>
+					<oldPath>/shared/test00/DataSources/ds_orders/tutorial/orderdetails</oldPath>
+					<newPath>/shared/test00/DataSourcesCopy/ds_orders/tutorial/orderdetails</newPath>
+			  </rebind>
+		</resources>	
+	</archive>
+	<archive>
+		<id>import2</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeaccess>true</includeaccess>
+		<includecaching>true</includecaching>
+		<includejars>true</includejars>
+		<includesourceinfo>false</includesourceinfo>
+		<overwrite>true</overwrite> 
+		<verbose>true</verbose> 
+		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
+		<resources>
+			  <rebind>
+					<oldPath>/shared/test00/DataSources</oldPath>
+					<newPath>/shared/test00/DataSourcesCopy</newPath>
+			  </rebind>
+		</resources>	
+	</archive>
+	
+
+	<archive>
+		<id>export02</id>
+		<archiveMethod>CAR</archiveMethod>
+		<archiveFileName>$MODULE_HOME/test/test00_$CIS_VERSION$%CIS_HTTP_TYPE%.car</archiveFileName>
+		<includeDependencies>false</includeDependencies>
+		<nosourceinfo>true</nosourceinfo>
+		<overwrite></overwrite> 
+		<resources>
+			<export>/shared/test00/DataSources/ds_orders</export>
 			<export></export>	
 		</resources>
 		<verbose>true</verbose> 
 		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
-	
+
 	<archive>
 		<id>import01</id>
 		<archiveMethod>CAR</archiveMethod>
@@ -72,11 +168,12 @@
 		<includeaccess>true</includeaccess>
 		<includecaching>true</includecaching>
 		<includejars>true</includejars>
-		<includesourceinfo>true</includesourceinfo>
+		<includesourceinfo>false</includesourceinfo>
 		<overwrite>true</overwrite> 
 		<verbose>true</verbose> 
 		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
+	
 	<archive>
 		<id>import02</id>
 		<archiveMethod>CAR</archiveMethod>
@@ -270,6 +367,165 @@
 		<archiveMethod>CAR</archiveMethod>
 		<encryptionPassword>$CIS_PASSWORD</encryptionPassword>
 	</archive>
+
+    <!--Element archive is optional, maxOccurs=unbounded-->
+    <archive>
+        <id>ALL_ATTRIBUTES_EXMPLE</id>
+        <archiveMethod>CAR</archiveMethod>
+        <archiveFileName>$PROJECT_HOME/test01.car</archiveFileName>
+        <!--Element includeDependencies is optional-->
+        <includeDependencies>false</includeDependencies>
+        <!--Element resources is optional-->
+        <resources>
+            <!--'Choice' block, maxOccurs=unbounded-->
+            <export>/shared/examples/CompositeView</export>
+            <relocate>
+                <oldPath>/shared/examples/CompositeView</oldPath>
+                <newPath>/shared/examples/newdir/CompositeView</newPath>
+            </relocate>
+            <rebind>
+                <oldPath>/shared/examples/ViewSales</oldPath>
+                <newPath>/shared/examples/newds/ViewSales</newPath>
+            </rebind>
+            <export>/shared/examples/ViewOrder</export>
+			<!--
+            <relocate>
+                <oldPath>string</oldPath>
+                <newPath>string</newPath>
+            </relocate>-->
+			<!--
+            <rebind>
+                <oldPath>string</oldPath>
+                <newPath>string</newPath>
+            </rebind>-->
+        </resources>
+        <!--Element encrypt is optional-->
+        <encrypt>false</encrypt>
+        <!--Element description is optional-->
+        <description>Export CompositeView</description>
+        <!--Element includeaccess is optional-->
+        <includeaccess>false</includeaccess>
+        <!--Element includeallusers is optional-->
+        <includeallusers>false</includeallusers>
+        <!--Element includerequiredusers is optional-->
+        <includerequiredusers>false</includerequiredusers>
+        <!--Element includecaching is optional-->
+        <includecaching>false</includecaching>
+        <!--Element includejars is optional-->
+        <includejars>true</includejars>
+        <!--Element includesourceinfo is optional-->
+        <includesourceinfo>false</includesourceinfo>
+        <!--Element includestatistics is optional-->
+        <includestatistics>false</includestatistics>
+        <!--Element messagesonly is optional-->
+        <messagesonly>false</messagesonly>
+        <!--Element overridelocks is optional-->
+        <overridelocks>false</overridelocks>
+        <!--Element overwrite is optional-->
+        <overwrite>false</overwrite>
+        <!--Element pkgName is optional-->
+        <pkgName>Composite Server Archive File via PD Tool</pkgName>
+        <!--Element printinfo is optional-->
+        <printinfo>false</printinfo>
+        <!--Element printroots is optional-->
+        <printroots>false</printroots>
+        <!--Element printusers is optional-->
+        <printusers>false</printusers>
+        <!--Element printcontents is optional-->
+        <printcontents>false</printcontents>
+        <!--Element printreferences is optional-->
+        <printreferences>false</printreferences>
+        <!--Element setAttributes is optional-->
+        <setAttributes>
+            <!--Element resourceAttribute, maxOccurs=unbounded-->
+            <resourceAttribute>
+				<resourcePath>/shared/examples/ds_inventory</resourcePath>
+				<resourceType>DATA_SOURCE</resourceType>
+				<attribute>annotation</attribute>
+				<value>sample data source</value>				
+            </resourceAttribute>
+            <resourceAttribute>
+                <resourcePath>string</resourcePath>
+                <resourceType>string</resourceType>
+                <attribute>annotation</attribute>
+                <value>string</value>
+            </resourceAttribute>
+        </setAttributes>
+        <!--Element users is optional-->
+        <users>
+            <!--'Choice' block is optional, maxOccurs=unbounded-->
+            <!--Element export, maxOccurs=unbounded-->
+            <export>
+                <domain>string</domain>
+                <!--Element group is optional-->
+                <group>string</group>
+                <!--Element user is optional-->
+                <user>string</user>
+            </export>
+            <export>
+                <domain>string</domain>
+                <!--Element group is optional-->
+                <group>string</group>
+                <!--Element user is optional-->
+                <user>string</user>
+            </export>
+			<!--<import>merge</import>-->
+        </users>
+        <!--Element verbose is optional-->
+        <verbose>false</verbose>
+        <!--Element quiet is optional-->
+        <quiet>false</quiet>
+        <!--Element excludeJars is optional-->
+        <excludeJars>false</excludeJars>
+        <!--Element nosourceinfo is optional-->
+        <nosourceinfo>false</nosourceinfo>
+        <!--Element mergeusers is optional-->
+        <mergeusers>false</mergeusers>
+        <!--Element nocaching is optional-->
+        <nocaching>false</nocaching>
+        <!--Element nocachepolicy is optional-->
+        <nocachepolicy>false</nocachepolicy>
+        <!--Element noscheduling is optional-->
+        <noscheduling>false</noscheduling>
+        <!--Element createcachetables is optional-->
+        <createcachetables>false</createcachetables>
+        <!--Element updateCacheTables is optional-->
+        <updateCacheTables>false</updateCacheTables>
+        <!--Element reintrospect is optional-->
+        <reintrospect>false</reintrospect>
+        <!--Element reintrospectNone is optional-->
+        <reintrospectNone>false</reintrospectNone>
+        <!--Element rebindableResources is optional-->
+        <rebindableResources>
+            <!--Element rebindablePaths, maxOccurs=unbounded-->
+            <rebindablePaths>
+                <path>string</path>
+                <description>string</description>
+            </rebindablePaths>
+            <rebindablePaths>
+                <path>string</path>
+                <description>string</description>
+            </rebindablePaths>
+        </rebindableResources>
+        <!--Element sso is optional-->
+        <sso>false</sso>
+        <!--Element sspi is optional-->
+        <sspi>false</sspi>
+        <!--Element spn is optional-->
+        <spn>string</spn>
+        <!--Element krb5Conf is optional-->
+        <krb5Conf>string</krb5Conf>
+        <!--Element optfile is optional-->
+        <optfile>string</optfile>
+        <!--Element encryptionPassword is optional-->
+        <encryptionPassword>string</encryptionPassword>
+        <!--Element genopt is optional-->
+        <genopt>string</genopt>
+        <!--Element includeParentResources is optional-->
+        <includeParentResources>false</includeParentResources>
+        <!--Element ignoreEncryption is optional-->
+        <ignoreEncryption>false</ignoreEncryption>
+    </archive>
 
 
 </p1:ArchiveModule>

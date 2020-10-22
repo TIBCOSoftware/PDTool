@@ -1,0 +1,7 @@
+To Export Eclipse User Libraries:
+
+1. Open Eclipse --> Windows --> Prefrences
+2. Expand Java --> Bulid Path --> User Libraries
+3. Click Export
+4. Select all user libraries
+5. Browse to <C_Drive_Path>\ASAssets_GIT_Repo2\PDTool\BuildProject\UserLibraries\PDToolUserLibraries.userlibraries

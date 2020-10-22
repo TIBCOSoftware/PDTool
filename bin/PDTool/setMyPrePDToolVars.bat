@@ -90,33 +90,33 @@ if defined REL_CIS_PASSWORD set CIS_PASSWORD=%REL_CIS_PASSWORD%
 if defined REL_CIS_DOMAIN   set CIS_DOMAIN=%REL_CIS_DOMAIN%
 REM #
 REM ################################
-REM # TFS VARIABLES
+REM # GIT VARIABLES
 REM ################################
 REM # 0=Do not print this section, 1 or true=Print this section
-set TFS_PRINT=0
-if "%REL_VCS_TYPE%"=="TFS" set TFS_PRINT=1
-REM # The TFS Home folder where VCS client exists
-set TFS_HOME=
-REM # The TFS repository URL pointing to the repository's collection
-set TFS_VCS_REPOSITORY_URL=
-REM # The TFS folder path starting at the TFS project and ending where the DV base level root folders start
-set TFS_VCS_PROJECT_ROOT=
-REM # TFS user name including the domain.  If LDAP it may need to include the domain user@domain.
-set TFS_VCS_USERNAME=
-REM # TFS user password.  See notes at top of this file to encrypt.
-set TFS_VCS_PASSWORD=
+set GIT_PRINT=0
+if "%REL_VCS_TYPE%"=="GIT" set GIT_PRINT=1
+REM # The GIT Home folder where VCS client exists
+set GIT_HOME=
+REM # The Git repository path at trunk or any folder designation within trunk
+set GIT_VCS_REPOSITORY_URL=
+REM # The Git folder path starting directly after the Git repo URL and ending where the DV base level root folders start
+set GIT_VCS_PROJECT_ROOT=
+REM # Git user name
+set GIT_VCS_USERNAME=
+REM # Git user password.  See notes at top of this file to encrypt.
+set GIT_VCS_PASSWORD=
 REM # Set the workspace home if applicable.  This variable points to the file system location parent folder to VCS_WORKSPACE_NAME
 REM # e.g. If the workspace is in the PDTOOL_HOME then use the shortest path: %PDTOOL_SUBSTITUTE_HOME%
-set TFS_VCS_WORKSPACE_HOME=
-REM # Set the VCS Workspace name.  e.g. TFSww7
-set TFS_VCS_WORKSPACE_NAME=
+set GIT_VCS_WORKSPACE_HOME=
+REM # Set the VCS Workspace name.  e.g. GITww7
+set GIT_VCS_WORKSPACE_NAME=
 REM # Set the VCS TEMP directory by adding a "t" to the end of the concatenated workspace home and workspace name
-REM # e.g. %TFS_VCS_WORKSPACE_HOME%\%TFS_VCS_WORKSPACE_NAME%t
-set TFS_VCS_TEMP_DIR=
+REM # e.g. %GIT_VCS_WORKSPACE_HOME%\%GIT_VCS_WORKSPACE_NAME%t
+set GIT_VCS_TEMP_DIR=
 REM #
-REM # TFS ENVIRONMENT-CONFIG PROPERTY PAIRS
+REM # GIT ENVIRONMENT-CONFIG PROPERTY PAIRS
 REM # These pairs provide the ability to use a short environment name in place of the configuration property name when instructing PDTool on which environment to deploy to.
-REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: TDEV~deploy_TFS_DEV,TUAT~deploy_TFS_UAT,TPROD~deploy_TFS_PROD
+REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: GDEV~deploy_GIT_DEV,GUAT~deploy_GIT_UAT,GPROD~deploy_GIT_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
 REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
@@ -124,26 +124,26 @@ REM #                    env-type = represents the CIS environment short name de
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
 REM #    It is up to the PDTool installer to modify these pairs to match your environment.
-set TFS_VALID_ENV_CONFIG_PAIRS=
+set GIT_VALID_ENV_CONFIG_PAIRS=
 REM #
 REM # ExecutePDToolRelease.bat OVERRIDE SECTION
 REM #
 REM # Check the release VCS repository URL is set from ExecutePDToolRelease.bat
-if defined REL_VCS_REPOSITORY_URL     set TFS_VCS_REPOSITORY_URL=%REL_VCS_REPOSITORY_URL%
+if defined REL_VCS_REPOSITORY_URL     set GIT_VCS_REPOSITORY_URL=%REL_VCS_REPOSITORY_URL%
 REM # Check the release VCS project root is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PROJECT_ROOT       set TFS_VCS_PROJECT_ROOT=%REL_VCS_PROJECT_ROOT%
+if defined REL_VCS_PROJECT_ROOT       set GIT_VCS_PROJECT_ROOT=%REL_VCS_PROJECT_ROOT%
 REM # Check the release VCS username is set from ExecutePDToolRelease.bat
-if defined REL_VCS_USERNAME           set TFS_VCS_USERNAME=%REL_VCS_USERNAME%
+if defined REL_VCS_USERNAME           set GIT_VCS_USERNAME=%REL_VCS_USERNAME%
 REM # Check the release VCS user password is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PASSWORD           set TFS_VCS_PASSWORD=%REL_VCS_PASSWORD%
+if defined REL_VCS_PASSWORD           set GIT_VCS_PASSWORD=%REL_VCS_PASSWORD%
 REM # Check the release VCS workspace home is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_HOME     set TFS_VCS_WORKSPACE_HOME=%REL_VCS_WORKSPACE_HOME%
+if defined REL_VCS_WORKSPACE_HOME     set GIT_VCS_WORKSPACE_HOME=%REL_VCS_WORKSPACE_HOME%
 REM # Check the release VCS workspace name is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_NAME     set TFS_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
+if defined REL_VCS_WORKSPACE_NAME     set GIT_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
 REM # Check the release VCS temporary directory is set from ExecutePDToolRelease.bat
-if defined REL_VCS_TEMP_DIR           set TFS_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
+if defined REL_VCS_TEMP_DIR           set GIT_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
 REM # Check the valid environment configuration pairs is set from ExecutePDToolRelease.bat
-if defined REL_VALID_ENV_CONFIG_PAIRS set TFS_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
+if defined REL_VALID_ENV_CONFIG_PAIRS set GIT_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
 REM #
 REM ################################
 REM # SVN VARIABLES
@@ -202,33 +202,33 @@ REM # Check the valid environment configuration pairs is set from ExecutePDToolR
 if defined REL_VALID_ENV_CONFIG_PAIRS set SVN_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
 REM #
 REM ################################
-REM # GIT VARIABLES
+REM # TFS VARIABLES
 REM ################################
 REM # 0=Do not print this section, 1 or true=Print this section
-set GIT_PRINT=0
-if "%REL_VCS_TYPE%"=="GIT" set GIT_PRINT=1
-REM # The GIT Home folder where VCS client exists
-set GIT_HOME=
-REM # The Git repository path at trunk or any folder designation within trunk
-set GIT_VCS_REPOSITORY_URL=
-REM # The Git folder path starting directly after the Git repo URL and ending where the DV base level root folders start
-set GIT_VCS_PROJECT_ROOT=
-REM # Git user name
-set GIT_VCS_USERNAME=
-REM # Git user password.  See notes at top of this file to encrypt.
-set GIT_VCS_PASSWORD=
+set TFS_PRINT=0
+if "%REL_VCS_TYPE%"=="TFS" set TFS_PRINT=1
+REM # The TFS Home folder where VCS client exists
+set TFS_HOME=
+REM # The TFS repository URL pointing to the repository's collection
+set TFS_VCS_REPOSITORY_URL=
+REM # The TFS folder path starting at the TFS project and ending where the DV base level root folders start
+set TFS_VCS_PROJECT_ROOT=
+REM # TFS user name including the domain.  If LDAP it may need to include the domain user@domain.
+set TFS_VCS_USERNAME=
+REM # TFS user password.  See notes at top of this file to encrypt.
+set TFS_VCS_PASSWORD=
 REM # Set the workspace home if applicable.  This variable points to the file system location parent folder to VCS_WORKSPACE_NAME
 REM # e.g. If the workspace is in the PDTOOL_HOME then use the shortest path: %PDTOOL_SUBSTITUTE_HOME%
-set GIT_VCS_WORKSPACE_HOME=
-REM # Set the VCS Workspace name.  e.g. GITww7
-set GIT_VCS_WORKSPACE_NAME=
+set TFS_VCS_WORKSPACE_HOME=
+REM # Set the VCS Workspace name.  e.g. TFSww7
+set TFS_VCS_WORKSPACE_NAME=
 REM # Set the VCS TEMP directory by adding a "t" to the end of the concatenated workspace home and workspace name
-REM # e.g. %GIT_VCS_WORKSPACE_HOME%\%GIT_VCS_WORKSPACE_NAME%t
-set GIT_VCS_TEMP_DIR=
+REM # e.g. %TFS_VCS_WORKSPACE_HOME%\%TFS_VCS_WORKSPACE_NAME%t
+set TFS_VCS_TEMP_DIR=
 REM #
-REM # GIT ENVIRONMENT-CONFIG PROPERTY PAIRS
+REM # TFS ENVIRONMENT-CONFIG PROPERTY PAIRS
 REM # These pairs provide the ability to use a short environment name in place of the configuration property name when instructing PDTool on which environment to deploy to.
-REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: GDEV~deploy_GIT_DEV,GUAT~deploy_GIT_UAT,GPROD~deploy_GIT_PROD
+REM #    Format: [vcs-type-char][env-type]~[config-name]   Example: TDEV~deploy_TFS_DEV,TUAT~deploy_TFS_UAT,TPROD~deploy_TFS_PROD
 REM #            Comma separated, no space and no double quotes.  Tilde separates pairs: ENV_TYPE~ConfigFileName. The .properties extension is not included and gets added automatically.
 REM #            Format of pairs: XDEV=deploy_DEV,XUAT=deploy_UAT,XPROD=deploy_PROD
 REM #               vcs-type-char = represents the first characters of the VCS environment. N=NOVCS,S=SVN,T=TFS,G=GIT,P=P4
@@ -236,26 +236,26 @@ REM #                    env-type = represents the CIS environment short name de
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
 REM #    It is up to the PDTool installer to modify these pairs to match your environment.
-set GIT_VALID_ENV_CONFIG_PAIRS=
+set TFS_VALID_ENV_CONFIG_PAIRS=
 REM #
 REM # ExecutePDToolRelease.bat OVERRIDE SECTION
 REM #
 REM # Check the release VCS repository URL is set from ExecutePDToolRelease.bat
-if defined REL_VCS_REPOSITORY_URL     set GIT_VCS_REPOSITORY_URL=%REL_VCS_REPOSITORY_URL%
+if defined REL_VCS_REPOSITORY_URL     set TFS_VCS_REPOSITORY_URL=%REL_VCS_REPOSITORY_URL%
 REM # Check the release VCS project root is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PROJECT_ROOT       set GIT_VCS_PROJECT_ROOT=%REL_VCS_PROJECT_ROOT%
+if defined REL_VCS_PROJECT_ROOT       set TFS_VCS_PROJECT_ROOT=%REL_VCS_PROJECT_ROOT%
 REM # Check the release VCS username is set from ExecutePDToolRelease.bat
-if defined REL_VCS_USERNAME           set GIT_VCS_USERNAME=%REL_VCS_USERNAME%
+if defined REL_VCS_USERNAME           set TFS_VCS_USERNAME=%REL_VCS_USERNAME%
 REM # Check the release VCS user password is set from ExecutePDToolRelease.bat
-if defined REL_VCS_PASSWORD           set GIT_VCS_PASSWORD=%REL_VCS_PASSWORD%
+if defined REL_VCS_PASSWORD           set TFS_VCS_PASSWORD=%REL_VCS_PASSWORD%
 REM # Check the release VCS workspace home is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_HOME     set GIT_VCS_WORKSPACE_HOME=%REL_VCS_WORKSPACE_HOME%
+if defined REL_VCS_WORKSPACE_HOME     set TFS_VCS_WORKSPACE_HOME=%REL_VCS_WORKSPACE_HOME%
 REM # Check the release VCS workspace name is set from ExecutePDToolRelease.bat
-if defined REL_VCS_WORKSPACE_NAME     set GIT_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
+if defined REL_VCS_WORKSPACE_NAME     set TFS_VCS_WORKSPACE_NAME=%REL_VCS_WORKSPACE_NAME%
 REM # Check the release VCS temporary directory is set from ExecutePDToolRelease.bat
-if defined REL_VCS_TEMP_DIR           set GIT_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
+if defined REL_VCS_TEMP_DIR           set TFS_VCS_TEMP_DIR=%REL_VCS_TEMP_DIR%
 REM # Check the valid environment configuration pairs is set from ExecutePDToolRelease.bat
-if defined REL_VALID_ENV_CONFIG_PAIRS set GIT_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
+if defined REL_VALID_ENV_CONFIG_PAIRS set TFS_VALID_ENV_CONFIG_PAIRS=%REL_VALID_ENV_CONFIG_PAIRS%
 REM #
 REM ################################
 REM # P4 VARIABLES

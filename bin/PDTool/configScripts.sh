@@ -1,5 +1,11 @@
 #!/bin/bash
 ######################################################################
+#
+# ./configScripts.sh [OWNER] [GROUP]
+# Example:
+#    ./configScripts.sh tibco tibco
+#
+######################################################################
 # (c) 2017 TIBCO Software Inc. All rights reserved.
 # 
 # Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
@@ -23,17 +29,17 @@ BASEDIR=..
 # Get the Owner permission variable
 if [ "$1" == "" ]
 then
-   OWNER=composite
+   OWNER="tibco"
 else
-   OWNER=$1
+   OWNER="$1"
 fi
 
 # Get the Group permission variable
 if [ "$2" == "" ]
 then
-   GROUP=composite
+   GROUP="tibco"
 else
-   GROUP=$2
+   GROUP="$2"
 fi
 echo "Command=$0 $1 $2"
 
@@ -41,94 +47,13 @@ echo "Command=$0 $1 $2"
 #   make sure each directory ends in a slash
 #   list must be enclosed in double quotes
 #
-ANT_HOME=${BASEDIR}/ext/ant
+ANT_HOME="${BASEDIR}/ext/ant"
 
-TARGETLIST_BASE="${BASEDIR}/bin/ ${BASEDIR}/resources/config/ ${BASEDIR}/resources/properties/ ${BASEDIR}/resources/modules/ ${BASEDIR}/resources/ant/"
+TARGETLIST_BASE="${BASEDIR}/bin/ ${BASEDIR}/resources/config/ ${BASEDIR}/resources/modules/ ${BASEDIR}/resources/plans/ ${BASEDIR}/resources/ant/"
 TARGETLIST="${TARGETLIST_BASE}"
 
 # Permission to set executable files (*.sh and *.bin)
-PERMISSION=744
-
-PLATFORM=$(uname -s | tr [A-Z] [a-z])
-
-DOS2UNIX=$(which dos2unix 2> /dev/null)
-FROMDOS=$(which fromdos 2> /dev/null)
-DOS2UX=$(which dos2ux 2> /dev/null)
-
-#if [ ! -x "$DOS2UNIX" ] && [ ! -x "$FROMDOS" ] && [ $PLATFORM = "linux" ]; then
-#
-#	cat << END
-#
-#Please install dos2unix.
-#
-#To install on Redhat/Fedora:
-#yum install dos2unix
-#
-#To install on SuSE:
-#zypper install dos2unix
-#
-#To install on Debian/Ubuntu:
-#apt-get install dos2unix
-#or
-#apt-get install tofrodos
-#END
-#	exit 1
-#fi
-#=========================================================================
-# FUNCTION LIBRARY
-#=========================================================================
-#--------------------------------------------
-# FUNCTION::Convert files from DOS/Windows to Unix using the respective known 
-# commands on particular platforms. If known conversion commands on the  
-# respective platforms are not found then it'll fall back to tr
-#--------------------------------------------
-function dos2Unix {
-	case $PLATFORM in
-  		sunos)
-  			if [ -x "$DOS2UNIX" ]; then
-  				${DOS2UNIX} $1 $1
-  				return 0
-  			fi
-  			;;
-  		linux)
-			if [ -x "$DOS2UNIX" ]; then
-				${DOS2UNIX} $1
-				return 0
-			elif [ -x "$FROMDOS" ]; then
-				${FROMDOS} $1
-				return 0
-			fi
-			;;
-		hp-ux)
-			if [ -x "$DOS2UX" ]; then
-				baseFileName=$(basename $1)
-				tmpFile=$(mktemp -t $baseFileName.XXXXXX)
-				if ${DOS2UX} $1 >"$tmpFile" ; then
-					cp -a -f "$tmpFile" "$1"
-				fi
-				rm -f "$tmpFile"
-				return 0
-			fi
-			;;
-# Try tr with if the platform is not Linux/Solaris/HP-UX
-		*)
-		    baseFileName=$(basename $1)
-			tmpFile=$(mktemp -t $baseFileName.XXXXXX)
-			if tr -d '\15\32' <"$1" >"$tmpFile" ; then
-				cp -a -f "$tmpFile" "$1"
-			fi
-			rm -f "$tmpFile"
-			return 0
-	esac
-	# If the platform is Linux/Solaris/HP-UX but the commands are not available then use tr
-	baseFileName=$(basename $0)
-	tmpFile=$(mktemp -t $baseFileName.XXXXXX)
-	if tr -d '\15\32' <"$1" >"$tmpFile" ; then
-		cp -a -f "$tmpFile" "$1"
-	fi
-	rm -f "$tmpFile"
-	return 0
-}
+PERMISSION="744"
 
 #=========================================================================
 # FUNCTION LIBRARY
@@ -137,15 +62,14 @@ function dos2Unix {
 # FUNCTION::Convert files from dos2unix
 #--------------------------------------------
 function convertDos2Unix {
-  echo "--------------------------------------"
-  echo "convert dos to unix::dos2unix"
-  echo "--------------------------------------"
-  LIST=`ls *.sh *.txt *.properties *.xml *.cmd`
-  echo "LIST=${LIST}"
+  echo "convert dos to unix with sed"
+  LIST=`ls -lp --format=single-column | grep '\.sh\|\.txt\|\.properties\|\.xml\|\.cmd\|\.dp'`
+  #echo "LIST=${LIST}"
+  IFS=$'\n'
   for fileName in ${LIST}
   do
-    echo "dos2unix: Convert ${fileName}"
-    dos2Unix "${fileName}"
+    echo "  sed: Convert ${fileName}"
+	sed -i 's/\r//' "${fileName}"
   done
 }
 
@@ -154,57 +78,27 @@ function convertDos2Unix {
 #--------------------------------------------
 function setPermission {
   permission=$2
-  
-  echo "--------------------------------------"
-  echo "set permission::chmod"
-  echo "--------------------------------------"
-  existSH=`ls *.sh | wc -l`
-  if [ "${existSH}" -gt "0" ]
-  then
-    echo "chmod ${PERMISSION} *.sh"
+  MSG=""
+  MSG="${MSG}set permission::chmod in dir=`pwd`\n"
+  numFiles1=`ls -lp --format=single-column | grep '\.sh' | wc -l`
+  if [ ${numFiles1} -gt 0 ]; then
+    MSG="${MSG}  chmod ${PERMISSION} *.sh\n"
     chmod ${PERMISSION} *.sh
   fi
-  existBIN=`ls *.bin | wc -l`
-  if [ "${existBIN}" -gt "0" ]
-  then
-    echo "chmod ${PERMISSION} *.bin"
+  numFiles2=`ls -lp --format=single-column | grep '\.bin' | wc -l`
+  if [ ${numFiles2} -gt 0 ]; then
+    MSG="${MSG}  chmod ${PERMISSION} *.bin\n"
     chmod ${PERMISSION} *.bin
   fi
-  existCMD=`ls *.cmd | wc -l`
-  if [ "${existCMD}" -gt "0" ]
-  then
-    echo "chmod ${PERMISSION} *.cmd"
+  numFiles3=`ls -lp --format=single-column | grep '\.cmd' | wc -l`
+  if [ ${numFiles3} -gt 0 ]; then
+    MSG="${MSG}  chmod ${PERMISSION} *.cmd\n"
     chmod ${PERMISSION} *.cmd
   fi
-  echo ""
+  if [[ (${numFiles1} -gt 0) || (${numFiles2} -gt 0) || (${numFiles3} -gt 0) ]]; then
+      echo -e $MSG
+  fi
 }
-
-#--------------------------------------------
-# FUNCTION::Change Group
-#--------------------------------------------
-function changeGroup {
-  group=$2
-
-  echo "--------------------------------------"
-  echo "configure groups::chgrp -R ${GROUP} *"
-  echo "--------------------------------------"
-  chgrp -R ${GROUP} *
-  echo ""
-}
-
-#--------------------------------------------
-# FUNCTION::Change Owner
-#--------------------------------------------
-function changeOwner {
-  owner=$2
-
-  echo "--------------------------------------"
-  echo "configure owner::chown -R ${OWNER} *"
-  echo "--------------------------------------"
-  chown -R ${OWNER} *
-  echo ""
-}
-
 
 
 #=========================================================================
@@ -213,7 +107,10 @@ function changeOwner {
 echo "-----------------------------------"
 echo "Begin installation configuration..."
 echo "-----------------------------------"
-
+echo "--------------------------------------"
+echo "configure owner:group=chown -R ${OWNER}:${GROUP} ../../PDTool"
+echo "--------------------------------------"
+chown -R ${OWNER}:${GROUP} ../../PDTool
 echo "-----------------------------------"
 echo "Target Folder List::[${TARGETLIST}]"
 echo "-----------------------------------"
@@ -232,8 +129,6 @@ then
        then
           convertDos2Unix
           setPermission ${PERMISSION}
-          changeGroup ${GROUP}
-          changeOwner ${OWNER}
        else
           echo "Folder does not exist: ${FOLDER}"
        fi
@@ -242,10 +137,10 @@ then
 fi
 
 # If ANT_HOME exists then set the permission on the ant executable
-if [ -d "${ANT_HOME}" ]
-then
+if [ -d "${ANT_HOME}" ]; then
    echo "--------------------------------------"
-   echo "Set permissions on ${ANT_HOME}/bin/ant..."
+   echo "Set permissions on ${ANT_HOME}/bin/ant"
+   echo "  chmod 744 \"${ANT_HOME}/bin/ant\""
    echo "--------------------------------------"
    chmod 744 "${ANT_HOME}/bin/ant"
 fi

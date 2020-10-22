@@ -17,31 +17,35 @@
 # agreement with TIBCO.
 #
 ######################################################################
-# #==========================================================
-# # setVars.bat :: Set Environment Variables
-# #==========================================================
+#==========================================================
+# setVars.sh :: Set Environment Variables
+#==========================================================
+SV="setVars.sh"
+PRINT_VARS="1"
 #
-#----------------------------------------------------------
-# USER MODIFIES ENVIRONMENT VARIABLES
-#-----------------------------------------------------------
+#=======================================================================================================
+# CREATE/MODIFY VARIABLES BELOW THIS POINT
+#=======================================================================================================
+# Initialize variables to unset them [required]
+MY_PRE_VARS_PATH=""
+MY_POST_VARS_PATH=""
 #
 # The My Vars path provides with the user the ability to set specific environment variables for their login
-# e.g. export MY_VARS_PATH=/usr/compositesw/setMyPDToolVars.sh
-export MY_VARS_PATH=""
-if [ "${MY_VARS_PATH}" == "" ]; then echo "Unknown path=${MY_VARS_PATH}"; fi
-if [ "${MY_VARS_PATH}" != "" ]
-then  
-	if [ ! -f ${MY_VARS_PATH} ]; then
-		echo "Cannot find ${MY_VARS_PATH} environment variable file."
-		exit 1
-	fi
-     echo."Invoking ${MY_VARS_PATH}"
-	 . ./${MY_VARS_PATH}
+#   The location of these batch files is typically outside of the PDTOOL_HOME in the user's directory space.
+#   e.g. set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool<ver>_<vcs> or set MY_VARS_HOME=c:\users\%USERNAME%\.compositesw\PDTool<ver>_<vcs>\bin
+MY_VARS_HOME="/opt/TIBCO/PDTool8.3.0_GIT/PDTool/bin"
+#
+if [ "$MY_VARS_HOME" != "" ]; then
+    MY_PRE_VARS_PATH="$MY_VARS_HOME/setMyPrePDToolVars.sh"
+    MY_POST_VARS_PATH="$MY_VARS_HOME/setMyPostPDToolVars.sh"
+    if [[ ( "$MY_PRE_VARS_PATH" != "" ) && ( -f  "$MY_PRE_VARS_PATH" ) ]]; then
+        source "$MY_PRE_VARS_PATH"
+    fi
 fi
 #
 # For Command-line execution - Set to JRE 1.6 Home Directory
 # For Ant execution - set to JDK 1.6 Home Directory
-export JAVA_HOME="/home/qa/dev/projects/tools/linux-x86-64/jdk/jdk1.6.0_22"
+export JAVA_HOME="/opt/TIBCO/TDV8.3/tdv1/jdk"
 
 # Configure the Java Heap Min and Max memory
 export MIN_MEMORY="-Xms256m"
@@ -56,9 +60,8 @@ export CONFIG_PROPERTY_FILE=deploy.properties
 #=======================================
 export CURDIR=`pwd`
 cd ..
-PROJECT_HOME="`pwd`"
-export PROJECT_HOME=`pwd`
-export PROJECT_HOME_PHYSICAL=`pwd`
+if [ "$PROJECT_HOME" == "" ]; then export PROJECT_HOME=`pwd`; fi;
+if [ "$PROJECT_HOME_PHYSICAL" == "" ]; then export PROJECT_HOME_PHYSICAL=`pwd`; fi;
 cd "${CURDIR}"
 
 # -----------------------
@@ -82,3 +85,42 @@ export HTTP_PROXY=""
 
 # Set the Java Options for the JVM command line
 export JAVA_OPT="${MIN_MEMORY} ${MAX_MEMORY} ${CERT_ARGS} ${HTTP_PROXY}"
+
+#=======================================================================================================
+# CREATE/MODIFY VARIABLES ABOVE THIS POINT
+#=======================================================================================================
+#---------------------------------------------
+# Print out the setVars.sh variables
+#---------------------------------------------
+if [ "$PRINT_VARS" == "1" ]; then
+    MSG=""
+    MSG="${MSG}########################################################################################################################################\n"
+    MSG="${MSG}$0: Setting PDTool variables\n"
+    MSG="${MSG}########################################################################################################################################\n"
+    MSG="${MSG}MY_VARS_HOME               =${MY_VARS_HOME}\n"
+    MSG="${MSG}MY_PRE_VARS_PATH           =${MY_PRE_VARS_PATH}\n"
+    MSG="${MSG}MY_POST_VARS_PATH          =${MY_POST_VARS_PATH}\n"
+    MSG="${MSG}JAVA_HOME                  =${JAVA_HOME}\n"
+    MSG="${MSG}CONFIG_PROPERTY_FILE       =${CONFIG_PROPERTY_FILE}\n"
+    MSG="${MSG}PROJECT_HOME               =${PROJECT_HOME}\n"
+    MSG="${MSG}PROJECT_HOME_PHYSICAL      =${PROJECT_HOME_PHYSICAL}\n"
+    MSG="${MSG}MIN_MEMORY                 =${MIN_MEMORY}\n"
+    MSG="${MSG}MAX_MEMORY                 =${MAX_MEMORY}\n"
+    MSG="${MSG}CERT_ARGS                  =${CERT_ARGS}\n"
+    MSG="${MSG}HTTP_PROXY                 =${HTTP_PROXY}\n"
+    MSG="${MSG}JAVA_OPT                   =${JAVA_OPT}\n"
+    echo -e "$MSG"
+    # Output to the default log file if the variable DEFAULT_LOG_PATH is defined in ExecutePDTool.sh
+    if [[ ("$DEFAULT_LOG_PATH" != "") && (-f "$DEFAULT_LOG_PATH") ]]; then
+        echo -e "$MSG">>"$DEFAULT_LOG_PATH"
+    fi
+	MSG=""
+fi
+#---------------------------------------------
+# POST-PROCESSING CUSTOM VARIABLES:
+#---------------------------------------------
+if [ "$MY_VARS_HOME" != "" ]; then
+    if [[ ( "$MY_POST_VARS_PATH" != "" ) && ( -f  "$MY_POST_VARS_PATH" ) ]]; then
+        source "$MY_POST_VARS_PATH"
+    fi
+fi

@@ -24,7 +24,7 @@
   <description>description</description>
 
   <!-- Default properties -->
-  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="SERVERID" 				value="localhost9810"/>
   <property name="noarguments" 				value="&quot;&quot;"/>
 		
   <!-- Default Path properties -->
@@ -46,9 +46,11 @@
 
   <!-- Default Classpath [Do Not Change] -->
   <path id="project.class.path">
-	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
-	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
-	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/common"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/pdtool"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv/endorsed"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="*.jar"/></fileset>
 	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
   </path>
 	

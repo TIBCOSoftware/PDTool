@@ -64,9 +64,9 @@ REM # Force SetupPDTool.bat to use default values when present and bypass prompt
 REM # Set to "Y" to bypass prompting for defaults values that are set with a value.
 set DEF_FORCE_PROMPT_BYPASS=Y
 REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
-set DEF_JAVA_HOME=C:\Program Files\Java\jre8
+set DEF_JAVA_HOME=C:\Program Files\Java\jdk-11.0.8
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDTool installation folder.
-set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool8.0.0_TFS
+set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool8.3.0_GIT
 REM # Default for I_PDTOOL_DESTINATION_DIR.  This is the default PDTool directory name.
 set DEF_PDTOOL_DESTINATION_DIR=PDTool
 REM # Default for I_VALID_ENV_CONFIG_PAIRS
@@ -78,9 +78,9 @@ REM #               vcs-type-char = represents the first characters of the VCS e
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
-set DEF_VALID_ENV_CONFIG_PAIRS=TDEV~deploy_TFS_DEV1,TUAT~deploy_TFS_UAT1,TPROD~deploy_TFS_PROD1
+set DEF_VALID_ENV_CONFIG_PAIRS=GDEV~deploy_GIT_DEV1,GUAT~deploy_GIT_UAT1,GPROD~deploy_GIT_PROD1
 REM # Default for I_CONFIG_PROPERTY_FILE - VCS Configuration property file used for connecting PDTool to CIS and VCS
-set DEF_CONFIG_PROPERTY_FILE=deploy_TFS_UAT1.properties
+set DEF_CONFIG_PROPERTY_FILE=deploy_GIT_UAT1.properties
 REM # Default for I_CIS_USERNAME.  Generally this will be the standard computer USERNAME value.
 set DEF_CIS_USERNAME=admin
 REM # Default for I_CIS_DOMAIN.  CIS Domain used for connection by CIS_USERNAME
@@ -88,18 +88,18 @@ set DEF_CIS_DOMAIN=composite
 REM # Default for I_CONFIGURE_VCS
 set DEF_CONFIGURE_VCS=Y
 REM # Default for I_VCS_BASE_TYPE=[SVN|TFS|GIT|P4]
-set DEF_VCS_BASE_TYPE=TFS
+set DEF_VCS_BASE_TYPE=GIT
 REM # Default for I_VCS_EDITOR. Windows=notepad and UNIX=vi
 set DEF_VCS_EDITOR=notepad
 REM # Default for I_VCS_HOME is the location of where the VCS client executable is located
-set DEF_VCS_HOME=%DEF_PDTOOL_DESTINATION_HOME%\VCSClients\TFS_TEE_client
+set DEF_VCS_HOME=C:\MyFiles\PDTool\VCSClients\GIT2.26.1\cmd
 REM # Default for I_VCS_REPOSITORY_URL - Always use 4 forward slashes to escape https://url --> https:////url and no slash at the end.
-set DEF_VCS_REPOSITORY_URL=http:////localhost:8080/tfs/CompositeCollection
+set DEF_VCS_REPOSITORY_URL=https:////url.com/PDTool_Test.git
 REM # Default for I_VCS_PROJECT_ROOT - One or more relative VCS folders that extend from DEF_VCS_REPOSITORY_URL.
-set DEF_VCS_PROJECT_ROOT=Composite_8.0.0/Rel
+set DEF_VCS_PROJECT_ROOT=cis_objects
 REM # Default for I_RELEASE_FOLDER - The relative VCS folders path that makes up the variable portion for a given release.  This is simply a default folder to start with.
 REM # During normal operation RELEASE_FOLDER is dynamically changed by using -release option with ExecutePDTool.bat
-set DEF_RELEASE_FOLDER=20150918
+set DEF_RELEASE_FOLDER=
 REM # Default for I_VCS_USERNAME.  Generally this will be the standard computer USERNAME value.
 set DEF_VCS_USERNAME=%USERNAME%
 REM # Default for I_VCS_DOMAIN.  To be appended to the I_VCS_USERNAME as in user@domain or leave blank if not applicable.  TFS requires this.
@@ -109,7 +109,7 @@ REM # Alternatively set it to the short path substitute drive path PDTOOL_SUBSTI
 REM # This is the parent folder to where the workspace name folder "I_VCS_WORKSPACE_NAME" is a child.
 set DEF_VCS_WORKSPACE_HOME=%%%%PDTOOL_SUBSTITUTE_DRIVE%%%%
 REM # Default for I_VCS_WORKSPACE_NAME.  The name of the workspace.
-set DEF_VCS_WORKSPACE_NAME=TFSww7
+set DEF_VCS_WORKSPACE_NAME=GITww7
 REM # Default for I_VCS_TEMP_DIR path.  Typically this is the set to the PDTOOL_HOME variable + DEF_VCS_WORKSPACE_NAME + t indicating temp
 REM # Alternatively set it to the short path substitute drive path PDTOOL_SUBSTITUTE_DRIVE referenced in setMyPrePDToolVars.bat + DEF_VCS_WORKSPACE_NAME + t indicating temp
 REM # This would resolved to something like J:\SVNwt

@@ -38,9 +38,6 @@ import com.tibco.ps.common.util.wsapi.WsApiHelperObjects;
 import com.tibco.ps.deploytool.dao.ArchiveDAO;
 import com.tibco.ps.deploytool.dao.ServerDAO;
 import com.tibco.ps.deploytool.util.DeployUtil;
-import com.tibco.ps.deploytool.modules.ArchiveIncludeDomainType.Domains;
-import com.tibco.ps.deploytool.modules.ArchiveIncludeGroupType.Groups;
-import com.tibco.ps.deploytool.modules.ArchiveIncludeUserType.Users;
 import com.tibco.ps.deploytool.modules.ArchiveRebindablePathType.RebindablePaths;
 import com.tibco.ps.deploytool.modules.ArchiveType;
 import com.tibco.ps.deploytool.modules.ArchiveRelocateResourcePathType;
@@ -486,6 +483,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * 		=================
  * 		-encryptionPassword <encryptionPassword>
  * 		[-genopt <filename>]
+ * 		=================
+ * 		8.3
+ * 		=================
+ *		-ignoreEncryption
  * 
  * @param archive Archive definition
  * @return list of parameters specified for pkg_export invocation
@@ -509,6 +510,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 	// Data source definitions are imported by default, so the inversed logic here is intentional
 		if (archive.isIncludesourceinfo() != null && archive.isIncludesourceinfo() == false ) {
 			argsList.add("-nosourceinfo");
+		}
+		if (archive.isNosourceinfo() != null && archive.isNosourceinfo() == true ) {
+			argsList.add("-nosourceinfo");	
 		}
 		if (archive.isMessagesonly() != null && archive.isMessagesonly() == true ) {
 			argsList.add("-messagesonly");
@@ -550,6 +554,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		}
 		if (archive.isPrintreferences() != null && archive.isPrintreferences() == true ) {
 			argsList.add("-printreferences");	
+		}
+		if (archive.isIgnoreEncryption() != null && archive.isIgnoreEncryption() == true ) {
+			argsList.add("-ignoreEncryption");	
 		}
 
         if ( archive.getResources() != null && archive.getResources().getExportOrRelocateOrRebind() != null ) {
@@ -615,7 +622,6 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * 		[-rebindable <path> <description>] 
  * 		[-includeaccess] 
  * 		[-includecaching]
- *		[-includesourceinfo]
  * 		[-nosourceinfo] 
  * 		[-includejars]
  * 		[-includeAllUsers] 
@@ -634,6 +640,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  * 		-encryptionPassword <encryptionPassword>
  * 		[-genopt <filename>] 
  *		<NamespacePath> [...]
+ * 		=================
+ * 		8.3
+ * 		=================
+ *		-includeParentResources
  * 
  * @param archive Archive definition
  * @return list of parameters specified for pkg_export invocation
@@ -665,8 +675,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.isIncludejars() != null && archive.isIncludejars() == true ) {
 			argsList.add("-includejars");	
 		}
-		if (archive.isIncludesourceinfo() != null && archive.isIncludesourceinfo() == true ) {
-			argsList.add("-includesourceinfo");	
+		if (archive.isIncludesourceinfo() != null && archive.isIncludesourceinfo() == false ) {
+			argsList.add("-nosourceinfo");	
 		}
 		if (archive.isIncludestatistics() != null && archive.isIncludestatistics() == true ) {
 			argsList.add("-includeStatistics");	
@@ -680,6 +690,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		if (archive.getPkgName() != null && archive.getPkgName().trim().length() > 0 ) {
 			argsList.add("-pkgname");	
 			argsList.add(archive.getPkgName());	
+		}
+		if (archive.isIncludeParentResources() != null && archive.isIncludeParentResources() == true ) {
+			argsList.add("-includeParentResources");	
 		}
 		
 		// Process the user lists
@@ -712,8 +725,8 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 					argsList.add("-rebindable");	
 					argsList.add(paths.getPath().toString());	
 				}
-				if ( paths.getDescripiton() != null && paths.getDescripiton().toString().trim().length() > 0 ) {
-					argsList.add(paths.getDescripiton().toString());	
+				if ( paths.getDescription() != null && paths.getDescription().toString().trim().length() > 0 ) {
+					argsList.add(paths.getDescription().toString());	
 				}
 			}
 		}
@@ -759,7 +772,10 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
  *		=================
  *		-encryptionPassword <encryptionPassword>
  *		[-genopt <filename>]
- *
+ * 		=================
+ * 		8.3
+ * 		=================
+ *		-ignoreEncryption
  * 	
  * @param archive Archive definition
  * @return list of parameters specified for backup_export invocation
@@ -784,6 +800,9 @@ public class ArchiveWSDAOImpl implements ArchiveDAO {
 		}
 		if (archive.isReintrospectNone() != null && archive.isReintrospectNone() == true ) {
 			argsList.add("-reintrospectNone");	
+		}
+		if (archive.isIgnoreEncryption() != null && archive.isIgnoreEncryption() == true ) {
+			argsList.add("-ignoreEncryption");	
 		}
 
 		if ( archive.getResources() != null && archive.getResources().getExportOrRelocateOrRebind() != null ) {

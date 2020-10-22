@@ -64,7 +64,7 @@ REM # Force SetupPDTool.bat to use default values when present and bypass prompt
 REM # Set to "Y" to bypass prompting for defaults values that are set with a value.
 set DEF_FORCE_PROMPT_BYPASS=Y
 REM # Default for I_JAVA_HOME.  Use %JAVA_HOME% if it is set in the environment and is JRE7.  Another alternative is to set to DV Studio JRE path.
-set DEF_JAVA_HOME=C:\Program Files\Java\jre8
+set DEF_JAVA_HOME=C:\Program Files\Java\jdk-11.0.8
 REM # Default for I_PDTOOL_DESTINATION_HOME.  This is the base PDTool installation folder.
 set DEF_PDTOOL_DESTINATION_HOME=C:\Users\%USERNAME%\PDTool8.0.0_NOVCS
 REM # Default for I_PDTOOL_DESTINATION_DIR.  This is the default PDTool directory name.
@@ -78,7 +78,7 @@ REM #               vcs-type-char = represents the first characters of the VCS e
 REM #                    env-type = represents the CIS environment short name deploying to.  Examples: DEV, ATA, ADA, CIT, SIT, UAT, TT, PROD, DR
 REM #               The combination of [vcs-type-char][env-type] makes it unique across all different env-config pair types.
 REM #    Configuration property file names found in PDTool\resources\config folder.
-set DEF_VALID_ENV_CONFIG_PAIRS=TDEV~deploy_TFS_DEV1,TUAT~deploy_TFS_UAT1,TPROD~deploy_TFS_PROD1
+set DEF_VALID_ENV_CONFIG_PAIRS=NDEV~deploy_NOVCS_DEV1,NUAT~deploy_NOVCS_UAT1,NPROD~deploy_NOVCS_PROD1
 REM # Default for I_CONFIG_PROPERTY_FILE - VCS Configuration property file used for connecting PDTool to CIS and VCS
 set DEF_CONFIG_PROPERTY_FILE=deploy_NOVCS_UAT1.properties
 REM # Default for I_CIS_USERNAME.  Generally this will be the standard computer USERNAME value.

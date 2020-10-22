@@ -288,7 +288,6 @@ call %writeOutput% "   VCS_PASSWORD=[%PR_VCS_PASSWORD%]" 																	"%SCRI
 call %writeOutput% "   CONFIG_PROPERTY_FILE=[%CONFIG_PROPERTY_FILE%]" 														"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   RELEASE_FOLDER=[%RELEASE_FOLDER%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
 call %writeOutput% "   CIS_VERSION=[%CIS_VERSION%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
-call %writeOutput% " "
 
 
 REM #=======================================
@@ -424,17 +423,61 @@ REM #call %writeOutput% " "
 REM #=======================================
 REM # Set DeployManager Environment Variables
 REM #=======================================
-set DEPLOY_CLASSPATH="%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\*"
-set ENDORSED_DIR=%PROJECT_HOME%\lib\endorsed
+if not defined CIS_VERSION (
+   call %writeOutput% "The variable CIS_VERSION is not defined properly from cisVersion.bat" 									"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   echo 
+   exit /B 1
+)
+if "%CIS_VERSION%" == "" (
+   call %writeOutput% "The variable CIS_VERSION is not set properly from cisVersion.bat" 										"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+   echo 
+   exit /B 1
+)
+REM # Setup the ENDORSED_DIR and DEPLOY_CLASSPATH for TDV 8.2 and lower
+set ENDORSED_DIR=%PROJECT_HOME%\lib\tdv\endorsed
+set JAVA_ENDORSED_DIRS=-Djava.endorsed.dirs="%ENDORSED_DIR%"
+set DEPLOY_CLASSPATH=%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\pdtool\*;%PROJECT_HOME%\lib\common\*;%PROJECT_HOME%\lib\tdv\*
+
+REM # Setup the ENDORSED_DIR and DEPLOY_CLASSPATH for TDV 8.3 and higher
+if "%CIS_VERSION%" GEQ "8.3.0" (
+    set JAVA_ENDORSED_DIRS=
+    set DEPLOY_CLASSPATH=%PROJECT_HOME%\dist\*;%PROJECT_HOME%\lib\pdtool\*;%PROJECT_HOME%\lib\common\*;%PROJECT_HOME%\lib\tdv\*;%ENDORSED_DIR%\*
+	set JAVA_OPT=%JAVA_OPT% --add-exports=java.base/sun.security.provider=ALL-UNNAMED --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.file=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED
+)
+
 set DEPLOY_MANAGER=com.tibco.ps.deploytool.DeployManagerUtil
 set DEPLOY_COMMON_UTIL=com.tibco.ps.common.scriptutil.ScriptUtil
 set CONFIG_LOG4J=-Dlog4j.configuration="file:%PROJECT_HOME%\resources\config\log4j.properties" 
 set CONFIG_ROOT=-Dcom.tibco.ps.configroot="%PROJECT_HOME%\resources\config"
+
+REM # NOTE: the above JAVA_OPT suppresses the following message as a result of using JDK 11.  The message does not happen with JRE 1.8
+REM # WARNING: An illegal reflective access operation has occurred
+REM # WARNING: Illegal reflective access by com.sun.xml.bind.v2.runtime.reflect.opt.Injector$1 (file:/C:/MyFiles/PDTool/PDTool8.3.0_20201014/PDTool/lib/tdv/webservices-rt-2.1.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int)
+REM # WARNING: Please consider reporting this to the maintainers of com.sun.xml.bind.v2.runtime.reflect.opt.Injector$1
+REM # WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+REM # WARNING: All illegal access operations will be denied in a future release
+
 REM #=======================================
 REM # Precedence evaluation
 REM #=======================================
 set PRECEDENCE=
 if defined propertyOrderPrecedence set PRECEDENCE=-DpropertyOrderPrecedence="%propertyOrderPrecedence%"
+
+REM #=======================================
+REM # Print the Environment Variables
+REM #=======================================
+call %writeOutput% "########################################################################################################################################"
+call %writeOutput% "%SCRIPT%: DeployManager Environment Variables:"
+call %writeOutput% "########################################################################################################################################"
+call %writeOutput% "   ENDORSED_DIR=[%ENDORSED_DIR%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   JAVA_ENDORSED_DIRS=[%JAVA_ENDORSED_DIRS%]" 															"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   DEPLOY_CLASSPATH=[%DEPLOY_CLASSPATH%]" 																"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   DEPLOY_MANAGER=[%DEPLOY_MANAGER%]" 																	"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   DEPLOY_COMMON_UTIL=[%DEPLOY_COMMON_UTIL%]" 															"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CONFIG_LOG4J=[%CONFIG_LOG4J%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   CONFIG_ROOT=[%CONFIG_ROOT%]" 																		"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+call %writeOutput% "   PRECEDENCE=[%PRECEDENCE%]" 																			"%SCRIPT%%SEP%%DATE%-%TIME%%SEP%"
+
 REM #=======================================
 REM # Parameter Validation
 REM #=======================================
@@ -454,7 +497,6 @@ call %writeOutput% " "
 call %writeOutput% "------------------------------------------------------------------" 
 call %writeOutput% "-------------------- COMMAND-LINE DEPLOYMENT ---------------------" 
 call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% " " 
 
 CALL:printablePassword "%VCS_PASSWORD%" PR_VCS_PASSWORD
 REM # Goto usage if PROPERTY_FILE is blank or does not exist
@@ -468,8 +510,8 @@ REM #***********************************************
 REM # Invoke: DeployManagerUtil execCisDeployTool "%PROPERTY_FILE%" "%VCS_USERNAME%" "%VCS_PASSWORD%"
 REM #***********************************************
 set JAVA_ACTION=execCisDeployTool
-set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%PROPERTY_FILE%" "%VCS_USERNAME%" "%VCS_PASSWORD%"
-set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%PROPERTY_FILE%" "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
+set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%PROPERTY_FILE%" "%VCS_USERNAME%" "%VCS_PASSWORD%"
+set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%PROPERTY_FILE%" "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
 GOTO START_SCRIPT
 
 REM #--------------
@@ -479,7 +521,6 @@ call %writeOutput% " "
 call %writeOutput% "------------------------------------------------------------------" 
 call %writeOutput% "------------------ COMMAND-LINE VCS INITIALIZE -------------------" 
 call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% " " 
 
 if not defined VCS_USERNAME set VCS_USERNAME= 
 if not defined VCS_PASSWORD set VCS_PASSWORD= 
@@ -489,8 +530,8 @@ REM #***********************************************
 REM # Invoke: DeployManagerUtil vcsInitWorkspace "%VCS_USERNAME%" "%VCS_PASSWORD%"
 REM #***********************************************
 set JAVA_ACTION=vcsInitWorkspace
-set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%VCS_PASSWORD%"
-set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
+set   COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%VCS_PASSWORD%"
+set PRCOMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DNO_OPERATION="%NO_OPERATION%"  %DEPLOY_MANAGER% %JAVA_ACTION% "%VCS_USERNAME%" "%PR_VCS_PASSWORD%"
 GOTO START_SCRIPT
 
 REM #--------------
@@ -500,7 +541,6 @@ call %writeOutput% " "
 call %writeOutput% "------------------------------------------------------------------" 
 call %writeOutput% "--------------------- COMMAND-LINE ENCRYPT -----------------------" 
 call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% " " 
 
 REM # Goto usage if PROPERTY_FILE is blank or does not exist
 set ARG=PROPERTY_FILE
@@ -513,7 +553,7 @@ REM #***********************************************
 REM # Invoke: ScriptUtil encryptPasswordsInFileBypass "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 REM #***********************************************
 set JAVA_ACTION=encryptPasswordsInFileBypass
-set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%PROPERTY_FILE%" "%ENCRYPT_BYPASS_STRING%"
 set PRCOMMAND=%COMMAND%
 GOTO START_SCRIPT
 
@@ -525,7 +565,6 @@ call %writeOutput% " "
 call %writeOutput% "------------------------------------------------------------------" 
 call %writeOutput% "------------------------- ANT DEPLOYMENT -------------------------" 
 call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% " " 
 
 if not defined VCS_USERNAME set VCS_USERNAME= 
 if not defined VCS_PASSWORD set VCS_PASSWORD= 
@@ -549,16 +588,21 @@ if NOT EXIST "%ANT_HOME%" (
    if defined PWD cd "%PWD%"
    exit /B 1
 )
-REM # Set the Ant classpath and options
-set ANT_CLASSPATH=%PROJECT_HOME%\dist;%PROJECT_HOME%\lib;%PROJECT_HOME%\lib\endorsed;%ANT_HOME%\lib
-set ANT_OPTS=%CONFIG_LOG4J% %CONFIG_ROOT% -Djava.endorsed.dirs="%ENDORSED_DIR%"
+REM # Set up the ANT options
+set ANT_OPTS=%CONFIG_LOG4J% %CONFIG_ROOT% %JAVA_ENDORSED_DIRS% --add-exports=java.base/sun.security.provider=ALL-UNNAMED --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.file=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED
+
+REM # Set the Ant classpath for TDV 8.2 and lower
+set ANT_CLASSPATH=%PROJECT_HOME%\dist;%PROJECT_HOME%\lib\pdtool;%PROJECT_HOME%\lib\common;%PROJECT_HOME%\lib\tdv;%ANT_HOME%\lib
+
+REM # Setup the ENDORSED_DIR and DEPLOY_CLASSPATH for TDV 8.3 and higher
+if "%CIS_VERSION%" GEQ "8.3.0" set ANT_CLASSPATH=%PROJECT_HOME%\dist;%PROJECT_HOME%\lib\pdtool;%PROJECT_HOME%\lib\common;%PROJECT_HOME%\lib\tdv;%ENDORSED_DIR%;%ANT_HOME%\lib
 
 REM #***********************************************
 REM # Invoke: ant -buildfile
 REM #***********************************************
 
-set   COMMAND="%ANT_HOME%/bin/ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DVCS_USERNAME="%VCS_USERNAME%" -DVCS_PASSWORD="%VCS_PASSWORD%" -DNO_OPERATION="%NO_OPERATION%" -buildfile "%PROPERTY_FILE%"
-set PRCOMMAND="%ANT_HOME%/bin/ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DVCS_USERNAME="%VCS_USERNAME%" -DVCS_PASSWORD="%PR_VCS_PASSWORD%" -DNO_OPERATION="%NO_OPERATION%" -buildfile "%PROPERTY_FILE%"
+set   COMMAND="%ANT_HOME%\bin\ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DVCS_USERNAME="%VCS_USERNAME%" -DVCS_PASSWORD="%VCS_PASSWORD%" -DNO_OPERATION="%NO_OPERATION%" -buildfile "%PROPERTY_FILE%"
+set PRCOMMAND="%ANT_HOME%\bin\ant" -lib "%ANT_CLASSPATH%" %PRECEDENCE% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% -DVCS_USERNAME="%VCS_USERNAME%" -DVCS_PASSWORD="%PR_VCS_PASSWORD%" -DNO_OPERATION="%NO_OPERATION%" -buildfile "%PROPERTY_FILE%"
 GOTO START_SCRIPT
 
 REM #--------------
@@ -568,7 +612,6 @@ call %writeOutput% " "
 call %writeOutput% "------------------------------------------------------------------" 
 call %writeOutput% "--------------------- COMMAND-LINE XSL TRANSFORMATION -----------------------" 
 call %writeOutput% "------------------------------------------------------------------" 
-call %writeOutput% " " 
 
 REM # Goto usage if XML_FILE_SOURCE is blank or does not exist
 if not defined XML_FILE_SOURCE (
@@ -593,7 +636,7 @@ REM #***********************************************
 REM # Invoke: ScriptUtil XslTransformUtility "%XML_FILE_SOURCE%" "%XSL_FILE_SOURCE%"
 REM #***********************************************
 set JAVA_ACTION=XslTransformUtility
-set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  %DEPLOY_CLASSPATH% %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% -Djava.endorsed.dirs="%ENDORSED_DIR%" -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%XML_FILE_SOURCE%" "%XSL_FILE_SOURCE%"
+set COMMAND="%JAVA_HOME%\bin\java" %JAVA_OPT% -cp  "%DEPLOY_CLASSPATH%" %CONFIG_ROOT% %CONFIG_LOG4J% %PRECEDENCE% %JAVA_ENDORSED_DIRS% -DPROJECT_HOME="%PROJECT_HOME%" -DPROJECT_HOME_PHYSICAL="%PROJECT_HOME_PHYSICAL%" -DCONFIG_PROPERTY_FILE=%CONFIG_PROPERTY_FILE% %DEPLOY_COMMON_UTIL% %JAVA_ACTION% "%XML_FILE_SOURCE%" "%XSL_FILE_SOURCE%"
 set PRCOMMAND=%COMMAND%
 GOTO START_SCRIPT
 

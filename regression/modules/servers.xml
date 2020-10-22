@@ -183,6 +183,93 @@
   </server>
   
   <server>
+    <id>localhost9810http</id>
+    <hostname>localhost</hostname>
+    <port>9810</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9810https</id>
+    <hostname>localhost</hostname>
+    <port>9810</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
+    <id>localhost9820http</id>
+    <hostname>localhost</hostname>
+    <port>9820</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9820https</id>
+    <hostname>localhost</hostname>
+    <port>9820</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
+    <id>localhost9830http</id>
+    <hostname>localhost</hostname>
+    <port>9830</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3N01</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>false</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+  <server>
+    <id>localhost9830https</id>
+    <hostname>localhost</hostname>
+    <port>9830</port>
+    <usage>localhost</usage>
+    <user>$CIS_USERNAME</user>
+    <encryptedpassword>$CIS_PASSWORD</encryptedpassword>
+    <domain>$CIS_DOMAIN</domain>
+    <cishome>c:\TIBCO\DV8.3N01</cishome>
+    <clustername />
+    <site>Local</site>
+    <useHttps>true</useHttps>
+    <allowVariables>true</allowVariables>
+  </server>
+
+  <server>
     <id>localhost9410http</id>
     <hostname>localhost</hostname>
     <port>9410</port>

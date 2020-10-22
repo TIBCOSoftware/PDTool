@@ -698,8 +698,35 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 				</xs:documentation>
 			  </xs:annotation>
 			</xs:element>
-
 		<!-- mtinius@20181218-End -->
+
+		<!-- mtinius@20201012-Start - added missing options -->
+			<xs:element name="includeParentResources" maxOccurs="1" minOccurs="0" type="xs:boolean" default="false">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE EXPORT:
+					Optional. For 8.3 and above only.
+					By enabling this option, the parent resources are included while exporting the data source metadata.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+			<xs:element name="ignoreEncryption" maxOccurs="1" minOccurs="0" type="xs:boolean" default="true">
+			  <xs:annotation>
+				<xs:documentation xml:lang="en">
+				ON PACKAGE IMPORT:
+				ON BACKUP IMPORT:
+					Optional. For 8.3 and above only.
+						If this option is used, then all backup data will be imported regardless of whether a valid encryption
+							key was provided. This means that the import will not fail. This option can be used to allow partially
+							importing any backed up data. However, the import process will only import data that is not encrypted or
+							can be decrypted using the provided encryption key.  All encrypted portions of the backup data that cannot
+							be decrypted will be imported as empty values and the import will otherwise succeed.
+							This affects all encrypted values in the backup data, which includes, but is not limited to data source and
+							LDAP domain connection passwords.
+				</xs:documentation>
+			  </xs:annotation>
+			</xs:element>
+		<!-- mtinius@20201012-End -->
 			
 		</xs:all>
 	</xs:complexType>
@@ -860,7 +887,7 @@ targetNamespace="http://www.tibco.com/ps/deploytool/modules" xmlns:xsd="undefine
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="path" type="xs:string"/>
-						<xs:element name="descripiton" type="xs:string"/>
+						<xs:element name="description" type="xs:string"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

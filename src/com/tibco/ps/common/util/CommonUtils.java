@@ -71,8 +71,8 @@ import com.tibco.ps.deploytool.dao.wsapi.ServerAttributeWSDAOImpl;
 import com.compositesw.common.security.CompositeSecurityException;
 import com.compositesw.common.security.EncryptionManager;
 import com.compositesw.common.vcs.primitives.ResourceNameCodec;
-import com.compositesw.ps.utils.repository.CisPathQuoter;
-import com.compositesw.ps.utils.repository.CisPathQuoterException;
+import com.tibco.ps.utils.repository.CisPathQuoter;
+import com.tibco.ps.utils.repository.CisPathQuoterException;
 
 // -- CommonUtils to avoid confusion with Ant Utils 
 public class CommonUtils {

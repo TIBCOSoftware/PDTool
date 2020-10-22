@@ -39,6 +39,7 @@ import com.compositesw.common.vcs.primitives.IOPrimitives.EmptyAwareFileOutputSt
 public class ExportCommand implements ArchiveConstants, PackageCommandConstants  {
 
     private static final String VCS_EXPORT_ZIP = "vcs_export.zip";
+	private static final Object KEY_VCS_EXPORT = null;
     
     public static void startCommand(String baseDir, String homeDir, String[] args) throws Exception {
         ExportOptions state = new ExportOptions(args);

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+######################################################################
+# (c) 2017 TIBCO Software Inc. All rights reserved.
+# 
+# Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+# The details can be found in the file LICENSE.
+# 
+# The following proprietary files are included as a convenience, and may not be used except pursuant
+# to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
+# csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+# csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+# and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+# are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
+# 
+# This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+# If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+# agreement with TIBCO.
+#
+######################################################################
+-->
+<project name="PDTool" default="default" basedir=".">
+  <description>description</description>
+
+  <!-- Default properties -->
+  <property name="SERVERID" 				value="UAT1_9810http"/>
+  <property name="noarguments" 				value="&quot;&quot;"/>
+		
+  <!-- Default Path properties -->
+  <property name="RESOURCE_HOME" 			value="${PROJECT_HOME}/resources"/>
+  <property name="MODULE_HOME" 				value="${RESOURCE_HOME}/modules"/>
+  <property name="pathToServersXML" 		value="${MODULE_HOME}/servers.xml"/>
+  <property name="pathToArchiveXML" 		value="${MODULE_HOME}/ArchiveModule.xml"/>
+  <property name="pathToDataSourcesXML" 	value="${MODULE_HOME}/DataSourceModule.xml"/>
+  <property name="pathToGroupsXML" 			value="${MODULE_HOME}/GroupModule.xml"/>
+  <property name="pathToPrivilegeXML" 		value="${MODULE_HOME}/PrivilegeModule.xml"/>
+  <property name="pathToRebindXML" 			value="${MODULE_HOME}/RebindModule.xml"/>
+  <property name="pathToRegressionXML" 		value="${MODULE_HOME}/RegressionModule.xml"/>
+  <property name="pathToResourceXML" 		value="${MODULE_HOME}/ResourceModule.xml"/>
+  <property name="pathToResourceCacheXML" 	value="${MODULE_HOME}/ResourceCacheModule.xml"/>
+  <property name="pathToServerAttributeXML" value="${MODULE_HOME}/ServerAttributeModule.xml"/>
+  <property name="pathToTriggerXML" 		value="${MODULE_HOME}/TriggerModule.xml"/>
+  <property name="pathToUsersXML" 			value="${MODULE_HOME}/UserModule.xml"/>
+  <property name="pathToVCSModuleXML" 		value="${MODULE_HOME}/VCSModule.xml"/>
+
+  <!-- Custom properties -->
+  <property name="archiveIds" 				value="import1"/>
+
+  <!-- Default Classpath [Do Not Change] -->
+  <path id="project.class.path">
+	<fileset dir="${PROJECT_HOME}/lib/common"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/pdtool"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv/endorsed"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
+  </path>
+  <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.tibco.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>
+
+<!-- ================================= 
+ target: default              
+================================= -->
+  <target name="default" description="Update CIS with environment specific parameters">
+  <!--
+	# ========================================
+	# Archive Module:
+	# ========================================
+		# Full Server Backup
+		PASS	TRUE	ExecuteAction  	backup_export   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Full Server Restore
+		PASS	TRUE	ExecuteAction  	backup_import   $SERVERID "FullBackup"  "$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Import
+		PASS	TRUE	ExecuteAction   	pkg_import  $SERVERID "import01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+		# Export
+		PASS	TRUE	ExecuteAction   	pkg_export  $SERVERID "export01"   	"$MODULE_HOME/ArchiveModule.xml" "$MODULE_HOME/servers.xml"
+	-->
+	    <executeJavaAction action="pkg_import"    	arguments="${SERVERID}^import1^${pathToArchiveXML}^${pathToServersXML}" endExecutionOnTaskFailure="TRUE"/>
+  </target>
+</project>

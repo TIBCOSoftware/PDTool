@@ -19,6 +19,7 @@
 
 To Developers:
 
+----------------------------------------------------------------------------
 Generate schema documentation, use Stylus Studio.
 ------------------------------------------------------
 1) Open the schema in Stylus studio
@@ -29,14 +30,20 @@ Generate schema documentation, use Stylus Studio.
 6) Click Save
 7) Click Yes to overwrite
 
-Distribute documentation to the PDTool:
+
 ----------------------------------------------------------------------------
-Run the "build.xml" in the PDToolModules directory
-Right click on build.xml and select "Run as --> Ant Build"
-
-The following operations will be performed:
-
-1) Generate the JAXB libraries 
-2) Distribute /dist/PDToolModules.jar to PDTool/lib 
-3) The docs will be pulled in when PDTool is built
- 
+Build the PDToolModules.jar
+----------------------------------------------------------------------------
+Right click on "pom.xml" Run as "Maven install"
+	a) This will perform the following:
+		Generate the JAXB .java source in /src
+		Compile the target in /target
+		Build the PDToolModules.jar
+		Copy target/PDToolModules.jar ../libcommon
+		Copy /schema/PDToolModules.xsd ../resources/schema
+		
+One Time only - copy runtime jar files to /libcommon
+	jakarta.activation-1.2.2.jar
+	jaxb-api-2.3.1.jar
+	jaxb-runtime-2.3.2.jar
+	

@@ -27,7 +27,8 @@
 	<property name="dist" location="dist"/>
 	<property name="wsdl" location="wsdl"/>
 	<property name="project-name" value="CisAdminApi"/>
-	<property name="project-target" value="../lib${ver}"/>
+	<property name="project-target" value="../lib${ver}/pdtool"/>
+	<property name="project-target2" value="../lib8.3.0/pdtool"/>
 
 	<path id="project.class.path">
 		<!--fileset dir="lib">
@@ -60,7 +61,7 @@
 
 	<target name="compile" depends="init,wsimportgen" description="compile the source " >
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac source="1.7" target="1.7" srcdir="${src}" destdir="${build}" >
+		<javac source="1.8" target="1.8" srcdir="${src}" destdir="${build}" >
 	      <classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -78,6 +79,11 @@
 
 		<!-- Copy the distribution jar file to the target project -->
 		<copy todir="${project-target}">
+		    <fileset dir="${dist}">
+		        <include name="**"/>
+		    </fileset>
+		</copy>
+		<copy todir="${project-target2}">
 		    <fileset dir="${dist}">
 		        <include name="**"/>
 		    </fileset>

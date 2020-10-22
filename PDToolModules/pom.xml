@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.tibco.ps.deploytool.modules</groupId>
+    <artifactId>PDToolModules</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+<!--
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+-->
+    </properties>
+     <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
+     
+    <dependencies>
+         <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+         <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>1.2.2</version>
+            <scope>runtime</scope>
+        </dependency>      
+    </dependencies>
+    <build>
+    	<finalName>${project.artifactId}</finalName>
+    	
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <!-- 
+                <configuration>
+                    <release>11</release>
+                </configuration>
+                 -->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <argLine>--illegal-access=permit</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xsdtojava</goal>
+                        </goals>
+                        <configuration>
+                            <xsdOptions>
+                                <xsdOption>
+                                    <xsd>${basedir}/schema/PDToolModules.xsd</xsd>
+                                    <packagename>com.tibco.ps.deploytool.modules</packagename>
+                                </xsdOption>
+                            </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>                    
+            </plugin>
+         <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+                <execution>
+                    <id>copy</id>
+                    <phase>package</phase>
+                    <configuration>
+                        <target>
+                            <echo>ANT TASK - copying files....</echo>
+
+                            <copy todir="../lib7.0.0/pdtool" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.jar" >
+                                    <include name="target/PDToolModules.jar" />
+                                </fileset>
+                            </copy>
+ 
+                            <copy todir="../lib8.0.0/pdtool" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.jar" >
+                                    <include name="target/PDToolModules.jar" />
+                                </fileset>
+                            </copy>
+ 
+                            <copy todir="../lib8.3.0/pdtool" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.jar" >
+                                    <include name="target/PDToolModules.jar" />
+                                </fileset>
+                            </copy>
+ 
+                            <copy todir="../resources/schema" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.xsd" >
+                                    <include name="schema/PDToolModules.xsd" />
+                                </fileset>
+                            </copy>
+
+                            <copy todir="../PDToolDocs/docs" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.html" >
+                                    <include name="docs/PDToolModules.xsd.html" />
+                                </fileset>
+                            </copy>
+
+                            <copy todir="../PDToolDocs/docs/images" overwrite="true" flatten="true">
+                                <fileset dir="${basedir}" includes="*.jpg" >
+                                    <include name="docs/images/*.jpg" />
+                                </fileset>
+                            </copy>
+                        </target>
+                    </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        </plugins>
+    </build>
+</project>

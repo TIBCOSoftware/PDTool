@@ -27,7 +27,7 @@
 	<property name="dist" location="dist"/>
 	<property name="wsdl" location="wsdl"/>
 	<property name="project-name" value="CisAdminApi"/>
-	<property name="project-target" value="../lib${ver}"/>
+	<property name="project-target" value="../lib${ver}/pdtool"/>
 
 	<path id="project.class.path">
 		<!--fileset dir="lib">

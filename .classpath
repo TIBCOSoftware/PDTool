@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/libcommon"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lib8.0.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-11.0.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/libExtAnt"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lib8.3.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

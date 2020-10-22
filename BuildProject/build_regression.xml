@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+######################################################################
+# (c) 2017 TIBCO Software Inc. All rights reserved.
+# 
+# Except as specified below, this software is licensed pursuant to the Eclipse Public License v. 1.0.
+# The details can be found in the file LICENSE.
+# 
+# The following proprietary files are included as a convenience, and may not be used except pursuant
+# to valid license to Composite Information Server or TIBCO(R) Data Virtualization Server:
+# csadmin-XXXX.jar, csarchive-XXXX.jar, csbase-XXXX.jar, csclient-XXXX.jar, cscommon-XXXX.jar,
+# csext-XXXX.jar, csjdbc-XXXX.jar, csserverutil-XXXX.jar, csserver-XXXX.jar, cswebapi-XXXX.jar,
+# and customproc-XXXX.jar (where -XXXX is an optional version number).  Any included third party files
+# are licensed under the terms contained in their own accompanying LICENSE files, generally named .LICENSE.txt.
+# 
+# This software is licensed AS-IS. Support for this software is not covered by standard maintenance agreements with TIBCO.
+# If you would like to obtain assistance with this software, such assistance may be obtained through a separate paid consulting
+# agreement with TIBCO.
+#
+######################################################################
+
+*******************************************************
+**** IMPORTANT - PLEASE READ REGARDING COMPILATION ****
+*******************************************************
+	To build the 7.0 jars, the properties java build path must be set for lib7.0.0
+	
+	1. Right click on the PDTool project, select properties, Select Java Build Path
+
+	2. LIBRARIES: click on "Libraries" tab
+			Select lib6.2 and click the "Remove" button
+			Click "Add Library" button
+			Select "User Library" and click Next
+			Select lib7.0.0 library and click finish
+			Click OK to 
+	3. Clean the project
+	4. Execute the build_regression.xml
+-->
+<project name="PDTool" default="default" basedir="..">
+
+	<!-- change the release number from r1 to r2, etc. if there is more than one build in a day. -->
+	<property name="relNum" value="r1"/>
+	<property name="project-name" value="PDTool"/>
+	<property name="atf" value="AutomatedTestFramework"/>
+	<property name="src" value="src"/>
+	<property name="build" location="build"/>
+	<property name="bin" location="bin"/>
+	<property name="dist" value="dist"/>
+	<property name="ext" location="ext"/>
+	<property name="lib" value="libcommon"/>
+	<property name="licenses" location="licenses"/>
+	<property name="regression" location="regression"/>
+	<property name="resources" location="resources"/>
+	<property name="security" location="security"/>
+	<property name="docs" location="PDToolDocs/docs"/>
+	<property name="project-PDToolModules" value="PDToolModules"/>
+
+	<!-- Release variables -->
+	<property name="relbase" value="../PDToolRelease"/>
+	<property file="${relbase}/_general_release/release_date_candidate.properties"/>
+	<property name="regression_rel" location="${relbase}/regression"/>
+	<property name="regression-target" value="PDToolRegression"/>
+	<property name="regression-zip-file-name" value="regression-${RELEASE_DT_CANDIDATE}.zip"/>
+
+	<!-- Check for existence of a Regression release zip file.  Don't continue if it exists because we don't want a final release to be accidently overwritten. -->
+	<target name="PdtoolRegressionZipExist">
+		<fail message="PDTOOL REGRESSION ZIP FILE ALREADY EXISTS: ${regression_rel}/${regression-zip-file-name}">
+			<condition>
+				<available file="${regression_rel}/${regression-zip-file-name}"/>
+			</condition>
+		</fail>
+	</target>
+
+	<!-- Create the PDTool Regresion distribution zip file. -->
+	<target name="dist" depends="PdtoolRegressionZipExist">
+
+		<!-- 
+		***************************************************************
+		Create Regression distribution zip file.
+		***************************************************************
+		-->
+		<!-- Create the Regression zip file target directories -->
+		<mkdir dir="${regression-target}"/>
+		<mkdir dir="${regression-target}/config"/>
+		<mkdir dir="${regression-target}/config_lists"/>
+		<mkdir dir="${regression-target}/modules"/>
+		<mkdir dir="${regression-target}/modules/generated"/>
+		<mkdir dir="${regression-target}/modules/test"/>
+		<mkdir dir="${regression-target}/plan_lists"/>
+		<mkdir dir="${regression-target}/plans"/>
+		<!-- Copy files from the regression source to the regression target directories -->
+		<copy todir="${regression-target}">
+		    <fileset dir="${regression}">
+		        <include name="*.txt"/>
+		        <include name="*.bat"/>
+		        <include name="*.sh"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/config">
+		    <fileset dir="${regression}/config">
+		        <include name="*.car"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/config">
+		    <fileset dir="${regression}/config">
+		        <include name="*.properties"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/config_lists">
+		    <fileset dir="${regression}/config_lists">
+		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/modules/test">
+		    <fileset dir="${regression}/modules/test">
+		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/modules">
+		    <fileset dir="${regression}/modules">
+		        <include name="*.xml"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/plan_lists">
+		    <fileset dir="${regression}/plan_lists">
+		        <include name="*.txt"/>
+		    </fileset>
+		</copy>
+		<copy todir="${regression-target}/plans">
+		    <fileset dir="${regression}/plans">
+		        <include name="*.dp"/>
+		    </fileset>
+		</copy>
+
+		<!-- Create the PDToolRegression zip file -->
+		<zip destfile="${regression_rel}/${regression-zip-file-name}" basedir="." includes="${regression-target}/**" />
+
+		<!-- Delete the staging directory used to create the zip file. -->
+		<delete dir="${regression-target}"/>
+
+	</target>
+	
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+	</target>
+
+	<target name="default" depends="clean,dist" description="Create the PDTool Regression Distribution"/>
+</project>

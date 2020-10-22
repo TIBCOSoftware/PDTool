@@ -53,8 +53,8 @@ PDTool Regression Testing Scripts for PDTool7.0.0 and PDTool8.0.0
 						TFS         = vcs TFS testing only
 						P4          = vcs Perforce testing only
 						CVS         = vcs CVS testing only
-			  5. Verify the target PDTool/security folder and CIS target instance to determine whether it requires weak or strong trust store.
-				 Copy the cis_studio_truststore_strong.jks into the PDTool/security folder for https testing if the target CIS is using strong encryption pack.
+			  5. Verify the target PDTool/security folder and DV target instance to determine whether it requires weak or strong trust store.
+				 Copy the cis_studio_truststore_strong.jks into the PDTool/security folder for https testing if the target DV is using strong encryption pack.
 				 Configure the PDTool/bin/setVars.bat or setVars.sh with the correct trust store.
               6. Proceed to "instructions" for execution.
 			  7. NOTE: PDTool regression will use the variable settings from /PDTool[7|8].0.0_yyyymmdd/PDTool/bin/setVars.bat and /PDTool[7|8].0.0_yyyymmdd/setMyPrePDToolVars.bat
@@ -68,27 +68,29 @@ PDTool Regression Testing Scripts for PDTool7.0.0 and PDTool8.0.0
 ---------------------------------
 How to execute on Windows:
 ---------------------------------
-CIS:    Regression Config Driver Script   Configuration List                         PDTool Home Dir             Debug Version
+DV:     Regression Config Driver Script   Configuration List                         PDTool Home Dir             Debug Version
 ====    ===============================   ========================================== ====================        ===== =======
 7.0.0:  regression_config_driver.bat      regression_win_7.0.0_config_NOVCS_HTTP.txt "D:\dev\PDTool7.0.0\PDTool" Y|N   7.0.0 <-- Represents a regression of PDTool for DV 7.0 on windows
 8.0.0:  regression_config_driver.bat      regression_win_8.0.0_config_NOVCS_HTTP.txt "D:\dev\PDTool8.0.0\PDTool" Y|N   8.0.0 <-- Represents a regression of PDTool for DV 8.0 on windows
+8.3.0:  regression_config_driver.bat      regression_win_8.3.0_config_NOVCS_HTTP.txt "D:\dev\PDTool8.3.0\PDTool" Y|N   8.3.0 <-- Represents a regression of PDTool for DV 8.3 on windows
 
 ---------------------------------
 How to execute on Unix (Linux):
 ---------------------------------
-CIS:    Regression Config Driver Script   Configuration List                         PDTool Home Dir                   Debug Version
+DV:     Regression Config Driver Script   Configuration List                         PDTool Home Dir                   Debug Version
 ====    ===============================   ========================================== ====================              ===== =======
 7.0.0:  ./regression_config_driver.sh     regression_unix_7.0.0_config.txt           "/u01/home/qa/PDTool7.0.0\PDTool" Y|N   7.0.0 <-- Represents a regression of PDTool for DV 7.0 on unix
 8.0.0:  ./regression_config_driver.sh     regression_unix_8.0.0_config.txt           "/u01/home/qa/PDTool8.0.0\PDTool" Y|N   8.0.0 <-- Represents a regression of PDTool for DV 8.0 on unix
+8.3.0:  ./regression_config_driver.sh     regression_unix_8.3.0_config.txt           "/u01/home/qa/PDTool8.3.0\PDTool" Y|N   8.3.0 <-- Represents a regression of PDTool for DV 8.3 on unix
 
 ------------------------------------------------------------
 Configuration List File:  regression_unix_7.0.0_config.txt
 ------------------------------------------------------------
 The configuration list file contains the PDTool configuration property name and
 the regression plan file list. The configuration property file instructs PDTool
-how to connect to CIS and provides VCS connection information also.  The regression
+how to connect to DV and provides VCS connection information also.  The regression
 plan file list is a list of PDTool plans to execute.  The list provided below
-will result in an execution of CIS 7.0 with the "baseline" plan files, followed by
+will result in an execution of DV 7.0 with the "baseline" plan files, followed by
 specific VCS types including subversion (svn), CVS (cvs) and Perforce (p4).  If this
 were on windows, it would also execute Team Foundation Server (tfs).  Lines are 
 commented out by using a # in the first character.  To run a short test to verify that

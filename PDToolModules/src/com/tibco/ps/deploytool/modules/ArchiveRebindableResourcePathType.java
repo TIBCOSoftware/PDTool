@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="path" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="descripiton" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,14 +45,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ArchiveRebindableResourcePathType", propOrder = {
     "path",
-    "descripiton"
+    "description"
 })
 public class ArchiveRebindableResourcePathType {
 
     @XmlElement(required = true)
     protected String path;
     @XmlElement(required = true)
-    protected String descripiton;
+    protected String description;
 
     /**
      * Gets the value of the path property.
@@ -79,7 +79,7 @@ public class ArchiveRebindableResourcePathType {
     }
 
     /**
-     * Gets the value of the descripiton property.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -87,11 +87,11 @@ public class ArchiveRebindableResourcePathType {
      *     
      */
     public String getDescripiton() {
-        return descripiton;
+        return description;
     }
 
     /**
-     * Sets the value of the descripiton property.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
@@ -99,7 +99,7 @@ public class ArchiveRebindableResourcePathType {
      *     
      */
     public void setDescripiton(String value) {
-        this.descripiton = value;
+        this.description = value;
     }
 
 }

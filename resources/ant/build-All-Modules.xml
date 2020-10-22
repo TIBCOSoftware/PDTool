@@ -34,9 +34,9 @@
   <!-- CIS6.1.0 Server Id -->
   <!-- <property name="SERVERID" 			value="localhost9430"/>  -->
   <!-- CIS6.2.0 Server Id -->
-  <!-- <property name="SERVERID" 			value="localhost9440"/>  -->
+  <!-- <property name="SERVERID" 			value="localhost9810"/>  -->
 
-  <property name="SERVERID" 				value="localhost9440"/>
+  <property name="SERVERID" 				value="localhost9810"/>
   <!-- VCS Connection Properties [svn01,perforce01,cvs01,tfs01] -->
   <property name="VCONN" 					value="svn01"/>
   <property name="noarguments" 				value="&quot;&quot;"/>
@@ -63,9 +63,11 @@
 
  <!-- Default Classpath [Do Not Change] -->
   <path id="project.class.path">
-	<fileset dir="${PROJECT_HOME}/lib"><include name="**/*.jar"/></fileset>
-	<fileset dir="${PROJECT_HOME}/lib/endorsed"><include name="**/*.jar"/></fileset>
-	<fileset dir="${PROJECT_HOME}/dist"><include name="**/*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/common"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/pdtool"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/lib/tdv/endorsed"><include name="*.jar"/></fileset>
+	<fileset dir="${PROJECT_HOME}/dist"><include name="*.jar"/></fileset>
 	<fileset dir="${PROJECT_HOME}/ext/ant/lib"><include name="**/*.jar"/></fileset>
   </path>
   <taskdef name="executeJavaAction" description="Execute Java Action" classname="com.tibco.ps.deploytool.ant.CompositeAntTask" classpathref="project.class.path"/>

@@ -1720,6 +1720,23 @@ set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=
 set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_HOME=
 setlocal enabledelayedexpansion
 set I_REPLACE_VALUE=!I_VCS_WORKSPACE_HOME!
+REM #---------------------------------------
+REM # if PDTOOL_SUBSTITUTE_DRIVE is blank then replace the text "%%PDTOOL_SUBSTITUTE_DRIVE%%" in I_PDTOOL_HOME with the value of I_PDTOOL_HOME
+REM #---------------------------------------
+if "!PDTOOL_SUBSTITUTE_DRIVE!" NEQ "" GOTO I_VCS_WORKSPACE_HOME_DONE
+	set TEMP_NAME=tmp.txt
+    echo !I_VCS_WORKSPACE_HOME!|findstr /i /C:"%%PDTOOL_SUBSTITUTE_DRIVE%%">%TEMP_NAME%
+	set /P T=<%TEMP_NAME%
+    echo Result of [echo I_VCS_WORKSPACE_HOME^|findstr /i /C:"%%PDTOOL_SUBSTITUTE_DRIVE%%"]=[%T%]
+	del /F /Q %TEMP_NAME%
+	rem if T does not contain a value then %PDTOOL_SUBSTITUTE_DRIVE% was not found and some other value is there so goto done
+	if not defined T GOTO I_VCS_WORKSPACE_HOME_DONE
+	if "%T%" == "" GOTO I_VCS_WORKSPACE_HOME_DONE
+	rem if %PDTOOL_SUBSTITUTE_DRIVE% was found and no drive was specified then replace with PDTOOL_HOME
+	set I_REPLACE_VALUE=!I_REPLACE_VALUE:%%PDTOOL_SUBSTITUTE_DRIVE%%=%I_PDTOOL_HOME%!
+	echo.I_VCS_WORKSPACE_HOME=[!I_REPLACE_VALUE!]
+:I_VCS_WORKSPACE_HOME_DONE
+
 echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
               CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%
@@ -1729,7 +1746,7 @@ if %ERROR% NEQ 0 GOTO INSTALLER_REPLACE_ERROR1
 REM #---------------------------------------
 REM # Set [SVN,TFS,GIT,P4]_VCS_WORKSPACE_NAME
 REM #---------------------------------------
-echo.
+echo. 
 echo.Replace "%I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME" in %MODIFY_SET_MY_PRE_VARS%
 echo.
 set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_WORKSPACE_NAME=
@@ -1752,6 +1769,23 @@ set    I_FIND_TEXT=set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=
 set I_REPLACE_TEXT=set %I_VCS_BASE_TYPE%_VCS_TEMP_DIR=
 setlocal enabledelayedexpansion
 set I_REPLACE_VALUE=!I_VCS_TEMP_DIR!
+REM #---------------------------------------
+REM # if PDTOOL_SUBSTITUTE_DRIVE is blank then replace the text "%%PDTOOL_SUBSTITUTE_DRIVE%%" in I_VCS_TEMP_DIR with the value of I_PDTOOL_HOME
+REM #---------------------------------------
+if "!PDTOOL_SUBSTITUTE_DRIVE!" NEQ "" GOTO I_VCS_TEMP_DIR_DONE
+	set TEMP_NAME=tmp.txt
+    echo !I_VCS_TEMP_DIR!|findstr /i /C:"%%PDTOOL_SUBSTITUTE_DRIVE%%">%TEMP_NAME%
+	set /P T=<%TEMP_NAME%
+    echo Result of [echo I_VCS_TEMP_DIR^|findstr /i /C:"%%PDTOOL_SUBSTITUTE_DRIVE%%"]=[%T%]
+	del /F /Q %TEMP_NAME%
+	rem if T does not contain a value then %PDTOOL_SUBSTITUTE_DRIVE% was not found and some other value is there so goto done
+	if not defined T GOTO I_VCS_TEMP_DIR_DONE
+	if "%T%" == "" GOTO I_VCS_TEMP_DIR_DONE
+	rem if %PDTOOL_SUBSTITUTE_DRIVE% was found and no drive was specified then replace with PDTOOL_HOME
+	set I_REPLACE_VALUE=!I_REPLACE_VALUE:%%PDTOOL_SUBSTITUTE_DRIVE%%=%I_PDTOOL_HOME%!
+	echo.I_VCS_TEMP_DIR=[!I_REPLACE_VALUE!]
+:I_VCS_TEMP_DIR_DONE
+
 echo.COMMAND: CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%" "%I_REPLACE_TEXT%!I_REPLACE_VALUE!"
               CALL:ParseLineReplaceText %debugReplaceText% "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_PDTOOL_DESTINATION_HOME%\%MODIFY_SET_MY_PRE_VARS%" "%I_FIND_TEXT%"
 set ERROR=%ERRORLEVEL%

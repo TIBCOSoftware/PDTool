@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo>ANT TASK - copying files....</echo>
+  <copy flatten="true" todir="../lib7.0.0/pdtool" overwrite="true">
+    <fileset includes="*.jar" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="target/PDToolModules.jar"/>
+    </fileset>
+  </copy>
+  <copy flatten="true" todir="../lib8.0.0/pdtool" overwrite="true">
+    <fileset includes="*.jar" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="target/PDToolModules.jar"/>
+    </fileset>
+  </copy>
+  <copy flatten="true" todir="../lib8.3.0/pdtool" overwrite="true">
+    <fileset includes="*.jar" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="target/PDToolModules.jar"/>
+    </fileset>
+  </copy>
+  <copy flatten="true" todir="../resources/schema" overwrite="true">
+    <fileset includes="*.xsd" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="schema/PDToolModules.xsd"/>
+    </fileset>
+  </copy>
+  <copy flatten="true" todir="../PDToolDocs/docs" overwrite="true">
+    <fileset includes="*.html" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="docs/PDToolModules.xsd.html"/>
+    </fileset>
+  </copy>
+  <copy flatten="true" todir="../PDToolDocs/docs/images" overwrite="true">
+    <fileset includes="*.jpg" dir="C:\MyFiles\git\ASAssets_GIT_Repo2\PDTool\PDToolModules">
+      <include name="docs/images/*.jpg"/>
+    </fileset>
+  </copy>
+</target>
+</project>
