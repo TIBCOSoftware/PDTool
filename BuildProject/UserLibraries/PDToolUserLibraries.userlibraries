@@ -6,16 +6,16 @@
         <archive path="/PDTool/lib7.0.0/common/jdom.jar"/>
         <archive path="/PDTool/lib7.0.0/common/saxpath.jar"/>
         <archive path="/PDTool/lib7.0.0/common/spring.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/mail.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/resolver.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/serializer.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/webservices-api.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/xalan-2.7.0.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/xercesImpl.jar"/>
-        <archive path="/PDTool/lib7.0.0/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib7.0.0/pdtool/CisAdminApi.jar"/>
         <archive path="/PDTool/lib7.0.0/pdtool/PDToolModules.jar"/>
         <archive path="/PDTool/lib7.0.0/pdtool/RepoUtils.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/mail.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/resolver.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/serializer.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/webservices-api.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/xalan-2.7.0.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/xercesImpl.jar"/>
+        <archive path="/PDTool/lib7.0.0/tdv/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib7.0.0/tdv/antlr-3.1.1.jar"/>
         <archive path="/PDTool/lib7.0.0/tdv/axiom-api-1.2.7.jar"/>
         <archive path="/PDTool/lib7.0.0/tdv/axiom-dom-1.2.7.jar"/>
@@ -43,13 +43,6 @@
         <archive path="/PDTool/lib7.0.0/tdv/XmlSchema-1.4.7.jar"/>
     </library>
     <library name="lib8.0.0" systemlibrary="false">
-        <archive path="/PDTool/lib8.0.0/endorsed/mail.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/resolver.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/serializer.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/webservices-api.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/xalan-2.7.2.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/xercesImpl.jar"/>
-        <archive path="/PDTool/lib8.0.0/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib8.0.0/common/commons-pool-1.5.7.jar"/>
         <archive path="/PDTool/lib8.0.0/common/jaxen.jar"/>
         <archive path="/PDTool/lib8.0.0/common/jdom.jar"/>
@@ -58,6 +51,13 @@
         <archive path="/PDTool/lib8.0.0/pdtool/CisAdminApi.jar"/>
         <archive path="/PDTool/lib8.0.0/pdtool/PDToolModules.jar"/>
         <archive path="/PDTool/lib8.0.0/pdtool/RepoUtils.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/mail.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/resolver.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/serializer.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/webservices-api.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/xalan-2.7.2.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/xercesImpl.jar"/>
+        <archive path="/PDTool/lib8.0.0/tdv/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib8.0.0/tdv/antlr-3.1.1.jar"/>
         <archive path="/PDTool/lib8.0.0/tdv/axiom-api-1.2.7.jar"/>
         <archive path="/PDTool/lib8.0.0/tdv/axiom-dom-1.2.7.jar"/>
@@ -90,24 +90,20 @@
         <archive path="/PDTool/lib8.0.0/tdv/XmlSchema-1.4.7.jar"/>
     </library>
     <library name="lib8.3.0" systemlibrary="false">
-        <archive path="/PDTool/lib8.3.0/endorsed/mail.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/resolver.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/serializer.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/webservices-api.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/xalan-2.7.2.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/xercesImpl.jar"/>
-        <archive path="/PDTool/lib8.3.0/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib8.3.0/common/commons-pool-1.5.7.jar"/>
-        <archive path="/PDTool/lib8.3.0/common/jakarta.activation-1.2.2.jar"/>
-        <archive path="/PDTool/lib8.3.0/common/jaxb-api-2.3.1.jar"/>
-        <archive path="/PDTool/lib8.3.0/common/jaxb-runtime-2.3.2.jar"/>
-        <archive path="/PDTool/lib8.3.0/common/jaxen.jar"/>
         <archive path="/PDTool/lib8.3.0/common/jdom.jar"/>
         <archive path="/PDTool/lib8.3.0/common/saxpath.jar"/>
         <archive path="/PDTool/lib8.3.0/common/spring.jar"/>
         <archive path="/PDTool/lib8.3.0/pdtool/CisAdminApi.jar"/>
         <archive path="/PDTool/lib8.3.0/pdtool/PDToolModules.jar"/>
         <archive path="/PDTool/lib8.3.0/pdtool/RepoUtils.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/mail.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/resolver.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/serializer.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/webservices-api.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/xalan-2.7.2.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/xercesImpl.jar"/>
+        <archive path="/PDTool/lib8.3.0/tdv/endorsed/xml-apis.jar"/>
         <archive path="/PDTool/lib8.3.0/tdv/antlr-3.1.1.jar"/>
         <archive path="/PDTool/lib8.3.0/tdv/axiom-api-1.2.7.jar"/>
         <archive path="/PDTool/lib8.3.0/tdv/axiom-dom-1.2.7.jar"/>
