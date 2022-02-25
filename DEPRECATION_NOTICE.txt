@@ -1,0 +1,16 @@
+Author: Mike Tinius, TIBCO PSG Architect and PDTool maintainer
+
+1. 2022-02-23: Deprecation Notice: Feb 2022
+	PDTool will no longer be maintained due to complexities of maintaining and testing over several TIBCO DV releases.
+	
+	Even though PDTool provides a robust mechanism for deployment that offers a great deal of flexibility, 
+		it has become increasingly difficult to maintain with many TDV 8.x releases.
+		
+	The key feature of PDTool is its ability to integrate with Version Control Systems (VCS) namely GIT and Subversion.
+	
+	The VCS capability (alone) has been migrated to a PSG managed and provided accelerator called TIBCO PSG CoE (Center of Excellence).
+		To acquire this capability would require a PSG engagement to install, configure and train on how to use.
+		TIBCO PSG CoE is a command-line based tool for Windows and Linux like PDTool is.  However, it does not offer ANT like PDTool does.
+		TIBCO PSG CoE supports all aspects of deployment differently than PDTool and similarly supports VCS deployment from GIT or Subversion only.
+	
+	
